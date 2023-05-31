@@ -1,0 +1,167 @@
+.track {
+  padding: 30px;
+  background: #50808e;
+  /* background: linear-gradient(#196e8c, #65a69e); */
+  color: white;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  overflow-x: hidden;
+  gap: 1rem;
+}
+
+.track .arrow-right {
+  cursor: pointer;
+}
+
+.track #waveform {
+  margin-left: auto;
+  flex: 1;
+}
+
+.play-btn {
+  width: 40px;
+  height: 40px;
+  padding: 8%;
+  border-radius: 50%;
+  border: none;
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: box-shadow 0.3s;
+  outline: white;
+}
+
+.play-btn:hover {
+  box-shadow: 0px 5px 15px rgba(87, 209, 236, 0.364);
+}
+
+.audio {
+  width: 95%;
+}
+
+.playpause {
+  width: 30px;
+  height: 30px;
+}
+
+.media-outer {
+  max-width: 95%;
+  border: 1px solid #cccccc;
+  background: #f8f8ff;
+  border-radius: 5px;
+  padding: 0 0.5em 0.5em;
+  transition: transform 0.2s;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  margin-right: 10px;
+  margin-left: 10px;
+  margin-top: 20px;
+}
+
+.media-outer:hover {
+  transform: scale(1.02);
+}
+
+.media-content {
+  flex: 1 1 auto;
+  padding: 1rem 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.media-articleSignifier {
+  font-family: Quicksand;
+  font-size: 10px;
+  color: #878787;
+  text-transform: uppercase;
+}
+
+.media-authorDate {
+  font-family: "Source Serif Pro";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 18px;
+  color: #9f9f9f;
+  height: 18px;
+  overflow: hidden;
+  margin-bottom: 0;
+}
+
+.media-img {
+  width: 100%;
+  aspect-ratio: 3/1;
+  object-fit: cover;
+}
+
+.media-top-section {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.media-middle-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.media-articleTitle {
+  color: black;
+  text-align: start;
+  text-overflow: ellipsis;
+  word-wrap: break-word;
+  overflow: hidden;
+  font-weight: 700;
+  font-size: 25px;
+  height: 25px;
+  font-family: "Alegreya Sans SC" !important;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  margin-bottom: 0;
+}
+
+.media-articleTitle:hover {
+  color: black;
+  text-decoration: none;
+  background-color: transparent;
+  opacity: 1;
+}
+
+.media-articleSubtitle {
+  color: black;
+  font-family: Quicksand;
+  text-overflow: ellipsis;
+  word-wrap: break-word;
+  overflow: hidden;
+  font-weight: 400;
+  font-size: 1rem;
+  line-height: 1rem;
+  font-style: normal;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  padding: 1rem 0 1rem;
+  margin: 0 0;
+}
+
+.video-player {
+  position: relative;
+  padding-top: 56.25%; /* 720 / 1280 = 0.5625 */
+}
+
+.react-player {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-bottom-right-radius: 5px;
+  border-bottom-left-radius: 5px;
+  overflow: hidden;
+}

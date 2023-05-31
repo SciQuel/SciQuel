@@ -1,0 +1,153 @@
+/* fonts */
+@import url("https://fonts.googleapis.com/css2?family=Alegreya+Sans+SC&family=EB+Garamond&family=Quicksand&family=Source+Serif+Pro&display=swap");
+
+.section {
+  width: 80%;
+  height: fit-content;
+  margin: 5% auto;
+}
+.home_new_section {
+  font-family: var(--font-quicksand);
+  color: rgba(52, 78, 65, 1);
+  margin-left: 10px;
+  margin-bottom: 0;
+  font-style: normal;
+  font-weight: 550;
+  font-size: 38px;
+  line-height: 48px;
+}
+
+.cards {
+  padding: 0px;
+  flex: 1 1 0;
+  /* margin: 1.25rem 10px; */
+}
+
+.cards-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* align-items: center; */
+  /* width: 100px; */
+  /* height: 100vh; */
+}
+
+.cards-list {
+  display: flex;
+  flex-wrap: wrap;
+  /* flex-direction: column; */
+  width: 100%;
+
+  /* gap: 1rem; */
+  /* justify-content: center; */
+}
+
+@media (min-width: 1023px) {
+  .cards {
+    flex: 0 0 auto;
+    flex-basis: 33.33333%;
+  }
+}
+
+@media screen and (max-width: 1024px) {
+  .section > h2 {
+    font-size: 32px;
+  }
+  .cards-list {
+    display: block;
+    flex-wrap: wrap;
+    width: 100%;
+  }
+
+  .browse_container {
+    width: 100% !important;
+  }
+
+  .trending-col {
+    width: 100% !important;
+  }
+}
+
+.home_next_prev_button {
+  background-color: transparent;
+  outline: none;
+  border-color: transparent;
+  cursor: pointer;
+}
+
+.pagination_circles dl {
+  display: inline-flex;
+}
+
+.circles {
+  cursor: pointer;
+  margin: 0 2px;
+  background-color: rgba(163, 201, 168, 1);
+  border-radius: 50px;
+  width: 0.5rem;
+  height: 0.5rem;
+}
+
+.circles_active {
+  background-color: rgba(80, 128, 142, 1);
+}
+
+.browse_container {
+  margin-top: 1.25rem;
+  width: 100%;
+  align-self: end;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+#trending .browse_container {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.browse_more {
+  display: flex;
+  align-items: center;
+  margin-right: 10px;
+}
+
+.browse_more:hover {
+  background-color: transparent;
+}
+
+.browse_more p {
+  color: rgba(79, 10, 5, 1);
+  font-weight: 500;
+  font-family: var(--font-quicksand);
+  font-size: 18px;
+  text-decoration: underline;
+  padding-right: 0.5rem;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.pagination_circles {
+  display: flex;
+  align-items: center;
+  /* justify-content: center; */
+}
+
+.trending-media {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.trending-row {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.trending-col {
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+}

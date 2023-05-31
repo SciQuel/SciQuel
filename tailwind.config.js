@@ -9,12 +9,13 @@ module.exports = {
     extend: {
       fontFamily: {
         alegreyaSansSC: "var(--font-alegreya-sans-sc)",
+        sourceSerif4: "var(--font-source-serif-4)",
       },
       colors: {
         sciquelTeal: "#69a297",
         sciquelHover: "#51726b",
         sciquelHeading: "rgba(52, 78, 65, 1)",
-        sciquelMediaType: "#878787",
+        sciquelMuted: "#878787",
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
