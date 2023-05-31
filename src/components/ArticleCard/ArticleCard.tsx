@@ -1,5 +1,3 @@
-import React, { useEffect, useReducer, useRef, useState } from "react";
-import "./ArticleCard.css";
 import Topic from "@/lib/topic";
 import Image from "next/image";
 import Link from "next/link";
@@ -14,7 +12,8 @@ export default function ArticleCard({ href }: Props) {
     <Link href="#">
       <div
         className={`flex min-w-[300px] cursor-pointer flex-col gap-4 overflow-clip
-        rounded-lg border border-sciquelCardBorder bg-sciquelCardBg`}
+        rounded-lg border border-sciquelCardBorder bg-sciquelCardBg transition
+        hover:scale-[1.02]`}
       >
         <div className="flex flex-col gap-4 p-5">
           {/* Article Card Header */}
