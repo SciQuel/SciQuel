@@ -1,10 +1,9 @@
 import Image from "next/image";
 import logo from "./logo.png";
-import searchIcon from "./search.svg";
 
 export default function Header() {
   return (
-    <div className="bg-sciquelTeal flex flex-col text-white">
+    <div className="flex flex-col bg-sciquelTeal text-white">
       <div className="absolute top-0 flex w-full justify-center px-10 py-4 text-xl font-thin leading-[2rem]">
         <Image src={logo} className="h-[2rem] w-auto" alt="SciQuel" />
         <p>SCIQUEL</p>
@@ -24,16 +23,16 @@ export default function Header() {
         </div>
       </div>
       <div className="flex flex-row px-40 text-center">
-        <div className="hover:bg-sciquelHover grow cursor-pointer py-2 transition-colors">
+        <div className="grow cursor-pointer py-2 transition-colors hover:bg-sciquelHover">
           LATEST
         </div>
-        <div className="hover:bg-sciquelHover grow cursor-pointer py-2 transition-colors">
+        <div className="grow cursor-pointer py-2 transition-colors hover:bg-sciquelHover">
           READ
         </div>
-        <div className="hover:bg-sciquelHover grow cursor-pointer py-2 transition-colors">
+        <div className="grow cursor-pointer py-2 transition-colors hover:bg-sciquelHover">
           TOPIC
         </div>
-        <div className="hover:bg-sciquelHover grow cursor-pointer py-2 transition-colors">
+        <div className="grow cursor-pointer py-2 transition-colors hover:bg-sciquelHover">
           ABOUT
         </div>
       </div>
