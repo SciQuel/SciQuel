@@ -1,9 +1,8 @@
 import Topic from "@/lib/topic";
 import ArticleList from "../ArticleList";
 import HomepageSection from "../HomepageSection";
-import MainCard from "../MainCard/MainCard";
 
-export default function WhatsNewSection() {
+export default function TrendingSection() {
   const articles = [
     {
       topic: Topic.COMPUTER_SCIENCE,
@@ -36,21 +35,7 @@ export default function WhatsNewSection() {
   ];
 
   return (
-    <HomepageSection heading="Read what's new">
-      <div className="pb-5">
-        <MainCard
-          thumbnailUrl="/assets/images/bobtail.png"
-          title={"Lights. Camera. Action!"}
-          subtitle={
-            "How does the Hawaiian bobtail squid singly live with Vibrio fischeri? A look at the Special Relationship between an uncommon bacterium and a pocket-sized squid."
-          }
-          author={"Edward Chen"}
-          date={"May 27, 2021"}
-          mediaType={"Article"}
-          tag={Topic.MEDICINE}
-          href={"/"}
-        />
-      </div>
+    <HomepageSection heading="Trending">
       <ArticleList articles={articles} />
     </HomepageSection>
   );

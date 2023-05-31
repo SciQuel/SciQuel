@@ -92,7 +92,7 @@ const MainCard = ({
   return (
     <Link href={href}>
       <div
-        className={`relative mx-auto my-8 h-[40vh] min-h-[350px] min-w-[300px] cursor-pointer pl-5
+        className={`relative mx-auto h-[40vh] min-h-[350px] min-w-[300px] cursor-pointer pl-5
                   text-center transition-transform duration-[0.3s] hover:scale-[1.05]`}
       >
         <div

@@ -3,6 +3,7 @@
 import ArticleCard from "@/components/ArticleCard/ArticleCard";
 import MainCard from "@/components/MainCard/MainCard";
 import MediaCard from "@/components/MediaCard/MediaCard";
+import TrendingSection from "@/components/TrendingSection";
 import WhatsNewSection from "@/components/WhatsNewSection";
 import API from "@/lib/api";
 import clsx from "clsx";
@@ -586,8 +587,9 @@ export default function Home() {
   return (
     <>
       {/* Article cards */}
-      <div className="mx-[10%] mt-10">
+      <div className="mx-[10%] mt-10 flex flex-col gap-12">
         <WhatsNewSection />
+        <TrendingSection />
       </div>
       {/* Trending section */}
       <div className={styles["section"]} id="trending_section">
