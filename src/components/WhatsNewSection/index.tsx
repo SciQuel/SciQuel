@@ -15,7 +15,7 @@ export default function WhatsNewSection() {
     },
     {
       topic: Topic.COMPUTER_SCIENCE,
-      title: "Lights. Camera. Action! ASD ASD ASD ASD ASD ASD",
+      title: "Lights. Camera. Action!",
       subtitle:
         "How the Hawaiian bobtail squid brings a creative vision to its maritime world of small big screens asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd ",
       author: "Edward Chen",
@@ -24,7 +24,8 @@ export default function WhatsNewSection() {
     },
     {
       topic: Topic.COMPUTER_SCIENCE,
-      title: "Lights. Camera. Action! ASD ASD ASD ASD ASD ASD",
+      title:
+        "Lights. Camera. Action! ASD ASD ASD ASD ASD ASD Lorem Ipsum Dolor Sit Amet",
       subtitle:
         "How the Hawaiian bobtail squid brings a creative vision to its maritime world of small big screens asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd ",
       author: "Edward Chen",

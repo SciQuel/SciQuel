@@ -16,7 +16,7 @@ interface Props {
 
 export default function ArticleList({ articles }: Props) {
   return (
-    <div className="flex flex-row gap-5">
+    <div className="grid auto-rows-max grid-cols-3 gap-4">
       {articles.map((article) => (
         <ArticleCard
           href="#"

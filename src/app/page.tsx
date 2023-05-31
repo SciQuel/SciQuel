@@ -589,47 +589,6 @@ export default function Home() {
       <div className="mx-[10%] mt-10">
         <WhatsNewSection />
       </div>
-      <div className="mx-[10%] mt-10 h-fit" id="read-new">
-        <p className={styles["home_new_section"]}>Read what&apos;s new</p>
-        {/*Uncomment to see the quizes in homepage*/}
-        {/*<MatchQuiz
-        question ="???"
-        answerOptions = {ans}
-        answers1 = {answer1}
-        answers2 = {answer2}
-        answers3 = {answer3}
-        />
-        <OneMatchQuiz/>*/}
-        <div className={styles["cards-container"]}>
-          {articleCardList.length > 0 ? (
-            <div className={styles["cards-list"]}>
-              {articleCardList.map((item) => (
-                <div
-                  style={{ padding: 0 }}
-                  className={styles["cards"]}
-                  key={item.key}
-                >
-                  <ArticleCard
-                    topic={item.topic}
-                    title={item.title}
-                    subtitle={item.subtitle}
-                    author={item.author}
-                    date={item.date}
-                    src={item.src}
-                    href={item.href}
-                    mediaType={item.mediaType}
-                    style={item.style}
-                  ></ArticleCard>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <></>
-          )}
-        </div>
-        {renderMore("article", "Read all recent", "#podcast", 0, 0)}
-      </div>
-
       {/* Trending section */}
       <div className={styles["section"]} id="trending_section">
         <p className={styles["home_new_section"]}>Trending</p>

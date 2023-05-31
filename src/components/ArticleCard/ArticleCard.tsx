@@ -25,11 +25,11 @@ export default function ArticleCard({
   return (
     <Link href={href ?? "#"}>
       <div
-        className={`flex min-w-[300px] cursor-pointer flex-col overflow-clip
-        rounded-lg border border-sciquelCardBorder bg-sciquelCardBg transition
-        hover:scale-[1.02]`}
+        className={`flex h-full min-w-[300px] cursor-pointer flex-col
+        overflow-clip rounded-lg border border-sciquelCardBorder bg-sciquelCardBg
+        transition hover:scale-[1.02]`}
       >
-        <div className="flex flex-col gap-4 p-5">
+        <div className="flex grow flex-col gap-4 p-5">
           {/* Article Card Header */}
           <div className="flex w-full flex-row">
             <TopicTag name={topic} />
@@ -38,7 +38,9 @@ export default function ArticleCard({
             </div>
           </div>
           {/* Article Content */}
-          <h1 className="font-alegreyaSansSC text-2xl font-medium">{title}</h1>
+          <h1 className="line-clamp-3 grow font-alegreyaSansSC text-2xl font-medium">
+            {title}
+          </h1>
           <p className="line-clamp-2">{subtitle}</p>
           <div className="flex flex-row font-sourceSerif4 text-sm font-[350] text-sciquelMuted">
             <p className="grow">By {author}</p>
