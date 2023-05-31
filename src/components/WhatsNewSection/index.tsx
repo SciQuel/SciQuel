@@ -11,7 +11,7 @@ export default function WhatsNewSection() {
         "How the Hawaiian bobtail squid brings a creative vision to its maritime world of small big screens asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd ",
       author: "Edward Chen",
       date: new Date("May 27, 2021"),
-      thumbnailUrl: "https://www.sciquel.org/bobtail.png",
+      thumbnailUrl: "/assets/images/bobtail.png",
     },
     {
       topic: Topic.COMPUTER_SCIENCE,
@@ -20,7 +20,7 @@ export default function WhatsNewSection() {
         "How the Hawaiian bobtail squid brings a creative vision to its maritime world of small big screens asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd ",
       author: "Edward Chen",
       date: new Date("May 27, 2021"),
-      thumbnailUrl: "https://www.sciquel.org/bobtail.png",
+      thumbnailUrl: "/assets/images/bobtail.png",
     },
     {
       topic: Topic.COMPUTER_SCIENCE,
@@ -29,7 +29,7 @@ export default function WhatsNewSection() {
         "How the Hawaiian bobtail squid brings a creative vision to its maritime world of small big screens asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd ",
       author: "Edward Chen",
       date: new Date("May 27, 2021"),
-      thumbnailUrl: "https://www.sciquel.org/bobtail.png",
+      thumbnailUrl: "/assets/images/bobtail.png",
     },
   ];
 

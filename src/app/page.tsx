@@ -3,12 +3,12 @@
 import ArticleCard from "@/components/ArticleCard/ArticleCard";
 import MainCard from "@/components/MainCard/MainCard";
 import MediaCard from "@/components/MediaCard/MediaCard";
+import WhatsNewSection from "@/components/WhatsNewSection";
 import API from "@/lib/api";
+import clsx from "clsx";
 import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
 import styles from "./Home.module.css";
-import clsx from "clsx";
-import WhatsNewSection from "@/components/WhatsNewSection";
 
 export default function Home() {
   const [podcastIndex, setPodcastIndex] = useState(0);
@@ -39,14 +39,14 @@ export default function Home() {
 
     (async () => {
       try {
-        let latestArticlesResponse = await api.getLatestArticles();
+        const latestArticlesResponse = await api.getLatestArticles();
         if (
           latestArticlesResponse.status === 200 &&
           Array.isArray(latestArticlesResponse.data) &&
           latestArticlesResponse.data.length > 0
         ) {
           console.log("latest article list is: ", latestArticlesResponse.data);
-          let tempLatestList = [];
+          const tempLatestList = [];
           let numRecentArticles = 0;
 
           latestArticlesResponse.data.forEach((item, index) => {
@@ -57,10 +57,10 @@ export default function Home() {
               numRecentArticles++;
               console.log("found ", numRecentArticles, " articles so far");
 
-              let articleDate = new Date(item.PublishedDate);
+              const articleDate = new Date(item.PublishedDate);
               let articleDay = articleDate.getDate().toString();
-              let articleMonth = articleDate.getMonth() + 1;
-              let articleFullYear = articleDate.getFullYear();
+              const articleMonth = articleDate.getMonth() + 1;
+              const articleFullYear = articleDate.getFullYear();
 
               if (articleDate.getDate() < 10) {
                 articleDay = "0" + articleDate.getDate();
@@ -92,22 +92,22 @@ export default function Home() {
       }
 
       try {
-        let staffPicksResponse = await api.getStaffPicks();
+        const staffPicksResponse = await api.getStaffPicks();
         console.log("staff picks list is: ", staffPicksResponse.data);
         if (
           staffPicksResponse.status === 200 &&
           Array.isArray(staffPicksResponse.data) &&
           staffPicksResponse.data.length > 0
         ) {
-          let tempStaffPicksList = [];
+          const tempStaffPicksList = [];
 
           for (let i = 0; i < staffPicksResponse.data.length && i < 3; i++) {
-            let item = staffPicksResponse.data[i];
+            const item = staffPicksResponse.data[i];
 
-            let articleDate = new Date(item.PublishedDate);
+            const articleDate = new Date(item.PublishedDate);
             let articleDay = articleDate.getDate().toString();
-            let articleMonth = articleDate.getMonth() + 1;
-            let articleFullYear = articleDate.getFullYear();
+            const articleMonth = articleDate.getMonth() + 1;
+            const articleFullYear = articleDate.getFullYear();
 
             if (articleDate.getDate() < 10) {
               articleDay = "0" + articleDate.getDate();
@@ -159,8 +159,7 @@ export default function Home() {
       asd asd asd asd asd asd asd asd asd asd asd asd asd "
       author="Edward Chen"
       date="05/27/21"
-      src="https://www.sciquel.org/bobtail.png"
-      style={{ margin: "20px 10px 0 10px", minWidth: "auto" }}
+      thumbnailUrl="/assets/images/bobtail.png"
     />,
     <ArticleCard
       key="article-card-2"
@@ -169,8 +168,7 @@ export default function Home() {
       subtitle="How the Hawaiian bobtail squid brings a creative vision to its..."
       author="Edward Chen"
       date="05/27/21"
-      src="https://www.sciquel.org/bobtail.png"
-      style={{ margin: "20px 10px 0 10px", minWidth: "auto" }}
+      thumbnailUrl="/assets/images/bobtail.png"
     />,
     <ArticleCard
       key="article-card-3"
@@ -179,8 +177,7 @@ export default function Home() {
       subtitle="How the Hawaiian bobtail squid brings a creative vision to its..."
       author="Edward Chen"
       date="05/27/21"
-      src="https://www.sciquel.org/bobtail.png"
-      style={{ margin: "20px 10px 0 10px", minWidth: "auto" }}
+      thumbnailUrl="/assets/images/bobtail.png"
     />,
   ];
 
@@ -339,6 +336,7 @@ export default function Home() {
 
   /**
    * Handle the position of initial touch on carousel
+   *
    * @param {} event
    * @param {string} type, either podcast or video carousel
    */
@@ -359,6 +357,7 @@ export default function Home() {
 
   /**
    * Handle the move of touch on carousel
+   *
    * @param {*} event
    * @param {*} type, either podcast or video carousel
    */
@@ -378,13 +377,14 @@ export default function Home() {
   };
 
   /**
-   * Handle the touch end on carousel, and call the correct function
-   * depending on distance from touch start and touch end.
+   * Handle the touch end on carousel, and call the correct function depending on distance from
+   * touch start and touch end.
+   *
    * @param {string} type, either podcast or video carousel
    */
   const handleTouchEnd = (type: string) => {
-    var start;
-    var end;
+    let start;
+    let end;
     switch (type) {
       case "podcast":
         start = touchStart.current[0];
@@ -414,26 +414,27 @@ export default function Home() {
 
   /**
    * Render the circles between the prev and next button
+   *
    * @param {number} active, the circle that will be have slighter darker color
    * @param {number} n
    * @returns JSX
    */
   const renderCircles = (active: number, n: number) => {
-    var content = [];
-    for (var i = 0; i < n / carouselIndex; i++) {
+    const content = [];
+    for (let i = 0; i < n / carouselIndex; i++) {
       if (active / carouselIndex === i) {
         content.push(
           <dt>
             <div
               className={clsx(styles["circles"], styles["circles_active"])}
             ></div>
-          </dt>
+          </dt>,
         );
       } else {
         content.push(
           <dt>
             <div className={styles["circles"]}></div>
-          </dt>
+          </dt>,
         );
       }
     }
@@ -442,11 +443,12 @@ export default function Home() {
   };
 
   /**
-   *  Handel the next click of the pagination
+   * Handel the next click of the pagination
+   *
    * @param {string} type
    */
   const handleNextClick = (type: string) => {
-    var temp = 0;
+    let temp = 0;
     if (carouselIndex === 1) {
       temp = 1;
     }
@@ -473,12 +475,13 @@ export default function Home() {
   };
 
   /**
-   * Handle the prev click of the pagination.
-   * NOTE: There is a bug where prev click call messed up some codes
+   * Handle the prev click of the pagination. NOTE: There is a bug where prev click call messed up
+   * some codes
+   *
    * @param {string} type
    */
   const handelPrevClick = (type: string) => {
-    var temp = 0;
+    let temp = 0;
     if (carouselIndex === 1) {
       temp = 1;
     }
@@ -487,7 +490,7 @@ export default function Home() {
       case "podcast":
         if (podcastIndex - carouselIndex < 0) {
           setPodcastIndex(
-            Math.floor(podcasts.length / carouselIndex) * carouselIndex - temp
+            Math.floor(podcasts.length / carouselIndex) * carouselIndex - temp,
           );
         } else {
           setPodcastIndex(podcastIndex - carouselIndex);
@@ -497,7 +500,7 @@ export default function Home() {
       case "video":
         if (videoIndex - carouselIndex < 0) {
           setVideoIndex(
-            Math.floor(videos.length / carouselIndex) * carouselIndex - temp
+            Math.floor(videos.length / carouselIndex) * carouselIndex - temp,
           );
         } else {
           setVideoIndex(videoIndex - carouselIndex);
@@ -510,6 +513,7 @@ export default function Home() {
 
   /**
    * Render the prev and next buttons along with the circles to indicate number of page
+   *
    * @param {string} type
    * @param {string} url
    * @param {number} index
@@ -521,7 +525,7 @@ export default function Home() {
     more,
     url: string,
     index: number,
-    length: number
+    length: number,
   ): JSX.Element => {
     let MediaCards = [];
 
@@ -724,7 +728,7 @@ export default function Home() {
             "Browse podcasts",
             "#podcast",
             podcastIndex,
-            podcasts.length
+            podcasts.length,
           )}
         </div>
       </div>
@@ -758,7 +762,7 @@ export default function Home() {
             "browse videos",
             "#video",
             videoIndex,
-            videos.length
+            videos.length,
           )}
         </div>
       </div>

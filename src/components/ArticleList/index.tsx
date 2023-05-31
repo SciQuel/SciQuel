@@ -1,9 +1,10 @@
+import type Topic from "@/lib/topic";
 import ArticleCard from "../ArticleCard/ArticleCard";
 
 interface Article {
-  topic: string;
+  topic: (typeof Topic)[keyof typeof Topic];
   title: string;
-  subtitle?: string;
+  subtitle: string;
   author: string;
   date: Date;
   thumbnailUrl: string;
@@ -18,13 +19,14 @@ export default function ArticleList({ articles }: Props) {
     <div className="flex flex-row gap-5">
       {articles.map((article) => (
         <ArticleCard
+          href="#"
           key={article.title}
           topic={article.topic}
           title={article.title}
           subtitle={article.subtitle}
           author={article.author}
           date={article.date.toDateString()}
-          src={article.thumbnailUrl}
+          thumbnailUrl={article.thumbnailUrl}
         />
       ))}
     </div>
