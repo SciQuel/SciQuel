@@ -92,7 +92,7 @@ const MainCard = ({
   return (
     <Link href={href}>
       <div
-        className={`relative mx-auto my-8 h-[40vh] min-h-[350px] w-[90%] min-w-[300px] cursor-pointer
+        className={`relative mx-auto my-8 h-[40vh] min-h-[350px] min-w-[300px] cursor-pointer pl-5
                   text-center transition-transform duration-[0.3s] hover:scale-[1.05]`}
       >
         <div
@@ -104,6 +104,7 @@ const MainCard = ({
             fill={true}
             alt={title}
             className="rounded-md"
+            style={{ objectFit: "cover" }}
           />
         </div>
         <Card

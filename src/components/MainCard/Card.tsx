@@ -107,7 +107,7 @@ export default function Card({
         <TopicTag name={tag} />
         <p className="m-0 hidden p-0 text-xs text-sciquelMuted">{mediaType}</p>
       </div>
-      <h2 className="my-2 text-left font-alegreyaSansSC text-3xl text-white">
+      <h2 className="my-2 text-left font-alegreyaSansSC text-3xl font-bold text-white">
         {title}
       </h2>
       <h4 className="line-clamp-3 text-left text-xl text-white">{subtitle}</h4>
