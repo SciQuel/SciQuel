@@ -1,4 +1,3 @@
-import Topic from "@/lib/enums/Topic";
 import ArticleList from "../ArticleList";
 import HomepageSection from "../HomepageSection";
 import MainCard from "../MainCard/MainCard";
@@ -6,7 +5,7 @@ import MainCard from "../MainCard/MainCard";
 export default function WhatsNewSection() {
   const articles = [
     {
-      topic: Topic.COMPUTER_SCIENCE,
+      topic: "COMPUTER_SCIENCE",
       title: "Lights. Camera. Action! ASD ASD ASD ASD ASD ASD",
       subtitle:
         "How the Hawaiian bobtail squid brings a creative vision to its maritime world of small big screens asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd ",
@@ -15,7 +14,7 @@ export default function WhatsNewSection() {
       thumbnailUrl: "/assets/images/bobtail.png",
     },
     {
-      topic: Topic.COMPUTER_SCIENCE,
+      topic: "COMPUTER_SCIENCE",
       title: "Lights. Camera. Action!",
       subtitle:
         "How the Hawaiian bobtail squid brings a creative vision to its maritime world of small big screens asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd ",
@@ -24,7 +23,7 @@ export default function WhatsNewSection() {
       thumbnailUrl: "/assets/images/bobtail.png",
     },
     {
-      topic: Topic.COMPUTER_SCIENCE,
+      topic: "COMPUTER_SCIENCE",
       title:
         "Lights. Camera. Action! ASD ASD ASD ASD ASD ASD Lorem Ipsum Dolor Sit Amet",
       subtitle:
@@ -47,7 +46,7 @@ export default function WhatsNewSection() {
           author={"Edward Chen"}
           date={"May 27, 2021"}
           mediaType={"Article"}
-          tag={Topic.MEDICINE}
+          tag="MEDICINE"
           href={"/"}
         />
       </div>

@@ -1,11 +1,12 @@
 import TopicTag from "@/components/TopicTag";
+import { type EnumKey } from "@/lib/enums";
 import type Topic from "@/lib/enums/Topic";
 import Image from "next/image";
 import Link from "next/link";
 
 interface Props {
   href: string;
-  topic: (typeof Topic)[keyof typeof Topic];
+  topic: EnumKey<typeof Topic>;
   title: string;
   subtitle: string;
   author: string;
