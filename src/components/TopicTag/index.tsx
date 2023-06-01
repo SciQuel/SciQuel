@@ -1,5 +1,5 @@
 import { type EnumKey } from "@/lib/enums";
-import type Topic from "@/lib/enums/Topic";
+import Topic from "@/lib/enums/Topic";
 
 interface Props {
   name: EnumKey<typeof Topic>;
@@ -30,7 +30,7 @@ export default function TopicTag({ name }: Props) {
       // Tailwind compilation only supports style, not interpolated arbitrary values
       style={{ backgroundColor: topicTagColors[name] }}
     >
-      <p className="m-0 text-xs font-medium text-white">{name}</p>
+      <p className="m-0 text-xs font-medium text-white">{Topic[name]}</p>
     </div>
   );
 }
