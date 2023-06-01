@@ -38,6 +38,9 @@ The enums used here follow the const object format. You can learn more about thi
    ```
 
    Code completion available on VSCode with JS/TS language features:
+   
+   <img width="553" alt="Screenshot 2023-06-01 at 11 58 44 AM" src="https://github.com/SciQuel/SciQuel/assets/17174688/345b5ee8-1d13-4c95-ba99-a3272705d434">
+
 
 ## Importing
 
