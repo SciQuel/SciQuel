@@ -1,4 +1,4 @@
-import ArticleList from "../ArticleList";
+import ArticleList, { type Article } from "../ArticleList";
 import HomepageSection from "../HomepageSection";
 import MainCard from "../MainCard/MainCard";
 
@@ -32,7 +32,7 @@ export default function WhatsNewSection() {
       date: new Date("May 27, 2021"),
       thumbnailUrl: "/assets/images/bobtail.png",
     },
-  ];
+  ] satisfies Article[];
 
   return (
     <HomepageSection heading="Read what's new">

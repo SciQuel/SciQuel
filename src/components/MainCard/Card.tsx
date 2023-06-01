@@ -1,8 +1,9 @@
 import TopicTag from "@/components/TopicTag";
+import { type EnumKey } from "@/lib/enums";
 import type Topic from "@/lib/enums/Topic";
 
 interface Props {
-  tag: (typeof Topic)[keyof typeof Topic];
+  tag: EnumKey<typeof Topic>;
   title: string;
   subtitle: string;
   author: string;

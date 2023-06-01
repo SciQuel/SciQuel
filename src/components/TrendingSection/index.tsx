@@ -1,4 +1,4 @@
-import ArticleList from "../ArticleList";
+import ArticleList, { type Article } from "../ArticleList";
 import HomepageSection from "../HomepageSection";
 
 export default function TrendingSection() {
@@ -31,7 +31,7 @@ export default function TrendingSection() {
       date: new Date("May 27, 2021"),
       thumbnailUrl: "/assets/images/bobtail.png",
     },
-  ];
+  ] satisfies Article[];
 
   return (
     <HomepageSection heading="Trending">

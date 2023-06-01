@@ -2,7 +2,7 @@ import { type EnumKey } from "@/lib/enums";
 import type Topic from "@/lib/enums/Topic";
 import ArticleCard from "../ArticleCard/ArticleCard";
 
-interface Article {
+export interface Article {
   topic: EnumKey<typeof Topic>;
   title: string;
   subtitle: string;
