@@ -1,5 +1,5 @@
-import type Topic from "@/lib/topic";
-import { TopicTag } from "../TopicTag/TopicTag";
+import TopicTag from "@/components/TopicTag";
+import type Topic from "@/lib/enums/Topic";
 
 interface Props {
   tag: (typeof Topic)[keyof typeof Topic];

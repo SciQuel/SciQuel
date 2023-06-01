@@ -1,4 +1,4 @@
-import Topic from "@/lib/topic";
+import Topic from "@/lib/enums/Topic";
 import ArticleList from "../ArticleList";
 import HomepageSection from "../HomepageSection";
 

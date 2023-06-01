@@ -1,7 +1,7 @@
-import type Topic from "@/lib/topic";
+import TopicTag from "@/components/TopicTag";
+import type Topic from "@/lib/enums/Topic";
 import Image from "next/image";
 import Link from "next/link";
-import { TopicTag } from "../TopicTag/TopicTag";
 
 interface Props {
   href: string;
@@ -38,10 +38,12 @@ export default function ArticleCard({
             </div>
           </div>
           {/* Article Content */}
-          <h1 className="line-clamp-3 grow font-alegreyaSansSC text-2xl font-medium">
+          <h1 className="line-clamp-3 font-alegreyaSansSC text-2xl font-medium">
             {title}
           </h1>
-          <p className="line-clamp-2">{subtitle}</p>
+          <div className="grow">
+            <p className="line-clamp-2">{subtitle}</p>
+          </div>
           <div className="flex flex-row font-sourceSerif4 text-sm font-[350] text-sciquelMuted">
             <p className="grow">By {author}</p>
             <p>{date}</p>

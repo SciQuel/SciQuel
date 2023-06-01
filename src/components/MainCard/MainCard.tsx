@@ -1,4 +1,4 @@
-import type Topic from "@/lib/topic";
+import type Topic from "@/lib/enums/Topic";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
@@ -15,7 +15,7 @@ interface Props {
   href: string;
 }
 
-const MainCard = ({
+export default function MainCard({
   title,
   subtitle,
   author,
@@ -24,7 +24,7 @@ const MainCard = ({
   tag,
   thumbnailUrl,
   href,
-}: Props) => {
+}: Props) {
   return (
     <Link href={href}>
       <div
@@ -54,6 +54,4 @@ const MainCard = ({
       </div>
     </Link>
   );
-};
-
-export default MainCard;
+}

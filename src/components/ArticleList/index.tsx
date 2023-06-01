@@ -1,4 +1,4 @@
-import type Topic from "@/lib/topic";
+import type Topic from "@/lib/enums/Topic";
 import ArticleCard from "../ArticleCard/ArticleCard";
 
 interface Article {
