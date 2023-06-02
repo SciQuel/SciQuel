@@ -1,4 +1,5 @@
 import { type EnumKey } from "@/lib/enums";
+import type MediaType from "@/lib/enums/MediaType";
 import type Topic from "@/lib/enums/Topic";
 import Image from "next/image";
 import Link from "next/link";
@@ -10,7 +11,7 @@ interface Props {
   subtitle: string;
   author: string;
   date: string;
-  mediaType: string;
+  mediaType: EnumKey<typeof MediaType>;
   tag: EnumKey<typeof Topic>;
   thumbnailUrl: string;
   href: string;

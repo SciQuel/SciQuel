@@ -1,5 +1,6 @@
 import TopicTag from "@/components/TopicTag";
 import { type EnumKey } from "@/lib/enums";
+import type MediaType from "@/lib/enums/MediaType";
 import type Topic from "@/lib/enums/Topic";
 
 interface Props {
@@ -8,7 +9,7 @@ interface Props {
   subtitle: string;
   author: string;
   date: string;
-  mediaType: string;
+  mediaType: EnumKey<typeof MediaType>;
 }
 
 export default function Card({
