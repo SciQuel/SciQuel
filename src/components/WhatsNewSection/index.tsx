@@ -25,7 +25,7 @@ export default function WhatsNewSection() {
     {
       topic: "COMPUTER_SCIENCE",
       title:
-        "Lights. Camera. Action! ASD ASD ASD ASD ASD ASD Lorem Ipsum Dolor Sit Amet",
+        "Lights. Camera. Action! ASD ASD ASD ASD ASD ASD Lorem Ipsum Dolor Sit Amet Consectitur",
       subtitle:
         "How the Hawaiian bobtail squid brings a creative vision to its maritime world of small big screens asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd ",
       author: "Edward Chen",
@@ -45,7 +45,7 @@ export default function WhatsNewSection() {
           }
           author={"Edward Chen"}
           date={"May 27, 2021"}
-          mediaType={"Article"}
+          mediaType={"ARTICLE"}
           tag="MEDICINE"
           href={"/"}
         />

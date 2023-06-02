@@ -39,11 +39,15 @@ export default function ArticleCard({
             </div>
           </div>
           {/* Article Content */}
-          <h1 className="line-clamp-3 font-alegreyaSansSC text-2xl font-medium">
-            {title}
-          </h1>
-          <div className="grow">
-            <p className="line-clamp-2">{subtitle}</p>
+          <div className="flex grow flex-col">
+            <div className="grow">
+              <h1 className="line-clamp-2 font-alegreyaSansSC text-xl font-medium">
+                {title}
+              </h1>
+            </div>
+            <div className="flex items-center">
+              <p className="line-clamp-3">{subtitle}</p>
+            </div>
           </div>
           <div className="flex flex-row font-sourceSerif4 text-sm font-[350] text-sciquelMuted">
             <p className="grow">By {author}</p>
