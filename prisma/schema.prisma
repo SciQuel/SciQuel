@@ -45,13 +45,15 @@ model Story {
   title      String
   titleColor String
 
+  slug String // Title slug for URL conforming to RFC 3986
+
   summary      String
   summaryColor String
 
   tags StoryTopic[]
 
   storyContributions StoryContribution[]
-  StoryContent       StoryContent[]
+  storyContent       StoryContent[]
 
   published Boolean
 
