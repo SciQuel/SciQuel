@@ -1,12 +1,11 @@
 import TopicTag from "@/components/TopicTag";
-import { type EnumKey } from "@/lib/enums";
-import type Topic from "@/lib/enums/Topic";
+import { type StoryTopic } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
 
 interface Props {
   href: string;
-  topic: EnumKey<typeof Topic>;
+  topic: StoryTopic;
   title: string;
   subtitle: string;
   author: string;

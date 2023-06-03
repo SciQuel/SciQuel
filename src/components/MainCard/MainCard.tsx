@@ -1,6 +1,4 @@
-import { type EnumKey } from "@/lib/enums";
-import type MediaType from "@/lib/enums/MediaType";
-import type Topic from "@/lib/enums/Topic";
+import { type StoryTopic, type StoryType } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
@@ -11,8 +9,8 @@ interface Props {
   subtitle: string;
   author: string;
   date: string;
-  mediaType: EnumKey<typeof MediaType>;
-  tag: EnumKey<typeof Topic>;
+  mediaType: StoryType;
+  tag: StoryTopic;
   thumbnailUrl: string;
   href: string;
 }

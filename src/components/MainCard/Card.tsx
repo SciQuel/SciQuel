@@ -1,15 +1,13 @@
 import TopicTag from "@/components/TopicTag";
-import { type EnumKey } from "@/lib/enums";
-import type MediaType from "@/lib/enums/MediaType";
-import type Topic from "@/lib/enums/Topic";
+import { type StoryTopic, type StoryType } from "@prisma/client";
 
 interface Props {
-  tag: EnumKey<typeof Topic>;
+  tag: StoryTopic;
   title: string;
   subtitle: string;
   author: string;
   date: string;
-  mediaType: EnumKey<typeof MediaType>;
+  mediaType: StoryType;
 }
 
 export default function Card({

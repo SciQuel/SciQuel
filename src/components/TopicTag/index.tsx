@@ -1,11 +1,10 @@
-import { type EnumKey } from "@/lib/enums";
-import Topic from "@/lib/enums/Topic";
+import { type StoryTopic } from "@prisma/client";
 
 interface Props {
-  name: EnumKey<typeof Topic>;
+  name: StoryTopic;
 }
 
-const topicTagColors: Record<EnumKey<typeof Topic>, string> = {
+const topicTagColors: Record<StoryTopic, string> = {
   ASTRONOMY: "#A44A3F",
   BIOLOGY: "#D15B2B",
   CHEMICAL_ENGINEERING: "#E3954F",
@@ -30,7 +29,9 @@ export default function TopicTag({ name }: Props) {
       // Tailwind compilation only supports style, not interpolated arbitrary values
       style={{ backgroundColor: topicTagColors[name] }}
     >
-      <p className="m-0 text-xs font-medium text-white">{Topic[name]}</p>
+      <p className="m-0 text-xs font-medium text-white">
+        {name.replace("_", " ").toLowerCase()}
+      </p>
     </div>
   );
 }
