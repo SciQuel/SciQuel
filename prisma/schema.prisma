@@ -59,6 +59,8 @@ model Story {
 
   staffPick Boolean
 
+  thumbnailUrl String
+
   createdAt   DateTime
   publishedAt DateTime
   updatedAt   DateTime
