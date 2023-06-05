@@ -10,7 +10,7 @@ interface Props {
   mediaType: StoryType;
 }
 
-export default function Card({
+export default function InnerCard({
   tag,
   title,
   subtitle,

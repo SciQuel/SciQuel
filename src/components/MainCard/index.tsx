@@ -2,7 +2,7 @@ import { type StoryTopic, type StoryType } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
-import Card from "./Card";
+import InnerCard from "./InnerCard";
 
 interface Props {
   title: string;
@@ -44,7 +44,7 @@ export default function MainCard({
           />
         </div>
         <div className="flex h-full w-7/12 items-end p-10 max-lg:w-full max-lg:bg-white max-lg:p-5">
-          <Card
+          <InnerCard
             title={title}
             subtitle={subtitle}
             author={author}

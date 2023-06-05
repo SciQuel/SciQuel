@@ -1,12 +1,12 @@
 "use client";
 
 import { type GetStoriesResult } from "@/app/api/stories/route";
+import ArticleList from "@/components/ArticleList";
+import HomepageSection from "@/components/HomepageSection";
+import MainCard from "@/components/MainCard";
 import axios from "axios";
 import { DateTime } from "luxon";
 import useSWR, { type Fetcher } from "swr";
-import ArticleList from "../ArticleList";
-import HomepageSection from "../HomepageSection";
-import MainCard from "../MainCard/MainCard";
 
 const fetcher: Fetcher<GetStoriesResult, string> = async (url) => {
   return (await axios.get<GetStoriesResult>(url)).data.map((story) => ({
