@@ -1,41 +1,26 @@
-import ArticleList, { type Article } from "../ArticleList";
+"use client";
+
+import { type GetStoriesResult } from "@/app/api/stories/route";
+import axios from "axios";
+import useSWR, { type Fetcher } from "swr";
+import ArticleList from "../ArticleList";
 import HomepageSection from "../HomepageSection";
 
+const fetcher: Fetcher<GetStoriesResult, string> = async (url) => {
+  return (await axios.get<GetStoriesResult>(url)).data.map((story) => ({
+    ...story,
+    createdAt: new Date(story.createdAt),
+    publishedAt: new Date(story.publishedAt),
+    updatedAt: new Date(story.updatedAt),
+  }));
+};
+
 export default function TrendingSection() {
-  const articles = [
-    {
-      topic: "COMPUTER_SCIENCE",
-      title: "Lights. Camera. Action! ASD ASD ASD ASD ASD ASD",
-      subtitle:
-        "How the Hawaiian bobtail squid brings a creative vision to its maritime world of small big screens asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd ",
-      author: "Edward Chen",
-      date: new Date("May 27, 2021"),
-      thumbnailUrl: "/assets/images/bobtail.png",
-    },
-    {
-      topic: "COMPUTER_SCIENCE",
-      title: "Lights. Camera. Action!",
-      subtitle:
-        "How the Hawaiian bobtail squid brings a creative vision to its maritime world of small big screens asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd ",
-      author: "Edward Chen",
-      date: new Date("May 27, 2021"),
-      thumbnailUrl: "/assets/images/bobtail.png",
-    },
-    {
-      topic: "COMPUTER_SCIENCE",
-      title:
-        "Lights. Camera. Action! ASD ASD ASD ASD ASD ASD Lorem Ipsum Dolor Sit Amet",
-      subtitle:
-        "How the Hawaiian bobtail squid brings a creative vision to its maritime world of small big screens asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd asd ",
-      author: "Edward Chen",
-      date: new Date("May 27, 2021"),
-      thumbnailUrl: "/assets/images/bobtail.png",
-    },
-  ] satisfies Article[];
+  const { data } = useSWR("/api/stories", fetcher);
 
   return (
     <HomepageSection heading="Trending">
-      <ArticleList articles={articles} />
+      {data && <ArticleList articles={data.slice(0, 3)} />}
     </HomepageSection>
   );
 }

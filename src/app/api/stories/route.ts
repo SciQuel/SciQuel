@@ -23,6 +23,9 @@ export async function GET() {
         },
       },
     },
+    orderBy: {
+      publishedAt: "desc",
+    },
   });
   return NextResponse.json(stories ?? []);
 }

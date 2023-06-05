@@ -1,18 +1,9 @@
-import { type EnumKey } from "@/lib/enums";
-import type Topic from "@/lib/enums/Topic";
+import { type GetStoriesResult } from "@/app/api/stories/route";
+import { DateTime } from "luxon";
 import ArticleCard from "../ArticleCard/ArticleCard";
 
-export interface Article {
-  topic: EnumKey<typeof Topic>;
-  title: string;
-  subtitle: string;
-  author: string;
-  date: Date;
-  thumbnailUrl: string;
-}
-
 interface Props {
-  articles: Article[];
+  articles: GetStoriesResult;
 }
 
 export default function ArticleList({ articles }: Props) {
@@ -22,11 +13,20 @@ export default function ArticleList({ articles }: Props) {
         <ArticleCard
           href="#"
           key={article.title}
-          topic={article.topic}
+          topic={article.tags[0]}
           title={article.title}
-          subtitle={article.subtitle}
-          author={article.author}
-          date={article.date.toDateString()}
+          subtitle={article.summary}
+          author={(() => {
+            const author = article.storyContributions.find(
+              (value) => value.contributionType === "AUTHOR",
+            );
+            return author
+              ? `${author.user.firstName} ${author.user.lastName}`
+              : "";
+          })()}
+          date={DateTime.fromJSDate(article.publishedAt).toLocaleString(
+            DateTime.DATE_FULL,
+          )}
           thumbnailUrl={article.thumbnailUrl}
         />
       ))}
