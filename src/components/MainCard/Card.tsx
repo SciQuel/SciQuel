@@ -19,18 +19,26 @@ export default function Card({
   mediaType,
 }: Props) {
   return (
-    <div className="absolute bottom-[4.5rem] z-10 min-h-[150px] w-[500px] min-w-[150px] rounded bg-gradient-to-b from-[#196e8c] to-[#65a69e] p-5">
-      <div className="flex items-start justify-between">
-        <TopicTag name={tag} />
-        <p className="m-0 hidden p-0 text-xs text-sciquelMuted">{mediaType}</p>
+    <div className="z-10 flex min-h-[150px] w-full min-w-[150px] flex-col rounded max-lg:bg-white">
+      <div className="flex flex-col rounded bg-gradient-to-b from-[#196e8c] to-[#65a69e] p-5 max-lg:bg-none">
+        <div className="flex items-start justify-between">
+          <TopicTag name={tag} />
+          <p className="m-0 hidden p-0 text-xs text-sciquelMuted">
+            {mediaType}
+          </p>
+        </div>
+        <h2 className="my-2 text-left font-alegreyaSansSC text-3xl font-bold text-white max-lg:text-sciquelDarkText">
+          {title}
+        </h2>
+        <h4 className="line-clamp-3 text-left text-xl text-white max-lg:text-sciquelDarkText">
+          {subtitle}
+        </h4>
       </div>
-      <h2 className="my-2 text-left font-alegreyaSansSC text-3xl font-bold text-white">
-        {title}
-      </h2>
-      <h4 className="line-clamp-3 text-left text-xl text-white">{subtitle}</h4>
-      <p className="absolute bottom-0 left-5 top-full my-3 font-sourceSerif4 text-xl font-[350] text-sciquelMuted">
-        {author} | {date}
-      </p>
+      <div className="mx-5 my-3 text-left">
+        <p className="top-full font-sourceSerif4 text-xl font-[350] text-sciquelMuted">
+          {author} | {date}
+        </p>
+      </div>
     </div>
   );
 }

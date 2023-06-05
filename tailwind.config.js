@@ -12,6 +12,7 @@ module.exports = {
         sourceSerif4: "var(--font-source-serif-4)",
       },
       colors: {
+        sciquelDarkText: "#333333",
         sciquelTeal: "#69a297",
         sciquelHover: "#51726b",
         sciquelHeading: "rgba(52, 78, 65, 1)",

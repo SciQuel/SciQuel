@@ -28,12 +28,12 @@ export default function MainCard({
   return (
     <Link href={href}>
       <div
-        className={`relative mx-auto h-[40vh] min-h-[350px] min-w-[300px] cursor-pointer pl-5
-                  text-center transition-transform duration-[0.3s] hover:scale-[1.05]`}
+        className={`relative mx-auto h-[50vh] min-h-[350px] min-w-[300px] cursor-pointer
+                  text-center transition-transform duration-[0.3s] hover:scale-[1.03]`}
       >
         <div
-          className={`absolute right-0 top-0 z-0 h-full min-h-[19rem] w-[44rem] min-w-[19rem]
-                    justify-center bg-cover bg-center`}
+          className={`absolute right-0 top-0 z-0 h-full min-h-[19rem] w-8/12
+                    justify-center bg-cover bg-center max-lg:w-full`}
         >
           <Image
             src={thumbnailUrl}
@@ -43,14 +43,16 @@ export default function MainCard({
             style={{ objectFit: "cover" }}
           />
         </div>
-        <Card
-          title={title}
-          subtitle={subtitle}
-          author={author}
-          date={date}
-          mediaType={mediaType}
-          tag={tag}
-        />
+        <div className="flex h-full w-7/12 items-end p-5 max-lg:w-full max-lg:bg-white">
+          <Card
+            title={title}
+            subtitle={subtitle}
+            author={author}
+            date={date}
+            mediaType={mediaType}
+            tag={tag}
+          />
+        </div>
       </div>
     </Link>
   );
