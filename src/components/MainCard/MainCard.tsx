@@ -43,7 +43,7 @@ export default function MainCard({
             style={{ objectFit: "cover" }}
           />
         </div>
-        <div className="flex h-full w-7/12 items-end p-5 max-lg:w-full max-lg:bg-white">
+        <div className="flex h-full w-7/12 items-end p-10 max-lg:w-full max-lg:bg-white max-lg:p-5">
           <Card
             title={title}
             subtitle={subtitle}
