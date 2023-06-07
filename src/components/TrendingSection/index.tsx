@@ -7,6 +7,10 @@ interface Props {
 }
 
 export default function TrendingSection({ articles }: Props) {
+  if (articles.length === 0) {
+    return null;
+  }
+
   return (
     <HomepageSection heading="Trending">
       {articles && <ArticleList articles={articles.slice(0, 3)} />}

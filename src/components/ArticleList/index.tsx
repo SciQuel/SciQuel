@@ -1,14 +1,24 @@
 import { type GetStoriesResult } from "@/app/api/stories/route";
+import clsx from "clsx";
 import { DateTime } from "luxon";
 import ArticleCard from "../ArticleCard/ArticleCard";
 
 interface Props {
   articles: GetStoriesResult;
+  preferHorizontal?: boolean;
 }
 
-export default function ArticleList({ articles }: Props) {
+export default function ArticleList({
+  articles,
+  preferHorizontal = false,
+}: Props) {
   return (
-    <div className="grid auto-rows-max grid-cols-3 gap-4">
+    <div
+      className={clsx(
+        "grid gap-4",
+        preferHorizontal ? null : "auto-rows-max grid-cols-3",
+      )}
+    >
       {articles.map((article) => (
         <ArticleCard
           href="#"
@@ -28,6 +38,7 @@ export default function ArticleList({ articles }: Props) {
             DateTime.DATE_FULL,
           )}
           thumbnailUrl={article.thumbnailUrl}
+          preferHorizontal={preferHorizontal}
         />
       ))}
     </div>

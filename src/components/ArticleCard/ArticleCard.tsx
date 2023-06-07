@@ -34,7 +34,12 @@ export default function ArticleCard({
           preferHorizontal ? "flex-row" : "flex-col",
         )}
       >
-        <div className="flex grow flex-col gap-4 p-5">
+        <div
+          className={clsx(
+            "flex flex-col gap-4 p-5",
+            preferHorizontal ? "w-2/3" : "grow",
+          )}
+        >
           {/* Article Card Header */}
           <div className="flex w-full flex-row">
             <TopicTag name={topic} />
