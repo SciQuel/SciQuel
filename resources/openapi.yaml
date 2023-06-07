@@ -1,0 +1,192 @@
+openapi: 3.0.0
+info:
+  title: SciQuel Backend API
+  version: 1.0.0
+  description: Backend API for SciQuel Web Application
+paths:
+  /api/stories:
+    get:
+      tags:
+        - Stories
+      summary: Return a list of stories
+      description: Return 4 stories
+      responses:
+        "200":
+          description: Successfully return a list of stories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Story"
+
+  /api/stories/[year]/[month]/[day]/[slug]:
+    get:
+      tags:
+        - Stories
+      summary: Return a story
+      description: Return a story given year, month, day and slug
+      parameters:
+        - in: path
+          name: year
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: month
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: day
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: slug
+          schema:
+            type: string
+          required: true
+      responses:
+        "200":
+          description: Successfully return a story
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Story"
+        "404":
+          description: Cannot find story with given constraints
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Not Found
+
+components:
+  schemas:
+    Story:
+      type: object
+      properties:
+        id:
+          type: string
+        storyType:
+          $ref: "#/components/schemas/StoryType"
+        title:
+          type: string
+        titleColor:
+          type: string
+        slug:
+          type: string
+        summary:
+          type: string
+        summaryColor:
+          type: string
+        tags:
+          type: array
+          items:
+            $ref: "#/components/schemas/StoryTopic"
+        storyContributions:
+          type: array
+          items:
+            $ref: "#/components/schemas/StoryContribution"
+        storyContent:
+          type: array
+          items:
+            $ref: "#/components/schemas/StoryContent"
+        published:
+          type: boolean
+        staffPick:
+          type: boolean
+        thumbnailUrl:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        publishedAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    StoryType:
+      type: string
+      enum:
+        - ARTICLE
+    StoryTopic:
+      type: string
+      enum:
+        - ASTRONOMY
+        - BIOLOGY
+        - CHEMICAL_ENGINEERING
+        - CHEMISTRY
+        - COMPUTER_SCIENCE
+        - ELECTRICAL_ENGINEERING
+        - ENVIRONMENTAL_SCIENCE
+        - GEOLOGY
+        - MATHEMATICS
+        - MECHANICAL_ENGINEERING
+        - MEDICINE
+        - PHYSICS
+        - PSYCHOLOGY
+        - SOCIOLOGY
+        - TECHNOLOGY
+    StoryContribution:
+      type: object
+      properties:
+        id:
+          type: string
+        user:
+          $ref: "#/components/schemas/User"
+        userId:
+          type: string
+        story:
+          $ref: "#/components/schemas/Story"
+        storyId:
+          type: string
+        contributionType:
+          $ref: "#/components/schemas/ContributionType"
+    StoryContent:
+      type: object
+      properties:
+        id:
+          type: string
+        story:
+          $ref: "#/components/schemas/Story"
+        storyId:
+          type: string
+        content:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        bio:
+          type: string
+        passwordHash:
+          type: string
+        joinedAt:
+          type: string
+          format: date-time
+        storyContributions:
+          type: array
+          items:
+            $ref: "#/components/schemas/StoryContribution"
+    ContributionType:
+      type: string
+      enum:
+        - AUTHOR
+        - ILLUSTRATOR
+        - ANIMATOR
