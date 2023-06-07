@@ -1,5 +1,6 @@
 import TopicTag from "@/components/TopicTag";
 import { type StoryTopic } from "@prisma/client";
+import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -11,6 +12,7 @@ interface Props {
   author: string;
   date: string;
   thumbnailUrl: string;
+  preferHorizontal?: boolean;
 }
 
 export default function ArticleCard({
@@ -21,13 +23,16 @@ export default function ArticleCard({
   author,
   date,
   thumbnailUrl,
+  preferHorizontal = false,
 }: Props) {
   return (
     <Link href={href ?? "#"}>
       <div
-        className={`flex h-full min-w-[300px] cursor-pointer flex-col
-        overflow-clip rounded-lg border border-sciquelCardBorder bg-sciquelCardBg
-        transition hover:scale-[1.02]`}
+        className={clsx(
+          `flex h-full min-w-[300px] cursor-pointer overflow-clip rounded-lg border
+          border-sciquelCardBorder bg-sciquelCardBg transition hover:scale-[1.02]`,
+          preferHorizontal ? "flex-row" : "flex-col",
+        )}
       >
         <div className="flex grow flex-col gap-4 p-5">
           {/* Article Card Header */}
@@ -53,7 +58,7 @@ export default function ArticleCard({
             <p>{date}</p>
           </div>
         </div>
-        <div className="relative h-44">
+        <div className={clsx("relative", preferHorizontal ? "w-1/3" : "h-44")}>
           <Image
             src={thumbnailUrl}
             fill={true}
