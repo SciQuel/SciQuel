@@ -11,7 +11,12 @@ export default function ArticleList({ articles }: Props) {
     <div className="grid auto-rows-max grid-cols-3 gap-4">
       {articles.map((article) => (
         <ArticleCard
-          href="#"
+          href={(() => {
+            const publishDate = DateTime.fromJSDate(article.publishedAt);
+            return `/stories/${publishDate.year}/${publishDate.toFormat(
+              "LL",
+            )}/${publishDate.toFormat("dd")}/${article.slug}`;
+          })()}
           key={article.title}
           topic={article.tags[0]}
           title={article.title}

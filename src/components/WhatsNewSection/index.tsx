@@ -33,10 +33,14 @@ export default function WhatsNewSection({ articles }: Props) {
             ).toLocaleString(DateTime.DATE_FULL)}
             mediaType={headlineArticle.storyType}
             tag={headlineArticle.tags[0]}
-            // TODO: Incorrect format: month is 0-indexed and not padded, day is not the date
-            href={`/${headlineArticle.publishedAt.getFullYear()}/${headlineArticle.publishedAt.getMonth()}/${headlineArticle.publishedAt.getDay()}/${
-              headlineArticle.slug
-            }`}
+            href={(() => {
+              const publishDate = DateTime.fromJSDate(
+                headlineArticle.publishedAt,
+              );
+              return `/stories/${publishDate.year}/${publishDate.toFormat(
+                "LL",
+              )}/${publishDate.toFormat("dd")}/${headlineArticle.slug}`;
+            })()}
           />
         )}
       </div>
