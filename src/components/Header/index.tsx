@@ -3,7 +3,7 @@ import logo from "./logo.png";
 
 export default function Header() {
   return (
-    <div className="flex flex-col bg-sciquelTeal text-white">
+    <div className="sticky top-0 z-10 flex flex-col bg-sciquelTeal text-white">
       <div className="absolute top-0 flex w-full justify-center px-10 py-4 text-xl font-thin leading-[2rem]">
         <Image src={logo} className="h-[2rem] w-auto" alt="SciQuel" />
         <p>SCIQUEL</p>
