@@ -7,6 +7,15 @@ const nextConfig = {
     });
     return config;
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "api.sciquel.org",
+        port: "",
+      },
+    ],
+  },
 };
 
 module.exports = nextConfig;
