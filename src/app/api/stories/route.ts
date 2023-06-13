@@ -15,6 +15,7 @@ export type GetStoriesResult = (Story & {
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const page = searchParams.get("page");
+  const staffPick = searchParams.get("staffPick");
 
   let numPagesToSkip = 0;
   const numStoriesPerPage = 10;
@@ -45,6 +46,7 @@ export async function GET(req: Request) {
         },
       },
     },
+    where: { staffPick: staffPick === "true" ? true : undefined },
     orderBy: {
       updatedAt: "desc",
     },
