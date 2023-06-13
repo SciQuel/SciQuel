@@ -12,9 +12,31 @@ export type GetStoriesResult = (Story & {
   }[];
 })[];
 
-export async function GET() {
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const page = searchParams.get("page");
+
+  let numPagesToSkip = 0;
+  const numStoriesPerPage = 10;
+
+  if (page === null) {
+    // return first 10 stories if user does not specify a page
+    numPagesToSkip = 0;
+  } else {
+    // return stories based on page
+    const parsedPage = typeof page === "string" ? parseInt(page) : null;
+
+    if (parsedPage === null || parsedPage < 1) {
+      // user requests a invalid page
+      return NextResponse.json({ error: "Bad Request" }, { status: 400 });
+    }
+
+    numPagesToSkip = parsedPage - 1;
+  }
+
   const stories = await prisma.story.findMany({
-    take: 4,
+    skip: numPagesToSkip * numStoriesPerPage,
+    take: numStoriesPerPage,
     include: {
       storyContributions: {
         select: {
@@ -24,7 +46,7 @@ export async function GET() {
       },
     },
     orderBy: {
-      publishedAt: "desc",
+      updatedAt: "desc",
     },
   });
   return NextResponse.json(stories ?? []);
