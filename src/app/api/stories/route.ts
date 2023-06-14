@@ -16,7 +16,7 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const page = searchParams.get("page");
   const pageSize = searchParams.get("page_size");
-  const staffPick = searchParams.get("staffPick");
+  const staffPick = searchParams.get("staff_pick");
 
   let numPagesToSkip = 0;
   let numStoriesPerPage = 10; // default page size
