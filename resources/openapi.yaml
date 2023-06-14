@@ -58,29 +58,37 @@ paths:
     get:
       tags:
         - Stories
-      summary: Return a story
+      summary: Return a story given publish date and slug
       description: Return a story given year, month, day and slug
       parameters:
         - in: path
           name: year
           schema:
             type: string
+            example: "2023"
           required: true
+          description: Publish year
         - in: path
           name: month
           schema:
             type: string
+            example: "01"
           required: true
+          description: Publish month
         - in: path
           name: day
           schema:
             type: string
+            example: "23"
           required: true
+          description: Publish day of month
         - in: path
           name: slug
           schema:
             type: string
+            example: lights-camera-action
           required: true
+          description: Unique identifier of the page in the last part of URL address (ex. title)
       responses:
         "200":
           description: Successfully return a story
@@ -88,6 +96,16 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Story"
+        "400":
+          description: User specified invalid path parameters
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Bad Request
         "404":
           description: Cannot find story with given constraints
           content:
