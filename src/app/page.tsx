@@ -1,3 +1,4 @@
+import StaffPicksSection from "@/components/StaffPicksSection";
 import TrendingSection from "@/components/TrendingSection";
 import WhatsNewSection from "@/components/WhatsNewSection";
 import { type GetStoriesResult } from "./api/stories/route";
@@ -11,6 +12,7 @@ export default async function Home() {
       <div className="mx-[10%] my-10 flex flex-col gap-12">
         <WhatsNewSection articles={whatsNewArticles} />
         <TrendingSection articles={whatsNewArticles} />
+        <StaffPicksSection articles={whatsNewArticles} />
       </div>
     </>
   );
