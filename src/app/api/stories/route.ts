@@ -15,19 +15,37 @@ export type GetStoriesResult = (Story & {
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const page = searchParams.get("page");
+  const pageSize = searchParams.get("page_size");
   const staffPick = searchParams.get("staffPick");
 
   let numPagesToSkip = 0;
-  const numStoriesPerPage = 10;
+  let numStoriesPerPage = 10; // default page size
+
+  if (pageSize !== null) {
+    // user specified page size
+    const parsedPageSize =
+      typeof pageSize === "string" ? parseInt(pageSize) : null;
+
+    if (
+      parsedPageSize === null ||
+      isNaN(parsedPageSize) ||
+      parsedPageSize < 1
+    ) {
+      // user requests a invalid page size
+      return NextResponse.json({ error: "Bad Request" }, { status: 400 });
+    }
+
+    numStoriesPerPage = parsedPageSize;
+  }
 
   if (page === null) {
-    // return first 10 stories if user does not specify a page
+    // return first page if user does not specify a page
     numPagesToSkip = 0;
   } else {
-    // return stories based on page
+    // user specified page
     const parsedPage = typeof page === "string" ? parseInt(page) : null;
 
-    if (parsedPage === null || parsedPage < 1) {
+    if (parsedPage === null || isNaN(parsedPage) || parsedPage < 1) {
       // user requests a invalid page
       return NextResponse.json({ error: "Bad Request" }, { status: 400 });
     }
