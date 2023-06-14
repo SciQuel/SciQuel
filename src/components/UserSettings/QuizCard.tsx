@@ -84,7 +84,7 @@ export default function QuizCard({
           {quizItem.title}
         </div>
         <div className="text-xs font-thin text-gray-400">{quizItem.type}</div>
-        <div className="my-2 w-14">
+        <div className="my-2 flex">
           <TopicTag name={quizItem.topic} />
         </div>
         <div className="text-xs font-thin text-gray-400">{quizItem.date}</div>

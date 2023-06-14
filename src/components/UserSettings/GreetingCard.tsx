@@ -1,5 +1,7 @@
+import TopicTag from "@/components/TopicTag";
 import Avatar from "@/components/UserSettings/ProfilePicture.png";
 import ArticleImage from "@/components/UserSettings/top_background_img.png";
+import { StoryTopic } from "@prisma/client";
 import Image from "next/image";
 
 export default function GreetingCard() {
@@ -20,18 +22,9 @@ export default function GreetingCard() {
             Good afternoon, James
           </p>
           <div className="mt-3 flex max-h-[24px] flex-wrap justify-start gap-2 overflow-hidden text-xs">
-            <div className="rounded-xl bg-green-600 p-1 px-2 text-white">
-              mathematics
-            </div>
-            <div className="rounded-xl bg-purple-400 p-1 px-2 text-white">
-              medicine
-            </div>
-            <div className="rounded-xl bg-yellow-400 p-1 px-2 text-white">
-              computer sci.
-            </div>
-            <div className="rounded-xl bg-blue-400 p-1 px-2 text-white">
-              tag-test
-            </div>
+            <TopicTag name={StoryTopic.MATHEMATICS} />
+            <TopicTag name={StoryTopic.MEDICINE} />
+            <TopicTag name={StoryTopic.COMPUTER_SCIENCE} />
           </div>
         </div>
         <p className="absolute bottom-4 left-6 font-thin">
