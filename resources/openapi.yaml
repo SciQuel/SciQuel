@@ -8,8 +8,32 @@ paths:
     get:
       tags:
         - Stories
-      summary: Return a list of stories
-      description: Return 4 stories
+      summary: Return a list of stories with pagination
+      description: Return a list of stories given a page number and a page size
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          required: false
+          description: Page number
+        - in: query
+          name: page_size
+          schema:
+            type: integer
+            minimum: 1
+            default: 10
+          required: false
+          description: Number of stories per page
+        - in: query
+          name: staff_pick
+          schema:
+            type: boolean
+            default: false
+          required: false
+          description: Return only staff pick stories
       responses:
         "200":
           description: Successfully return a list of stories
@@ -19,6 +43,16 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Story"
+        "400":
+          description: User requested invalid page or page size
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Bad Request
 
   /api/stories/[year]/[month]/[day]/[slug]:
     get:
