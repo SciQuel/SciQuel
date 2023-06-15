@@ -1,9 +1,13 @@
+"use client";
+
+import { signIn, signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import logo from "./logo.png";
 import search from "./search.svg";
 import SideBar from "./SideBar/SideBar";
 
 export default function Header() {
+  const session = useSession();
   return (
     <div className="flex flex-col bg-sciquelTeal text-white">
       <div className="absolute top-0 flex w-full justify-center px-10 py-4 text-xl font-thin leading-[2rem]">
@@ -18,9 +22,23 @@ export default function Header() {
             <input className=" w-auto border border-x-transparent border-y-transparent bg-transparent outline-none focus:border-b-white" />
           </div>
           <div className="h-[2rem] grow" />
-          <a href="#" className="font-bold leading-[2rem]">
-            LOGIN
-          </a>
+          {session.status === "authenticated" ? (
+            <a
+              href="#"
+              onClick={() => void signOut()}
+              className="font-bold leading-[2rem]"
+            >
+              SIGN OUT
+            </a>
+          ) : (
+            <a
+              href="#"
+              onClick={() => void signIn()}
+              className="font-bold leading-[2rem]"
+            >
+              LOGIN
+            </a>
+          )}
         </div>
       </div>
       <div className="flex flex-row px-40 text-center">
