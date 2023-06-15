@@ -1,4 +1,66 @@
-export default function DashboardCard({ title }: { title: string }) {
+import Image from "next/image";
+
+interface ArticleItem {
+  title: string;
+  description?: string;
+  date: string;
+  subtitle?: string;
+  image: string;
+  type: string;
+  author?: string;
+}
+
+function ListItem(props: ArticleItem) {
+  return (
+    <li className="p-2">
+      <div className="flex items-start">
+        <Image
+          src={props.image}
+          width={100}
+          height={100}
+          alt="article image"
+          className="mr-2 h-12 w-12 "
+        />
+        <div className="flex grow flex-col">
+          <div className="flex items-center justify-between">
+            <div className="flex gap-2">
+              <h3 className="text-sm font-semibold">{props.title}</h3>
+              <span className="text-sm font-thin">
+                {props.type !== "articles" && props.type}
+              </span>
+            </div>
+            <span className="ml-2 text-xs font-thin">
+              {props.date + " days ago"}
+            </span>
+          </div>
+          {props.author && (
+            <p className="text-xs font-thin">{`by ${props.author}`}</p>
+          )}
+          {props.description && (
+            <p className="line-clamp-2 text-xs font-thin">
+              {props.description}
+            </p>
+          )}
+        </div>
+      </div>
+    </li>
+  );
+}
+
+export default function DashboardCard({
+  targetType,
+  articles,
+  title,
+}: {
+  targetType: string;
+  articles: ArticleItem[];
+  title: string;
+}) {
+  // filter the array according to the targetType
+  const items: ArticleItem[] = articles.filter(
+    (a: ArticleItem) => a.type === targetType,
+  );
+
   return (
     <div className="flex flex-col gap-4 rounded-md border bg-white px-4 py-6 ">
       <div className="flex justify-between">
@@ -55,8 +117,10 @@ export default function DashboardCard({ title }: { title: string }) {
           />
         </svg>
       </div>
-      <ul>
-        <li></li>
+      <ul className="divide-y">
+        {items.map((entry: ArticleItem) => (
+          <ListItem {...entry} />
+        ))}
       </ul>
     </div>
   );
