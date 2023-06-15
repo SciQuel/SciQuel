@@ -1,5 +1,7 @@
 import Image from "next/image";
 import logo from "./logo.png";
+import search from "./search.svg";
+import SideBar from "./SideBar/SideBar";
 
 export default function Header() {
   return (
@@ -10,12 +12,11 @@ export default function Header() {
       </div>
       <div className="relative">
         <div className="flex w-full flex-row gap-4 px-10 py-4 align-middle">
-          <button className="h-[2rem]">
-            <i className="symbol text-2xl leading-[2rem]">menu</i>
-          </button>
-          <button className="h-[2rem]">
-            <i className="symbol text-2xl leading-[2rem]">search</i>
-          </button>
+          <SideBar />
+          <div className="top-0 flex">
+            <Image className="h-[2rem] w-auto" src={search} alt="searchIcon" />
+            <input className=" w-auto border border-x-transparent border-y-transparent bg-transparent outline-none focus:border-b-white" />
+          </div>
           <div className="h-[2rem] grow" />
           <a href="#" className="font-bold leading-[2rem]">
             LOGIN
