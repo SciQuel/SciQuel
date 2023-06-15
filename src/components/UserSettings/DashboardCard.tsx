@@ -12,14 +12,14 @@ interface ArticleItem {
 
 function ListItem(props: ArticleItem) {
   return (
-    <li className="p-2">
+    <li className="p-1 py-2">
       <div className="flex items-start">
         <Image
           src={props.image}
           width={100}
           height={100}
           alt="article image"
-          className="mr-2 h-12 w-12 "
+          className="mr-3 h-12 w-12 "
         />
         <div className="flex grow flex-col">
           <div className="flex items-center justify-between">
@@ -62,7 +62,7 @@ export default function DashboardCard({
   );
 
   return (
-    <div className="flex flex-col gap-4 rounded-md border bg-white px-4 py-6 ">
+    <div className="flex flex-col gap-4 rounded-md border bg-white px-6 py-8 ">
       <div className="flex justify-between">
         <h3 className="font-semibold">{title}</h3>
         <div className="flex items-center gap-2">

@@ -8,7 +8,7 @@ export default function GreetingCard() {
   return (
     <div className="flex min-h-[320px] flex-wrap overflow-hidden rounded-md border bg-white">
       <div className="relative flex min-h-[280px] flex-1 flex-col items-center p-6 sm:flex-row sm:items-start lg:basis-7/12">
-        <div className="flex h-24 w-24 flex-none items-center rounded-full bg-gradient-to-b from-emerald-300 to-blue-400 sm:h-36 sm:w-36">
+        <div className="flex h-24 w-24 flex-none items-center rounded-full bg-gradient-to-b from-[#A1C9C1] to-[#58ABF8] sm:h-36 sm:w-36">
           <Image
             src={Avatar}
             alt="avatar"
@@ -35,14 +35,14 @@ export default function GreetingCard() {
       <div className="flex h-[320px] basis-full flex-col lg:basis-5/12">
         <div className="relative grow object-cover">
           <Image src={ArticleImage} alt="article image" fill />
-          <div className="absolute bottom-4 left-4 flex items-center gap-2 rounded-2xl bg-white/30 p-2 px-4 backdrop-blur-md hover:scale-110 hover:bg-white/80">
+          <div className="absolute bottom-4 left-4 flex items-center gap-2 rounded-2xl bg-[#A3C9A8] p-2 px-4 backdrop-blur-md hover:scale-105 hover:bg-white">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
               strokeWidth={1.5}
               stroke="currentColor"
-              className="h-5 w-5 text-blue-300"
+              className="h-5 w-5 text-[#69A297]"
             >
               <path
                 strokeLinecap="round"
@@ -53,19 +53,47 @@ export default function GreetingCard() {
             Read
           </div>
         </div>
-        <div className="flex justify-between bg-green-200 px-6 py-4">
+        <div className="flex justify-between bg-white px-6 py-4">
           <div className="h-fit basis-5/6">
             <p className="line-clamp-1 text-xl font-semibold">
               Milankovitch cycles: what are akdsfjielj adf adfdai
             </p>
-            <p>by Harriet Patel_2</p>
+            <p>
+              by <span className="text-[#69A297]">Harriet Patel_2</span>
+            </p>
           </div>
           <div className="flex basis-1/6 items-center justify-center gap-2">
             <button className="h-8 rounded-lg bg-gray-100 px-2 hover:scale-105 hover:bg-gray-200">
-              {"<"}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="h-6 w-6"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M15.75 19.5L8.25 12l7.5-7.5"
+                />
+              </svg>
             </button>
             <button className="h-8 rounded-lg bg-gray-100 px-2 hover:scale-105 hover:bg-gray-200">
-              {">"}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="h-6 w-6"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M8.25 4.5l7.5 7.5-7.5 7.5"
+                />
+              </svg>
             </button>
           </div>
         </div>
