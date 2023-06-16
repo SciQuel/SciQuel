@@ -1,3 +1,4 @@
+import { type GetStoryResult } from "@/app/api/stories/[year]/[month]/[day]/[slug]/route";
 import StoryH1 from "@/components/story-components/StoryH1";
 import StoryLargeImage from "@/components/story-components/StoryLargeImage";
 import StoryParagraph from "@/components/story-components/StoryParagraph";
@@ -9,15 +10,44 @@ import remarkDirective from "remark-directive";
 import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
 import { unified } from "unified";
-import content from "./example.md";
 
-export default async function StoriesPage() {
-  const htmlContent = await generateMarkdown();
-  // console.log(htmlContent.result);
+interface Params {
+  params: {
+    year: string;
+    month: string;
+    day: string;
+    slug: string;
+  };
+}
+
+export default async function StoriesPage({ params }: Params) {
+  const story = await retrieveStoryContent(params);
+  const htmlContent = await generateMarkdown(story.storyContent[0].content);
   return <div className="flex flex-col gap-5 pt-10">{htmlContent.result}</div>;
 }
 
-async function generateMarkdown() {
+async function retrieveStoryContent({
+  year,
+  day,
+  month,
+  slug,
+}: Params["params"]) {
+  const storyRoute = `/stories/${year}/${month}/${day}/${slug}`;
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_SITE_URL}/api${storyRoute}?include_content=true`,
+    {
+      next: { tags: [storyRoute] },
+    },
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch data");
+  }
+
+  return (await res.json()) as GetStoryResult;
+}
+
+async function generateMarkdown(content: string) {
   const file = await unified()
     .use(remarkParse)
     .use(remarkDirective)
