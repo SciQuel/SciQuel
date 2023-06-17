@@ -69,7 +69,7 @@ export default function QuizCard({
   idx: number;
   quizItem: QuizItem;
 }) {
-  console.log(idx);
+  // render quiz score using d3 with useEffect
   useEffect(() => {
     createScoreDonut(quizItem, `quiz-history-item-${idx}`);
   }, []);

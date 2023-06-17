@@ -1,8 +1,6 @@
 import DashboardCard from "@/components/UserSettings/DashboardCard";
 
-//import Union from "/user-settings/Union.svg";
-//import ViewVector from "user-settings/ViewVector.svg";
-
+// mock data
 const items = [
   {
     title: "Lights, Camera, Action!",
@@ -121,24 +119,29 @@ const items = [
 
 export default function ArticleCards() {
   return (
-    <div className="my-12 grid grow grid-cols-1 gap-8 lg:grid-cols-2">
+    <section className="my-12 grid grow grid-cols-1 gap-8 lg:grid-cols-2">
+      {/* Brained Articles */}
       <DashboardCard
         title="Brained Articles"
         targetType="articles"
         articles={items}
       />
+      {/* Saved Definitions */}
       <DashboardCard
         title="Saved Definitions"
         targetType="articles"
         articles={items}
       />
+      {/* Annotations */}
       <DashboardCard
         title="Annotations"
         targetType="annotations"
         articles={items}
       />
+      {/* Comments */}
       <DashboardCard title="Comments" targetType="comments" articles={items} />
+      {/* Bookmarks */}
       <DashboardCard title="Bookmarks" targetType="articles" articles={items} />
-    </div>
+    </section>
   );
 }

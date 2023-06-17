@@ -6,7 +6,7 @@ import Image from "next/image";
 
 export default function GreetingCard() {
   return (
-    <div className="flex min-h-[320px] flex-wrap overflow-hidden rounded-md border bg-white">
+    <section className="flex min-h-[320px] flex-wrap overflow-hidden rounded-md border bg-white">
       <div className="relative flex min-h-[280px] flex-1 flex-col items-center p-6 sm:flex-row sm:items-start lg:basis-7/12">
         <div className="flex h-24 w-24 flex-none items-center rounded-full bg-gradient-to-b from-[#A1C9C1] to-[#58ABF8] sm:h-36 sm:w-36">
           <Image
@@ -98,6 +98,6 @@ export default function GreetingCard() {
           </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 }
