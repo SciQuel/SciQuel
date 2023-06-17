@@ -10,12 +10,12 @@ interface ArticleItem {
   author?: string;
 }
 
-function ListItem(props: ArticleItem) {
+function ListItem({ info }: { info: ArticleItem }) {
   return (
     <li className="p-1 py-2">
       <div className="flex items-start">
         <Image
-          src={props.image}
+          src={info.image}
           width={100}
           height={100}
           alt="article image"
@@ -24,22 +24,20 @@ function ListItem(props: ArticleItem) {
         <div className="flex grow flex-col">
           <div className="flex items-center justify-between">
             <div className="flex gap-2">
-              <h3 className="text-sm font-semibold">{props.title}</h3>
+              <h3 className="text-sm font-semibold">{info.title}</h3>
               <span className="text-sm font-thin">
-                {props.type !== "articles" && props.type}
+                {info.type !== "articles" && info.type}
               </span>
             </div>
             <span className="ml-2 text-xs font-thin">
-              {props.date + " days ago"}
+              {info.date + " days ago"}
             </span>
           </div>
-          {props.author && (
-            <p className="text-xs font-thin">{`by ${props.author}`}</p>
+          {info.author && (
+            <p className="text-xs font-thin">{`by ${info.author}`}</p>
           )}
-          {props.description && (
-            <p className="line-clamp-2 text-xs font-thin">
-              {props.description}
-            </p>
+          {info.description && (
+            <p className="line-clamp-2 text-xs font-thin">{info.description}</p>
           )}
         </div>
       </div>
@@ -118,8 +116,8 @@ export default function DashboardCard({
         </svg>
       </div>
       <ul className="divide-y">
-        {items.map((entry: ArticleItem) => (
-          <ListItem {...entry} />
+        {items.map((entry: ArticleItem, idx: number) => (
+          <ListItem info={entry} key={idx} />
         ))}
       </ul>
     </div>
