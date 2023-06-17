@@ -20,7 +20,7 @@ function createScoreDonut(quiz_obj: QuizItem, id_str: string) {
   const width = 115;
   const score = `${quiz_obj.score}/${quiz_obj.total}`;
   const endAngle = 2 * Math.PI * (quiz_obj.score / quiz_obj.total);
-  const svgEl: HTMLElement = d3.select(selector);
+  const svgEl = d3.select(selector);
   svgEl.selectAll("*").remove();
 
   const svg = d3
@@ -29,7 +29,10 @@ function createScoreDonut(quiz_obj: QuizItem, id_str: string) {
     .attr("height", height)
     .attr("width", width)
     .append("g")
-    .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+    .attr(
+      "transform",
+      "translate(" + String(width / 2) + "," + String(height / 2) + ")",
+    );
   const arc = d3
     .arc()
     .outerRadius(55)
