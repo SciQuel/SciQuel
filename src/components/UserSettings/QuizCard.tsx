@@ -20,7 +20,7 @@ function createScoreDonut(quiz_obj: QuizItem, id_str: string) {
   const width = 115;
   const score = `${quiz_obj.score}/${quiz_obj.total}`;
   const endAngle = 2 * Math.PI * (quiz_obj.score / quiz_obj.total);
-  const svgEl = d3.select(selector);
+  const svgEl: HTMLElement = d3.select(selector);
   svgEl.selectAll("*").remove();
 
   const svg = d3

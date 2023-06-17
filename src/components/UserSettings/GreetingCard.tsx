@@ -1,7 +1,7 @@
 import TopicTag from "@/components/TopicTag";
-import Avatar from "@/components/UserSettings/ProfilePicture.png";
-import ArticleImage from "@/components/UserSettings/top_background_img.png";
 import { StoryTopic } from "@prisma/client";
+import Avatar from "/public/user-settings/ProfilePicture.png";
+import ArticleImage from "/public/user-settings/top_background_img.png";
 import Image from "next/image";
 
 export default function GreetingCard() {
