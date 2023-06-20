@@ -1,19 +1,29 @@
 import prisma from "@/lib/prisma";
-import { NextResponse } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
+import { z } from "zod";
 
-export async function POST(req: Request) {
-  const { searchParams } = new URL(req.url);
-  const storyId = searchParams.get("story_id");
+const bodySchema = z.object({
+  story_id: z
+    .string({
+      required_error: "story_id is required",
+      invalid_type_error: "story_id must be a ObjectId",
+    })
+    .regex(/^[0-9a-f]{24}$/, { message: "story_id must be a valid ObjectId" }),
+});
 
-  if (storyId === null) {
-    return NextResponse.json({ error: "Bad Request" }, { status: 400 });
+export async function POST(req: NextRequest) {
+  const result = bodySchema.safeParse(await req.json());
+  if (!result.success) {
+    return NextResponse.json(result.error, { status: 400 });
   }
 
-  // validate storyId
+  const { story_id } = result.data;
+
+  // validate story_id
   try {
     const story = await prisma.story.findUnique({
       where: {
-        id: storyId,
+        id: story_id,
       },
     });
 
@@ -24,13 +34,13 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: e }, { status: 400 });
   }
 
-  //TODO: retrieve userId from session/cookie
-  const userId = "647ad6fda9efff3abe83044f";
+  //TODO: retrieve user_id from session/cookie
+  const user_id = "647ad6fda9efff3abe83044f";
 
   const res = await prisma.pageView.create({
     data: {
-      userId: userId,
-      storyId: storyId,
+      userId: user_id,
+      storyId: story_id,
     },
   });
 
