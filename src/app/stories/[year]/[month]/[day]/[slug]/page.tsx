@@ -1,5 +1,6 @@
 import { type GetStoryResult } from "@/app/api/stories/[year]/[month]/[day]/[slug]/route";
 import StoryH1 from "@/components/story-components/StoryH1";
+import StoryH2 from "@/components/story-components/StoryH2";
 import StoryLargeImage from "@/components/story-components/StoryLargeImage";
 import StoryParagraph from "@/components/story-components/StoryParagraph";
 import remarkSciquelDirective from "@/lib/remark-sciquel-directive";
@@ -70,6 +71,9 @@ async function generateMarkdown(content: string) {
         ),
         h1: (props: HTMLProps<HTMLHeadingElement>) => (
           <StoryH1>{props.children}</StoryH1>
+        ),
+        h2: (props: HTMLProps<HTMLHeadingElement>) => (
+          <StoryH2>{props.children}</StoryH2>
         ),
         "large-image": (props: HTMLProps<HTMLElement>) => {
           if (typeof props.src === "string") {
