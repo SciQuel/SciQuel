@@ -123,14 +123,16 @@ paths:
         - User
       summary: Record user page view activity
       description: Record the page view activity of a user
-      parameters:
-        - in: query
-          name: story_id
-          schema:
-            type: string
-            example: "647ad74aa9efff3abe83045a"
-          required: true
-          description: ObjectId of the story
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                story_id:
+                  type: string
+                  example: "647ad74aa9efff3abe83045a"
       responses:
         "200":
           description: Successfully record the page view
