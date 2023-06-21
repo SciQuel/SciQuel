@@ -9,6 +9,13 @@ const bodySchema = z.object({
       invalid_type_error: "story_id must be a ObjectId",
     })
     .regex(/^[0-9a-f]{24}$/, { message: "story_id must be a valid ObjectId" }),
+
+  user_id: z
+    .string({
+      required_error: "user_id is required",
+      invalid_type_error: "user_id must be a ObjectId",
+    })
+    .regex(/^[0-9a-f]{24}$/, { message: "user_id must be a valid ObjectId" }),
 });
 
 export async function POST(req: NextRequest) {
@@ -19,7 +26,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(result.error, { status: 400 });
     }
 
-    const { story_id } = result.data;
+    const { story_id, user_id } = result.data;
 
     // validate story_id
     const story = await prisma.story.findUnique({
@@ -32,8 +39,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Story not found" }, { status: 404 });
     }
 
-    //TODO: retrieve user_id from session/cookie
-    const user_id = "647ad6fda9efff3abe83044f";
+    // validate user_id
+    const user = await prisma.user.findUnique({
+      where: {
+        id: user_id,
+      },
+    });
+
+    if (user === null) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
 
     const res = await prisma.pageView.create({
       data: {
