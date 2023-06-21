@@ -133,6 +133,9 @@ paths:
                 story_id:
                   type: string
                   example: "647ad74aa9efff3abe83045a"
+                user_id:
+                  type: string
+                  example: "647ad6fda9efff3abe83044f"
       responses:
         "200":
           description: Successfully record the page view
@@ -141,7 +144,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/PageView"
         "400":
-          description: User specified invalid story id
+          description: Request body is invalid
           content:
             application/json:
               schema:
@@ -151,7 +154,7 @@ paths:
                     type: string
                     example: Bad Request
         "404":
-          description: Specified story id does not exist
+          description: story_id or user_id not found
           content:
             application/json:
               schema:
