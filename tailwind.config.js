@@ -19,6 +19,7 @@ module.exports = {
         sciquelMuted: "#878787",
         sciquelCardBg: "#f8f8ff",
         sciquelCardBorder: "#cccccc",
+        sciquelMuted2: "#58A4B0",
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
