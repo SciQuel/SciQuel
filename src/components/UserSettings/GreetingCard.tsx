@@ -4,7 +4,16 @@ import Avatar from "/public/user-settings/ProfilePicture.png";
 import ArticleImage from "/public/user-settings/top_background_img.png";
 import Image from "next/image";
 
-export default function GreetingCard() {
+export default function GreetingCard(props: { name: string }) {
+  const names = props.name.split(",");
+
+  const getGreeting = () => {
+    const currHr = new Date().getHours();
+    if (currHr < 12) return "Good morning";
+    else if (currHr < 18) return "Good afternoon";
+    else return "Good Evening";
+  };
+
   return (
     <section className="flex min-h-[320px] flex-wrap overflow-hidden rounded-md border bg-white">
       <div className="relative flex min-h-[280px] flex-1 flex-col items-center p-6 sm:flex-row sm:items-start lg:basis-7/12">
@@ -19,7 +28,7 @@ export default function GreetingCard() {
         </div>
         <div className="mt-2 sm:ml-6">
           <p className="line-clamp-2 text-2xl font-semibold sm:text-3xl">
-            Good afternoon, James
+            {getGreeting()}, {names[names.length - 1]}
           </p>
           <div className="mt-3 flex max-h-[24px] flex-wrap justify-start gap-2 overflow-hidden text-xs">
             <TopicTag name={StoryTopic.MATHEMATICS} />
