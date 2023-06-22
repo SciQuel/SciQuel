@@ -5,6 +5,7 @@ import Image from "next/image";
 import logo from "./logo.png";
 import search from "./search.svg";
 import SideBar from "./SideBar/SideBar";
+import Topic from "./Topic/Topic";
 
 export default function Header() {
   const session = useSession();
@@ -49,7 +50,7 @@ export default function Header() {
           READ
         </div>
         <div className="grow cursor-pointer py-2 transition-colors hover:bg-sciquelHover">
-          TOPIC
+          <Topic></Topic>
         </div>
         <div className="grow cursor-pointer py-2 transition-colors hover:bg-sciquelHover">
           ABOUT
