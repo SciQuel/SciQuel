@@ -40,11 +40,14 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body
-        className={clsx(
-          quicksand.className,
-          alegreyaSansSC.variable,
-          sourceSerif4.variable,
-        )}
+        className={
+          clsx(
+            quicksand.className,
+            alegreyaSansSC.variable,
+            sourceSerif4.variable,
+            'min-h-screen',
+          )
+        }
       >
         <AuthProvider session={session}>
           <Header />
