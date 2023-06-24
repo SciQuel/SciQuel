@@ -33,26 +33,39 @@ function createScoreDonut(quiz_obj: QuizItem, id_str: string) {
       "transform",
       "translate(" + String(width / 2) + "," + String(height / 2) + ")",
     );
-  const arc = d3
-    .arc()
-    .outerRadius(55)
-    .innerRadius(40)
-    .cornerRadius(15)
-    .startAngle(0)
-    .endAngle(endAngle);
 
-  const bg_arc = d3
-    .arc()
-    .outerRadius(55)
-    .innerRadius(40)
-    .startAngle(0)
-    .endAngle(2 * Math.PI);
+  interface ArcDatum extends d3.DefaultArcObject {
+    cornerRadius: number;
+  }
 
-  svg.append("path").attr("d", bg_arc).attr("fill", "#D9D9D9");
+  const arc = d3.arc<ArcDatum>().cornerRadius(15);
 
   svg
     .append("path")
-    .attr("d", arc)
+    .attr(
+      "d",
+      arc({
+        outerRadius: 55,
+        innerRadius: 40,
+        cornerRadius: 0,
+        startAngle: 0,
+        endAngle: 2 * Math.PI,
+      }),
+    )
+    .attr("fill", "#D9D9D9");
+
+  svg
+    .append("path")
+    .attr(
+      "d",
+      arc({
+        outerRadius: 55,
+        innerRadius: 40,
+        cornerRadius: 15,
+        startAngle: 0,
+        endAngle,
+      }),
+    )
     .attr("fill", () => {
       if (quiz_obj.score / quiz_obj.total < 0.5) {
         return "#E79595";
