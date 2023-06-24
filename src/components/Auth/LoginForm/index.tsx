@@ -3,6 +3,7 @@
 import Form from "@/components/Form";
 import FormInput from "@/components/Form/FormInput";
 import { signIn } from "next-auth/react";
+import Link from "next/link";
 import { useState } from "react";
 
 export default function LoginForm() {
@@ -25,6 +26,7 @@ export default function LoginForm() {
         required
         indicateRequired={false}
         value={email}
+        type="email"
         onChange={(e) => setEmail(e.target.value)}
       />
       <FormInput
@@ -35,12 +37,18 @@ export default function LoginForm() {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
+      <Link
+        className="mt-2 text-sm text-sciquelDarkText"
+        href="/auth/forgot-password"
+      >
+        Forgot your password?
+      </Link>
       <button
         type="submit"
-        className={`b mt-6 rounded-md bg-sciquelTeal px-2 py-1 font-semibold text-white
+        className={`mt-4 rounded-md bg-sciquelTeal px-2 py-1 font-semibold text-white
         transition-all hover:brightness-90`}
       >
-        Submit
+        Log in
       </button>
     </Form>
   );

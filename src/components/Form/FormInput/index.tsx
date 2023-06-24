@@ -4,7 +4,7 @@ interface Props {
   title: string;
   required?: boolean;
   indicateRequired?: boolean;
-  type?: "text" | "password";
+  type?: "text" | "password" | "email";
   value?: HTMLProps<HTMLInputElement>["value"];
   onChange?: ChangeEventHandler<HTMLInputElement>;
 }
