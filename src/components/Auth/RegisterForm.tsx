@@ -44,8 +44,7 @@ export default function RegisterForm() {
         required
         indicateRequired={false}
         value={confirmPassword}
-        minLength={8}
-        maxLength={64}
+        invalid={password !== confirmPassword}
         onChange={(e) => setConfirmPassword(e.target.value)}
       />
       <button
