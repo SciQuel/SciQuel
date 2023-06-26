@@ -37,12 +37,9 @@ export default function LoginForm() {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
-      <Link
-        className="mt-2 text-sm text-sciquelDarkText"
-        href="/auth/forgot-password"
-      >
-        Forgot your password?
-      </Link>
+      <div className="mt-2 text-sm text-sciquelTeal">
+        <Link href="/auth/forgot-password">Forgot your password?</Link>
+      </div>
       <button
         type="submit"
         disabled={email.length === 0 || password.length === 0}
@@ -51,6 +48,12 @@ export default function LoginForm() {
       >
         Log in
       </button>
+      <p className="mt-6 text-sm text-sciquelDarkText">
+        Haven't signed up yet?{" "}
+        <Link href="/auth/register" className="text-sciquelTeal">
+          Sign up here
+        </Link>
+      </p>
     </Form>
   );
 }
