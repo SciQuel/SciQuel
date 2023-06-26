@@ -121,4 +121,6 @@ model Brain {
   storyId String @db.ObjectId
 
   createdAt DateTime @default(now())
+
+  @@unique([userId, storyId])
 }
