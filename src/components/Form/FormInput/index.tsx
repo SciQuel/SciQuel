@@ -1,4 +1,6 @@
-import { type ChangeEventHandler, type HTMLProps } from "react";
+"use client";
+
+import { useState, type ChangeEventHandler, type HTMLProps } from "react";
 
 interface Props {
   title: string;
@@ -17,15 +19,19 @@ export default function FormInput({
   value,
   onChange,
 }: Props) {
+  const [show, setShow] = useState(false);
   return (
     <div className="relative mt-6 w-full">
       <input
         className={`peer w-full rounded-md px-2 py-1 placeholder-transparent outline
-        outline-1 outline-gray-200 hover:outline-sciquelTeal
-        focus:outline-2 focus:outline-sciquelTeal focus:ring-0`}
+        outline-1 outline-gray-200 invalid:outline-dashed
+        invalid:outline-2 invalid:outline-red-400 hover:outline-sciquelTeal
+        invalid:hover:outline-red-400 focus:outline-2 focus:outline-sciquelTeal focus:ring-0`}
         placeholder={title}
-        type={type}
+        type={type === "password" ? (show ? "text" : "password") : type}
         value={value}
+        minLength={type === "password" ? 8 : undefined}
+        maxLength={type === "password" ? 64 : undefined}
         onChange={onChange}
       />
       <label
@@ -37,6 +43,15 @@ export default function FormInput({
         {title}
         {required && indicateRequired ? " *" : null}
       </label>
+      {type === "password" && (
+        <label
+          className={`absolute -top-5 right-0 cursor-pointer text-sm text-sciquelTeal
+          hover:brightness-75`}
+          onClick={() => setShow(!show)}
+        >
+          {show ? "Hide password" : "Show password"}
+        </label>
+      )}
     </div>
   );
 }
