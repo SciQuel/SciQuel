@@ -29,7 +29,7 @@ export default function RegisterForm() {
         onChange={(e) => setEmail(e.target.value)}
       />
       <FormInput
-        title="Password"
+        title="Password (8-64 characters)"
         type="password"
         required
         indicateRequired={false}
