@@ -2,6 +2,7 @@
 
 import Form from "@/components/Form";
 import FormInput from "@/components/Form/FormInput";
+import Link from "next/link";
 import { useState } from "react";
 
 export default function LoginForm() {
@@ -36,11 +37,18 @@ export default function LoginForm() {
           />
           <button
             type="submit"
+            disabled={email.length === 0}
             className={`mt-6 rounded-md bg-sciquelTeal px-2 py-1 font-semibold text-white
-        transition-all hover:brightness-90`}
+        transition-all hover:brightness-90 disabled:bg-gray-300 disabled:hover:brightness-100`}
           >
             Submit
           </button>
+          <Link
+            className="mt-2 text-sm text-sciquelDarkText"
+            href="/auth/login"
+          >
+            or return to Login
+          </Link>
         </>
       )}
     </Form>
