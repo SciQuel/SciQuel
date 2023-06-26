@@ -34,6 +34,8 @@ export default function RegisterForm() {
         required
         indicateRequired={false}
         value={password}
+        minLength={8}
+        maxLength={64}
         onChange={(e) => setPassword(e.target.value)}
       />
       <FormInput
@@ -42,6 +44,8 @@ export default function RegisterForm() {
         required
         indicateRequired={false}
         value={confirmPassword}
+        minLength={8}
+        maxLength={64}
         onChange={(e) => setConfirmPassword(e.target.value)}
       />
       <button
@@ -54,7 +58,7 @@ export default function RegisterForm() {
       </button>
       <p className="mt-6 text-sm text-sciquelDarkText">
         Already have an account?{" "}
-        <Link href="/auth/register" className="text-sciquelTeal">
+        <Link href="/auth/login" className="text-sciquelTeal">
           Log in here
         </Link>
       </p>

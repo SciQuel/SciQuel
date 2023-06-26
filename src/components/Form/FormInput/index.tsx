@@ -8,11 +8,15 @@ interface Props {
   indicateRequired?: boolean;
   type?: "text" | "password" | "email";
   value?: HTMLProps<HTMLInputElement>["value"];
+  minLength?: number;
+  maxLength?: number;
   onChange?: ChangeEventHandler<HTMLInputElement>;
 }
 
 export default function FormInput({
   title,
+  minLength,
+  maxLength,
   required = false,
   indicateRequired = true,
   type = "text",
@@ -30,8 +34,8 @@ export default function FormInput({
         placeholder={title}
         type={type === "password" ? (show ? "text" : "password") : type}
         value={value}
-        minLength={type === "password" ? 8 : undefined}
-        maxLength={type === "password" ? 64 : undefined}
+        minLength={minLength}
+        maxLength={maxLength}
         onChange={onChange}
       />
       <label
