@@ -1,5 +1,6 @@
 "use client";
 
+import clsx from "clsx";
 import { useState, type ChangeEventHandler, type HTMLProps } from "react";
 
 interface Props {
@@ -10,6 +11,7 @@ interface Props {
   value?: HTMLProps<HTMLInputElement>["value"];
   minLength?: number;
   maxLength?: number;
+  invalid?: boolean;
   onChange?: ChangeEventHandler<HTMLInputElement>;
 }
 
@@ -21,16 +23,21 @@ export default function FormInput({
   indicateRequired = true,
   type = "text",
   value,
+  invalid,
   onChange,
 }: Props) {
   const [show, setShow] = useState(false);
   return (
     <div className="relative mt-6 w-full">
       <input
-        className={`peer w-full rounded-md px-2 py-1 placeholder-transparent outline
-        outline-1 outline-gray-200 invalid:outline-dashed
-        invalid:outline-2 invalid:outline-red-400 hover:outline-sciquelTeal
-        invalid:hover:outline-red-400 focus:outline-2 focus:outline-sciquelTeal focus:ring-0`}
+        className={clsx(
+          `peer w-full rounded-md px-2 py-1 placeholder-transparent outline invalid:outline-dashed
+          invalid:outline-2 invalid:outline-red-400 hover:outline-sciquelTeal
+          invalid:hover:outline-red-400 focus:outline-2 focus:ring-0`,
+          invalid
+            ? "outline-dashed outline-2 outline-red-400 hover:outline-red-400 focus:outline-red-400"
+            : "outline-1 outline-gray-200 focus:outline-sciquelTeal",
+        )}
         placeholder={title}
         type={type === "password" ? (show ? "text" : "password") : type}
         value={value}
