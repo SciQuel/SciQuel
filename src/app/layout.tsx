@@ -44,6 +44,7 @@ export default async function RootLayout({
           quicksand.className,
           alegreyaSansSC.variable,
           sourceSerif4.variable,
+          "min-h-screen",
         )}
       >
         <AuthProvider session={session}>
