@@ -3,6 +3,7 @@ import StoryH1 from "@/components/story-components/StoryH1";
 import StoryH2 from "@/components/story-components/StoryH2";
 import StoryLargeImage from "@/components/story-components/StoryLargeImage";
 import StoryParagraph from "@/components/story-components/StoryParagraph";
+import env from "@/lib/env";
 import remarkSciquelDirective from "@/lib/remark-sciquel-directive";
 import { createElement, Fragment, type HTMLProps } from "react";
 import rehypeReact from "rehype-react";
@@ -35,7 +36,7 @@ async function retrieveStoryContent({
 }: Params["params"]) {
   const storyRoute = `/stories/${year}/${month}/${day}/${slug}`;
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_SITE_URL}/api${storyRoute}?include_content=true`,
+    `${env.NEXT_PUBLIC_SITE_URL}/api${storyRoute}?include_content=true`,
     {
       next: { tags: [storyRoute] },
     },

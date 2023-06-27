@@ -44,7 +44,7 @@ async function getWhatsNewArticles() {
 
 async function getExampleStory() {
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_SITE_URL}/api/stories/2022/01/11/lights-camera-action`,
+    `${env.NEXT_PUBLIC_SITE_URL}/api/stories/2022/01/11/lights-camera-action`,
     {
       next: { revalidate: 60 },
     },
