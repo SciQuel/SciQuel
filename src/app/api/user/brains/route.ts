@@ -3,7 +3,7 @@ import { Prisma } from "@prisma/client";
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 
-const bodySchema = z.object({
+const requestSchema = z.object({
   story_id: z
     .string({
       required_error: "story_id is required",
@@ -22,7 +22,7 @@ const bodySchema = z.object({
 export async function POST(req: NextRequest) {
   let result;
   try {
-    result = bodySchema.safeParse(await req.json());
+    result = requestSchema.safeParse(await req.json());
     if (!result.success) {
       return NextResponse.json(result.error, { status: 400 });
     }
@@ -85,6 +85,69 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // all other errors
+    return NextResponse.json({ error: e }, { status: 500 });
+  }
+}
+
+export async function DELETE(req: NextRequest) {
+  try {
+    const { searchParams } = new URL(req.url);
+
+    const params = {
+      story_id: searchParams.get("story_id"),
+      user_id: searchParams.get("user_id"),
+    };
+
+    const result = requestSchema.safeParse(params);
+    if (!result.success) {
+      return NextResponse.json(result.error, { status: 400 });
+    }
+
+    const { story_id, user_id } = result.data;
+
+    // validate story_id
+    const story = await prisma.story.findUnique({
+      where: {
+        id: story_id,
+      },
+    });
+
+    if (story === null) {
+      return NextResponse.json({ error: "Story not found" }, { status: 404 });
+    }
+
+    // validate user_id
+    const user = await prisma.user.findUnique({
+      where: {
+        id: user_id,
+      },
+    });
+
+    if (user === null) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    const res = await prisma.brain.deleteMany({
+      where: {
+        userId: user_id,
+        storyId: story_id,
+      },
+    });
+
+    if (res === null) {
+      return NextResponse.json(
+        { error: "Failed to delete from db" },
+        { status: 500 },
+      );
+    }
+
+    if (res.count === 0) {
+      return NextResponse.json({ error: "No entries found" }, { status: 404 });
+    }
+
+    return NextResponse.json(res, { status: 200 });
+  } catch (e) {
     // all other errors
     return NextResponse.json({ error: e }, { status: 500 });
   }
