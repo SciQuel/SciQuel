@@ -1,3 +1,36 @@
+"use client";
+
+import clsx from "clsx";
+import { useState } from "react";
+
+function ToggleSwitch({ id }: { id: string }) {
+  const [isChecked, setIsChecked] = useState(true);
+  return (
+    <label
+      htmlFor={id}
+      className={clsx({
+        "relative h-10 w-20 rounded-full": true,
+        "bg-[#A6A6A6]": isChecked,
+        "bg-[#69A297]": !isChecked,
+      })}
+    >
+      <input
+        type="checkbox"
+        id={id}
+        className="peer sr-only"
+        onChange={(e) => setIsChecked(e.target.checked ? false : true)}
+      />
+      <span className="absolute left-11 top-1 h-4/5 w-2/5 rounded-full bg-white drop-shadow-lg transition-all duration-300 peer-checked:left-1"></span>
+      <span className="absolute left-2.5 top-2 h-4/5 w-2/5 text-base text-white transition-all duration-300 peer-checked:opacity-0">
+        OFF
+      </span>
+      <span className="absolute right-3.5 top-2 text-base text-white opacity-0 transition-all duration-300 peer-checked:opacity-100">
+        ON
+      </span>
+    </label>
+  );
+}
+
 export default function Settings() {
   return (
     <div className="relative flex grow flex-col gap-8 py-6 md:pl-56">
@@ -25,12 +58,15 @@ export default function Settings() {
         <ul className="divide-y rounded-md border bg-white px-4 text-xl font-semibold">
           <li className="flex h-16 items-center justify-between">
             Reading History
+            <ToggleSwitch id="reading-history" />
           </li>
           <li className="flex h-16 items-center justify-between">
-            Show quizzes on articles{" "}
+            Show quizzes on articles
+            <ToggleSwitch id="show-quizzes" />
           </li>
           <li className="flex h-16 items-center justify-between">
-            Show in-line comments{" "}
+            Show in-line comments
+            <ToggleSwitch id="show-comments" />
           </li>
         </ul>
       </section>
@@ -166,6 +202,7 @@ export default function Settings() {
           </li>
           <li className="flex h-16 items-center justify-between">
             Auto logout
+            <ToggleSwitch id="auto-logout-1" />
           </li>
         </ul>
       </section>
@@ -212,6 +249,7 @@ export default function Settings() {
           </li>
           <li className="flex h-16 items-center justify-between">
             Auto logout
+            <ToggleSwitch id="auto-logout-2" />
           </li>
         </ul>
       </section>
@@ -250,12 +288,15 @@ export default function Settings() {
           Enable or disable accessibility features
         </p>
         <ul className="divide-y rounded-md border bg-white px-4 text-xl font-semibold">
-          <li className="flex h-16 items-center justify-between">Dark mode </li>
+          <li className="flex h-16 items-center justify-between">
+            Dark mode <ToggleSwitch id="dark-mode" />
+          </li>
           <li className="flex h-16 items-center justify-between">
             Text size (px){" "}
           </li>
           <li className="flex h-16 items-center justify-between">
             Turn on automatic captions for audio and video content
+            <ToggleSwitch id="auto-caption" />
           </li>
         </ul>
       </section>
