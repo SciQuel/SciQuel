@@ -28,7 +28,7 @@
     "slug": "^8.2.2",
     "swr": "^2.1.5",
     "tailwindcss": "3.3.2",
-    "typescript": "5.0.4",
+    "typescript": "^5.1.6",
     "wavesurfer.js": "^6.6.3",
     "zod": "^3.21.4"
   },
