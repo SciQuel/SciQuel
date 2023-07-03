@@ -1,23 +1,39 @@
 import { type StoryTopic } from "@prisma/client";
+import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
+import Astronomy from "./TopicIcons/Astronomy.png";
+import Biology from "./TopicIcons/Biology.png";
+import ChemEng from "./TopicIcons/ChemEng.png";
+import Chemistry from "./TopicIcons/Chemistry.png";
+import ComputerS from "./TopicIcons/ComputerS.png";
+import ElectricEng from "./TopicIcons/ElectricEng.png";
+import EnviroS from "./TopicIcons/EnviroS.png";
+import Geology from "./TopicIcons/Geology.png";
+import Math from "./TopicIcons/Math.png";
+import MechEng from "./TopicIcons/MechEng.png";
+import Medicine from "./TopicIcons/Medicine.png";
+import Physics from "./TopicIcons/Physics.png";
+import Psychology from "./TopicIcons/Psychology.png";
+import Sociology from "./TopicIcons/Sociology.png";
+import Technology from "./TopicIcons/Technology.png";
 
 export default function Topic() {
   const topics = [
-    "Astronomy",
-    "Biology",
-    "Chemistry",
-    "Computer Science",
-    "Chemical",
-    "Electrical",
-    "Environmental Sciences",
-    "Geology",
-    "Mathematics",
-    "Mechanical Engineering",
-    "Medicine",
-    "Physics",
-    "Psychology",
-    "Sociology",
-    "Technology",
+    { Topic: "Astronomy", Image: Astronomy },
+    { Topic: "Biology", Image: Biology },
+    { Topic: "Chemistry", Image: Chemistry },
+    { Topic: "Computer Science", Image: ComputerS },
+    { Topic: "Chemical", Image: ChemEng },
+    { Topic: "Electrical", Image: ElectricEng },
+    { Topic: "Environmental Science", Image: EnviroS },
+    { Topic: "Geology", Image: Geology },
+    { Topic: "Mathematics", Image: Math },
+    { Topic: "Mechanical Engineering", Image: MechEng },
+    { Topic: "Medicine", Image: Medicine },
+    { Topic: "Physics", Image: Physics },
+    { Topic: "Psychology", Image: Psychology },
+    { Topic: "Sociology", Image: Sociology },
+    { Topic: "Technology", Image: Technology },
   ];
   const [showTopic, setShowTopic] = useState(false);
   const topicRef = useRef<HTMLDivElement>(null);
@@ -48,7 +64,7 @@ export default function Topic() {
     <div>
       <div onClick={() => setShowTopic((showTopic) => !showTopic)}>TOPIC</div>
       <div
-        className="fixed left-0 right-0 z-50 mt-8 h-full cursor-default overflow-y-auto 
+        className="fixed left-0 right-0 z-50 mt-2 h-full cursor-default overflow-y-auto 
       overflow-x-hidden bg-black bg-opacity-40  "
         style={{ display: showTopic ? "block" : "none" }}
       >
@@ -61,13 +77,18 @@ export default function Topic() {
                     <>
                       <li
                         key={index}
-                        className="hover: my-3 cursor-pointer text-[#50808e] "
-                        onMouseEnter={() => onMouseEnter(topic)}
+                        className="hover: my-3 flex cursor-pointer text-[#50808e] "
+                        onMouseEnter={() => onMouseEnter(topic.Topic)}
                         style={{
-                          color: currentTopic === topic ? "#ad2319" : "",
+                          color: currentTopic === topic.Topic ? "#ad2319" : "",
                         }}
                       >
-                        {topic}
+                        <Image
+                          src={topic.Image}
+                          className="h-[2rem] w-auto"
+                          alt="SciQuel"
+                        />
+                        <span>{topic.Topic}</span>
                       </li>
                     </>
                   ))}
