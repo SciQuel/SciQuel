@@ -16,6 +16,7 @@ export default function SideBar() {
       document.removeEventListener("mousedown", handler);
     };
   });
+
   return (
     <div>
       <div
@@ -29,97 +30,110 @@ export default function SideBar() {
 
       <div
         className="fixed top-0 z-40 h-screen w-56  
-        -translate-x-full  transform overflow-y-auto bg-[#69a297] transition-all duration-500 "
+        -translate-x-full  transform  bg-[#69a297] transition-all duration-500 "
         style={{ left: showSideBar ? "14rem" : "0" }}
         ref={menuRef}
       >
         <nav className="relative flex flex-col ">
-          <a className="text-white-400 mt-3 flex transform cursor-pointer items-center  hover:bg-sciquelHover">
+          <li className="text-white-400 my-1.5 flex transform cursor-pointer items-center  hover:bg-sciquelHover">
             <span className="mx-4 font-medium">Read Science</span>
-          </a>
-          <a className="text-white-400 mt-3 flex transform cursor-pointer items-center  hover:bg-sciquelHover">
+          </li>
+          <li className="text-white-400 my-1.5 flex transform cursor-pointer items-center  hover:bg-sciquelHover">
             <span className="mx-4 font-medium">Listen Science</span>
-          </a>
+          </li>
 
-          <a className="text-white-400 mt-3 flex transform cursor-pointer items-center  hover:bg-sciquelHover">
+          <li className="text-white-400 my-1.5 flex transform cursor-pointer items-center  hover:bg-sciquelHover">
             <span className="mx-4 font-medium">Watch Science</span>
-          </a>
+          </li>
 
-          <a className="text-white-400 mt-3 flex transform cursor-pointer items-center   hover:bg-sciquelHover">
+          <li className="text-white-400 my-1.5 flex transform cursor-pointer items-center   hover:bg-sciquelHover">
             <span className="mx-4 font-medium">View Science</span>
-          </a>
+          </li>
 
-          <hr className="mx-3 mt-4" />
+          <hr className="mx-3 my-2" />
 
-          <a className="text-white-400 mt-3 flex transform cursor-pointer items-center  hover:bg-sciquelHover">
+          <li className="text-white-400 my-1.5 flex transform cursor-pointer items-center  hover:bg-sciquelHover">
             <span className="mx-4 font-medium">Astronomy</span>
-          </a>
+          </li>
 
-          <a className="text-white-400 mt-3 flex transform cursor-pointer items-center   hover:bg-sciquelHover">
+          <li className="text-white-400 my-1.5 flex transform cursor-pointer items-center   hover:bg-sciquelHover">
             <span className="mx-4 font-medium">Biology</span>
-          </a>
-          <a className="text-white-400 mt-3 flex transform cursor-pointer items-center   hover:bg-sciquelHover">
+          </li>
+          <li className="text-white-400 my-1.5 flex transform cursor-pointer items-center   hover:bg-sciquelHover">
             <span className="mx-4 font-medium">Chemistry</span>
-          </a>
-          <a className="text-white-400 mt-3 flex transform cursor-pointer items-center   hover:bg-sciquelHover">
+          </li>
+          <li className="text-white-400 my-1.5 flex transform cursor-pointer items-center   hover:bg-sciquelHover">
             <span className="mx-4 font-medium">Computer Science</span>
-          </a>
-          <a className="text-white-400 mt-3 flex transform cursor-pointer items-center   hover:bg-sciquelHover">
+          </li>
+          <li className="text-white-400 my-1.5 flex transform cursor-pointer items-center   hover:bg-sciquelHover">
             <span className="mx-4 font-medium">Chemical</span>
-          </a>
-          <a className="text-white-400 mt-3 flex transform cursor-pointer items-center   hover:bg-sciquelHover">
+          </li>
+          <li className="text-white-400 my-1.5 flex transform cursor-pointer items-center   hover:bg-sciquelHover">
             <span className="mx-4 font-medium">Electrical</span>
-          </a>
-          <a className="text-white-400 mt-3 flex transform cursor-pointer items-center   hover:bg-sciquelHover">
+          </li>
+          <li className="text-white-400 my-1.5 flex transform cursor-pointer items-center   hover:bg-sciquelHover">
             <span className="mx-4 font-medium">Environmental Science</span>
-          </a>
-          <a className="text-white-400 mt-3 flex transform cursor-pointer items-center   hover:bg-sciquelHover">
+          </li>
+          <li className="text-white-400 my-1.5 flex transform cursor-pointer items-center   hover:bg-sciquelHover">
             <span className="mx-4 font-medium">Geology</span>
-          </a>
-          <a className="text-white-400 mt-3 flex transform cursor-pointer items-center   hover:bg-sciquelHover">
+          </li>
+          <li className="text-white-400 my-1.5 flex transform cursor-pointer items-center   hover:bg-sciquelHover">
             <span className="mx-4 font-medium">Mathematics</span>
-          </a>
-          <a className="text-white-400 mt-3 flex transform cursor-pointer items-center   hover:bg-sciquelHover">
+          </li>
+          <li className="text-white-400 my-1.5 flex transform cursor-pointer items-center   hover:bg-sciquelHover">
             <span className="mx-4 font-medium">Mechanical Engineering</span>
-          </a>
+          </li>
 
-          <a className="text-white-400 mt-3 flex transform cursor-pointer items-center   hover:bg-sciquelHover">
+          <li className="text-white-400 my-1.5 flex transform cursor-pointer items-center   hover:bg-sciquelHover">
             <span className="mx-4 font-medium">Medicine</span>
-          </a>
-          <a className="text-white-400 mt-3 flex transform cursor-pointer items-center   hover:bg-sciquelHover">
+          </li>
+          <li className="text-white-400 my-1.5 flex transform cursor-pointer items-center   hover:bg-sciquelHover">
             <span className="mx-4 font-medium">Physics</span>
-          </a>
-          <a className="text-white-400 mt-3 flex transform cursor-pointer items-center   hover:bg-sciquelHover">
+          </li>
+          <li className="text-white-400 my-1.5 flex transform cursor-pointer items-center   hover:bg-sciquelHover">
             <span className="mx-4 font-medium">Psychology</span>
-          </a>
-          <a className="text-white-400 mt-3 flex transform cursor-pointer items-center   hover:bg-sciquelHover">
+          </li>
+          <li className="text-white-400 my-1.5 flex transform cursor-pointer items-center   hover:bg-sciquelHover">
             <span className="mx-4 font-medium">Sociology</span>
-          </a>
-          <a className="text-white-400 mt-3 flex transform cursor-pointer items-center   hover:bg-sciquelHover">
+          </li>
+          <li className="text-white-400 my-1.5 flex transform cursor-pointer items-center   hover:bg-sciquelHover">
             <span className="mx-4 font-medium">Technology</span>
-          </a>
+          </li>
 
-          <hr className="mx-3 mt-4" />
+          <hr className="mx-3 my-2" />
 
-          <a className="text-white-400 mt-3 flex transform cursor-pointer items-center   hover:bg-sciquelHover">
+          <li className="text-white-400 my-1.5 flex transform cursor-pointer items-center   hover:bg-sciquelHover">
             <span className="mx-4 font-medium">Get Involved</span>
-          </a>
-          <a className="text-white-400 mt-3 flex transform cursor-pointer items-center   hover:bg-sciquelHover">
+          </li>
+          <li className="text-white-400 my-1.5 flex transform cursor-pointer items-center   hover:bg-sciquelHover">
             <span className="mx-4 font-medium">Leave FeedBack</span>
-          </a>
-          <a className="text-white-400 mt-3 flex transform cursor-pointer items-center   hover:bg-sciquelHover">
+          </li>
+          <li className="text-white-400 my-1.5 flex transform cursor-pointer items-center   hover:bg-sciquelHover">
             <span className="mx-4 font-medium">Behind The Science</span>
-          </a>
-          <hr className="mx-3 mt-4" />
-          <a className=" text-white-400 relative mt-3 flex transform items-center   hover:bg-sciquelHover">
-            <span className="mx-4 font-medium">More&rarr;</span>
-            <span
-              className="absolute left-1/2 m-4 mx-auto -translate-x-1/2 translate-y-full rounded-md bg-gray-800 px-1 
-    text-sm text-gray-100 opacity-0 transition-opacity group-hover:opacity-100"
-            >
-              Tooltip
-            </span>
-          </a>
+          </li>
+
+          <hr className="mx-3 my-2" />
+
+          <li className=" text-white-400 group relative relative my-1.5 flex transform items-center   hover:bg-sciquelHover">
+            <a className="mx-4 font-medium">More&rarr;</a>
+            <ul className=" absolute bottom-0 left-56 z-50 hidden w-56 bg-[#69a297] group-hover:block">
+              <li className="hover-trigger text-white-400 relative relative my-1.5 flex transform items-center   hover:bg-sciquelHover">
+                <a className="mx-4 font-medium">Trending</a>
+              </li>
+              <li className="hover-trigger text-white-400 relative relative my-1.5 flex transform items-center   hover:bg-sciquelHover">
+                <a className="mx-4 font-medium">Newsletter</a>
+              </li>
+              <li className="hover-trigger text-white-400 relative relative my-1.5 flex transform items-center   hover:bg-sciquelHover">
+                <a className="mx-4 font-medium">About SciQuel</a>
+              </li>
+              <li className="hover-trigger text-white-400 relative relative my-1.5 flex transform items-center   hover:bg-sciquelHover">
+                <a className="mx-4 font-medium">Contact Us</a>
+              </li>
+              <li className="hover-trigger text-white-400 relative relative my-1.5 flex transform items-center   hover:bg-sciquelHover">
+                <a className="mx-4 font-medium">RSS</a>
+              </li>
+            </ul>
+          </li>
         </nav>
       </div>
     </div>
