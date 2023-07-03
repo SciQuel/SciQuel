@@ -1,6 +1,18 @@
 "use client";
 
 import AccessibilityIcon from "/public/user-settings/setting-page/accessibility_icon.svg";
+import CeIcon from "/public/user-settings/setting-page/ce_icon.svg";
+import ChemistryIcon from "/public/user-settings/setting-page/chemistry_icon.svg";
+import CsIcon from "/public/user-settings/setting-page/cs_icon.svg";
+import EeIcon from "/public/user-settings/setting-page/ee_icon.svg";
+import EnvSciIcon from "/public/user-settings/setting-page/env_sci_icon.svg";
+import MathIcon from "/public/user-settings/setting-page/math_icon.svg";
+import MeIcon from "/public/user-settings/setting-page/me_icon.svg";
+import MedicineIcon from "/public/user-settings/setting-page/medicine_icon.svg";
+import PhysicsIcon from "/public/user-settings/setting-page/physics_icon.svg";
+import PsyIcon from "/public/user-settings/setting-page/psy_icon.svg";
+import SociologyIcon from "/public/user-settings/setting-page/Sociology_icon.svg";
+import TechIcon from "/public/user-settings/setting-page/tech_icon.svg";
 import clsx from "clsx";
 import { useEffect, useRef, useState } from "react";
 
@@ -159,52 +171,64 @@ export default function Settings() {
           Pick the curated content you want to see most.
         </p>
         <div className="grid max-h-64 auto-rows-max grid-cols-2 gap-2 overflow-auto rounded-md border bg-white p-4">
-          <div>
+          <div className="flex items-center gap-1">
             <input type="checkbox" value="Chemistry" className="mr-2" />
+            <ChemistryIcon className="w-5" />
             Chemistry
           </div>
-          <div>
+          <div className="flex items-center gap-1">
             <input type="checkbox" value="Chemistry" className="mr-2" />
-            Chhemical Eng.
+            <CeIcon className="w-6" />
+            Chemical Eng.
           </div>
-          <div>
+          <div className="flex items-center gap-1">
             <input type="checkbox" value="Chemistry" className="mr-2" />
+            <MeIcon className="w-6" />
             Mechanical Eng.
           </div>
-          <div>
+          <div className="flex items-center gap-1">
             <input type="checkbox" value="Chemistry" className="mr-2" />
+            <MathIcon className="w-6" />
             Mathematics
           </div>
-          <div>
+          <div className="flex items-center gap-1">
             <input type="checkbox" value="Chemistry" className="mr-2" />
+            <PhysicsIcon className="w-6" />
             Physics
           </div>
-          <div>
+          <div className="flex items-center gap-1">
             <input type="checkbox" value="Chemistry" className="mr-2" />
+            <SociologyIcon className="w-6" />
             Sociology
           </div>
-          <div>
+          <div className="flex items-center gap-1">
             <input type="checkbox" value="Chemistry" className="mr-2" />
+            <CsIcon className="w-6" />
             Comp Sci.
           </div>
-          <div>
+          <div className="flex items-center gap-1">
             <input type="checkbox" value="Chemistry" className="mr-2" />
+            <EeIcon className="w-6" />
             Electrical Eng.
           </div>
-          <div>
+          <div className="flex items-center gap-1">
             <input type="checkbox" value="Chemistry" className="mr-2" />
+            <EnvSciIcon className="w-6" />
             Envir. Science
           </div>
-          <div>
+          <div className="flex items-center gap-1">
             <input type="checkbox" value="Chemistry" className="mr-2" />
+            <MedicineIcon className="w-6" />
             Medicine
           </div>
-          <div>
+          <div className="flex items-center gap-1">
             <input type="checkbox" value="Chemistry" className="mr-2" />
+            <PsyIcon className="w-6" />
             Psychology
           </div>
-          <div>
+          <div className="flex items-center gap-1">
             <input type="checkbox" value="Chemistry" className="mr-2" />
+            <TechIcon className="w-6" />
             Technology
           </div>
         </div>
@@ -305,7 +329,7 @@ export default function Settings() {
         <div className="flex items-center gap-1">
           <h3 className="text-xl font-semibold">ACCESSIBILITY</h3>
 
-          <AccessibilityIcon />
+          <AccessibilityIcon className="h-7 w-7" />
         </div>
         <p className="mb-4 text-lg text-stone-500">
           Enable or disable accessibility features
