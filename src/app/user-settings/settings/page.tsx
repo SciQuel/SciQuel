@@ -11,7 +11,7 @@ import MeIcon from "/public/user-settings/setting-page/me_icon.svg";
 import MedicineIcon from "/public/user-settings/setting-page/medicine_icon.svg";
 import PhysicsIcon from "/public/user-settings/setting-page/physics_icon.svg";
 import PsyIcon from "/public/user-settings/setting-page/psy_icon.svg";
-import SociologyIcon from "/public/user-settings/setting-page/Sociology_icon.svg";
+import SociologyIcon from "/public/user-settings/setting-page/sociology_icon.svg";
 import TechIcon from "/public/user-settings/setting-page/tech_icon.svg";
 import clsx from "clsx";
 import { useEffect, useRef, useState } from "react";
