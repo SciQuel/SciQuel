@@ -111,8 +111,14 @@ export default function SideBar() {
             <span className="mx-4 font-medium">Behind The Science</span>
           </a>
           <hr className="mx-3 mt-4" />
-          <a className="text-white-400 mt-3 flex transform items-center   hover:bg-sciquelHover">
+          <a className=" text-white-400 relative mt-3 flex transform items-center   hover:bg-sciquelHover">
             <span className="mx-4 font-medium">More&rarr;</span>
+            <span
+              className="absolute left-1/2 m-4 mx-auto -translate-x-1/2 translate-y-full rounded-md bg-gray-800 px-1 
+    text-sm text-gray-100 opacity-0 transition-opacity group-hover:opacity-100"
+            >
+              Tooltip
+            </span>
           </a>
         </nav>
       </div>
