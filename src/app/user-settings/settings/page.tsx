@@ -2,7 +2,6 @@
 
 import AccessibilityIcon from "/public/user-settings/setting-page/accessibility_icon.svg";
 import clsx from "clsx";
-import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
 function FontSlider() {
@@ -306,12 +305,7 @@ export default function Settings() {
         <div className="flex items-center gap-1">
           <h3 className="text-xl font-semibold">ACCESSIBILITY</h3>
 
-          <Image
-            src={AccessibilityIcon}
-            width={30}
-            height={30}
-            alt="accessibility icon"
-          />
+          <AccessibilityIcon />
         </div>
         <p className="mb-4 text-lg text-stone-500">
           Enable or disable accessibility features
