@@ -1,6 +1,7 @@
 import StaffPicksSection from "@/components/StaffPicksSection";
 import TrendingSection from "@/components/TrendingSection";
 import WhatsNewSection from "@/components/WhatsNewSection";
+import env from "@/lib/env";
 import { type GetStoriesResult } from "./api/stories/route";
 
 export default async function Home() {
@@ -19,7 +20,7 @@ export default async function Home() {
 }
 
 async function getWhatsNewArticles() {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/stories`, {
+  const res = await fetch(`${env.NEXT_PUBLIC_SITE_URL}/api/stories`, {
     next: { revalidate: 60 },
   });
 
