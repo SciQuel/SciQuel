@@ -3,7 +3,52 @@
 import AccessibilityIcon from "/public/user-settings/setting-page/accessibility_icon.svg";
 import clsx from "clsx";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+
+function FontSlider() {
+  const [fontSize, setFontSize] = useState(26);
+  const [step, setStep] = useState(100);
+  const ref = useRef(null);
+
+  const getBackgroundSize = () => {
+    return {
+      backgroundSize: `${((fontSize - 20) * 100) / 20}% 100%`,
+    };
+  };
+  useEffect(() => {
+    setStep((fontSize - 26) * 11.8 + 100);
+  });
+
+  return (
+    <div className="flex items-end gap-4">
+      <span>A</span>
+      <label
+        htmlFor="font-range"
+        className={`absolute text-base font-thin`}
+        style={{
+          transform: `translateX(${step}px) translateY(-24px)`,
+        }}
+      >
+        {fontSize}
+      </label>
+      <input
+        type="range"
+        min="20"
+        max="40"
+        step="1"
+        id="font-range"
+        defaultValue="26"
+        className="mb-3 h-1 w-64 appearance-none rounded-full bg-[#D9D9D9] bg-gradient-to-r from-[#69A297] to-[#69A297] bg-no-repeat [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#69A297]"
+        style={getBackgroundSize()}
+        ref={ref}
+        onChange={(e) => {
+          setFontSize(Number(e.target.value));
+        }}
+      />
+      <span className="text-5xl">A</span>
+    </div>
+  );
+}
 
 function ToggleSwitch({ id }: { id: string }) {
   const [isChecked, setIsChecked] = useState(true);
@@ -275,8 +320,9 @@ export default function Settings() {
           <li className="flex h-16 items-center justify-between">
             Dark mode <ToggleSwitch id="dark-mode" />
           </li>
-          <li className="flex h-16 items-center justify-between">
-            Text size (px){" "}
+          <li className="flex h-32 flex-col justify-between py-4">
+            <p className="">Text size (px)</p>
+            <FontSlider />
           </li>
           <li className="flex h-16 items-center justify-between">
             Turn on automatic captions for audio and video content
