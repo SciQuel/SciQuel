@@ -12,7 +12,7 @@ export default function Header() {
   const session = useSession();
   const [scroll, setScroll] = useState(false);
 
-  const [y, setY] = useState(typeof window !== undefined ? window.scrollY : 0);
+  const [y, setY] = useState(0);
   const [counter, setCounter] = useState(0);
 
   const handleNavigation = useCallback(
