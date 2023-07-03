@@ -14,11 +14,10 @@ import PsyIcon from "/public/user-settings/setting-page/psy_icon.svg";
 import SociologyIcon from "/public/user-settings/setting-page/sociology_icon.svg";
 import TechIcon from "/public/user-settings/setting-page/tech_icon.svg";
 import clsx from "clsx";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
 function FontSlider() {
   const [fontSize, setFontSize] = useState(26);
-  const [step, setStep] = useState(100);
   const ref = useRef(null);
 
   const getBackgroundSize = () => {
@@ -26,9 +25,6 @@ function FontSlider() {
       backgroundSize: `${((fontSize - 20) * 100) / 20}% 100%`,
     };
   };
-  useEffect(() => {
-    setStep((fontSize - 26) * 11.8 + 100);
-  });
 
   return (
     <div className="flex items-end gap-4">
@@ -37,7 +33,9 @@ function FontSlider() {
         htmlFor="font-range"
         className={`absolute text-base font-thin`}
         style={{
-          transform: `translateX(${step}px) translateY(-24px)`,
+          transform: `translateX(${
+            (fontSize - 26) * 11.8 + 100
+          }px) translateY(-24px)`,
         }}
       >
         {fontSize}
