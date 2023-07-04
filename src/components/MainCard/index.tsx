@@ -28,12 +28,12 @@ export default function MainCard({
   return (
     <Link href={href}>
       <div
-        className={`relative mx-auto h-[50vh] min-h-[350px] min-w-[300px] cursor-pointer
-                  text-center transition-transform duration-[0.3s] hover:scale-[1.03]`}
+        className={`relative mx-auto h-[70vh] min-h-[300px] max-h-[500px] min-w-[300px] cursor-pointer
+                  text-center transition-all duration-300 hover:scale-[1.03] lg:h-[70vh] h-[50vh] z-0`}
       >
         <div
-          className={`absolute right-0 top-0 z-0 h-full min-h-[19rem] w-8/12
-                    justify-center bg-cover bg-center max-lg:w-full`}
+          className={`absolute right-0 top-0 z-10 h-full w-full
+                    justify-center bg-cover bg-center transition-all duration-300 lg:w-7/12 w-8/12`}
         >
           <Image
             src={thumbnailUrl}
@@ -43,7 +43,7 @@ export default function MainCard({
             style={{ objectFit: "cover" }}
           />
         </div>
-        <div className="flex h-full w-7/12 items-end p-10 max-lg:w-full max-lg:bg-white max-lg:p-5">
+        <div className="relative flex flex-col justify-end h-full w-full p-5 transition-all duration-300 lg:w-10/12 w-7/12">
           <InnerCard
             title={title}
             subtitle={subtitle}
@@ -52,6 +52,11 @@ export default function MainCard({
             mediaType={mediaType}
             tag={tag}
           />
+          <div className="absolute bottom-0 lg:block mx-5 my-3 text-left transition-all duration-300 z-10 bottom-[18%]">
+            <p className="font-sourceSerif4 text-xl font-[350] text-sciquelMuted">
+              {author} | {date}
+            </p>
+          </div>
         </div>
       </div>
     </Link>
