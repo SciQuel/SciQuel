@@ -22,7 +22,9 @@ export default function ArticleList({
       {articles.map((article) => (
         <ArticleCard
           href={(() => {
-            const publishDate = DateTime.fromJSDate(article.publishedAt);
+            const publishDate = DateTime.fromJSDate(
+              article.publishedAt,
+            ).toUTC();
             return `/stories/${publishDate.year}/${publishDate.toFormat(
               "LL",
             )}/${publishDate.toFormat("dd")}/${article.slug}`;
