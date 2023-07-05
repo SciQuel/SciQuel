@@ -29,10 +29,16 @@ function SidebarItem(props: {
 
 export default function Sidebar() {
   const path: string = usePathname();
+  const temp = path.split("/");
+  const title = temp[temp.length - 1]
+    .replace(/(?:^\w|[A-Z]|\b\w)/g, function (word, index) {
+      return index === 0 ? word.toUpperCase() : word.toLowerCase();
+    })
+    .replace(/-/g, " ");
   return (
     <div className="z-10 pt-6 md:fixed md:w-56">
       <h2 className="text-center text-3xl font-semibold text-[#50808e] md:text-left">
-        Dashboard
+        {title}
       </h2>
       <div className="mt-8 flex flex-wrap justify-between gap-4 gap-y-8 text-center text-xl text-[#50808e] md:flex-col md:gap-y-2 md:text-left">
         <SidebarItem href="/user-settings/dashboard" path={path}>
