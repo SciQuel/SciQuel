@@ -21,10 +21,27 @@ export async function POST(request: NextRequest) {
         { status: 500 },
       );
     }
-    await prisma.user.update({
-      where: { email: data.data.email },
-      data: { passwordHash: hashPassword(password) },
+
+    const authVerification = await prisma.authVerification.findUnique({
+      where: { id: data.data.id },
     });
+
+    if (!authVerification) {
+      return NextResponse.json(
+        { error: "The request is expired" },
+        { status: 401 },
+      );
+    }
+
+    await Promise.all([
+      prisma.user.update({
+        where: { email: data.data.email },
+        data: { passwordHash: hashPassword(password) },
+      }),
+      prisma.authVerification.delete({
+        where: { id: data.data.id },
+      }),
+    ]);
     return NextResponse.json({});
   } catch (err) {
     return NextResponse.json(
