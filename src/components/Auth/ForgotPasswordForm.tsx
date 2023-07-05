@@ -2,6 +2,8 @@
 
 import Form from "@/components/Form";
 import FormInput from "@/components/Form/FormInput";
+import env from "@/lib/env";
+import axios from "axios";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -14,6 +16,7 @@ export default function LoginForm() {
       className="flex flex-col"
       onSubmit={(e) => {
         e.preventDefault();
+        void axios.post("/api/auth/forgot-password", { email });
         setSubmitted(true);
       }}
     >

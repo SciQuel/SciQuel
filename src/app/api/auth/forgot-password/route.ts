@@ -1,3 +1,5 @@
+import env from "@/lib/env";
+import mailer from "@/lib/mailer";
 import prisma from "@/lib/prisma";
 import { sign } from "jsonwebtoken";
 import { NextResponse, type NextRequest } from "next/server";
@@ -17,7 +19,15 @@ export default async function POST(request: NextRequest) {
     });
     if (user !== null) {
       const token = sign({ email }, process.env.NEXTAUTH_SECRET ?? "");
+      void mailer.sendMail({
+        from: '"SciQuel" <no-reply@sciquel.org>',
+        replyTo: '"SciQuel Team" <team@sciquel.org>',
+        to: user.email,
+        subject: "Reset your SciQuel password",
+        text: `Please reset your password with the following link: ${env.NEXT_PUBLIC_SITE_URL}/auth/reset-password?token=${token}`,
+      });
     }
+    return NextResponse.json({});
   } catch (err) {
     return NextResponse.json(
       { error: "Unable to complete request" },
