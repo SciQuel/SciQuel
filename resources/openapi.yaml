@@ -173,6 +173,120 @@ paths:
                   error:
                     type: string
                     example: Failed to create db entry
+
+  /api/user/brains:
+    post:
+      tags:
+        - User
+      summary: User brain activity
+      description: User hit brain button at the story
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                story_id:
+                  type: string
+                  example: "647ad74aa9efff3abe83045a"
+                user_id:
+                  type: string
+                  example: "647ad6fda9efff3abe83044f"
+      responses:
+        "200":
+          description: Successfully record the brain activity
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Brain"
+        "400":
+          description: Request body is invalid, or try to record duplicate entries
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Bad Request
+        "404":
+          description: story_id or user_id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Story not found
+        "500":
+          description: Failed to insert record into database
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Failed to create db entry
+    delete:
+      tags:
+        - User
+      summary: User brain activity
+      description: User undo hit brain button at the story
+      parameters:
+        - in: path
+          name: story_id
+          schema:
+            type: string
+            example: "647ad74aa9efff3abe83045a"
+          required: true
+          description: Story ID
+        - in: path
+          name: user_id
+          schema:
+            type: string
+            example: "647ad6fda9efff3abe83044f"
+          required: true
+          description: User ID
+      responses:
+        "200":
+          description: Successfully record the brain activity
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Brain"
+        "400":
+          description: Query parameters are invalid
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Bad Request
+        "404":
+          description: story_id or user_id not found, or brain activity not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Story not found
+        "500":
+          description: Failed to delete record from database
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Failed to create db entry
 components:
   schemas:
     Story:
@@ -299,6 +413,18 @@ components:
         - ILLUSTRATOR
         - ANIMATOR
     PageView:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        storyId:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+    Brain:
       type: object
       properties:
         id:
