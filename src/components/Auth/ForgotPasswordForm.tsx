@@ -2,7 +2,6 @@
 
 import Form from "@/components/Form";
 import FormInput from "@/components/Form/FormInput";
-import env from "@/lib/env";
 import axios from "axios";
 import Link from "next/link";
 import { useState } from "react";

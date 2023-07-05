@@ -5,7 +5,8 @@ import { sign } from "jsonwebtoken";
 import { NextResponse, type NextRequest } from "next/server";
 import schema from "./schema";
 
-export default async function POST(request: NextRequest) {
+export async function POST(request: NextRequest) {
+  console.log(1);
   try {
     const requestBody = schema.safeParse(await request.json());
     if (!requestBody.success) {
@@ -24,7 +25,7 @@ export default async function POST(request: NextRequest) {
         replyTo: '"SciQuel Team" <team@sciquel.org>',
         to: user.email,
         subject: "Reset your SciQuel password",
-        text: `Please reset your password with the following link: ${env.NEXT_PUBLIC_SITE_URL}/auth/reset-password?token=${token}`,
+        text: `Please reset your password with the following link: ${env.NEXT_PUBLIC_SITE_URL}/auth/reset-password/${token}`,
       });
     }
     return NextResponse.json({});

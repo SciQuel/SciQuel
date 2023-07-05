@@ -49,7 +49,11 @@ export default function RegisterForm() {
       />
       <button
         type="submit"
-        disabled={email.length === 0 || password.length === 0}
+        disabled={
+          email.length === 0 ||
+          password.length === 0 ||
+          password !== confirmPassword
+        }
         className={`mt-4 rounded-md bg-sciquelTeal px-2 py-1 font-semibold text-white
         transition-all hover:brightness-90 disabled:bg-gray-300 disabled:hover:brightness-100`}
       >

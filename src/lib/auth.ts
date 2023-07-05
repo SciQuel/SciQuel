@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import bcrypt from "bcrypt";
+import bcrypt, { hashSync } from "bcrypt";
 import { type AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
@@ -47,3 +47,7 @@ export const authOptions: AuthOptions = {
     signIn: "/auth/login",
   },
 };
+
+export function hashPassword(password: string) {
+  return hashSync(password, 10);
+}
