@@ -42,11 +42,8 @@ export default function RegisterForm() {
       </h1>
       {submitted ? (
         <p className="mt-6">
-          Account successfully created. Please login{" "}
-          <Link href="/auth/login" className="text-sciquelTeal">
-            here
-          </Link>
-          .
+          Account successfully created for <b>{email}</b>. Please check the
+          instructions sent to your email to complete your account registration.
         </p>
       ) : (
         <>

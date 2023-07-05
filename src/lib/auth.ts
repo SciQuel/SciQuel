@@ -46,6 +46,21 @@ export const authOptions: AuthOptions = {
   pages: {
     signIn: "/auth/login",
   },
+  callbacks: {
+    async signIn({ user }) {
+      if (!user.email) {
+        return false;
+      }
+      const userRecord = await prisma.user.findUnique({
+        where: { email: user.email },
+      });
+      if (userRecord) {
+        // TODO: Add page explaining verification
+        return userRecord.verified ? true : "/";
+      }
+      return "/auth/login";
+    },
+  },
 };
 
 export function hashPassword(password: string) {
