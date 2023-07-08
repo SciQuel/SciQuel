@@ -1,4 +1,4 @@
-import { hashPassword } from "@/lib/auth";
+import { hashPassword, sendAccountVerification } from "@/lib/auth";
 import env from "@/lib/env";
 import mailer from "@/lib/mailer";
 import prisma from "@/lib/prisma";
@@ -32,25 +32,7 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    const authVerification = await prisma.authVerification.create({
-      data: {
-        user: { connect: { id: newUser.id } },
-        type: AuthVerificationType.EMAIL_VERIFICATION,
-      },
-    });
-
-    const token = jwt.sign(
-      { email: newUser.email, id: authVerification.id },
-      process.env.NEXTAUTH_SECRET ?? "",
-    );
-    const verifyLink = `${env.NEXT_PUBLIC_SITE_URL}/auth/verify/${token}`;
-    await mailer.sendMail({
-      from: '"SciQuel" <no-reply@sciquel.org>',
-      replyTo: '"SciQuel Team" <team@sciquel.org>',
-      to: requestBody.data.email,
-      subject: "Complete your account registration",
-      text: `Please complete your account registration by verifying your email with the following link: ${verifyLink}`,
-    });
+    await sendAccountVerification(newUser);
     return NextResponse.json({}, { status: 201 });
   } catch (err) {
     return NextResponse.json(
