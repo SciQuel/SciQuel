@@ -109,6 +109,8 @@ model AuthVerification {
   userId String @db.ObjectId
 
   type AuthVerificationType
+
+  createdAt DateTime @default(now())
 }
 
 model StoryContent {
