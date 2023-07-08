@@ -7,7 +7,7 @@ import schema from "./schema";
 export default async function VerifyInfoPage({
   searchParams,
 }: {
-  searchParams: JSON;
+  searchParams: { [key: string]: unknown };
 }) {
   const parsedParams = schema.safeParse(searchParams);
 
