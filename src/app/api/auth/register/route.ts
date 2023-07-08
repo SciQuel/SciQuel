@@ -1,9 +1,5 @@
 import { hashPassword, sendAccountVerification } from "@/lib/auth";
-import env from "@/lib/env";
-import mailer from "@/lib/mailer";
 import prisma from "@/lib/prisma";
-import { AuthVerificationType } from "@prisma/client";
-import jwt from "jsonwebtoken";
 import { NextResponse, type NextRequest } from "next/server";
 import schema from "./schema";
 
