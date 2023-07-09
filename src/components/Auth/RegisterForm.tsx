@@ -4,7 +4,7 @@ import Form from "@/components/Form";
 import FormInput from "@/components/Form/FormInput";
 import axios from "axios";
 import Link from "next/link";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function RegisterForm() {
