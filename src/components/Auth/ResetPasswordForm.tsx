@@ -19,16 +19,12 @@ export default function ResetPasswordForm({ token }: Props) {
     <Form
       onSubmit={(e) => {
         e.preventDefault();
-        axios
+        void axios
           .post("/api/auth/reset-password", { token, password })
           .then((res) => {
             if (res.status === 200) {
               setSubmitted(true);
             }
-          })
-          .catch((err) => {
-            // TODO: Implement proper error messaging
-            console.log(err);
           });
       }}
       className="flex flex-col"

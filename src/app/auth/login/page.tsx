@@ -17,6 +17,9 @@ export default function LoginPage({
         We could not find an account matching that email and password.
       </Alert>
     ),
+    Verification: (
+      <Alert type="danger">The verification request was invalid.</Alert>
+    ),
   };
 
   const error = searchParams.error;

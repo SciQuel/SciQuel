@@ -47,7 +47,6 @@ export default async function VerifyPage({ params }: { params: Params }) {
       </div>
     );
   } catch (err) {
-    // TODO: Implement proper error messaging
-    return redirect("/auth/login");
+    return redirect("/auth/login?error=Verification");
   }
 }

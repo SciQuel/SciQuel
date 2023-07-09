@@ -8,7 +8,7 @@ interface Params {
   token: string;
 }
 
-export default async function ForgotPasswordPage({
+export default async function ResetPasswordPage({
   params,
 }: {
   params: Params;
@@ -28,7 +28,6 @@ export default async function ForgotPasswordPage({
 
     return <ResetPasswordForm token={params.token} />;
   } catch (err) {
-    // TODO: Implement proper error messaging
-    return redirect("/auth/login");
+    return redirect("/auth/login?error=Verification");
   }
 }

@@ -59,12 +59,11 @@ export const authOptions: AuthOptions = {
         where: { email: user.email },
       });
       if (userRecord) {
-        // TODO: Add page explaining verification
         return userRecord.verified
           ? true
           : `/auth/verify?user=${userRecord.email}`;
       }
-      return "/auth/login";
+      return "/auth/login?error=CredentialsSignin";
     },
   },
 };

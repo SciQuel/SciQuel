@@ -4,6 +4,7 @@ import Form from "@/components/Form";
 import FormInput from "@/components/Form/FormInput";
 import axios from "axios";
 import Link from "next/link";
+import { redirect, useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function RegisterForm() {
@@ -13,6 +14,8 @@ export default function RegisterForm() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [submitted, setSubmitted] = useState(false);
+
+  const router = useRouter();
 
   return (
     <Form
@@ -30,9 +33,8 @@ export default function RegisterForm() {
               setSubmitted(true);
             }
           })
-          .catch((err) => {
-            // TODO: Implement proper error messaging
-            console.log(err);
+          .catch(() => {
+            return router.replace("/auth/register?error=Default");
           });
       }}
       className="flex flex-col"
