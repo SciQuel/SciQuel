@@ -12,7 +12,10 @@
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
   },
   "dependencies": {
+    "@floating-ui/react": "^0.24.6",
+    "@monaco-editor/react": "^4.5.1",
     "@prisma/client": "^4.15.0",
+    "@tailwindcss/container-queries": "^0.1.1",
     "autoprefixer": "10.4.14",
     "axios": "^1.4.0",
     "bcrypt": "^5.1.0",
