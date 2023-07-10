@@ -6,10 +6,10 @@ export default function Toolbar() {
     <div className="flex flex-row gap-1 border-b bg-gray-100 p-2">
       <ToolbarButton>Headings</ToolbarButton>
       <ToolbarRule />
-      <ToolbarButton>B</ToolbarButton>
-      <ToolbarButton>I</ToolbarButton>
-      <ToolbarButton>U</ToolbarButton>
-      <ToolbarButton>S</ToolbarButton>
+      <ToolbarButton tooltip="Bold">B</ToolbarButton>
+      <ToolbarButton tooltip="Italic">I</ToolbarButton>
+      <ToolbarButton tooltip="Underline">U</ToolbarButton>
+      <ToolbarButton tooltip="Strikethrough">S</ToolbarButton>
       <ToolbarButton>Quote</ToolbarButton>
       <ToolbarButton>Link</ToolbarButton>
       <ToolbarButton>Image</ToolbarButton>
