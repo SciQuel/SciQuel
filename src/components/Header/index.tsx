@@ -17,11 +17,10 @@ export default function Header() {
   const [counter, setCounter] = useState(0);
 
   const handleNavigation = useCallback(
-    (e: any) => {
-      const window = e.currentTarget;
-      let maxY = document.documentElement.scrollHeight - window.innerHeight;
+    (e: Event) => {
+      const window = e.currentTarget as Window;
+      const maxY = document.documentElement.scrollHeight - window.innerHeight;
       if (window.location.pathname.split("/")[1] === "stories") {
-        // console.log("stories");
         /**
          * y > window.scrollY : last saved Y > current scrollY means scrolling up
          * window.scrollY > 800(height of imag): scrolling event only apply after 800(heigh of imag )
@@ -53,7 +52,6 @@ export default function Header() {
               setScroll(true);
             } else if (window.scrollY <= 0) {
               window.scrollTo(0, 1);
-              console.log("counter " + counter);
               if (counter >= 20) {
                 setScroll(false);
               } else {
@@ -115,7 +113,11 @@ export default function Header() {
         <div className="flex w-full flex-row gap-4 px-10 py-4 align-middle">
           <SideBar />
           <div className="top-0 flex">
-            <Image className="h-[2rem] w-auto" src={search} alt="searchIcon" />
+            <Image
+              className="h-[2rem] w-auto"
+              src={search as string}
+              alt="searchIcon"
+            />
             <input className=" w-auto border border-x-transparent border-y-transparent bg-transparent outline-none focus:border-b-white" />
           </div>
           <div className="h-[2rem] grow" />

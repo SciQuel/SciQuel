@@ -37,7 +37,7 @@ export default function Topic() {
   const [showTopic, setShowTopic] = useState(false);
   const topicRef = useRef<HTMLDivElement>(null);
   const [currentTopic, setCurrentTopic] = useState("Astronomy");
-  const onMouseEnter = (top: any) => {
+  const onMouseEnter = (top: string) => {
     setCurrentTopic(top);
   };
   useEffect(() => {
@@ -46,9 +46,9 @@ export default function Topic() {
     } else {
       document.body.style.overflow = "unset";
     }
-    let handler = (event: any) => {
+    const handler = (event: Event) => {
       if (topicRef.current != null) {
-        if (!topicRef.current.contains(event.target)) {
+        if (!topicRef.current.contains(event.target as Node)) {
           setShowTopic(false);
         }
       }

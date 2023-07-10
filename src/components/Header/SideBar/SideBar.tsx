@@ -3,11 +3,11 @@ import { useEffect, useRef, useState } from "react";
 
 export default function SideBar() {
   const [showSideBar, setShowSideBar] = useState(false);
-  let menuRef = useRef<HTMLDivElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    let handler = (event: any) => {
+    const handler = (event: Event) => {
       if (menuRef.current != null) {
-        if (!menuRef.current.contains(event.target)) {
+        if (!menuRef.current.contains(event.target as Node)) {
           setShowSideBar(false);
         }
       }

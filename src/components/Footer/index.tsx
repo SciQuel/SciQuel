@@ -1,8 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
+import instagram from "../Footer/images/icons8-instagram.svg";
 import arrow from "./images/arrow-right-circle.svg";
 import facebook from "./images/icons8-facebook.svg";
-import instagram from "./images/icons8-instagram.svg";
 import youtube from "./images/icons8-youtube.svg";
 
 export default function Footer() {
@@ -33,10 +33,26 @@ export default function Footer() {
           <div className="flex flex-col items-end pt-4 ">
             <p>Sciquel</p>
             <div className="flex flex-row">
-              <Image src={instagram} alt="instagram" />
-              <Image src={facebook} alt="instagram" />
-              <Image src={youtube} alt="instagram" />
-              <Image src={arrow} alt="instagram" />
+              <Image
+                src={instagram as string}
+                className="h-[2rem] w-auto"
+                alt="instagram"
+              />
+              <Image
+                src={facebook as string}
+                className="h-[2rem] w-auto"
+                alt="instagram"
+              />
+              <Image
+                src={youtube as string}
+                className="h-[2rem] w-auto"
+                alt="instagram"
+              />
+              <Image
+                src={arrow as string}
+                className="h-[2rem] w-auto"
+                alt="instagram"
+              />
             </div>
             <p>125 Western Ave.</p>
             <p>Allston, MA 02163</p>
