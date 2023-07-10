@@ -22,18 +22,18 @@ import clsx from "clsx";
 import { useRef, useState } from "react";
 
 const iconMap: Record<StoryTopic, JSX.Element> = {
-  CHEMISTRY: <ChemistryIcon />,
-  CHEMICAL_ENGINEERING: <CeIcon />,
-  MECHANICAL_ENGINEERING: <MeIcon />,
-  MATHEMATICS: <MathIcon />,
-  PHYSICS: <PhysicsIcon />,
-  SOCIOLOGY: <SociologyIcon />,
-  COMPUTER_SCIENCE: <CsIcon />,
-  ELECTRICAL_ENGINEERING: <EeIcon />,
-  ENVIRONMENTAL_SCIENCE: <EnvSciIcon />,
-  MEDICINE: <MedicineIcon />,
-  PSYCHOLOGY: <PsyIcon />,
-  TECHNOLOGY: <TechIcon />,
+  CHEMISTRY: <ChemistryIcon className="w-6" />,
+  CHEMICAL_ENGINEERING: <CeIcon className="w-6" />,
+  MECHANICAL_ENGINEERING: <MeIcon className="w-6" />,
+  MATHEMATICS: <MathIcon className="w-6" />,
+  PHYSICS: <PhysicsIcon className="w-6" />,
+  SOCIOLOGY: <SociologyIcon className="w-6" />,
+  COMPUTER_SCIENCE: <CsIcon className="w-6" />,
+  ELECTRICAL_ENGINEERING: <EeIcon className="w-6" />,
+  ENVIRONMENTAL_SCIENCE: <EnvSciIcon className="w-6" />,
+  MEDICINE: <MedicineIcon className="w-6" />,
+  PSYCHOLOGY: <PsyIcon className="w-6" />,
+  TECHNOLOGY: <TechIcon className="w-6" />,
   ASTRONOMY: <></>, // wait for the design team
   BIOLOGY: <></>, // wait for the design team
   GEOLOGY: <></>, // wait for the design team
@@ -152,7 +152,8 @@ export default function Settings() {
             <div className="flex items-center gap-1">
               <input type="checkbox" value={topic} className="mr-2" />
               {iconMap[topic as keyof typeof StoryTopic]}
-              {topic}
+              {topic.charAt(0) +
+                topic.slice(1).replace(/_/g, " ").toLowerCase()}
             </div>
           ))}
         </div>
