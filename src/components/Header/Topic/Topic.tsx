@@ -1,4 +1,3 @@
-import { type StoryTopic } from "@prisma/client";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import Astronomy from "./TopicIcons/Astronomy.png";

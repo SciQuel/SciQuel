@@ -2,6 +2,7 @@
 
 import { signIn, signOut, useSession } from "next-auth/react";
 import Image from "next/image";
+import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import logo from "./logo.png";
 import search from "./search.svg";
@@ -145,13 +146,13 @@ export default function Header() {
           className=" grow cursor-pointer py-2 transition-colors hover:bg-sciquelHover"
           style={{ display: scroll ? "none" : "block" }}
         >
-          LATEST
+          <Link href="/">LATEST</Link>
         </div>
         <div
           className="grow cursor-pointer py-2 transition-colors hover:bg-sciquelHover"
           style={{ display: scroll ? "none" : "block" }}
         >
-          READ
+          <Link href="/">READ</Link>
         </div>
         <div
           className="grow cursor-pointer py-2 transition-colors hover:bg-sciquelHover"
@@ -163,7 +164,7 @@ export default function Header() {
           className="grow cursor-pointer py-2 transition-colors hover:bg-sciquelHover"
           style={{ display: scroll ? "none" : "block" }}
         >
-          ABOUT
+          <Link href="/">ABOUT</Link>
         </div>
       </div>
     </div>
