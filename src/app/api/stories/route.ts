@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
 import {
   ContributionType,
+  Prisma,
   StoryTopic,
   StoryType,
   type Story,
@@ -24,6 +25,7 @@ export async function GET(req: Request) {
   const page = searchParams.get("page");
   const pageSize = searchParams.get("page_size");
   const staffPick = searchParams.get("staff_pick");
+  const topic = searchParams.get("topic");
 
   let numPagesToSkip = 0;
   let numStoriesPerPage = 10; // default page size
@@ -60,23 +62,47 @@ export async function GET(req: Request) {
     numPagesToSkip = parsedPage - 1;
   }
 
-  const stories = await prisma.story.findMany({
-    skip: numPagesToSkip * numStoriesPerPage,
-    take: numStoriesPerPage,
-    include: {
-      storyContributions: {
-        select: {
-          contributionType: true,
-          user: { select: { firstName: true, lastName: true } },
+  let parsedTopic: StoryTopic | null = null;
+  if (topic !== null) {
+    parsedTopic =
+      typeof topic === "string" && topic.length > 0
+        ? (topic.toUpperCase() as StoryTopic)
+        : null;
+
+    if (parsedTopic === null) {
+      return NextResponse.json({ error: "Bad Request" }, { status: 400 });
+    }
+  }
+
+  try {
+    const stories = await prisma.story.findMany({
+      skip: numPagesToSkip * numStoriesPerPage,
+      take: numStoriesPerPage,
+      include: {
+        storyContributions: {
+          select: {
+            contributionType: true,
+            user: { select: { firstName: true, lastName: true } },
+          },
         },
       },
-    },
-    where: { staffPick: staffPick === "true" ? true : undefined },
-    orderBy: {
-      updatedAt: "desc",
-    },
-  });
-  return NextResponse.json(stories ?? []);
+      where: {
+        staffPick: staffPick === "true" ? true : undefined,
+        ...(parsedTopic ? { tags: { has: parsedTopic } } : {}),
+      },
+      orderBy: {
+        updatedAt: "desc",
+      },
+    });
+    return NextResponse.json(stories ?? []);
+  } catch (e) {
+    if (e instanceof Prisma.PrismaClientValidationError) {
+      return NextResponse.json({ error: "Bad Request" }, { status: 400 });
+    }
+
+    // all other errors
+    return NextResponse.json({ error: e }, { status: 500 });
+  }
 }
 
 export async function POST(request: NextRequest) {
