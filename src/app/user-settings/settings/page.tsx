@@ -1,5 +1,6 @@
 "use client";
 
+import { StoryTopic } from "@prisma/client";
 import AccessibilityIcon from "/public/user-settings/setting-page/accessibility_icon.svg";
 import CeIcon from "/public/user-settings/setting-page/ce_icon.svg";
 import ChemistryIcon from "/public/user-settings/setting-page/chemistry_icon.svg";
@@ -19,6 +20,24 @@ import SociologyIcon from "/public/user-settings/setting-page/sociology_icon.svg
 import TechIcon from "/public/user-settings/setting-page/tech_icon.svg";
 import clsx from "clsx";
 import { useRef, useState } from "react";
+
+const iconMap: Record<StoryTopic, JSX.Element> = {
+  CHEMISTRY: <ChemistryIcon />,
+  CHEMICAL_ENGINEERING: <CeIcon />,
+  MECHANICAL_ENGINEERING: <MeIcon />,
+  MATHEMATICS: <MathIcon />,
+  PHYSICS: <PhysicsIcon />,
+  SOCIOLOGY: <SociologyIcon />,
+  COMPUTER_SCIENCE: <CsIcon />,
+  ELECTRICAL_ENGINEERING: <EeIcon />,
+  ENVIRONMENTAL_SCIENCE: <EnvSciIcon />,
+  MEDICINE: <MedicineIcon />,
+  PSYCHOLOGY: <PsyIcon />,
+  TECHNOLOGY: <TechIcon />,
+  ASTRONOMY: <></>, // wait for the design team
+  BIOLOGY: <></>, // wait for the design team
+  GEOLOGY: <></>, // wait for the design team
+};
 
 function FontSlider() {
   const [fontSize, setFontSize] = useState(26);
@@ -129,82 +148,13 @@ export default function Settings() {
           Pick the curated content you want to see most.
         </p>
         <div className="grid max-h-64 auto-rows-max grid-cols-1 gap-2 overflow-auto rounded-md border bg-white p-4 md:grid-cols-2">
-          <div className="flex items-center gap-1">
-            <input type="checkbox" value="chemistry" className="mr-2" />
-            <ChemistryIcon className="w-5" />
-            Chemistry
-          </div>
-          <div className="flex items-center gap-1">
-            <input
-              type="checkbox"
-              value="chemical_engineering"
-              className="mr-2"
-            />
-            <CeIcon className="w-6" />
-            Chemical Eng.
-          </div>
-          <div className="flex items-center gap-1">
-            <input
-              type="checkbox"
-              value="mechanical_engineering"
-              className="mr-2"
-            />
-            <MeIcon className="w-6" />
-            Mechanical Eng.
-          </div>
-          <div className="flex items-center gap-1">
-            <input type="checkbox" value="mathematics" className="mr-2" />
-            <MathIcon className="w-6" />
-            Mathematics
-          </div>
-          <div className="flex items-center gap-1">
-            <input type="checkbox" value="physics" className="mr-2" />
-            <PhysicsIcon className="w-6" />
-            Physics
-          </div>
-          <div className="flex items-center gap-1">
-            <input type="checkbox" value="sociology" className="mr-2" />
-            <SociologyIcon className="w-6" />
-            Sociology
-          </div>
-          <div className="flex items-center gap-1">
-            <input type="checkbox" value="computer_science" className="mr-2" />
-            <CsIcon className="w-6" />
-            Comp Sci.
-          </div>
-          <div className="flex items-center gap-1">
-            <input
-              type="checkbox"
-              value="electrical_engineering"
-              className="mr-2"
-            />
-            <EeIcon className="w-6" />
-            Electrical Eng.
-          </div>
-          <div className="flex items-center gap-1">
-            <input
-              type="checkbox"
-              value="environment_science"
-              className="mr-2"
-            />
-            <EnvSciIcon className="w-6" />
-            Envir. Science
-          </div>
-          <div className="flex items-center gap-1">
-            <input type="checkbox" value="medicine" className="mr-2" />
-            <MedicineIcon className="w-6" />
-            Medicine
-          </div>
-          <div className="flex items-center gap-1">
-            <input type="checkbox" value="psychology" className="mr-2" />
-            <PsyIcon className="w-6" />
-            Psychology
-          </div>
-          <div className="flex items-center gap-1">
-            <input type="checkbox" value="technology" className="mr-2" />
-            <TechIcon className="w-6" />
-            Technology
-          </div>
+          {Object.keys(StoryTopic).map((topic) => (
+            <div className="flex items-center gap-1">
+              <input type="checkbox" value={topic} className="mr-2" />
+              {iconMap[topic as keyof typeof StoryTopic]}
+              {topic}
+            </div>
+          ))}
         </div>
       </section>
 
