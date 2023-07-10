@@ -1,77 +1,70 @@
-import TestStory from "@/components/testStoryPage";
+import { type GetStoryResult } from "@/app/api/stories/[year]/[month]/[day]/[slug]/route";
+import StoryH1 from "@/components/story-components/StoryH1";
+import StoryH2 from "@/components/story-components/StoryH2";
+import StoryLargeImage from "@/components/story-components/StoryLargeImage";
+import StoryParagraph from "@/components/story-components/StoryParagraph";
 import TopicTag from "@/components/TopicTag";
+import env from "@/lib/env";
+import remarkSciquelDirective from "@/lib/remark-sciquel-directive";
 import { type StoryTopic } from "@prisma/client";
+import { createElement, Fragment, type HTMLProps } from "react";
+import rehypeReact from "rehype-react";
+import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
+import remarkDirective from "remark-directive";
+import remarkParse from "remark-parse";
+import remarkRehype from "remark-rehype";
+import { unified } from "unified";
 
 interface Params {
-  slug: string;
-  year: string;
-  month: string;
-  day: string;
+  params: {
+    year: string;
+    month: string;
+    day: string;
+    slug: string;
+  };
 }
 
-// story is
-// object with keys
-//{id, storyType, title, titleColor,
-//slug, summary, summaryColor, tags, published, staffPick, thumbnailUrl,
-//createdAt, publishedAt, updatedAt, storyContributions}).
-
-async function getStory(params: { params: Params }) {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_SITE_URL}/api/stories/${params.year}/${params.month}/${params.day}/${params.slug}`,
-  );
-
-  if (!res.ok) {
-    throw new Error("Failed to fetch data");
-  }
-
-  return res.json().then((value: any) => value);
-}
-
-export default async function Stories({
-  params,
-}: {
-  params: { params: Params };
-}) {
-  const storyInfo = await getStory(params);
-
+export default async function StoriesPage({ params }: Params) {
+  const story = await retrieveStoryContent(params);
+  const htmlContent = await generateMarkdown(story.storyContent[0].content);
   return (
     <>
       <div
         style={{
-          backgroundImage: `url(${storyInfo.thumbnailUrl})`,
+          backgroundImage: `url(${story.thumbnailUrl})`,
         }}
         className="flex h-screen w-screen flex-col justify-end"
       >
         <h1
           className="p-8 font-alegreyaSansSC text-8xl"
-          style={{ color: storyInfo.titleColor }}
+          style={{ color: story.titleColor }}
         >
-          {storyInfo.title}
+          {story.title}
         </h1>
         <h2
           className="p-8 pt-0 font-alegreyaSansSC text-5xl"
-          style={{ color: storyInfo.summaryColor }}
+          style={{ color: story.summaryColor }}
         >
-          {storyInfo.summary}
+          {story.summary}
         </h2>
       </div>
       <div
         className="m-auto flex w-screen flex-col  md:w-[720px]"
-        style={{ backgroundColor: "lime" }}
+        // style={{ backgroundColor: "lime" }}
       >
         section for credits
         <div className="flex flex-row">
           <p className="mr-2 flex flex-row">
-            {storyInfo.storyType.slice(0, 1) +
-              storyInfo.storyType.slice(1).toLowerCase()}{" "}
+            {story.storyType.slice(0, 1) +
+              story.storyType.slice(1).toLowerCase()}{" "}
             | we need to add article type |
           </p>{" "}
-          {storyInfo.tags.map((item: StoryTopic, index: number) => {
+          {story.tags.map((item: StoryTopic, index: number) => {
             return <TopicTag name={item} key={item + index} />;
           })}
         </div>
         <div>
-          {storyInfo.storyContributions.map((element, index) => {
+          {story.storyContributions.map((element, index) => {
             return (
               <span>
                 {element.contributionType == "AUTHOR"
@@ -82,12 +75,71 @@ export default async function Stories({
           })}
         </div>
       </div>
-      <div>
-        test route year is {params.year} <br /> month is {params.month} <br />{" "}
-        day is {params.day} <br /> slug is {params.slug} <br />
-        {storyInfo.storyType} {storyInfo.storyContributions.contributionType}
-        <TestStory storyInfo={storyInfo}></TestStory>
-      </div>
+      <div className="flex flex-col gap-5 pt-10">{htmlContent.result}</div>
     </>
   );
+}
+
+async function retrieveStoryContent({
+  year,
+  day,
+  month,
+  slug,
+}: Params["params"]) {
+  const storyRoute = `/stories/${year}/${month}/${day}/${slug}`;
+  const res = await fetch(
+    `${env.NEXT_PUBLIC_SITE_URL}/api${storyRoute}?include_content=true`,
+    {
+      next: { tags: [storyRoute] },
+    },
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch data");
+  }
+
+  return (await res.json()) as GetStoryResult;
+}
+
+async function generateMarkdown(content: string) {
+  const file = await unified()
+    .use(remarkParse)
+    .use(remarkDirective)
+    .use(remarkSciquelDirective)
+    .use(remarkRehype)
+    .use(rehypeSanitize, {
+      ...defaultSchema,
+      attributes: {
+        ...defaultSchema.attributes,
+        "large-image": ["src"],
+      },
+      tagNames: [...(defaultSchema.tagNames ?? []), "large-image"],
+    })
+    .use(rehypeReact, {
+      createElement,
+      Fragment,
+      components: {
+        p: (props: HTMLProps<HTMLParagraphElement>) => (
+          <StoryParagraph>{props.children}</StoryParagraph>
+        ),
+        h1: (props: HTMLProps<HTMLHeadingElement>) => (
+          <StoryH1>{props.children}</StoryH1>
+        ),
+        h2: (props: HTMLProps<HTMLHeadingElement>) => (
+          <StoryH2>{props.children}</StoryH2>
+        ),
+        "large-image": (props: HTMLProps<HTMLElement>) => {
+          if (typeof props.src === "string") {
+            return (
+              <StoryLargeImage src={props.src}>
+                {props.children}
+              </StoryLargeImage>
+            );
+          }
+          return <></>;
+        },
+      },
+    })
+    .process(content);
+  return file;
 }
