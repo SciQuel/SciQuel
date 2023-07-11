@@ -10,17 +10,19 @@ import {
   useInteractions,
   useRole,
 } from "@floating-ui/react";
-import { useState, type PropsWithChildren } from "react";
+import { useState, type HTMLProps, type PropsWithChildren } from "react";
 
 interface Props {
   type?: "button" | "dropdown";
   tooltip?: string;
+  onClick?: HTMLProps<HTMLButtonElement>["onClick"];
 }
 
 export default function ToolbarButton({
   type = "button",
   tooltip,
   children,
+  onClick,
 }: PropsWithChildren<Props>) {
   const [tooltipOpen, setTooltipOpen] = useState(false);
 
@@ -50,6 +52,7 @@ export default function ToolbarButton({
         className="peer cursor-pointer rounded-md p-1 font-light leading-none ring-blue-500 hover:bg-slate-300"
         ref={refs.setReference}
         {...getReferenceProps()}
+        onClick={onClick}
       >
         {children}
       </button>

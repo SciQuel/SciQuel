@@ -3,15 +3,18 @@
 import { generateMarkdown } from "@/lib/markdown";
 import { Editor } from "@monaco-editor/react";
 import clsx from "clsx";
+import { KeyCode, KeyMod, type editor } from "monaco-editor";
 import { Inter } from "next/font/google";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import Toolbar from "./Toolbar";
+import bold from "./Toolbar/actions/bold";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export default function MarkdownEditor() {
   const [value, setValue] = useState("");
   const [renderedContent, setRenderedContent] = useState<ReactNode>(null);
+  const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
 
   useEffect(() => {
     void generateMarkdown(value).then((file) => {
@@ -19,10 +22,21 @@ export default function MarkdownEditor() {
     });
   }, [value]);
 
+  useEffect(() => {
+    editorRef.current?.addAction({
+      id: "insertBold",
+      label: "Insert Bold Area",
+      keybindings: [KeyMod.CtrlCmd | KeyCode.KeyB],
+      run: (editor) => {
+        bold(editor);
+      },
+    });
+  }, [editorRef]);
+
   return (
     <div className="flex grow flex-row">
       <div className={clsx("flex w-1/2 flex-col border-r", inter.className)}>
-        <Toolbar />
+        <Toolbar editorRef={editorRef.current} />
         <Editor
           language="markdown"
           loading={<></>}
@@ -34,6 +48,9 @@ export default function MarkdownEditor() {
             minimap: { enabled: false },
             lineNumbers: "off",
             unicodeHighlight: { ambiguousCharacters: false },
+          }}
+          onMount={(editor) => {
+            editorRef.current = editor;
           }}
         />
       </div>
