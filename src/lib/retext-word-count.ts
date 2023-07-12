@@ -1,5 +1,4 @@
 import { type Plugin, type Transformer } from "unified";
-import { type Node } from "unist";
 import { visit } from "unist-util-visit";
 
 const retextWordCount: Plugin<[Record<string, number>]> = (wordCount) => {
