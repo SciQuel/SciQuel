@@ -5,7 +5,7 @@ import StoryLargeImage from "@/components/story-components/StoryLargeImage";
 import StoryParagraph from "@/components/story-components/StoryParagraph";
 import env from "@/lib/env";
 import remarkSciquelDirective from "@/lib/remark-sciquel-directive";
-import { createElement, Fragment, type HTMLProps } from "react";
+import { createElement, Fragment, type HTMLProps, type ReactNode } from "react";
 import rehypeReact from "rehype-react";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import remarkDirective from "remark-directive";
@@ -25,7 +25,11 @@ interface Params {
 export default async function StoriesPage({ params }: Params) {
   const story = await retrieveStoryContent(params);
   const htmlContent = await generateMarkdown(story.storyContent[0].content);
-  return <div className="flex flex-col gap-5 pt-10">{htmlContent.result}</div>;
+  return (
+    <div className="flex flex-col gap-5 pt-10">
+      {htmlContent.result as ReactNode}
+    </div>
+  );
 }
 
 async function retrieveStoryContent({
