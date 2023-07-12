@@ -1,7 +1,10 @@
+"use client";
+
 import { type editor } from "monaco-editor";
 import React from "react";
 import bold from "./actions/bold";
 import italic from "./actions/italic";
+import link from "./actions/link";
 import ToolbarButton from "./ToolbarButton";
 import ToolbarRule from "./ToolbarRule";
 
@@ -15,7 +18,7 @@ export default function Toolbar({ editorRef }: Props) {
       <ToolbarButton>Headings</ToolbarButton>
       <ToolbarRule />
       <ToolbarButton
-        tooltip="Bold"
+        tooltip="Bold (Ctrl/⌘+B)"
         onClick={() => {
           if (editorRef) {
             bold(editorRef);
@@ -25,7 +28,7 @@ export default function Toolbar({ editorRef }: Props) {
         B
       </ToolbarButton>
       <ToolbarButton
-        tooltip="Italic"
+        tooltip="Italic (Ctrl/⌘+I)"
         onClick={() => {
           if (editorRef) {
             italic(editorRef);
@@ -35,7 +38,16 @@ export default function Toolbar({ editorRef }: Props) {
         I
       </ToolbarButton>
       <ToolbarButton>Quote</ToolbarButton>
-      <ToolbarButton>Link</ToolbarButton>
+      <ToolbarButton
+        tooltip="Insert Link (Ctrl/⌘+K)"
+        onClick={() => {
+          if (editorRef) {
+            link(editorRef);
+          }
+        }}
+      >
+        Link
+      </ToolbarButton>
       <ToolbarButton>Image</ToolbarButton>
     </div>
   );
