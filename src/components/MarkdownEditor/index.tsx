@@ -38,8 +38,7 @@ export default function MarkdownEditor() {
       editorRef.current = editor;
 
       // monaco-editor requires Browser API, so it is dynamically imported on component render
-      void import("monaco-editor").then((module) => {
-        const { KeyMod, KeyCode } = module;
+      void import("monaco-editor").then(({ KeyMod, KeyCode }) => {
         editor.addAction({
           id: "insertBold",
           label: "Insert Bold Area",
