@@ -14,6 +14,7 @@ import {
 } from "react";
 import Toolbar from "./Toolbar";
 import bold from "./Toolbar/actions/bold";
+import italic from "./Toolbar/actions/italic";
 
 const Editor = dynamic(
   () => import("@monaco-editor/react").then((module) => module.Editor),
@@ -45,6 +46,14 @@ export default function MarkdownEditor() {
           keybindings: [KeyMod.CtrlCmd | KeyCode.KeyB],
           run: (editor) => {
             bold(editor);
+          },
+        });
+        editor.addAction({
+          id: "insertItalic",
+          label: "Insert Italic Area",
+          keybindings: [KeyMod.CtrlCmd | KeyCode.KeyI],
+          run: (editor) => {
+            italic(editor);
           },
         });
       });

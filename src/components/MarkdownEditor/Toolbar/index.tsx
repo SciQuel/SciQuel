@@ -1,6 +1,7 @@
 import { type editor } from "monaco-editor";
 import React from "react";
 import bold from "./actions/bold";
+import italic from "./actions/italic";
 import ToolbarButton from "./ToolbarButton";
 import ToolbarRule from "./ToolbarRule";
 
@@ -23,7 +24,16 @@ export default function Toolbar({ editorRef }: Props) {
       >
         B
       </ToolbarButton>
-      <ToolbarButton tooltip="Italic">I</ToolbarButton>
+      <ToolbarButton
+        tooltip="Italic"
+        onClick={() => {
+          if (editorRef) {
+            italic(editorRef);
+          }
+        }}
+      >
+        I
+      </ToolbarButton>
       <ToolbarButton tooltip="Underline">U</ToolbarButton>
       <ToolbarButton tooltip="Strikethrough">S</ToolbarButton>
       <ToolbarButton>Quote</ToolbarButton>
