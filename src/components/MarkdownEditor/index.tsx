@@ -14,6 +14,7 @@ import {
 } from "react";
 import Toolbar from "./Toolbar";
 import bold from "./Toolbar/actions/bold";
+import image from "./Toolbar/actions/image";
 import italic from "./Toolbar/actions/italic";
 import link from "./Toolbar/actions/link";
 
@@ -63,6 +64,14 @@ export default function MarkdownEditor() {
           keybindings: [KeyMod.CtrlCmd | KeyCode.KeyK],
           run: (editor) => {
             link(editor);
+          },
+        });
+        editor.addAction({
+          id: "insertImage",
+          label: "Insert Image",
+          keybindings: [KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KeyI],
+          run: (editor) => {
+            image(editor);
           },
         });
       });

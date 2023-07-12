@@ -3,6 +3,7 @@
 import { type editor } from "monaco-editor";
 import React from "react";
 import bold from "./actions/bold";
+import image from "./actions/image";
 import italic from "./actions/italic";
 import link from "./actions/link";
 import ToolbarButton from "./ToolbarButton";
@@ -48,7 +49,16 @@ export default function Toolbar({ editorRef }: Props) {
       >
         Link
       </ToolbarButton>
-      <ToolbarButton>Image</ToolbarButton>
+      <ToolbarButton
+        tooltip="Insert Image (Ctrl/⌘+Shift+I)"
+        onClick={() => {
+          if (editorRef) {
+            image(editorRef);
+          }
+        }}
+      >
+        Image
+      </ToolbarButton>
     </div>
   );
 }

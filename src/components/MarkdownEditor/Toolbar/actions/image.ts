@@ -1,25 +1,36 @@
 import { type editor } from "monaco-editor";
 
-export default function link(editor: editor.ICodeEditor) {
+export default function image(editor: editor.ICodeEditor) {
   const selection = editor.getSelection() ?? null;
   if (selection !== null) {
     const wrappedText = editor.getModel()?.getValueInRange(selection) ?? "";
     try {
       new URL(wrappedText);
-      editor.executeEdits("insert-link", [
-        { range: selection, text: `[Link Text](${wrappedText})` },
+      editor.executeEdits("insert-image", [
+        {
+          range: selection,
+          text: `::large-image[Image Caption]{src=${wrappedText}}`,
+        },
       ]);
       editor.focus();
       const newSelection = selection
-        .setStartPosition(selection.startLineNumber, selection.startColumn + 1)
+        .setStartPosition(
+          selection.startLineNumber,
+          selection.startColumn + "::large-image[".length,
+        )
         .setEndPosition(
           selection.endLineNumber,
-          selection.startColumn + 1 + "Link Text".length,
+          selection.startColumn +
+            "::large-image[".length +
+            "Image Caption".length,
         );
       editor.setSelection(newSelection);
     } catch {
-      editor.executeEdits("insert-link", [
-        { range: selection, text: `[${wrappedText}](https://example.com)` },
+      editor.executeEdits("insert-image", [
+        {
+          range: selection,
+          text: `::large-image[${wrappedText}]{src=https://picsum.photos/id/162/800/400}`,
+        },
       ]);
       editor.focus();
       if (
@@ -30,7 +41,9 @@ export default function link(editor: editor.ICodeEditor) {
         const position = editor.getPosition();
         position &&
           editor.setPosition({
-            column: position.column - "](https://example.com)".length,
+            column:
+              position.column -
+              "]{src=https://picsum.photos/id/162/800/400}".length,
             lineNumber: position.lineNumber,
           });
       } else {
@@ -39,12 +52,15 @@ export default function link(editor: editor.ICodeEditor) {
             selection.endLineNumber,
             selection.startColumn +
               wrappedText.length +
-              3 +
-              "https://example.com".length,
+              "::large-image[".length +
+              "]{src=https://picsum.photos/id/162/800/400".length,
           )
           .setStartPosition(
             selection.startLineNumber,
-            selection.startColumn + wrappedText.length + 3,
+            selection.startColumn +
+              wrappedText.length +
+              "::large-image[".length +
+              "]{src=".length,
           );
         editor.setSelection(newSelection);
       }
