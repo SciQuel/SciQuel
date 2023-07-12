@@ -9,7 +9,7 @@ paths:
       tags:
         - Stories
       summary: Return a list of stories with pagination
-      description: Return a list of stories given a page number and a page size
+      description: Return a list of stories with pagination and optional filter on story topics
       parameters:
         - in: query
           name: page
@@ -34,6 +34,13 @@ paths:
             default: false
           required: false
           description: Return only staff pick stories
+        - in: query
+          name: topic
+          schema:
+            type: string
+            example: "ASTRONOMY"
+          required: false
+          description: Filter stories by topic (non-case sensitive)
       responses:
         "200":
           description: Successfully return a list of stories
@@ -44,7 +51,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/Story"
         "400":
-          description: User requested invalid page or page size
+          description: User requested invalid page or page size or topic
           content:
             application/json:
               schema:
