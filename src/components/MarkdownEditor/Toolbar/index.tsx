@@ -1,5 +1,5 @@
 import { type editor } from "monaco-editor";
-import React, { type Ref } from "react";
+import React from "react";
 import bold from "./actions/bold";
 import ToolbarButton from "./ToolbarButton";
 import ToolbarRule from "./ToolbarRule";

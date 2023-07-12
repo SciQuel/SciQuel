@@ -1,13 +1,24 @@
 "use client";
 
 import { generateMarkdown } from "@/lib/markdown";
-import { Editor } from "@monaco-editor/react";
 import clsx from "clsx";
-import { KeyCode, KeyMod, type editor } from "monaco-editor";
+import { type editor } from "monaco-editor";
+import dynamic from "next/dynamic";
 import { Inter } from "next/font/google";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import Toolbar from "./Toolbar";
 import bold from "./Toolbar/actions/bold";
+
+const Editor = dynamic(
+  () => import("@monaco-editor/react").then((module) => module.Editor),
+  { ssr: false },
+);
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,16 +33,25 @@ export default function MarkdownEditor() {
     });
   }, [value]);
 
-  useEffect(() => {
-    editorRef.current?.addAction({
-      id: "insertBold",
-      label: "Insert Bold Area",
-      keybindings: [KeyMod.CtrlCmd | KeyCode.KeyB],
-      run: (editor) => {
-        bold(editor);
-      },
-    });
-  }, [editorRef]);
+  const handleEditorMount = useCallback(
+    (editor: editor.IStandaloneCodeEditor) => {
+      editorRef.current = editor;
+
+      // monaco-editor requires Browser API, so it is dynamically imported on component render
+      void import("monaco-editor").then((module) => {
+        const { KeyMod, KeyCode } = module;
+        editor.addAction({
+          id: "insertBold",
+          label: "Insert Bold Area",
+          keybindings: [KeyMod.CtrlCmd | KeyCode.KeyB],
+          run: (editor) => {
+            bold(editor);
+          },
+        });
+      });
+    },
+    [],
+  );
 
   return (
     <div className="flex grow flex-row">
@@ -48,10 +68,9 @@ export default function MarkdownEditor() {
             minimap: { enabled: false },
             lineNumbers: "off",
             unicodeHighlight: { ambiguousCharacters: false },
+            suggest: { showWords: false },
           }}
-          onMount={(editor) => {
-            editorRef.current = editor;
-          }}
+          onMount={handleEditorMount}
         />
       </div>
       <div className="flex max-h-full w-1/2 flex-col overflow-scroll">
