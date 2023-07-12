@@ -41,16 +41,16 @@ export default function MarkdownEditor() {
       // monaco-editor requires Browser API, so it is dynamically imported on component render
       void import("monaco-editor").then(({ KeyMod, KeyCode }) => {
         editor.addAction({
-          id: "insertBold",
-          label: "Insert Bold Area",
+          id: "insertRemoveBold",
+          label: "Insert/Remove Bold Area",
           keybindings: [KeyMod.CtrlCmd | KeyCode.KeyB],
           run: (editor) => {
             bold(editor);
           },
         });
         editor.addAction({
-          id: "insertItalic",
-          label: "Insert Italic Area",
+          id: "insertRemoveItalic",
+          label: "Insert/Remove Italic Area",
           keybindings: [KeyMod.CtrlCmd | KeyCode.KeyI],
           run: (editor) => {
             italic(editor);
