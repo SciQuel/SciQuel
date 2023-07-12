@@ -7,6 +7,8 @@ import image from "./actions/image";
 import italic from "./actions/italic";
 import link from "./actions/link";
 import quote from "./actions/quote";
+import ImageIcon from "./icons/ImageIcon";
+import LinkIcon from "./icons/LinkIcon";
 import ToolbarButton from "./ToolbarButton";
 import ToolbarRule from "./ToolbarRule";
 
@@ -27,7 +29,7 @@ export default function Toolbar({ editorRef }: Props) {
           }
         }}
       >
-        B
+        <span className="font-bold">B</span>
       </ToolbarButton>
       <ToolbarButton
         tooltip="Italic (Ctrl/⌘+I)"
@@ -37,7 +39,7 @@ export default function Toolbar({ editorRef }: Props) {
           }
         }}
       >
-        I
+        <span className="mr-[0.1rem] font-sourceSerif4 italic">I</span>
       </ToolbarButton>
       <ToolbarButton
         tooltip="Quote (Ctrl/⌘+Shift+9)"
@@ -47,7 +49,11 @@ export default function Toolbar({ editorRef }: Props) {
           }
         }}
       >
-        Quote
+        <div className="mt-2 flex items-center">
+          <span className="font-sourceSerif4 text-2xl font-bold leading-[5px]">
+            ”
+          </span>
+        </div>
       </ToolbarButton>
       <ToolbarButton
         tooltip="Insert Link (Ctrl/⌘+K)"
@@ -57,7 +63,9 @@ export default function Toolbar({ editorRef }: Props) {
           }
         }}
       >
-        Link
+        <div className="-my-1 h-5">
+          <LinkIcon />
+        </div>
       </ToolbarButton>
       <ToolbarButton
         tooltip="Insert Image (Ctrl/⌘+Shift+I)"
@@ -67,7 +75,9 @@ export default function Toolbar({ editorRef }: Props) {
           }
         }}
       >
-        Image
+        <div className="-my-1 h-5">
+          <ImageIcon />
+        </div>
       </ToolbarButton>
     </div>
   );
