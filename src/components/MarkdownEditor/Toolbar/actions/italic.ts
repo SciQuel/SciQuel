@@ -29,7 +29,7 @@ export default function italic(editor: editor.ICodeEditor) {
     const position = editor.getPosition();
     position &&
       editor.setPosition({
-        column: position.column - 2,
+        column: position.column - 1,
         lineNumber: position.lineNumber,
       });
   }
