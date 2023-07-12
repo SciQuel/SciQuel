@@ -13,11 +13,9 @@ interface Params {
 
 export default async function StoriesPage({ params }: Params) {
   const story = await retrieveStoryContent(params);
-  const htmlContent = await generateMarkdown(story.storyContent[0].content);
+  const { file } = await generateMarkdown(story.storyContent[0].content);
   return (
-    <div className="flex flex-col gap-5 pt-10 @container">
-      {htmlContent.result}
-    </div>
+    <div className="flex flex-col gap-5 pt-10 @container">{file.result}</div>
   );
 }
 

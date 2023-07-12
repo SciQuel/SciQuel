@@ -12,6 +12,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import StatusBar from "./StatusBar";
 import Toolbar from "./Toolbar";
 import bold from "./Toolbar/actions/bold";
 import image from "./Toolbar/actions/image";
@@ -30,9 +31,11 @@ export default function MarkdownEditor() {
   const [value, setValue] = useState("");
   const [renderedContent, setRenderedContent] = useState<ReactNode>(null);
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
+  const [stats, setStats] = useState<Record<string, number>>({});
 
   useEffect(() => {
-    void generateMarkdown(value).then((file) => {
+    void generateMarkdown(value).then(({ file, wordStats }) => {
+      setStats(wordStats);
       setRenderedContent(file.result);
     });
   }, [value]);
@@ -89,24 +92,27 @@ export default function MarkdownEditor() {
   );
 
   return (
-    <div className="flex grow flex-row">
+    <div className="flex h-full grow flex-row">
       <div className={clsx("flex w-1/2 flex-col border-r", inter.className)}>
         <Toolbar editorRef={editorRef.current} />
-        <Editor
-          language="markdown"
-          loading={<></>}
-          value={value}
-          onChange={(v) => setValue(v ?? "")}
-          options={{
-            wordWrap: "on",
-            padding: { top: 10 },
-            minimap: { enabled: false },
-            lineNumbers: "off",
-            unicodeHighlight: { ambiguousCharacters: false },
-            suggest: { showWords: false },
-          }}
-          onMount={handleEditorMount}
-        />
+        <div className="grow">
+          <Editor
+            language="markdown"
+            loading={<></>}
+            value={value}
+            onChange={(v) => setValue(v ?? "")}
+            options={{
+              wordWrap: "on",
+              padding: { top: 10 },
+              minimap: { enabled: false },
+              lineNumbers: "off",
+              unicodeHighlight: { ambiguousCharacters: false },
+              suggest: { showWords: false },
+            }}
+            onMount={handleEditorMount}
+          />
+        </div>
+        <StatusBar wordStats={stats} />
       </div>
       <div className="flex max-h-full w-1/2 flex-col overflow-scroll">
         <div className="h-0">

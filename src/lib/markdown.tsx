@@ -9,13 +9,22 @@ import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import remarkDirective from "remark-directive";
 import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
+import remarkRetext from "remark-retext";
+import retextEnglish from "retext-english";
 import { unified } from "unified";
+import retextWordCount from "./retext-word-count";
 
 export async function generateMarkdown(content: string) {
-  const file = await unified()
+  const wordStats: Record<string, number> = {};
+
+  const remarkResult = unified()
     .use(remarkParse)
     .use(remarkDirective)
     .use(remarkSciquelDirective)
+    .use(
+      remarkRetext,
+      unified().use(retextEnglish).use(retextWordCount, wordStats),
+    )
     .use(remarkRehype)
     .use(rehypeSanitize, {
       ...defaultSchema,
@@ -51,5 +60,6 @@ export async function generateMarkdown(content: string) {
       },
     })
     .process(content);
-  return file;
+
+  return { file: await remarkResult, wordStats };
 }
