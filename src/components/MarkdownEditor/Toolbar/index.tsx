@@ -6,6 +6,7 @@ import bold from "./actions/bold";
 import image from "./actions/image";
 import italic from "./actions/italic";
 import link from "./actions/link";
+import quote from "./actions/quote";
 import ToolbarButton from "./ToolbarButton";
 import ToolbarRule from "./ToolbarRule";
 
@@ -38,7 +39,16 @@ export default function Toolbar({ editorRef }: Props) {
       >
         I
       </ToolbarButton>
-      <ToolbarButton>Quote</ToolbarButton>
+      <ToolbarButton
+        tooltip="Quote (Ctrl/⌘+Shift+9)"
+        onClick={() => {
+          if (editorRef) {
+            quote(editorRef);
+          }
+        }}
+      >
+        Quote
+      </ToolbarButton>
       <ToolbarButton
         tooltip="Insert Link (Ctrl/⌘+K)"
         onClick={() => {

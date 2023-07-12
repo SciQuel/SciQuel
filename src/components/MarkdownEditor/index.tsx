@@ -17,6 +17,7 @@ import bold from "./Toolbar/actions/bold";
 import image from "./Toolbar/actions/image";
 import italic from "./Toolbar/actions/italic";
 import link from "./Toolbar/actions/link";
+import quote from "./Toolbar/actions/quote";
 
 const Editor = dynamic(
   () => import("@monaco-editor/react").then((module) => module.Editor),
@@ -56,6 +57,14 @@ export default function MarkdownEditor() {
           keybindings: [KeyMod.CtrlCmd | KeyCode.KeyI],
           run: (editor) => {
             italic(editor);
+          },
+        });
+        editor.addAction({
+          id: "insertRemoveBlockquote",
+          label: "Insert/Remove Blockquote",
+          keybindings: [KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.Digit9],
+          run: (editor) => {
+            quote(editor);
           },
         });
         editor.addAction({
