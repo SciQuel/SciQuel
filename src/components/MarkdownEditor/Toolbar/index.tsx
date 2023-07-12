@@ -3,6 +3,7 @@
 import { type editor } from "monaco-editor";
 import React from "react";
 import bold from "./actions/bold";
+import heading from "./actions/heading";
 import image from "./actions/image";
 import italic from "./actions/italic";
 import link from "./actions/link";
@@ -10,6 +11,7 @@ import quote from "./actions/quote";
 import ImageIcon from "./icons/ImageIcon";
 import LinkIcon from "./icons/LinkIcon";
 import ToolbarButton from "./ToolbarButton";
+import ToolbarDropdown from "./ToolbarDropdown";
 import ToolbarRule from "./ToolbarRule";
 
 interface Props {
@@ -19,7 +21,18 @@ interface Props {
 export default function Toolbar({ editorRef }: Props) {
   return (
     <div className="flex flex-row gap-1 border-b bg-gray-100 p-2">
-      <ToolbarButton>Headings</ToolbarButton>
+      <ToolbarDropdown
+        dropdownItems={new Array(6).fill(null, 0, 6).map((_value, index) => ({
+          label: `Heading ${index + 1}`,
+          onClick: () => {
+            if (editorRef) {
+              heading(editorRef, index + 1);
+            }
+          },
+        }))}
+      >
+        Headings
+      </ToolbarDropdown>
       <ToolbarRule />
       <ToolbarButton
         tooltip="Bold (Ctrl/⌘+B)"

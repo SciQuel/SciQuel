@@ -13,13 +13,11 @@ import {
 import { useState, type HTMLProps, type PropsWithChildren } from "react";
 
 interface Props {
-  type?: "button" | "dropdown";
   tooltip?: string;
   onClick?: HTMLProps<HTMLButtonElement>["onClick"];
 }
 
 export default function ToolbarButton({
-  type = "button",
   tooltip,
   children,
   onClick,
@@ -56,7 +54,7 @@ export default function ToolbarButton({
       >
         {children}
       </button>
-      {type === "button" && tooltip && tooltipOpen && (
+      {tooltip && tooltipOpen && (
         <div
           className="z-10 rounded-md bg-slate-700 p-[0.35rem] leading-none text-white"
           ref={refs.setFloating}
