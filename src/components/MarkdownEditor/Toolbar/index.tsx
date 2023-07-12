@@ -34,8 +34,6 @@ export default function Toolbar({ editorRef }: Props) {
       >
         I
       </ToolbarButton>
-      <ToolbarButton tooltip="Underline">U</ToolbarButton>
-      <ToolbarButton tooltip="Strikethrough">S</ToolbarButton>
       <ToolbarButton>Quote</ToolbarButton>
       <ToolbarButton>Link</ToolbarButton>
       <ToolbarButton>Image</ToolbarButton>
