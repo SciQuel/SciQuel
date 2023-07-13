@@ -6,7 +6,8 @@ import StoryParagraph from "@/components/story-components/StoryParagraph";
 import TopicTag from "@/components/TopicTag";
 import env from "@/lib/env";
 import remarkSciquelDirective from "@/lib/remark-sciquel-directive";
-import { type StoryTopic } from "@prisma/client";
+import { StoryContribution, type StoryTopic } from "@prisma/client";
+import { DateTime } from "luxon";
 import { createElement, Fragment, type HTMLProps } from "react";
 import rehypeReact from "rehype-react";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
@@ -49,10 +50,9 @@ export default async function StoriesPage({ params }: Params) {
         </h2>
       </div>
       <div
-        className="m-auto flex w-screen flex-col  md:w-[720px]"
+        className="mx-2 mt-5 flex w-screen flex-col md:mx-auto  md:w-[720px]"
         // style={{ backgroundColor: "lime" }}
       >
-        section for credits
         <div className="flex flex-row">
           <p className="mr-2 flex flex-row">
             {story.storyType.slice(0, 1) +
@@ -66,16 +66,31 @@ export default async function StoriesPage({ params }: Params) {
         <div>
           {story.storyContributions.map((element, index) => {
             return (
-              <span>
+              <p>
                 {element.contributionType == "AUTHOR"
                   ? `by ${element.user.firstName} ${element.user.lastName}`
                   : `${element.contributionType} by ${element.user.firstName} ${element.user.lastName}`}
-              </span>
+              </p>
             );
           })}
         </div>
+        <p>
+          {DateTime.fromISO(story.publishedAt).toLocaleString({
+            ...DateTime.DATETIME_MED,
+            timeZoneName: "short",
+          })}
+          {story.updatedAt != story.publishedAt
+            ? " | " +
+              DateTime.fromISO(story.updatedAt).toLocaleString({
+                ...DateTime.DATETIME_MED,
+                timeZoneName: "short",
+              })
+            : ""}
+        </p>
       </div>
-      <div className="flex flex-col gap-5 pt-10">{htmlContent.result}</div>
+      <div className="mx-2 mt-2 flex flex-col items-center gap-5 md:mx-auto">
+        {htmlContent.result}
+      </div>
     </>
   );
 }
