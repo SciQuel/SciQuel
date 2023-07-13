@@ -1,6 +1,7 @@
 import { type GetStoriesResult } from "@/app/api/stories/route";
 import ArticleList from "../ArticleList";
 import HomepageSection from "../HomepageSection";
+import NavigateLink from "../HomepageSection/NavigateLink";
 
 interface Props {
   articles: GetStoriesResult;
@@ -16,6 +17,10 @@ export default function StaffPicksSection({ articles }: Props) {
       {articles && (
         <ArticleList articles={articles.slice(0, 3)} preferHorizontal={true} />
       )}
+      <NavigateLink
+        text="Browse staff picks"
+        route="/stories/list?staff_pick=true"
+      />
     </HomepageSection>
   );
 }

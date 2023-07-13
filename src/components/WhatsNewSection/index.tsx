@@ -3,6 +3,7 @@ import ArticleList from "@/components/ArticleList";
 import HomepageSection from "@/components/HomepageSection";
 import MainCard from "@/components/MainCard";
 import { DateTime } from "luxon";
+import NavigateLink from "../HomepageSection/NavigateLink";
 
 interface Props {
   articles: GetStoriesResult;
@@ -45,6 +46,7 @@ export default function WhatsNewSection({ articles }: Props) {
         )}
       </div>
       {readMoreArticles && <ArticleList articles={readMoreArticles} />}
+      <NavigateLink text="Read all recent" route="/stories/list" />
     </HomepageSection>
   );
 }
