@@ -1,7 +1,6 @@
 "use client";
 
 import { type editor } from "monaco-editor";
-import React from "react";
 import bold from "./actions/bold";
 import heading from "./actions/heading";
 import image from "./actions/image";
@@ -15,18 +14,19 @@ import ToolbarDropdown from "./ToolbarDropdown";
 import ToolbarRule from "./ToolbarRule";
 
 interface Props {
-  editorRef: editor.IStandaloneCodeEditor | null;
+  editor: editor.IStandaloneCodeEditor | null;
 }
 
-export default function Toolbar({ editorRef }: Props) {
+export default function Toolbar({ editor }: Props) {
   return (
     <div className="flex flex-row gap-1 border-b bg-gray-100 p-2">
       <ToolbarDropdown
+        disabled={editor === null}
         dropdownItems={new Array(6).fill(null, 0, 6).map((_value, index) => ({
           label: `Heading ${index + 1}`,
           onClick: () => {
-            if (editorRef) {
-              heading(editorRef, index + 1);
+            if (editor) {
+              heading(editor, index + 1);
             }
           },
         }))}
@@ -35,30 +35,33 @@ export default function Toolbar({ editorRef }: Props) {
       </ToolbarDropdown>
       <ToolbarRule />
       <ToolbarButton
+        disabled={editor === null}
         tooltip="Bold (Ctrl/⌘+B)"
         onClick={() => {
-          if (editorRef) {
-            bold(editorRef);
+          if (editor) {
+            bold(editor);
           }
         }}
       >
         <span className="font-bold">B</span>
       </ToolbarButton>
       <ToolbarButton
+        disabled={editor === null}
         tooltip="Italic (Ctrl/⌘+I)"
         onClick={() => {
-          if (editorRef) {
-            italic(editorRef);
+          if (editor) {
+            italic(editor);
           }
         }}
       >
         <span className="mr-[0.1rem] font-sourceSerif4 italic">I</span>
       </ToolbarButton>
       <ToolbarButton
+        disabled={editor === null}
         tooltip="Quote (Ctrl/⌘+Shift+9)"
         onClick={() => {
-          if (editorRef) {
-            quote(editorRef);
+          if (editor) {
+            quote(editor);
           }
         }}
       >
@@ -69,10 +72,11 @@ export default function Toolbar({ editorRef }: Props) {
         </div>
       </ToolbarButton>
       <ToolbarButton
+        disabled={editor === null}
         tooltip="Insert Link (Ctrl/⌘+K)"
         onClick={() => {
-          if (editorRef) {
-            link(editorRef);
+          if (editor) {
+            link(editor);
           }
         }}
       >
@@ -81,10 +85,11 @@ export default function Toolbar({ editorRef }: Props) {
         </div>
       </ToolbarButton>
       <ToolbarButton
+        disabled={editor === null}
         tooltip="Insert Image (Ctrl/⌘+Shift+I)"
         onClick={() => {
-          if (editorRef) {
-            image(editorRef);
+          if (editor) {
+            image(editor);
           }
         }}
       >

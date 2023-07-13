@@ -10,14 +10,17 @@ import {
   useInteractions,
   useRole,
 } from "@floating-ui/react";
+import clsx from "clsx";
 import { useState, type HTMLProps, type PropsWithChildren } from "react";
 
 interface Props {
   tooltip?: string;
+  disabled?: boolean;
   onClick?: HTMLProps<HTMLButtonElement>["onClick"];
 }
 
 export default function ToolbarButton({
+  disabled,
   tooltip,
   children,
   onClick,
@@ -47,7 +50,10 @@ export default function ToolbarButton({
   return (
     <>
       <button
-        className="peer cursor-pointer rounded-md p-1 font-light leading-none ring-blue-500 hover:bg-slate-300"
+        className={clsx(
+          "peer cursor-pointer rounded-md p-1 font-light leading-none ring-blue-500 hover:bg-slate-300",
+          disabled && "pointer-events-none fill-gray-300 text-gray-300",
+        )}
         ref={refs.setReference}
         {...getReferenceProps()}
         onClick={onClick}

@@ -19,10 +19,12 @@ export interface DropdownItem {
 }
 
 interface Props {
+  disabled?: boolean;
   dropdownItems: DropdownItem[];
 }
 
 export default function ToolbarDropdown({
+  disabled,
   dropdownItems,
   children,
 }: PropsWithChildren<Props>) {
@@ -49,7 +51,10 @@ export default function ToolbarDropdown({
   return (
     <>
       <button
-        className="peer cursor-pointer rounded-md p-1 font-light leading-none ring-blue-500 hover:bg-slate-300"
+        className={clsx(
+          "peer cursor-pointer rounded-md p-1 font-light leading-none ring-blue-500 hover:bg-slate-300",
+          disabled && "pointer-events-none fill-gray-300 text-gray-300",
+        )}
         ref={refs.setReference}
         {...getReferenceProps()}
       >
@@ -66,6 +71,7 @@ export default function ToolbarDropdown({
             {dropdownItems.map((item, index) => {
               return (
                 <div
+                  key={`dropdown-heading-${index + 1}`}
                   onClick={() => {
                     setTooltipOpen(false);
                     setTimeout(() => {

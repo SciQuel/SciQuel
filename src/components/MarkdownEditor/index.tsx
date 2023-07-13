@@ -5,13 +5,7 @@ import clsx from "clsx";
 import { type editor } from "monaco-editor";
 import dynamic from "next/dynamic";
 import { Inter } from "next/font/google";
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-  type ReactNode,
-} from "react";
+import { useCallback, useEffect, useState, type ReactNode } from "react";
 import StatusBar from "./StatusBar";
 import Toolbar from "./Toolbar";
 import bold from "./Toolbar/actions/bold";
@@ -30,7 +24,9 @@ const inter = Inter({ subsets: ["latin"] });
 export default function MarkdownEditor() {
   const [value, setValue] = useState("");
   const [renderedContent, setRenderedContent] = useState<ReactNode>(null);
-  const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
+  const [editor, setEditor] = useState<editor.IStandaloneCodeEditor | null>(
+    null,
+  );
   const [stats, setStats] = useState<Record<string, number>>({});
 
   useEffect(() => {
@@ -42,7 +38,7 @@ export default function MarkdownEditor() {
 
   const handleEditorMount = useCallback(
     (editor: editor.IStandaloneCodeEditor) => {
-      editorRef.current = editor;
+      setEditor(editor);
 
       // monaco-editor requires Browser API, so it is dynamically imported on component render
       void import("monaco-editor").then(({ KeyMod, KeyCode }) => {
@@ -94,7 +90,7 @@ export default function MarkdownEditor() {
   return (
     <div className="flex h-full grow flex-row">
       <div className={clsx("flex w-1/2 flex-col border-r", inter.className)}>
-        <Toolbar editorRef={editorRef.current} />
+        <Toolbar editor={editor} />
         <div className="grow">
           <Editor
             language="markdown"
