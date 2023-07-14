@@ -20,6 +20,10 @@ export default async function VerifyInfoPage({
   });
 
   if (user) {
+    if (user.verified) {
+      return redirect("/auth/login?error=Verification");
+    }
+
     await prisma.authVerification.deleteMany({
       where: {
         user: { id: user.id },
