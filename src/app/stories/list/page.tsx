@@ -1,26 +1,24 @@
-"use client";
-
 import { type GetStoriesResult } from "@/app/api/stories/route";
 import ArticleList from "@/components/ArticleList";
 import HomepageSection from "@/components/HomepageSection";
 import Pagination from "@/components/StoriesList/Pagination";
 import env from "@/lib/env";
-import { useSearchParams } from "next/navigation";
 
-// eslint-disable-next-line @next/next/no-async-client-component
-export default async function StoriesListPage() {
-  const searchParams = useSearchParams();
-  const topic = searchParams.get("topic");
-  const staff_pick = searchParams.get("staff_pick");
-  const page_number = searchParams.get("page");
+interface Params {
+  topic: string;
+  staff_pick: string;
+  page_number: string;
+}
 
-  const params = {
+export default async function StoriesListPage({ params }: { params: Params }) {
+  const { topic, staff_pick, page_number } = params;
+  const searchParams = {
     ...(topic ? { topic } : {}),
     ...(staff_pick && staff_pick === "true" ? { staff_pick: "true" } : {}),
     page: page_number || "1",
   };
 
-  const { stories, total_pages } = await getStories(params);
+  const { stories, total_pages } = await getStories(searchParams);
 
   // Header text shows ALL TOPICS by default or Topic if specified
   let headerText = topic ? topic.toUpperCase() : "ALL TOPICS";

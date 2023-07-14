@@ -32,7 +32,7 @@ export default function Pagination({ total_pages }: Props) {
           </li>
         )}
         {pages.map((page) => (
-          <li>
+          <li key={`pagination-item-${page}`}>
             <a
               className={
                 (page === page_number
