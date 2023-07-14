@@ -7,6 +7,7 @@ import Pagination from "@/components/StoriesList/Pagination";
 import env from "@/lib/env";
 import { useSearchParams } from "next/navigation";
 
+// eslint-disable-next-line @next/next/no-async-client-component
 export default async function StoriesListPage() {
   const searchParams = useSearchParams();
   const topic = searchParams.get("topic");
@@ -61,7 +62,7 @@ async function getStories(params: Record<string, string>) {
     throw new Error("Failed to fetch data");
   }
 
-  const data: GetStoriesResult = await res.json();
+  const data: GetStoriesResult = await res.json().then();
 
   data.stories = data.stories.map((story) => ({
     ...story,
