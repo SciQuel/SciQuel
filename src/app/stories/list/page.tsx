@@ -3,6 +3,7 @@
 import { type GetStoriesResult } from "@/app/api/stories/route";
 import ArticleList from "@/components/ArticleList";
 import HomepageSection from "@/components/HomepageSection";
+import Pagination from "@/components/StoriesList/Pagination";
 import env from "@/lib/env";
 import { useSearchParams } from "next/navigation";
 
@@ -10,13 +11,15 @@ export default async function StoriesListPage() {
   const searchParams = useSearchParams();
   const topic = searchParams.get("topic");
   const staff_pick = searchParams.get("staff_pick");
+  const page_number = searchParams.get("page");
 
   const params = {
     ...(topic ? { topic } : {}),
     ...(staff_pick && staff_pick === "true" ? { staff_pick: "true" } : {}),
+    page: page_number || "1",
   };
 
-  const articles = await getStories(params);
+  const { stories, total_pages } = await getStories(params);
 
   // Header text shows ALL TOPICS by default or Topic if specified
   let headerText = topic ? topic.toUpperCase() : "ALL TOPICS";
@@ -30,8 +33,11 @@ export default async function StoriesListPage() {
     <>
       <div className="mx-[10%] my-10 flex flex-col gap-12">
         <HomepageSection heading={headerText}>
-          {articles.length > 0 ? (
-            <ArticleList articles={articles} preferHorizontal={true} />
+          {stories.length > 0 ? (
+            <>
+              <ArticleList articles={stories} preferHorizontal={true} />
+              <Pagination total_pages={total_pages} />
+            </>
           ) : (
             <h2 className="text-3xl font-[550] text-sciquelHeading">
               No Result
@@ -46,7 +52,6 @@ export default async function StoriesListPage() {
 async function getStories(params: Record<string, string>) {
   const searchParams = new URLSearchParams(params);
   const route = `/stories?${searchParams.toString()}`;
-  console.log(route);
 
   const res = await fetch(`${env.NEXT_PUBLIC_SITE_URL}/api${route}`, {
     next: { revalidate: 60 },
@@ -56,14 +61,14 @@ async function getStories(params: Record<string, string>) {
     throw new Error("Failed to fetch data");
   }
 
-  const stories = await res
-    .json()
-    .then((value: GetStoriesResult) => value.stories);
+  const data: GetStoriesResult = await res.json();
 
-  return stories.map((story) => ({
+  data.stories = data.stories.map((story) => ({
     ...story,
     createdAt: new Date(story.createdAt),
     publishedAt: new Date(story.publishedAt),
     updatedAt: new Date(story.updatedAt),
   }));
+
+  return data;
 }
