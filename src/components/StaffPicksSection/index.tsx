@@ -1,10 +1,10 @@
-import { type GetStoriesResult } from "@/app/api/stories/route";
+import { type Stories } from "@/app/api/stories/route";
 import ArticleList from "../ArticleList";
 import HomepageSection from "../HomepageSection";
 import NavigateLink from "../HomepageSection/NavigateLink";
 
 interface Props {
-  articles: GetStoriesResult;
+  articles: Stories;
 }
 
 export default function StaffPicksSection({ articles }: Props) {

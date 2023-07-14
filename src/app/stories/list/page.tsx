@@ -56,12 +56,14 @@ async function getStories(params: Record<string, string>) {
     throw new Error("Failed to fetch data");
   }
 
-  return res.json().then((value: GetStoriesResult) =>
-    value.map((story) => ({
-      ...story,
-      createdAt: new Date(story.createdAt),
-      publishedAt: new Date(story.publishedAt),
-      updatedAt: new Date(story.updatedAt),
-    })),
-  );
+  const stories = await res
+    .json()
+    .then((value: GetStoriesResult) => value.stories);
+
+  return stories.map((story) => ({
+    ...story,
+    createdAt: new Date(story.createdAt),
+    publishedAt: new Date(story.publishedAt),
+    updatedAt: new Date(story.updatedAt),
+  }));
 }
