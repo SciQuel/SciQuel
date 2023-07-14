@@ -26,9 +26,10 @@ export default async function VerifyInfoPage({
         type: AuthVerificationType.EMAIL_VERIFICATION,
       },
     });
-    void sendAccountVerification(user);
+    sendAccountVerification(user).catch((err) => {
+      console.error(err);
+    });
   }
-
   return (
     <div className="flex flex-col">
       <h1 className="text-center text-4xl font-semibold text-sciquelTeal">

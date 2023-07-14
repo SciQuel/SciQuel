@@ -32,13 +32,17 @@ export async function POST(request: NextRequest) {
         process.env.NEXTAUTH_SECRET ?? "",
       );
       const resetLink = `${env.NEXT_PUBLIC_SITE_URL}/auth/reset-password/${token}`;
-      void mailer.sendMail({
-        from: '"SciQuel" <no-reply@sciquel.org>',
-        replyTo: '"SciQuel Team" <team@sciquel.org>',
-        to: user.email,
-        subject: "Reset your SciQuel password",
-        text: `Please reset your password with the following link: ${resetLink}`,
-      });
+      mailer
+        .sendMail({
+          from: '"SciQuel" <no-reply@sciquel.org>',
+          replyTo: '"SciQuel Team" <team@sciquel.org>',
+          to: user.email,
+          subject: "Reset your SciQuel password",
+          text: `Please reset your password with the following link: ${resetLink}`,
+        })
+        .catch((err) => {
+          console.error(err);
+        });
     }
     return NextResponse.json({});
   } catch (err) {

@@ -31,6 +31,7 @@ export async function POST(request: NextRequest) {
     await sendAccountVerification(newUser);
     return NextResponse.json({}, { status: 201 });
   } catch (err) {
+    console.error(err);
     return NextResponse.json(
       { error: "Unable to complete request" },
       { status: 500 },
