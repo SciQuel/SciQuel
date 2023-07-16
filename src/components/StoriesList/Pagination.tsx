@@ -21,7 +21,6 @@ export default function Pagination({ total_pages }: Props) {
         {page_number !== 1 && (
           <li>
             <a
-              className=""
               href={`${usePathname()}?${new URLSearchParams({
                 ...params,
                 page: String(page_number - 1),
@@ -52,7 +51,6 @@ export default function Pagination({ total_pages }: Props) {
         {page_number !== total_pages && (
           <li>
             <a
-              className=""
               href={`${usePathname()}?${new URLSearchParams({
                 ...params,
                 page: String(page_number + 1),
