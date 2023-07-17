@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import logo from "./logo.png";
-import search from "./search.svg";
+import SearchIcon from "./search.svg";
 import SideBar from "./SideBar/SideBar";
 import Topic from "./Topic/Topic";
 
@@ -22,17 +22,14 @@ export default function Header() {
       const maxY = document.documentElement.scrollHeight - window.innerHeight;
       if (window.location.pathname.split("/")[1] === "stories") {
         /**
-         * y > window.scrollY : last saved Y > current scrollY means scrolling up
-         * window.scrollY > 800(height of imag): scrolling event only apply after 800(heigh of imag )
-         * window.scrollY == 0 : if scroll Y  = 0 means hit the top apply the scroll up.
+         * y > window.scrollY : last saved Y > current scrollY means scrolling up window.scrollY >
+         * 800(height of imag): scrolling event only apply after 800(heigh of imag ) window.scrollY
+         * == 0 : if scroll Y = 0 means hit the top apply the scroll up.
          */
         if (y > window.scrollY && window.scrollY > 650) {
           // console.log("scrolling up");
 
-          /**
-           * Safari case
-           * if Y greather maxY( whole page ) set as scrolling down style
-           */
+          /** Safari case if Y greather maxY( whole page ) set as scrolling down style */
           if (y > maxY) {
             // console.log("scrolling down");
             setScroll(true);
@@ -41,9 +38,7 @@ export default function Header() {
           }
         } else {
           /**
-           * Safari case
-           * if Y is less than equal to 0 (top of page)  set as scrolling up style
-           * else
+           * Safari case if Y is less than equal to 0 (top of page) set as scrolling up style else
            * regular case scrolling down style
            */
           if (window.scrollY <= 10) {
@@ -91,9 +86,9 @@ export default function Header() {
     },
     [counter, y],
   );
-  /** useEffect tell React that your component needs to do something after render.
-   * EventListener for function handleNavigation
-   * and clean up after it.
+  /**
+   * useEffect tell React that your component needs to do something after render. EventListener for
+   * function handleNavigation and clean up after it.
    */
   useEffect(() => {
     setY(window.scrollY);
@@ -113,11 +108,7 @@ export default function Header() {
         <div className="flex w-full flex-row gap-4 px-10 py-4 align-middle">
           <SideBar />
           <div className="top-0 flex">
-            <Image
-              className="h-[2rem] w-auto"
-              src={search as string}
-              alt="searchIcon"
-            />
+            <SearchIcon className="h-[2rem] w-auto" />
             <input className=" w-auto border border-x-transparent border-y-transparent bg-transparent outline-none focus:border-b-white" />
           </div>
           <div className="h-[2rem] grow" />
