@@ -1,38 +1,26 @@
-import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import Astronomy from "./TopicIcons/Astronomy.png";
-import Biology from "./TopicIcons/Biology.png";
-import ChemEng from "./TopicIcons/ChemEng.png";
-import Chemistry from "./TopicIcons/Chemistry.png";
-import ComputerS from "./TopicIcons/ComputerS.png";
-import ElectricEng from "./TopicIcons/ElectricEng.png";
-import EnviroS from "./TopicIcons/EnviroS.png";
-import Geology from "./TopicIcons/Geology.png";
-import Math from "./TopicIcons/Math.png";
-import MechEng from "./TopicIcons/MechEng.png";
-import Medicine from "./TopicIcons/Medicine.png";
-import Physics from "./TopicIcons/Physics.png";
-import Psychology from "./TopicIcons/Psychology.png";
-import Sociology from "./TopicIcons/Sociology.png";
-import Technology from "./TopicIcons/Technology.png";
+import TopicIcon from "./TopicIcon";
 
 export default function Topic() {
   const topics = [
-    { Topic: "Astronomy", Image: Astronomy },
-    { Topic: "Biology", Image: Biology },
-    { Topic: "Chemistry", Image: Chemistry },
-    { Topic: "Computer Science", Image: ComputerS },
-    { Topic: "Chemical", Image: ChemEng },
-    { Topic: "Electrical", Image: ElectricEng },
-    { Topic: "Environmental Science", Image: EnviroS },
-    { Topic: "Geology", Image: Geology },
-    { Topic: "Mathematics", Image: Math },
-    { Topic: "Mechanical Engineering", Image: MechEng },
-    { Topic: "Medicine", Image: Medicine },
-    { Topic: "Physics", Image: Physics },
-    { Topic: "Psychology", Image: Psychology },
-    { Topic: "Sociology", Image: Sociology },
-    { Topic: "Technology", Image: Technology },
+    { Topic: "Astronomy", Image: <TopicIcon type="Astronomy" /> },
+    { Topic: "Biology", Image: <TopicIcon type="Biology" /> },
+    { Topic: "Chemistry", Image: <TopicIcon type="Chemistry" /> },
+    { Topic: "Computer Science", Image: <TopicIcon type="ComputerS" /> },
+    { Topic: "Chemical", Image: <TopicIcon type="Chemical" /> },
+    { Topic: "Electrical", Image: <TopicIcon type="Electrical" /> },
+    {
+      Topic: "Environmental Science",
+      Image: <TopicIcon type="Environmental" />,
+    },
+    { Topic: "Geology", Image: <TopicIcon type="Geology" /> },
+    { Topic: "Mathematics", Image: <TopicIcon type="Math" /> },
+    { Topic: "Mechanical Engineering", Image: <TopicIcon type="Mechanical" /> },
+    { Topic: "Medicine", Image: <TopicIcon type="Medicine" /> },
+    { Topic: "Physics", Image: <TopicIcon type="Physics" /> },
+    { Topic: "Psychology", Image: <TopicIcon type="Psychology" /> },
+    { Topic: "Sociology", Image: <TopicIcon type="Sociology" /> },
+    { Topic: "Technology", Image: <TopicIcon type="Technology" /> },
   ];
   const [showTopic, setShowTopic] = useState(false);
   const topicRef = useRef<HTMLDivElement>(null);
@@ -73,21 +61,19 @@ export default function Topic() {
               <div className="w-[20%] p-6 text-left">
                 <ul>
                   {topics.map((topic, index) => (
-                    <li
-                      key={index}
-                      className=" hover: my-3 flex cursor-pointer items-center text-[#50808e] "
-                      onMouseEnter={() => onMouseEnter(topic.Topic)}
-                      style={{
-                        color: currentTopic === topic.Topic ? "#ad2319" : "",
-                      }}
-                    >
-                      <Image
-                        src={topic.Image}
-                        className="h-[2rem] w-auto"
-                        alt="SciQuel"
-                      />
-                      <span>{topic.Topic}</span>
-                    </li>
+                    <>
+                      <li
+                        key={index}
+                        className=" hover: my-3 flex cursor-pointer items-center text-[#50808e] "
+                        onMouseEnter={() => onMouseEnter(topic.Topic)}
+                        style={{
+                          color: currentTopic === topic.Topic ? "#ad2319" : "",
+                        }}
+                      >
+                        {topic.Image}
+                        <span>{topic.Topic}</span>
+                      </li>
+                    </>
                   ))}
                 </ul>
               </div>
