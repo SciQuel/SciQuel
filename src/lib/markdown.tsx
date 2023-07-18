@@ -1,3 +1,4 @@
+import StoryCaptionCitation from "@/components/story-components/StoryCaptionCitation";
 import StoryH1 from "@/components/story-components/StoryH1";
 import StoryH2 from "@/components/story-components/StoryH2";
 import StoryH3 from "@/components/story-components/StoryH3";
@@ -36,7 +37,11 @@ export async function generateMarkdown(content: string) {
         ...defaultSchema.attributes,
         "large-image": ["src"],
       },
-      tagNames: [...(defaultSchema.tagNames ?? []), "large-image"],
+      tagNames: [
+        ...(defaultSchema.tagNames ?? []),
+        "large-image",
+        "caption-citation",
+      ],
     })
     .use(rehypeReact, {
       createElement,
@@ -72,6 +77,10 @@ export async function generateMarkdown(content: string) {
             );
           }
           return <></>;
+        },
+        "caption-citation": (props: HTMLProps<HTMLElement>) => {
+          console.log(1);
+          return <StoryCaptionCitation>{props.children}</StoryCaptionCitation>;
         },
       },
     })
