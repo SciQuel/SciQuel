@@ -3,33 +3,37 @@
 import { signIn, signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import logo from "./logo.png";
-import SearchIcon from "./search.svg";
+import Search from "./search.svg";
 import SideBar from "./SideBar/SideBar";
 import Topic from "./Topic/Topic";
 
 export default function Header() {
   const session = useSession();
   const [scroll, setScroll] = useState(false);
-
+  const [searchQuery, setSearchQuery] = useState("");
   const [y, setY] = useState(0);
   const [counter, setCounter] = useState(0);
-
+  const router = useRouter();
   const handleNavigation = useCallback(
     (e: Event) => {
       const window = e.currentTarget as Window;
       const maxY = document.documentElement.scrollHeight - window.innerHeight;
       if (window.location.pathname.split("/")[1] === "stories") {
         /**
-         * y > window.scrollY : last saved Y > current scrollY means scrolling up window.scrollY >
-         * 800(height of imag): scrolling event only apply after 800(heigh of imag ) window.scrollY
-         * == 0 : if scroll Y = 0 means hit the top apply the scroll up.
+         * y > window.scrollY : last saved Y > current scrollY means scrolling up
+         * window.scrollY > 800(height of imag): scrolling event only apply after 800(heigh of imag )
+         * window.scrollY == 0 : if scroll Y  = 0 means hit the top apply the scroll up.
          */
         if (y > window.scrollY && window.scrollY > 650) {
           // console.log("scrolling up");
 
-          /** Safari case if Y greather maxY( whole page ) set as scrolling down style */
+          /**
+           * Safari case
+           * if Y greather maxY( whole page ) set as scrolling down style
+           */
           if (y > maxY) {
             // console.log("scrolling down");
             setScroll(true);
@@ -38,7 +42,9 @@ export default function Header() {
           }
         } else {
           /**
-           * Safari case if Y is less than equal to 0 (top of page) set as scrolling up style else
+           * Safari case
+           * if Y is less than equal to 0 (top of page)  set as scrolling up style
+           * else
            * regular case scrolling down style
            */
           if (window.scrollY <= 10) {
@@ -86,14 +92,20 @@ export default function Header() {
     },
     [counter, y],
   );
-  /**
-   * useEffect tell React that your component needs to do something after render. EventListener for
-   * function handleNavigation and clean up after it.
+  const onSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    const encodedSearchQuery = encodeURI(searchQuery);
+    router.push(`/search?q=${encodedSearchQuery}`);
+    console.log("current query ", encodedSearchQuery);
+  };
+  /** useEffect tell React that your component needs to do something after render.
+   * EventListener for function handleNavigation
+   * and clean up after it.
    */
   useEffect(() => {
     setY(window.scrollY);
     window.addEventListener("scroll", handleNavigation);
-
+    console;
     return () => {
       window.removeEventListener("scroll", handleNavigation);
     };
@@ -108,8 +120,15 @@ export default function Header() {
         <div className="flex w-full flex-row gap-4 px-10 py-4 align-middle">
           <SideBar />
           <div className="top-0 flex">
-            <SearchIcon className="h-[2rem] w-auto" />
-            <input className=" w-auto border border-x-transparent border-y-transparent bg-transparent outline-none focus:border-b-white" />
+            <Search className="h-[2rem] w-auto " />
+
+            <form onSubmit={onSearch}>
+              <input
+                className=" w-auto border border-x-transparent border-y-transparent bg-transparent outline-none focus:border-b-white"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </form>
           </div>
           <div className="h-[2rem] grow" />
           {session.status === "authenticated" ? (
