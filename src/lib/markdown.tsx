@@ -1,5 +1,9 @@
 import StoryH1 from "@/components/story-components/StoryH1";
 import StoryH2 from "@/components/story-components/StoryH2";
+import StoryH3 from "@/components/story-components/StoryH3";
+import StoryH4 from "@/components/story-components/StoryH4";
+import StoryH5 from "@/components/story-components/StoryH5";
+import StoryH6 from "@/components/story-components/StoryH6";
 import StoryLargeImage from "@/components/story-components/StoryLargeImage";
 import StoryParagraph from "@/components/story-components/StoryParagraph";
 import remarkSciquelDirective from "@/lib/remark-sciquel-directive";
@@ -46,6 +50,18 @@ export async function generateMarkdown(content: string) {
         ),
         h2: (props: HTMLProps<HTMLHeadingElement>) => (
           <StoryH2>{props.children}</StoryH2>
+        ),
+        h3: (props: HTMLProps<HTMLHeadingElement>) => (
+          <StoryH3>{props.children}</StoryH3>
+        ),
+        h4: (props: HTMLProps<HTMLHeadingElement>) => (
+          <StoryH4>{props.children}</StoryH4>
+        ),
+        h5: (props: HTMLProps<HTMLHeadingElement>) => (
+          <StoryH5>{props.children}</StoryH5>
+        ),
+        h6: (props: HTMLProps<HTMLHeadingElement>) => (
+          <StoryH6>{props.children}</StoryH6>
         ),
         "large-image": (props: HTMLProps<HTMLElement>) => {
           if (typeof props.src === "string") {

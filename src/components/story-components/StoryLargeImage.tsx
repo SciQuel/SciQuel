@@ -19,7 +19,9 @@ export default function StoryLargeImage({
         )}
       >
         <img src={src} />
-        <figcaption>{children}</figcaption>
+        <figcaption className="[&_*]:mt-0 [&_*]:w-full [&_*]:text-sciquelCaption [&_p]:font-sourceSerif4 [&_p]:text-[1rem] [&_p]:leading-tight">
+          {children}
+        </figcaption>
       </figure>
     </div>
   );

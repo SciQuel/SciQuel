@@ -17,6 +17,7 @@ module.exports = {
         sciquelHover: "#51726b",
         sciquelHeading: "rgba(52, 78, 65, 1)",
         sciquelMuted: "#878787",
+        sciquelCaption: "#565656",
         sciquelCardBg: "#f8f8ff",
         sciquelCardBorder: "#cccccc",
       },
