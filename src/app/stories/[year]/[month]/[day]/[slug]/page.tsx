@@ -16,7 +16,9 @@ export default async function StoriesPage({ params }: Params) {
   const story = await retrieveStoryContent(params);
   const { file } = await generateMarkdown(story.storyContent[0].content);
   return (
-    <div className="flex flex-col gap-5 pt-10">{file.result as ReactNode}</div>
+    <div className="flex flex-col gap-5 pt-10 @container">
+      {file.result as ReactNode}
+    </div>
   );
 }
 

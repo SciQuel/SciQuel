@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import { type PropsWithChildren } from "react";
 
 interface Props {
@@ -9,9 +10,17 @@ export default function StoryLargeImage({
   children,
 }: PropsWithChildren<Props>) {
   return (
-    <figure className="flex flex-col justify-center gap-2 @xs:mx-[1rem] @md:mx-[2rem] @lg:mx-[5rem] @5xl:mx-[10rem]">
-      <img src={src} />
-      <figcaption>{children}</figcaption>
-    </figure>
+    <div className="flex justify-center">
+      <figure
+        className={clsx(
+          "flex flex-col justify-center gap-2",
+          "@lg:w-[28rem] @3xl:w-[42rem] @5xl:w-[50rem] @7xl:w-[60rem]",
+          "mx-10 @lg:mx-0",
+        )}
+      >
+        <img src={src} />
+        <figcaption>{children}</figcaption>
+      </figure>
+    </div>
   );
 }
