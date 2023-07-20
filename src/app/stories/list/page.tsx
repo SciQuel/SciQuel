@@ -10,15 +10,19 @@ interface Params {
   page_number: string;
 }
 
-export default async function StoriesListPage({ params }: { params: Params }) {
-  const { topic, staff_pick, page_number } = params;
-  const searchParams = {
+export default async function StoriesListPage({
+  searchParams,
+}: {
+  searchParams: Params;
+}) {
+  const { topic, staff_pick, page_number } = searchParams;
+  const params = {
     ...(topic ? { topic } : {}),
     ...(staff_pick && staff_pick === "true" ? { staff_pick: "true" } : {}),
     page: page_number || "1",
   };
 
-  const { stories, total_pages } = await getStories(searchParams);
+  const { stories, total_pages } = await getStories(params);
 
   // Header text shows ALL TOPICS by default or Topic if specified
   let headerText = topic ? topic.toUpperCase() : "ALL TOPICS";
