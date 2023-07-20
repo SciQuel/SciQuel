@@ -1,4 +1,5 @@
 import { type GetStoryResult } from "@/app/api/stories/[year]/[month]/[day]/[slug]/route";
+import ShareLinks from "@/components/ShareLinks";
 import StoryH1 from "@/components/story-components/StoryH1";
 import StoryH2 from "@/components/story-components/StoryH2";
 import StoryLargeImage from "@/components/story-components/StoryLargeImage";
@@ -6,7 +7,7 @@ import StoryParagraph from "@/components/story-components/StoryParagraph";
 import TopicTag from "@/components/TopicTag";
 import env from "@/lib/env";
 import remarkSciquelDirective from "@/lib/remark-sciquel-directive";
-import { StoryContribution, type StoryTopic } from "@prisma/client";
+import { type StoryTopic } from "@prisma/client";
 import { DateTime } from "luxon";
 import { createElement, Fragment, type HTMLProps } from "react";
 import rehypeReact from "rehype-react";
@@ -29,32 +30,34 @@ export default async function StoriesPage({ params }: Params) {
   const story = await retrieveStoryContent(params);
   const htmlContent = await generateMarkdown(story.storyContent[0].content);
   return (
-    <>
+    <div className="absolute top-0 h-fit w-screen">
       <div
         style={{
           backgroundImage: `url(${story.thumbnailUrl})`,
         }}
-        className="flex h-screen w-screen flex-col justify-end"
+        className="relative top-0 flex h-screen w-screen flex-col justify-end px-12 py-10"
       >
         <h1
-          className="p-8 font-alegreyaSansSC text-8xl"
+          className="w-4/5 p-8 font-alegreyaSansSC text-8xl font-bold"
           style={{ color: story.titleColor }}
         >
           {story.title}
         </h1>
         <h2
-          className="p-8 pt-0 font-alegreyaSansSC text-5xl"
+          className="w-5/6 p-8 pt-0 font-alegreyaSansSC text-4xl font-semibold"
           style={{ color: story.summaryColor }}
         >
           {story.summary}
         </h2>
       </div>
-      <div
-        className="mx-2 mt-5 flex w-screen flex-col md:mx-auto  md:w-[720px]"
-        // style={{ backgroundColor: "lime" }}
-      >
+
+      <div className="relative mx-2 mt-5 flex w-screen flex-col md:mx-auto md:w-[720px]">
+        <div className="absolute right-0 top-0 flex flex-1 flex-row justify-center xl:-left-36 xl:mt-5 xl:flex-col xl:pt-5">
+          <ShareLinks />
+        </div>
+
         <div className="flex flex-row">
-          <p className="mr-2 flex flex-row">
+          <p className="mr-2">
             {story.storyType.slice(0, 1) +
               story.storyType.slice(1).toLowerCase()}{" "}
             | we need to add article type |
@@ -88,10 +91,35 @@ export default async function StoriesPage({ params }: Params) {
             : ""}
         </p>
       </div>
-      <div className="mx-2 mt-2 flex flex-col items-center gap-5 md:mx-auto">
+
+      <div className="mx-2 mt-2 flex flex-col  items-center gap-5 md:mx-auto">
         {htmlContent.result}
       </div>
-    </>
+      <p className="w-[calc( 100% - 1rem )] mx-2 my-5 border-t-2 border-[#616161]  text-sm text-[#616161] md:mx-auto md:w-[720px]">
+        Animation provided by Source name 1. Sources provided by Source name 2.
+        We thank Funding 1 for their support, and Professor 2 for their
+        guidance. Ex. Cover Image: “Hawaiian Bobtail Squid” is licensed under CC
+        BY-NC 4.0.
+      </p>
+      {story.storyContributions.map((element, index) => (
+        <div
+          key={element.user.firstName + element.user.lastName}
+          className="w-[calc( 100% - 1rem )] mx-2 mb-3 flex flex-row items-stretch rounded-2xl border border-sciquelCardBorder p-3 shadow-md md:mx-auto md:w-[720px]"
+        >
+          <div className="m-5 aspect-square h-full flex-1 rounded-full bg-slate-600 text-center">
+            temp
+          </div>
+          <div className="m-5 flex flex-[2.3] flex-col">
+            <p className="font-alegreyaSansSC text-4xl font-medium text-sciquelTeal">
+              {element.user.firstName} {element.user.lastName}
+            </p>
+            <p className="flex-1 font-sourceSerif4 text-xl">
+              {element.user.bio}
+            </p>
+          </div>
+        </div>
+      ))}
+    </div>
   );
 }
 
