@@ -1,9 +1,11 @@
 import { type GetStoryResult } from "@/app/api/stories/[year]/[month]/[day]/[slug]/route";
-import ShareLinks from "@/components/ShareLinks";
+import FromThisSeries from "@/components/story-components/FromThisSeries";
+import ShareLinks from "@/components/story-components/ShareLinks";
 import StoryH1 from "@/components/story-components/StoryH1";
 import StoryH2 from "@/components/story-components/StoryH2";
 import StoryLargeImage from "@/components/story-components/StoryLargeImage";
 import StoryParagraph from "@/components/story-components/StoryParagraph";
+import StoryUl from "@/components/story-components/StoryUl";
 import TopicTag from "@/components/TopicTag";
 import env from "@/lib/env";
 import remarkSciquelDirective from "@/lib/remark-sciquel-directive";
@@ -50,9 +52,8 @@ export default async function StoriesPage({ params }: Params) {
           {story.summary}
         </h2>
       </div>
-
       <div className="relative mx-2 mt-5 flex w-screen flex-col md:mx-auto md:w-[720px]">
-        <div className="absolute right-0 top-0 flex flex-1 flex-row justify-center xl:-left-36 xl:mt-5 xl:flex-col xl:pt-5">
+        <div className="absolute right-0 top-0 flex flex-1 flex-row justify-center xl:-left-24  xl:flex-col xl:pt-3">
           <ShareLinks />
         </div>
 
@@ -91,7 +92,6 @@ export default async function StoriesPage({ params }: Params) {
             : ""}
         </p>
       </div>
-
       <div className="mx-2 mt-2 flex flex-col  items-center gap-5 md:mx-auto">
         {htmlContent.result}
       </div>
@@ -119,6 +119,7 @@ export default async function StoriesPage({ params }: Params) {
           </div>
         </div>
       ))}
+      <FromThisSeries />
     </div>
   );
 }
@@ -170,6 +171,9 @@ async function generateMarkdown(content: string) {
         ),
         h2: (props: HTMLProps<HTMLHeadingElement>) => (
           <StoryH2>{props.children}</StoryH2>
+        ),
+        ul: (props: HTMLProps<HTMLUListElement>) => (
+          <StoryUl>{props.children}</StoryUl>
         ),
         "large-image": (props: HTMLProps<HTMLElement>) => {
           if (typeof props.src === "string") {

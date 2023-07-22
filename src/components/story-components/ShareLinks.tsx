@@ -11,24 +11,24 @@ export default function ShareLinks() {
         <Image
           src={facebookIcon}
           alt="share to facebook"
-          width={50}
-          height={50}
+          width={40}
+          height={40}
         />
       </button>
       <button className="h-fit w-fit rounded-full p-3">
         <Image
           src={instagramIcon}
           alt="share to instagram"
-          width={50}
-          height={50}
+          width={40}
+          height={40}
         />
       </button>
       <button className="h-fit w-fit rounded-full p-3">
         <Image
           src={shareIcon}
           alt="share to a link to this story"
-          width={50}
-          height={50}
+          width={40}
+          height={40}
         />
       </button>
     </>
