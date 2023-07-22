@@ -10,7 +10,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import slug from "slug";
 import { postStorySchema } from "./schema";
 
-export type GetStoriesResult = (Story & {
+export type Stories = (Story & {
   storyContributions: {
     user: {
       firstName: string;
@@ -19,6 +19,12 @@ export type GetStoriesResult = (Story & {
     contributionType: ContributionType;
   }[];
 })[];
+
+export type GetStoriesResult = {
+  stories: Stories;
+  page_number: number;
+  total_pages: number;
+};
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
@@ -75,6 +81,13 @@ export async function GET(req: Request) {
   }
 
   try {
+    const query = {
+      where: {
+        staffPick: staffPick === "true" ? true : undefined,
+        ...(parsedTopic ? { tags: { has: parsedTopic } } : {}),
+      },
+    };
+
     const stories = await prisma.story.findMany({
       skip: numPagesToSkip * numStoriesPerPage,
       take: numStoriesPerPage,
@@ -86,15 +99,23 @@ export async function GET(req: Request) {
           },
         },
       },
-      where: {
-        staffPick: staffPick === "true" ? true : undefined,
-        ...(parsedTopic ? { tags: { has: parsedTopic } } : {}),
-      },
+      where: query.where,
       orderBy: {
         updatedAt: "desc",
       },
     });
-    return NextResponse.json(stories ?? []);
+
+    const numStories = await prisma.story.count({
+      where: query.where,
+    });
+
+    return NextResponse.json(
+      {
+        stories,
+        page_number: numPagesToSkip + 1,
+        total_pages: Math.ceil(numStories / numStoriesPerPage),
+      } ?? { stories: [] },
+    );
   } catch (e) {
     if (e instanceof Prisma.PrismaClientValidationError) {
       return NextResponse.json({ error: "Bad Request" }, { status: 400 });
