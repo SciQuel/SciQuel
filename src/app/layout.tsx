@@ -1,4 +1,5 @@
 import "./globals.css";
+import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import { authOptions } from "@/lib/auth";
 import clsx from "clsx";
@@ -44,12 +45,13 @@ export default async function RootLayout({
           quicksand.className,
           alegreyaSansSC.variable,
           sourceSerif4.variable,
-          "min-h-screen",
+          "flex min-h-screen flex-col",
         )}
       >
         <AuthProvider session={session}>
           <Header />
           {children}
+          <Footer />
         </AuthProvider>
       </body>
     </html>
