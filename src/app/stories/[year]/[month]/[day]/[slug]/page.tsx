@@ -11,6 +11,7 @@ import env from "@/lib/env";
 import remarkSciquelDirective from "@/lib/remark-sciquel-directive";
 import { type StoryTopic } from "@prisma/client";
 import { DateTime } from "luxon";
+import Image from "next/image";
 import { createElement, Fragment, type HTMLProps, type ReactNode } from "react";
 import rehypeReact from "rehype-react";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
@@ -32,25 +33,28 @@ export default async function StoriesPage({ params }: Params) {
   const story = await retrieveStoryContent(params);
   const htmlContent = await generateMarkdown(story.storyContent[0].content);
   return (
-    <div className="absolute top-0 h-fit w-screen">
-      <div
-        style={{
-          backgroundImage: `url(${story.thumbnailUrl})`,
-        }}
-        className="relative top-0 flex h-screen w-screen flex-col justify-end px-12 py-10"
-      >
-        <h1
-          className="w-4/5 p-8 font-alegreyaSansSC text-8xl font-bold"
-          style={{ color: story.titleColor }}
-        >
-          {story.title}
-        </h1>
-        <h2
-          className="w-5/6 p-8 pt-0 font-alegreyaSansSC text-4xl font-semibold"
-          style={{ color: story.summaryColor }}
-        >
-          {story.summary}
-        </h2>
+    <div className="flex flex-col">
+      <div className="relative h-screen">
+        <Image
+          src={story.thumbnailUrl}
+          className="-z-10 h-full object-cover"
+          fill={true}
+          alt={story.title}
+        />
+        <div className="relative flex h-full flex-col justify-end px-12 pb-24 pt-10">
+          <h1
+            className="w-4/5 p-8 font-alegreyaSansSC text-6xl font-bold sm:text-8xl"
+            style={{ color: story.titleColor }}
+          >
+            {story.title}
+          </h1>
+          <h2
+            className="w-5/6 p-8 pt-0 font-alegreyaSansSC text-4xl font-semibold"
+            style={{ color: story.summaryColor }}
+          >
+            {story.summary}
+          </h2>
+        </div>
       </div>
       <div className="relative mx-2 mt-5 flex w-screen flex-col md:mx-auto md:w-[720px]">
         <div className="absolute right-0 top-0 flex flex-1 flex-row justify-center xl:-left-24  xl:flex-col xl:pt-3">
@@ -92,7 +96,7 @@ export default async function StoriesPage({ params }: Params) {
             : ""}
         </p>
       </div>
-      <div className="mx-2 mt-2 flex flex-col  items-center gap-5 md:mx-auto">
+      <div className="mx-2 mt-2 flex flex-col items-center gap-5 md:mx-auto">
         {htmlContent.result as ReactNode}
       </div>
       <p className="w-[calc( 100% - 1rem )] mx-2 my-5 border-t-2 border-[#616161]  text-sm text-[#616161] md:mx-auto md:w-[720px]">
@@ -141,8 +145,14 @@ async function retrieveStoryContent({
   if (!res.ok) {
     throw new Error("Failed to fetch data");
   }
+  const json = (await res.json()) as GetStoryResult;
 
-  return (await res.json()) as GetStoryResult;
+  return {
+    ...json,
+    createdAt: new Date(json.createdAt),
+    publishedAt: new Date(json.publishedAt),
+    updatedAt: new Date(json.updatedAt),
+  } as GetStoryResult;
 }
 
 async function generateMarkdown(content: string) {
