@@ -1,5 +1,4 @@
 import Image from "next/image";
-import bookmarkIcon from "../../../public/assets/images/bookmark.png";
 import facebookIcon from "../../../public/assets/images/story-facebook.png";
 import instagramIcon from "../../../public/assets/images/story-ig.png";
 import shareIcon from "../../../public/assets/images/story-share.png";
