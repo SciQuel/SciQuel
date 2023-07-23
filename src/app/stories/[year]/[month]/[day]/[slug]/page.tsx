@@ -11,7 +11,7 @@ import env from "@/lib/env";
 import remarkSciquelDirective from "@/lib/remark-sciquel-directive";
 import { type StoryTopic } from "@prisma/client";
 import { DateTime } from "luxon";
-import { createElement, Fragment, type HTMLProps } from "react";
+import { createElement, Fragment, type HTMLProps, type ReactNode } from "react";
 import rehypeReact from "rehype-react";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import remarkDirective from "remark-directive";
@@ -64,13 +64,13 @@ export default async function StoriesPage({ params }: Params) {
             | we need to add article type |
           </p>{" "}
           {story.tags.map((item: StoryTopic, index: number) => {
-            return <TopicTag name={item} key={item + index} />;
+            return <TopicTag name={item} key={`${item}-${index}`} />;
           })}
         </div>
         <div>
           {story.storyContributions.map((element, index) => {
             return (
-              <p>
+              <p key={`contributor-header-${index}`}>
                 {element.contributionType == "AUTHOR"
                   ? `by ${element.user.firstName} ${element.user.lastName}`
                   : `${element.contributionType} by ${element.user.firstName} ${element.user.lastName}`}
@@ -79,13 +79,13 @@ export default async function StoriesPage({ params }: Params) {
           })}
         </div>
         <p>
-          {DateTime.fromISO(story.publishedAt).toLocaleString({
+          {DateTime.fromJSDate(story.publishedAt).toLocaleString({
             ...DateTime.DATETIME_MED,
             timeZoneName: "short",
           })}
           {story.updatedAt != story.publishedAt
             ? " | " +
-              DateTime.fromISO(story.updatedAt).toLocaleString({
+              DateTime.fromJSDate(story.updatedAt).toLocaleString({
                 ...DateTime.DATETIME_MED,
                 timeZoneName: "short",
               })
@@ -93,7 +93,7 @@ export default async function StoriesPage({ params }: Params) {
         </p>
       </div>
       <div className="mx-2 mt-2 flex flex-col  items-center gap-5 md:mx-auto">
-        {htmlContent.result}
+        {htmlContent.result as ReactNode}
       </div>
       <p className="w-[calc( 100% - 1rem )] mx-2 my-5 border-t-2 border-[#616161]  text-sm text-[#616161] md:mx-auto md:w-[720px]">
         Animation provided by Source name 1. Sources provided by Source name 2.
@@ -103,7 +103,7 @@ export default async function StoriesPage({ params }: Params) {
       </p>
       {story.storyContributions.map((element, index) => (
         <div
-          key={element.user.firstName + element.user.lastName}
+          key={`contributor-footer-${index}`}
           className="w-[calc( 100% - 1rem )] mx-2 mb-3 flex flex-row items-stretch rounded-2xl border border-sciquelCardBorder p-3 shadow-md md:mx-auto md:w-[720px]"
         >
           <div className="m-5 aspect-square h-full flex-1 rounded-full bg-slate-600 text-center">
