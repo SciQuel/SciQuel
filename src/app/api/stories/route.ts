@@ -97,6 +97,7 @@ export async function GET(req: Request) {
       },
       where: query.where,
       orderBy: {
+        updatedAt: "desc",
         ...(sort_by === "newest" ? { updatedAt: "desc" } : {}),
         ...(sort_by === "oldest" ? { updatedAt: "asc" } : {}),
       },
