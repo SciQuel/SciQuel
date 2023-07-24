@@ -8,7 +8,7 @@ interface Query {
     OR?: object[];
     staffPick: boolean | undefined;
     tags?: object;
-    storyType?: StoryType;
+    storyType: StoryType | undefined;
     createdAt: object;
   };
 }
@@ -53,7 +53,7 @@ export async function GET(req: Request) {
           : {}),
         staffPick: staff_pick,
         ...(topic ? { tags: { has: topic } } : {}),
-        ...(type ? { storyType: type } : {}),
+        storyType: type,
         createdAt: {
           gte: date_from,
           lt: date_to,
