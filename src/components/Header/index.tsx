@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import logo from "./logo.png";
+import ProfileButton from "./ProfileButton";
 import SearchIcon from "./search.svg";
 import SideBar from "./SideBar/SideBar";
 import Topic from "./Topic/Topic";
@@ -109,26 +110,10 @@ export default function Header() {
           <SideBar />
           <div className="top-0 flex">
             <SearchIcon className="h-[2rem] w-auto" />
-            <input className=" w-auto border border-x-transparent border-y-transparent bg-transparent outline-none focus:border-b-white" />
+            <input className="w-auto border border-x-transparent border-y-transparent bg-transparent outline-none focus:border-b-white" />
           </div>
           <div className="h-[2rem] grow" />
-          {session.status === "authenticated" ? (
-            <a
-              href="#"
-              onClick={() => void signOut()}
-              className="font-bold leading-[2rem]"
-            >
-              SIGN OUT
-            </a>
-          ) : (
-            <a
-              href="#"
-              onClick={() => void signIn()}
-              className="font-bold leading-[2rem]"
-            >
-              LOGIN
-            </a>
-          )}
+          <ProfileButton />
         </div>
       </div>
       <div
