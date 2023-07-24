@@ -1,6 +1,5 @@
 "use client";
 
-import { signIn, signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
@@ -11,7 +10,6 @@ import SideBar from "./SideBar/SideBar";
 import Topic from "./Topic/Topic";
 
 export default function Header() {
-  const session = useSession();
   const [scroll, setScroll] = useState(false);
 
   const [y, setY] = useState(0);
