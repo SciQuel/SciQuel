@@ -1,15 +1,14 @@
 import prisma from "@/lib/prisma";
-import { Prisma } from "@prisma/client";
+import { Prisma, type StoryType } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { getStorySchema } from "./schema";
 
 interface Query {
   where: {
     OR?: object[];
-    topic?: string;
-    type?: string;
-    date_from?: Date;
-    date_to?: Date;
+    tags?: object;
+    storyType?: StoryType;
+    createdAt: object;
   };
 }
 
@@ -44,8 +43,10 @@ export async function GET(req: Request) {
           : {}),
         ...(topic ? { tags: { has: topic } } : {}),
         ...(type ? { storyType: type } : {}),
-        ...(date_from ? { createdAt: { gte: date_from } } : {}),
-        ...(date_to ? { createdAt: { lt: date_to } } : {}),
+        createdAt: {
+          gte: date_from,
+          lt: date_to,
+        },
       },
     };
 
@@ -80,6 +81,7 @@ export async function GET(req: Request) {
     );
   } catch (e) {
     if (e instanceof Prisma.PrismaClientValidationError) {
+      console.log(e.message);
       return NextResponse.json({ error: "Bad Request" }, { status: 400 });
     }
 
