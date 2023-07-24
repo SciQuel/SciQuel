@@ -124,6 +124,90 @@ paths:
                     type: string
                     example: Not Found
 
+  /api/stories/search:
+    get:
+      tags:
+        - Stories
+      summary: Return a list of stories based on search query
+      description: Return a list of stories that matches to search query
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          required: false
+          description: Page number
+        - in: query
+          name: page_size
+          schema:
+            type: integer
+            minimum: 1
+            default: 10
+          required: false
+          description: Number of stories per page
+        - in: query
+          name: keyword
+          schema:
+            type: string
+          required: false
+          description: Filter by keyword on story title, summary
+        - in: query
+          name: topic
+          schema:
+            type: string
+            example: "ASTRONOMY"
+          required: false
+          description: Filter stories by topic (non-case sensitive)
+        - in: query
+          name: type
+          schema:
+            type: string
+            example: "ARTICLE"
+          required: false
+          description: Filter stories by storyType (non-case sensitive)
+        - in: query
+          name: date_from
+          schema:
+            type: string
+            example: "2023-06-13"
+          required: false
+          description: Filter stories after or on this date
+        - in: query
+          name: date_to
+          schema:
+            type: string
+            example: "2023-06-13"
+          required: false
+          description: Filter stories before or on this date
+        - in: query
+          name: sort_by
+          schema:
+            type: string
+            example: "newest | oldest"
+          required: false
+          description: Sort stories with preset rules
+      responses:
+        "200":
+          description: Successfully return a list of stories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Story"
+        "400":
+          description: User requested invalid page or page size or topic
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Bad Request
+
   /api/user/page_views:
     post:
       tags:
