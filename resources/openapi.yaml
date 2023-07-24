@@ -8,128 +8,8 @@ paths:
     get:
       tags:
         - Stories
-      summary: Return a list of stories with pagination
-      description: Return a list of stories with pagination and optional filter on story topics
-      parameters:
-        - in: query
-          name: page
-          schema:
-            type: integer
-            minimum: 1
-            default: 1
-          required: false
-          description: Page number
-        - in: query
-          name: page_size
-          schema:
-            type: integer
-            minimum: 1
-            default: 10
-          required: false
-          description: Number of stories per page
-        - in: query
-          name: staff_pick
-          schema:
-            type: boolean
-            default: false
-          required: false
-          description: Return only staff pick stories
-        - in: query
-          name: topic
-          schema:
-            type: string
-            example: "ASTRONOMY"
-          required: false
-          description: Filter stories by topic (non-case sensitive)
-      responses:
-        "200":
-          description: Successfully return a list of stories
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Story"
-        "400":
-          description: User requested invalid page or page size or topic
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: Bad Request
-
-  /api/stories/[year]/[month]/[day]/[slug]:
-    get:
-      tags:
-        - Stories
-      summary: Return a story given publish date and slug
-      description: Return a story given year, month, day and slug
-      parameters:
-        - in: path
-          name: year
-          schema:
-            type: string
-            example: "2023"
-          required: true
-          description: Publish year
-        - in: path
-          name: month
-          schema:
-            type: string
-            example: "01"
-          required: true
-          description: Publish month
-        - in: path
-          name: day
-          schema:
-            type: string
-            example: "23"
-          required: true
-          description: Publish day of month
-        - in: path
-          name: slug
-          schema:
-            type: string
-            example: lights-camera-action
-          required: true
-          description: Unique identifier of the page in the last part of URL address (ex. title)
-      responses:
-        "200":
-          description: Successfully return a story
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Story"
-        "400":
-          description: User specified invalid path parameters
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: Bad Request
-        "404":
-          description: Cannot find story with given constraints
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: Not Found
-
-  /api/stories/search:
-    get:
-      tags:
-        - Stories
-      summary: Return a list of stories based on search query
-      description: Return a list of stories that matches to search query
+      summary: Return a list of stories
+      description: Return a list of stories with pagination given optional parameters
       parameters:
         - in: query
           name: page
@@ -214,6 +94,69 @@ paths:
                   error:
                     type: string
                     example: Bad Request
+
+  /api/stories/[year]/[month]/[day]/[slug]:
+    get:
+      tags:
+        - Stories
+      summary: Return a story given publish date and slug
+      description: Return a story given year, month, day and slug
+      parameters:
+        - in: path
+          name: year
+          schema:
+            type: string
+            example: "2023"
+          required: true
+          description: Publish year
+        - in: path
+          name: month
+          schema:
+            type: string
+            example: "01"
+          required: true
+          description: Publish month
+        - in: path
+          name: day
+          schema:
+            type: string
+            example: "23"
+          required: true
+          description: Publish day of month
+        - in: path
+          name: slug
+          schema:
+            type: string
+            example: lights-camera-action
+          required: true
+          description: Unique identifier of the page in the last part of URL address (ex. title)
+      responses:
+        "200":
+          description: Successfully return a story
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Story"
+        "400":
+          description: User specified invalid path parameters
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Bad Request
+        "404":
+          description: Cannot find story with given constraints
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Not Found
 
   /api/user/page_views:
     post:
