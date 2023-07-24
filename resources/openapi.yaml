@@ -154,6 +154,13 @@ paths:
           required: false
           description: Filter by keyword on story title, summary
         - in: query
+          name: staff_pick
+          schema:
+            type: boolean
+            default: false
+          required: false
+          description: Return only staff pick stories
+        - in: query
           name: topic
           schema:
             type: string

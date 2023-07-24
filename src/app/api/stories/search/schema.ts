@@ -15,6 +15,12 @@ export const getStorySchema = z.object({
     )
     .optional(),
   keyword: z.string().optional(),
+  staff_pick: z
+    .preprocess(
+      (value) => (value === "true" ? true : undefined),
+      z.boolean().optional(),
+    )
+    .optional(),
   topic: z
     .preprocess(
       (value) => String(z.string().parse(value).toUpperCase()),

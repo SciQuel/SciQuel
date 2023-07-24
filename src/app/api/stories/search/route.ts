@@ -6,6 +6,7 @@ import { getStorySchema } from "./schema";
 interface Query {
   where: {
     OR?: object[];
+    staffPick: boolean | undefined;
     tags?: object;
     storyType?: StoryType;
     createdAt: object;
@@ -21,8 +22,17 @@ export async function GET(req: Request) {
     return NextResponse.json(parsedParams.error, { status: 400 });
   }
 
-  const { page, page_size, keyword, topic, type, date_from, date_to, sort_by } =
-    parsedParams.data;
+  const {
+    page,
+    page_size,
+    keyword,
+    staff_pick,
+    topic,
+    type,
+    date_from,
+    date_to,
+    sort_by,
+  } = parsedParams.data;
 
   const numPagesToSkip = (page && page - 1) || 0;
   const numStoriesPerPage = page_size || 10; // default page size
@@ -41,6 +51,7 @@ export async function GET(req: Request) {
               ],
             }
           : {}),
+        staffPick: staff_pick,
         ...(topic ? { tags: { has: topic } } : {}),
         ...(type ? { storyType: type } : {}),
         createdAt: {
