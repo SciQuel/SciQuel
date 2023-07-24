@@ -52,8 +52,6 @@ export default function ProfileButton() {
     return null;
   }
 
-  const fullname = session.data?.user?.name?.split(", ").reverse().join(" ");
-
   return (
     <div
       ref={refs.setReference}
@@ -62,7 +60,9 @@ export default function ProfileButton() {
     >
       <div className="h-9 w-9 rounded-full bg-slate-900"></div>
       <div className="flex flex-col gap-1">
-        <div className="leading-none">{fullname}</div>
+        <div className="leading-none">
+          {session.data?.user.firstName} {session.data?.user.lastName}
+        </div>
         <div className="text-xs leading-none">{session.data?.user?.email}</div>
       </div>
       <div className="-ml-2 h-6 w-6">
