@@ -159,43 +159,22 @@ export default function Header() {
           style={{ display: scroll ? "none" : "block" }}
         >
           <Link href="/">LATEST</Link>
-      <div
-        className=" duration-350 z-10 flex flex-row px-40 text-center transition-all"
-        style={{ height: scroll ? "0" : "40px" }}
-      >
-        <div
-          className=" grow cursor-pointer py-2 transition-colors hover:bg-sciquelHover"
-          style={{ display: scroll ? "none" : "block" }}
-        >
-          <Link href="/">LATEST</Link>
         </div>
-        <div
-          className="grow cursor-pointer py-2 transition-colors hover:bg-sciquelHover"
-          style={{ display: scroll ? "none" : "block" }}
-        >
-          <Link href="/">READ</Link>
+
         <div
           className="grow cursor-pointer py-2 transition-colors hover:bg-sciquelHover"
           style={{ display: scroll ? "none" : "block" }}
         >
           <Link href="/">READ</Link>
         </div>
-        <div
-          className="grow cursor-pointer py-2 transition-colors hover:bg-sciquelHover"
-          style={{ display: scroll ? "none" : "block" }}
-        >
-          <Topic></Topic>
+
         <div
           className="grow cursor-pointer py-2 transition-colors hover:bg-sciquelHover"
           style={{ display: scroll ? "none" : "block" }}
         >
           <Topic></Topic>
         </div>
-        <div
-          className="grow cursor-pointer py-2 transition-colors hover:bg-sciquelHover"
-          style={{ display: scroll ? "none" : "block" }}
-        >
-          <Link href="/">ABOUT</Link>
+
         <div
           className="grow cursor-pointer py-2 transition-colors hover:bg-sciquelHover"
           style={{ display: scroll ? "none" : "block" }}
