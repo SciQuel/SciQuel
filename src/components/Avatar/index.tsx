@@ -17,9 +17,17 @@ interface Props {
     | "6xl"
     | "7xl"
     | "8xl";
+  className?: string;
+  onClick?: () => void;
 }
 
-export default function Avatar({ imageUrl, label, size = "md" }: Props) {
+export default function Avatar({
+  imageUrl,
+  label,
+  size = "md",
+  className,
+  onClick,
+}: Props) {
   return (
     <div
       className={clsx(
@@ -37,7 +45,9 @@ export default function Avatar({ imageUrl, label, size = "md" }: Props) {
         size === "6xl" && "h-52 w-52 text-7xl",
         size === "7xl" && "h-64 w-64 text-8xl",
         size === "8xl" && "h-72 w-72 text-9xl",
+        className,
       )}
+      onClick={onClick}
     >
       {typeof imageUrl === "string" ? (
         <Image src={imageUrl} width={288} height={288} alt="avatar" />
