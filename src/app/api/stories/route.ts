@@ -8,7 +8,17 @@ import {
 } from "@prisma/client";
 import { NextResponse, type NextRequest } from "next/server";
 import slug from "slug";
-import { postStorySchema } from "./schema";
+import { getStorySchema, postStorySchema } from "./schema";
+
+interface GetStoryQuery {
+  where: {
+    OR?: object[];
+    staffPick: boolean | undefined;
+    tags?: object;
+    storyType: StoryType | undefined;
+    createdAt: object;
+  };
+}
 
 export type Stories = (Story & {
   storyContributions: {
@@ -28,63 +38,49 @@ export type GetStoriesResult = {
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
-  const page = searchParams.get("page");
-  const pageSize = searchParams.get("page_size");
-  const staffPick = searchParams.get("staff_pick");
-  const topic = searchParams.get("topic");
-
-  let numPagesToSkip = 0;
-  let numStoriesPerPage = 10; // default page size
-
-  if (pageSize !== null) {
-    // user specified page size
-    const parsedPageSize =
-      typeof pageSize === "string" ? parseInt(pageSize) : null;
-
-    if (
-      parsedPageSize === null ||
-      isNaN(parsedPageSize) ||
-      parsedPageSize < 1
-    ) {
-      // user requests a invalid page size
-      return NextResponse.json({ error: "Bad Request" }, { status: 400 });
-    }
-
-    numStoriesPerPage = parsedPageSize;
+  const parsedParams = getStorySchema.safeParse(
+    Object.fromEntries(searchParams),
+  );
+  if (!parsedParams.success) {
+    return NextResponse.json(parsedParams.error, { status: 400 });
   }
 
-  if (page === null) {
-    // return first page if user does not specify a page
-    numPagesToSkip = 0;
-  } else {
-    // user specified page
-    const parsedPage = typeof page === "string" ? parseInt(page) : null;
+  const {
+    page,
+    page_size,
+    keyword,
+    staff_pick,
+    topic,
+    type,
+    date_from,
+    date_to,
+    sort_by,
+  } = parsedParams.data;
 
-    if (parsedPage === null || isNaN(parsedPage) || parsedPage < 1) {
-      // user requests a invalid page
-      return NextResponse.json({ error: "Bad Request" }, { status: 400 });
-    }
+  const numPagesToSkip = (page && page - 1) || 0;
+  const numStoriesPerPage = page_size || 10; // default page size
 
-    numPagesToSkip = parsedPage - 1;
-  }
-
-  let parsedTopic: StoryTopic | null = null;
-  if (topic !== null) {
-    parsedTopic =
-      typeof topic === "string" && topic.length > 0
-        ? (topic.toUpperCase() as StoryTopic)
-        : null;
-
-    if (parsedTopic === null) {
-      return NextResponse.json({ error: "Bad Request" }, { status: 400 });
-    }
-  }
+  // to include stories created on that date
+  date_to?.setDate(date_to.getDate() + 1);
 
   try {
-    const query = {
+    const query: GetStoryQuery = {
       where: {
-        staffPick: staffPick === "true" ? true : undefined,
-        ...(parsedTopic ? { tags: { has: parsedTopic } } : {}),
+        ...(keyword
+          ? {
+              OR: [
+                { title: { contains: keyword, mode: "insensitive" } },
+                { summary: { contains: keyword, mode: "insensitive" } },
+              ],
+            }
+          : {}),
+        staffPick: staff_pick,
+        ...(topic ? { tags: { has: topic } } : {}),
+        storyType: type,
+        createdAt: {
+          gte: date_from,
+          lt: date_to,
+        },
       },
     };
 
@@ -102,6 +98,8 @@ export async function GET(req: Request) {
       where: query.where,
       orderBy: {
         updatedAt: "desc",
+        ...(sort_by === "newest" ? { updatedAt: "desc" } : {}),
+        ...(sort_by === "oldest" ? { updatedAt: "asc" } : {}),
       },
     });
 
@@ -118,6 +116,7 @@ export async function GET(req: Request) {
     );
   } catch (e) {
     if (e instanceof Prisma.PrismaClientValidationError) {
+      console.log(e.message);
       return NextResponse.json({ error: "Bad Request" }, { status: 400 });
     }
 
