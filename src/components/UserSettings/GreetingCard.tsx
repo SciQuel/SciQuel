@@ -4,7 +4,7 @@ import Avatar from "/public/user-settings/ProfilePicture.png";
 import ArticleImage from "/public/user-settings/top_background_img.png";
 import Image from "next/image";
 
-export default function GreetingCard({ user }: { user: User }) {
+export default function GreetingCard({ user }: { user: any }) {
   const getGreeting = () => {
     const currHr = new Date().getHours();
     if (currHr < 12) return "Good morning";
@@ -35,8 +35,11 @@ export default function GreetingCard({ user }: { user: User }) {
           </div>
         </div>
         <p className="absolute bottom-4 left-6 font-thin">
-          A member since {String(user.joinedAt.getMonth())} of{" "}
-          {String(user.joinedAt.getFullYear())}
+          A member since{" "}
+          {user.joinedAt.toLocaleDateString("en-us", {
+            year: "numeric",
+            month: "short",
+          })}
         </p>
       </div>
 

@@ -1,4 +1,4 @@
-export default function Layout(props: {
+export default async function Layout(props: {
   greeting: React.ReactNode;
   quiz_history: React.ReactNode;
   article_cards: React.ReactNode;
