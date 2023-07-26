@@ -8,8 +8,8 @@ paths:
     get:
       tags:
         - Stories
-      summary: Return a list of stories with pagination
-      description: Return a list of stories with pagination and optional filter on story topics
+      summary: Return a list of stories
+      description: Return a list of stories with pagination given optional parameters
       parameters:
         - in: query
           name: page
@@ -28,6 +28,12 @@ paths:
           required: false
           description: Number of stories per page
         - in: query
+          name: keyword
+          schema:
+            type: string
+          required: false
+          description: Filter by keyword on story title, summary
+        - in: query
           name: staff_pick
           schema:
             type: boolean
@@ -41,6 +47,34 @@ paths:
             example: "ASTRONOMY"
           required: false
           description: Filter stories by topic (non-case sensitive)
+        - in: query
+          name: type
+          schema:
+            type: string
+            example: "ARTICLE"
+          required: false
+          description: Filter stories by storyType (non-case sensitive)
+        - in: query
+          name: date_from
+          schema:
+            type: string
+            example: "2023-06-13"
+          required: false
+          description: Filter stories after or on this date
+        - in: query
+          name: date_to
+          schema:
+            type: string
+            example: "2023-06-13"
+          required: false
+          description: Filter stories before or on this date
+        - in: query
+          name: sort_by
+          schema:
+            type: string
+            example: "newest | oldest"
+          required: false
+          description: Sort stories with preset rules
       responses:
         "200":
           description: Successfully return a list of stories

@@ -4,7 +4,7 @@ import Avatar from "/public/user-settings/ProfilePicture.png";
 import ArticleImage from "/public/user-settings/top_background_img.png";
 import Image from "next/image";
 
-export default function GreetingCard({ user }: { user: any }) {
+export default function GreetingCard(props: { name: string }) {
   const getGreeting = () => {
     const currHr = new Date().getHours();
     if (currHr < 12) return "Good morning";
@@ -26,7 +26,7 @@ export default function GreetingCard({ user }: { user: any }) {
         </div>
         <div className="mt-2 sm:ml-6">
           <p className="line-clamp-2 text-2xl font-semibold sm:text-3xl">
-            {getGreeting()}, {user.firstName}
+            {getGreeting()}, {props.name}
           </p>
           <div className="mt-3 flex max-h-[24px] flex-wrap justify-start gap-2 overflow-hidden text-xs">
             <TopicTag name={StoryTopic.MATHEMATICS} />
