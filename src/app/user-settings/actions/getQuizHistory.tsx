@@ -5,7 +5,7 @@ export async function getSession() {
   return await getServerSession();
 }
 
-export default async function getUserData() {
+export default async function getQuizHistory() {
   try {
     const session = await getSession();
 
@@ -13,19 +13,22 @@ export default async function getUserData() {
       return null;
     }
 
-    const currUser = await prisma.user.findUnique({
+    const quizs = await prisma.quiz.findMany({
       where: {
-        email: session.user.email,
+        user: {
+          email: session.user.email,
+        },
+      },
+      include: {
+        story: true,
       },
     });
 
-    if (!currUser) {
+    if (!quizs) {
       return null;
     }
 
-    return {
-      ...currUser,
-    };
+    return quizs;
   } catch (err) {
     return null;
   }

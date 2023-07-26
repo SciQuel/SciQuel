@@ -4,7 +4,7 @@ import Avatar from "/public/user-settings/ProfilePicture.png";
 import ArticleImage from "/public/user-settings/top_background_img.png";
 import Image from "next/image";
 
-export default function GreetingCard(props: { name: string }) {
+export default function GreetingCard({ user }: { user: any }) {
   const getGreeting = () => {
     const currHr = new Date().getHours();
     if (currHr < 12) return "Good morning";
@@ -26,7 +26,7 @@ export default function GreetingCard(props: { name: string }) {
         </div>
         <div className="mt-2 sm:ml-6">
           <p className="line-clamp-2 text-2xl font-semibold sm:text-3xl">
-            {getGreeting()}, {props.name}
+            {getGreeting()}, {user.firstName}
           </p>
           <div className="mt-3 flex max-h-[24px] flex-wrap justify-start gap-2 overflow-hidden text-xs">
             <TopicTag name={StoryTopic.MATHEMATICS} />
@@ -74,7 +74,10 @@ export default function GreetingCard(props: { name: string }) {
             </p>
           </div>
           <div className="flex basis-1/6 items-center justify-center gap-2">
-            <button className="h-8 rounded-lg bg-gray-100 px-2 hover:scale-105 hover:bg-gray-200">
+            <button
+              className="h-8 rounded-lg bg-gray-100 px-2 hover:scale-105 hover:bg-gray-200"
+              title="previous"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -90,7 +93,10 @@ export default function GreetingCard(props: { name: string }) {
                 />
               </svg>
             </button>
-            <button className="h-8 rounded-lg bg-gray-100 px-2 hover:scale-105 hover:bg-gray-200">
+            <button
+              title="next"
+              className="h-8 rounded-lg bg-gray-100 px-2 hover:scale-105 hover:bg-gray-200"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
