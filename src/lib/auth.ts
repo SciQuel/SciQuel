@@ -37,7 +37,8 @@ export const authOptions: AuthOptions = {
           return {
             id: user.id,
             email: user.email,
-            name: `${user.lastName}, ${user.firstName}`,
+            firstName: user.firstName,
+            lastName: user.lastName,
           };
         }
         return null;
@@ -64,6 +65,23 @@ export const authOptions: AuthOptions = {
           : `/auth/verify?user=${userRecord.email}`;
       }
       return "/auth/login?error=CredentialsSignin";
+    },
+    session({ session, token }) {
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          firstName: token.firstName,
+          lastName: token.lastName,
+        },
+      };
+    },
+    jwt({ token, user, account }) {
+      if (account) {
+        token.firstName = user.firstName;
+        token.lastName = user.lastName;
+      }
+      return token;
     },
   },
 };
