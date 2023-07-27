@@ -201,6 +201,7 @@ export default function AvatarEditorModal({
                 scale={scale}
                 rotate={rotation}
                 borderRadius={144}
+                backgroundColor="white"
               />
               <div className="flex w-full flex-col">
                 <label htmlFor="image-scale">Scale: {scale}x</label>
