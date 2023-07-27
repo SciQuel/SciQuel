@@ -31,7 +31,7 @@ export default function Avatar({
   return (
     <div
       className={clsx(
-        "flex items-center justify-center overflow-clip rounded-full",
+        "flex items-center justify-center overflow-clip rounded-full text-black",
         typeof imageUrl !== "string" && "bg-amber-400",
         size === "xs" && "h-5 w-5 text-xs",
         size === "sm" && "h-9 w-9 text-lg",
@@ -52,9 +52,7 @@ export default function Avatar({
       {typeof imageUrl === "string" ? (
         <Image src={imageUrl} width={288} height={288} alt="avatar" />
       ) : (
-        <span className="select-none font-sans font-semibold text-black">
-          {label}
-        </span>
+        <span className="select-none font-sans font-semibold">{label}</span>
       )}
     </div>
   );
