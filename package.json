@@ -72,6 +72,7 @@
     "prettier-plugin-tailwindcss": "^0.3.0",
     "prisma": "^4.15.0",
     "request": "^2.88.2",
+    "tailwindcss-touch": "^1.0.1",
     "ts-node": "^10.9.1"
   }
 }

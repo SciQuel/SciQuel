@@ -18,19 +18,21 @@ export default function GreetingCard(props: { name: string }) {
   return (
     <section className="flex min-h-[320px] flex-wrap overflow-hidden rounded-md border bg-white">
       <div className="relative flex min-h-[280px] flex-1 flex-col items-center p-6 sm:flex-row sm:items-start lg:basis-7/12">
-        <div className="relative flex h-[6.75rem] w-[6.75rem] items-center justify-center rounded-full bg-gradient-to-b from-[#A1C9C1] to-[#58ABF8]">
-          <AvatarEditorButton />
-          <Avatar
-            imageUrl={session.data?.user.image ?? undefined}
-            label={props.name.trim()[0]}
-            size="2xl"
-          />
+        <div>
+          <div className="relative flex h-[6.75rem] w-[6.75rem] items-center justify-center rounded-full bg-gradient-to-b from-[#A1C9C1] to-[#58ABF8]">
+            <AvatarEditorButton />
+            <Avatar
+              imageUrl={session.data?.user.image ?? undefined}
+              label={props.name.trim()[0]}
+              size="2xl"
+            />
+          </div>
         </div>
         <div className="mt-2 sm:ml-6">
           <p className="line-clamp-2 text-2xl font-semibold sm:text-3xl">
             {getGreeting()}, {props.name}
           </p>
-          <div className="mt-3 flex max-h-[24px] flex-wrap justify-start gap-2 overflow-hidden text-xs">
+          <div className="mt-3 flex max-h-[24px] flex-wrap justify-start gap-2 text-xs">
             <TopicTag name={StoryTopic.MATHEMATICS} />
             <TopicTag name={StoryTopic.MEDICINE} />
             <TopicTag name={StoryTopic.COMPUTER_SCIENCE} />
