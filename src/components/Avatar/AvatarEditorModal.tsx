@@ -1,6 +1,13 @@
+import axios from "axios";
 import clsx from "clsx";
 import { useSession } from "next-auth/react";
-import { useState, type Dispatch, type SetStateAction } from "react";
+import {
+  useCallback,
+  useRef,
+  useState,
+  type Dispatch,
+  type SetStateAction,
+} from "react";
 import AvatarEditorCanvas from "react-avatar-editor";
 import Avatar from ".";
 
@@ -8,23 +15,36 @@ interface Props {
   labelId: string;
   descriptionId: string;
   setIsOpen: Dispatch<SetStateAction<boolean>>;
+  setLoading: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function AvatarEditorModal({
   labelId,
   descriptionId,
   setIsOpen,
+  setLoading: setOuterLoading,
 }: Props) {
   const [selected, setSelected] = useState<"default" | "custom">("default");
   const [uploadOpen, setUploadOpen] = useState(false);
   const [image, setImage] = useState<string | File>("");
   const [scale, setScale] = useState(1);
   const [rotation, setRotation] = useState(0);
+  const [loading, setLoading] = useState(false);
+
+  const editorRef = useRef<AvatarEditorCanvas>(null);
+
+  const combinedSetLoading = useCallback(
+    (value: boolean) => {
+      setLoading(value);
+      setOuterLoading(value);
+    },
+    [setLoading, setOuterLoading],
+  );
 
   const session = useSession();
   const names = session.data?.user?.name?.split(", ");
   return (
-    <>
+    <div className={clsx(loading && "pointer-events-none opacity-40")}>
       <div className="flex flex-col p-4">
         <h2 id={labelId} className="text-lg font-semibold">
           Edit your profile picture
@@ -85,12 +105,13 @@ export default function AvatarEditorModal({
           >
             <div className="flex flex-row gap-4">
               <AvatarEditorCanvas
+                ref={editorRef}
                 width={288}
                 height={288}
                 image={image}
                 scale={scale}
                 rotate={rotation}
-                borderRadius={144}
+                // borderRadius={144}
               />
               <div className="flex w-full flex-col">
                 <label htmlFor="image-scale">Scale: {scale}x</label>
@@ -132,13 +153,43 @@ export default function AvatarEditorModal({
           Cancel
         </button>
         <button
-          onClick={() => setIsOpen(false)}
-          className="disabled:pointer-none hover:not:disabled:bg-blue-600 rounded-md bg-blue-500 px-3 py-2 font-semibold text-white disabled:opacity-40"
+          onClick={() => {
+            if (editorRef.current) {
+              combinedSetLoading(true);
+              const scaledCanvas = editorRef.current.getImageScaledToCanvas();
+              scaledCanvas.toBlob((blob) => {
+                if (blob) {
+                  const formData = new FormData();
+                  const file = new File([blob], "image.png");
+                  formData.append("file", file, file.name);
+                  axios
+                    .put("/api/user/profile/image", formData, {
+                      headers: {
+                        "Content-Type": "multipart/form-data",
+                      },
+                    })
+                    .then((res) => {
+                      if (res.status === 201) {
+                        setIsOpen(false);
+                      }
+                    })
+                    .catch((err) => {
+                      console.error(err);
+                    })
+                    .finally(() => {
+                      combinedSetLoading(false);
+                    });
+                }
+              });
+            }
+          }}
+          className={`rounded-md bg-blue-500 px-3 py-2 font-semibold text-white
+            hover:bg-blue-600 disabled:pointer-events-none disabled:opacity-40`}
           disabled={selected === "custom" && image === ""}
         >
           Submit
         </button>
       </div>
-    </>
+    </div>
   );
 }

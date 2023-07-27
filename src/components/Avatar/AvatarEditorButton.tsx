@@ -15,6 +15,7 @@ import AvatarEditorModal from "./AvatarEditorModal";
 
 export default function AvatarEditorButton() {
   const [isOpen, setIsOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const { refs, context } = useFloating({
     open: isOpen,
@@ -24,6 +25,7 @@ export default function AvatarEditorButton() {
   const click = useClick(context);
   const dismiss = useDismiss(context, {
     outsidePressEvent: "mousedown",
+    enabled: !loading,
   });
   const role = useRole(context);
 
@@ -66,6 +68,7 @@ export default function AvatarEditorButton() {
                 labelId={labelId}
                 descriptionId={descriptionId}
                 setIsOpen={setIsOpen}
+                setLoading={setLoading}
               />
             </div>
           </FloatingFocusManager>
