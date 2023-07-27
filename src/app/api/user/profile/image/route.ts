@@ -63,6 +63,7 @@ export async function PUT(request: Request) {
 }
 
 export async function DELETE() {
+  console.log(1);
   try {
     const session = await getServerSession();
     if (!session?.user || !session.user.email) {
@@ -88,7 +89,7 @@ export async function DELETE() {
       data: { avatarUrl: null },
     });
 
-    return NextResponse.json({}, { status: 204 });
+    return NextResponse.json({}, { status: 200 });
   } catch (err) {
     console.error(err);
     return NextResponse.json("Internal Server Error", { status: 500 });

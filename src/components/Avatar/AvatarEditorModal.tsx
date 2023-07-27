@@ -73,10 +73,25 @@ export default function AvatarEditorModal({
             });
         }
       });
+    } else if (selected === "default" && session.data?.user.image) {
+      combinedSetLoading(true);
+      axios
+        .delete("/api/user/profile/image")
+        .then((res) => {
+          if (res.status === 200) {
+            setIsOpen(false);
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+        })
+        .finally(() => {
+          combinedSetLoading(false);
+        });
     } else {
       setIsOpen(false);
     }
-  }, []);
+  }, [selected]);
 
   const willDisplayWarning =
     session.data?.user.image && selected !== "database";
