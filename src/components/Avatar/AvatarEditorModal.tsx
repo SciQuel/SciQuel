@@ -10,6 +10,7 @@ import {
 } from "react";
 import AvatarEditorCanvas from "react-avatar-editor";
 import Avatar from ".";
+import Alert from "../Alert";
 
 interface Props {
   labelId: string;
@@ -43,6 +44,42 @@ export default function AvatarEditorModal({
     },
     [setLoading, setOuterLoading],
   );
+
+  const submitHandler = useCallback(() => {
+    if (editorRef.current && selected === "custom") {
+      combinedSetLoading(true);
+      const scaledCanvas = editorRef.current.getImageScaledToCanvas();
+      scaledCanvas.toBlob((blob) => {
+        if (blob) {
+          const formData = new FormData();
+          const file = new File([blob], "image.png");
+          formData.append("file", file, file.name);
+          axios
+            .put("/api/user/profile/image", formData, {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            })
+            .then((res) => {
+              if (res.status === 201) {
+                setIsOpen(false);
+              }
+            })
+            .catch((err) => {
+              console.error(err);
+            })
+            .finally(() => {
+              combinedSetLoading(false);
+            });
+        }
+      });
+    } else {
+      setIsOpen(false);
+    }
+  }, []);
+
+  const willDisplayWarning =
+    session.data?.user.image && selected !== "database";
 
   return (
     <div className={clsx(loading && "pointer-events-none opacity-40")}>
@@ -96,6 +133,25 @@ export default function AvatarEditorModal({
               setUploadOpen(true);
             }}
           />
+        </div>
+      </div>
+      <div className="px-4">
+        <div
+          className={clsx(
+            "overflow-hidden transition-all duration-300",
+            willDisplayWarning ? "pb-4" : "p-0",
+          )}
+        >
+          <div
+            className={clsx(
+              "transition-all duration-300",
+              willDisplayWarning ? "h-8" : "h-0",
+            )}
+          >
+            <Alert type="warn">
+              Your old photo will be permanently deleted when you submit!
+            </Alert>
+          </div>
         </div>
       </div>
       <hr
@@ -167,38 +223,7 @@ export default function AvatarEditorModal({
           Cancel
         </button>
         <button
-          onClick={() => {
-            if (editorRef.current && selected === "custom") {
-              combinedSetLoading(true);
-              const scaledCanvas = editorRef.current.getImageScaledToCanvas();
-              scaledCanvas.toBlob((blob) => {
-                if (blob) {
-                  const formData = new FormData();
-                  const file = new File([blob], "image.png");
-                  formData.append("file", file, file.name);
-                  axios
-                    .put("/api/user/profile/image", formData, {
-                      headers: {
-                        "Content-Type": "multipart/form-data",
-                      },
-                    })
-                    .then((res) => {
-                      if (res.status === 201) {
-                        setIsOpen(false);
-                      }
-                    })
-                    .catch((err) => {
-                      console.error(err);
-                    })
-                    .finally(() => {
-                      combinedSetLoading(false);
-                    });
-                }
-              });
-            } else {
-              setIsOpen(false);
-            }
-          }}
+          onClick={submitHandler}
           className={`rounded-md bg-blue-500 px-3 py-2 font-semibold text-white
             hover:bg-blue-600 disabled:pointer-events-none disabled:opacity-40`}
           disabled={selected === "custom" && image === ""}
