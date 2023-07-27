@@ -26,7 +26,6 @@ export async function PUT(request: Request) {
     const parsedForm = putProfileImageSchema.safeParse(formData);
 
     if (!parsedForm.success) {
-      console.log(parsedForm.error);
       return NextResponse.json({ error: "Bad Request" }, { status: 400 });
     }
 
