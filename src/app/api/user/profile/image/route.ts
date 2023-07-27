@@ -1,7 +1,9 @@
 import { randomUUID } from "crypto";
+import { tagUser } from "@/lib/cache";
 import prisma from "@/lib/prisma";
 import { Storage } from "@google-cloud/storage";
 import { getServerSession } from "next-auth";
+import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 import { putProfileImageSchema } from "./schema";
 
@@ -40,8 +42,12 @@ export async function PUT(request: Request) {
       where: { email: session.user.email },
     });
 
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
     if (
-      user?.avatarUrl &&
+      user.avatarUrl &&
       user.avatarUrl.startsWith(bucketUrlPrefix) &&
       user.avatarUrl.endsWith(".png")
     ) {
@@ -53,6 +59,8 @@ export async function PUT(request: Request) {
       where: { email: session.user.email },
       data: { avatarUrl: fileUrl },
     });
+
+    revalidateTag(tagUser(user.id));
 
     return NextResponse.json({}, { status: 201 });
   } catch (err) {
@@ -72,8 +80,12 @@ export async function DELETE() {
       where: { email: session.user.email },
     });
 
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
     if (
-      user?.avatarUrl &&
+      user.avatarUrl &&
       user.avatarUrl.startsWith(bucketUrlPrefix) &&
       user.avatarUrl.endsWith(".png")
     ) {
@@ -86,6 +98,8 @@ export async function DELETE() {
       where: { email: session.user.email },
       data: { avatarUrl: null },
     });
+
+    revalidateTag(tagUser(user.id));
 
     return NextResponse.json({}, { status: 200 });
   } catch (err) {
