@@ -13,6 +13,7 @@ const storage = new Storage({
   },
 });
 const bucket = storage.bucket(process.env.GCS_BUCKET ?? "");
+const bucketUrlPrefix = `https://storage.googleapis.com/${process.env.GCS_BUCKET}/`;
 
 export async function PUT(request: Request) {
   try {
@@ -32,7 +33,6 @@ export async function PUT(request: Request) {
     const { file } = parsedForm.data;
 
     const filename = `${randomUUID()}.png`;
-    const bucketUrlPrefix = `https://storage.googleapis.com/${process.env.GCS_BUCKET}/`;
     const fileUrl = `${bucketUrlPrefix}${filename}`;
 
     await bucket.file(filename).save(Buffer.from(await file.arrayBuffer()));
@@ -56,6 +56,39 @@ export async function PUT(request: Request) {
     });
 
     return NextResponse.json({}, { status: 201 });
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json("Internal Server Error", { status: 500 });
+  }
+}
+
+export async function DELETE() {
+  try {
+    const session = await getServerSession();
+    if (!session?.user || !session.user.email) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email },
+    });
+
+    if (
+      user?.avatarUrl &&
+      user.avatarUrl.startsWith(bucketUrlPrefix) &&
+      user.avatarUrl.endsWith(".png")
+    ) {
+      await bucket
+        .file(user.avatarUrl.slice(bucketUrlPrefix.length))
+        .delete({ ignoreNotFound: true });
+    }
+
+    await prisma.user.update({
+      where: { email: session.user.email },
+      data: { avatarUrl: null },
+    });
+
+    return NextResponse.json({}, { status: 204 });
   } catch (err) {
     console.error(err);
     return NextResponse.json("Internal Server Error", { status: 500 });
