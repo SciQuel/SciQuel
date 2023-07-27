@@ -39,6 +39,7 @@ export const authOptions: AuthOptions = {
             email: user.email,
             firstName: user.firstName,
             lastName: user.lastName,
+            image: user.avatarUrl,
           };
         }
         return null;

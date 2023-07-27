@@ -1,5 +1,6 @@
 "use client";
 
+import Avatar from "@/components/Avatar";
 import {
   autoUpdate,
   FloatingFocusManager,
@@ -58,7 +59,11 @@ export default function ProfileButton() {
       {...getReferenceProps()}
       className="flex cursor-pointer flex-row items-center gap-3"
     >
-      <div className="h-9 w-9 rounded-full bg-slate-900"></div>
+      <Avatar
+        imageUrl={session.data?.user.image ?? undefined}
+        label={session.data?.user.firstName[0]}
+        size="sm"
+      />
       <div className="flex flex-col gap-1">
         <div className="leading-none">
           {session.data?.user.firstName} {session.data?.user.lastName}

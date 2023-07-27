@@ -24,7 +24,10 @@ export default function AvatarEditorModal({
   setIsOpen,
   setLoading: setOuterLoading,
 }: Props) {
-  const [selected, setSelected] = useState<"default" | "custom">("default");
+  const session = useSession();
+  const [selected, setSelected] = useState<"default" | "database" | "custom">(
+    session?.data?.user.image ? "database" : "default",
+  );
   const [uploadOpen, setUploadOpen] = useState(false);
   const [image, setImage] = useState<string | File>("");
   const [scale, setScale] = useState(1);
@@ -41,8 +44,6 @@ export default function AvatarEditorModal({
     [setLoading, setOuterLoading],
   );
 
-  const session = useSession();
-  const names = session.data?.user?.name?.split(", ");
   return (
     <div className={clsx(loading && "pointer-events-none opacity-40")}>
       <div className="flex flex-col p-4">
@@ -57,7 +58,7 @@ export default function AvatarEditorModal({
       <div className="flex flex-col p-4">
         <div className="flex flex-row gap-3">
           <Avatar
-            label={names?.[names.length - 1][0]}
+            label={session.data?.user.firstName[0]}
             className={clsx(
               "ring-4",
               selected === "default"
@@ -66,6 +67,19 @@ export default function AvatarEditorModal({
             )}
             onClick={() => {
               setSelected("default");
+              setUploadOpen(false);
+            }}
+          />
+          <Avatar
+            imageUrl={session.data?.user.image ?? undefined}
+            className={clsx(
+              "ring-4",
+              selected === "database"
+                ? "ring-cyan-500"
+                : "cursor-pointer ring-transparent hover:ring-cyan-300",
+            )}
+            onClick={() => {
+              setSelected("database");
               setUploadOpen(false);
             }}
           />
@@ -154,7 +168,7 @@ export default function AvatarEditorModal({
         </button>
         <button
           onClick={() => {
-            if (editorRef.current) {
+            if (editorRef.current && selected === "custom") {
               combinedSetLoading(true);
               const scaledCanvas = editorRef.current.getImageScaledToCanvas();
               scaledCanvas.toBlob((blob) => {
@@ -181,6 +195,8 @@ export default function AvatarEditorModal({
                     });
                 }
               });
+            } else {
+              setIsOpen(false);
             }
           }}
           className={`rounded-md bg-blue-500 px-3 py-2 font-semibold text-white

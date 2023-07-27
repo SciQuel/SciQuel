@@ -39,6 +39,11 @@ const nextConfig = {
         hostname: "api.sciquel.org",
         port: "",
       },
+      {
+        protocol: "https",
+        hostname: "storage.googleapis.com",
+        port: "",
+      },
     ],
   },
 };

@@ -2,10 +2,12 @@ import Avatar from "@/components/Avatar";
 import TopicTag from "@/components/TopicTag";
 import { StoryTopic } from "@prisma/client";
 import ArticleImage from "/public/user-settings/top_background_img.png";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import AvatarEditorButton from "../Avatar/AvatarEditorButton";
 
 export default function GreetingCard(props: { name: string }) {
+  const session = useSession();
   const getGreeting = () => {
     const currHr = new Date().getHours();
     if (currHr < 12) return "Good morning";
@@ -18,7 +20,11 @@ export default function GreetingCard(props: { name: string }) {
       <div className="relative flex min-h-[280px] flex-1 flex-col items-center p-6 sm:flex-row sm:items-start lg:basis-7/12">
         <div className="relative flex h-[6.75rem] w-[6.75rem] items-center justify-center rounded-full bg-gradient-to-b from-[#A1C9C1] to-[#58ABF8]">
           <AvatarEditorButton />
-          <Avatar label={props.name.trim()[0]} size="2xl" />
+          <Avatar
+            imageUrl={session.data?.user.image ?? undefined}
+            label={props.name.trim()[0]}
+            size="2xl"
+          />
         </div>
         <div className="mt-2 sm:ml-6">
           <p className="line-clamp-2 text-2xl font-semibold sm:text-3xl">
