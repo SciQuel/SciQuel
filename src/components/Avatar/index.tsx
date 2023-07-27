@@ -52,7 +52,9 @@ export default function Avatar({
       {typeof imageUrl === "string" ? (
         <Image src={imageUrl} width={288} height={288} alt="avatar" />
       ) : (
-        <span className="select-none font-sans font-semibold">{label}</span>
+        <span className="select-none font-sans font-semibold text-black">
+          {label}
+        </span>
       )}
     </div>
   );

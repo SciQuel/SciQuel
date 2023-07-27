@@ -62,6 +62,7 @@ export default function AvatarEditorModal({
             })
             .then((res) => {
               if (res.status === 201) {
+                void session.update();
                 setIsOpen(false);
               }
             })
@@ -79,6 +80,7 @@ export default function AvatarEditorModal({
         .delete("/api/user/profile/image")
         .then((res) => {
           if (res.status === 200) {
+            void session.update();
             setIsOpen(false);
           }
         })
@@ -122,19 +124,21 @@ export default function AvatarEditorModal({
               setUploadOpen(false);
             }}
           />
-          <Avatar
-            imageUrl={session.data?.user.image ?? undefined}
-            className={clsx(
-              "ring-4",
-              selected === "database"
-                ? "ring-cyan-500"
-                : "cursor-pointer ring-transparent hover:ring-cyan-300",
-            )}
-            onClick={() => {
-              setSelected("database");
-              setUploadOpen(false);
-            }}
-          />
+          {session.data?.user.image && (
+            <Avatar
+              imageUrl={session.data?.user.image ?? undefined}
+              className={clsx(
+                "ring-4",
+                selected === "database"
+                  ? "ring-cyan-500"
+                  : "cursor-pointer ring-transparent hover:ring-cyan-300",
+              )}
+              onClick={() => {
+                setSelected("database");
+                setUploadOpen(false);
+              }}
+            />
+          )}
           <Avatar
             label="+"
             className={clsx(

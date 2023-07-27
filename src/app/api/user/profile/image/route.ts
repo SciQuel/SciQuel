@@ -63,7 +63,6 @@ export async function PUT(request: Request) {
 }
 
 export async function DELETE() {
-  console.log(1);
   try {
     const session = await getServerSession();
     if (!session?.user || !session.user.email) {

@@ -77,8 +77,16 @@ export const authOptions: AuthOptions = {
         },
       };
     },
-    jwt({ token, user, account }) {
-      if (account) {
+    async jwt({ token, user, account, trigger }) {
+      if (trigger === "update") {
+        const user = await prisma.user.findUnique({ where: { id: token.sub } });
+        if (user) {
+          token.firstName = user.firstName;
+          token.lastName = user.lastName;
+          token.email = user.email;
+          token.picture = user.avatarUrl;
+        }
+      } else if (trigger === "signIn" && account) {
         token.firstName = user.firstName;
         token.lastName = user.lastName;
       }
