@@ -3,6 +3,8 @@ import QuizCard from "@/components/UserSettings/QuizCard";
 import { StoryTopic, type Quiz } from "@prisma/client";
 import getQuizHistory from "../../actions/getQuizHistory";
 
+type QuizAndStory = Quiz & { story: Story };
+
 // mock data
 const mock_quiz_history = [
   {
@@ -56,10 +58,10 @@ const mock_quiz_history = [
 ];
 
 export default async function QuizHistory() {
-  const quizs = await getQuizHistory();
+  const quizs: QuizAndStory[] | null = await getQuizHistory();
   return (
     <section className="mt-6 flex min-h-[180px] w-full flex-nowrap gap-4 overflow-auto ">
-      {quizs?.map((quizItem, idx) => (
+      {quizs?.map((quizItem: QuizAndStory, idx) => (
         <QuizCard idx={idx} quiz={quizItem} key={quizItem.id} />
       ))}
     </section>

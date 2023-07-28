@@ -1,5 +1,8 @@
 import prisma from "@/lib/prisma";
+import { type Quiz, type Story } from "@prisma/client";
 import { getServerSession } from "next-auth";
+
+type QuizAndStory = Quiz & { story: Story };
 
 export async function getSession() {
   return await getServerSession();
@@ -13,7 +16,7 @@ export default async function getQuizHistory() {
       return null;
     }
 
-    const quizs = await prisma.quiz.findMany({
+    const quizs = (await prisma.quiz.findMany({
       where: {
         user: {
           email: session.user.email,
@@ -22,7 +25,7 @@ export default async function getQuizHistory() {
       include: {
         story: true,
       },
-    });
+    })) as QuizAndStory[];
 
     if (!quizs) {
       return null;
