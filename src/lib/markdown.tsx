@@ -3,6 +3,7 @@ import StoryH1 from "@/components/story-components/StoryH1";
 import StoryH2 from "@/components/story-components/StoryH2";
 import StoryLargeImage from "@/components/story-components/StoryLargeImage";
 import StoryParagraph from "@/components/story-components/StoryParagraph";
+import StoryUl from "@/components/story-components/StoryUl";
 import remarkSciquelDirective from "@/lib/remark-sciquel-directive";
 import { createElement, Fragment, type HTMLProps } from "react";
 import rehypeReact from "rehype-react";
@@ -14,7 +15,6 @@ import remarkRetext from "remark-retext";
 import retextEnglish from "retext-english";
 import { unified } from "unified";
 import retextWordCount from "./retext-word-count";
-import StoryUl from "@/components/story-components/StoryUl";
 
 export async function generateMarkdown(content: string) {
   const wordStats: Record<string, number> = {};
@@ -53,7 +53,9 @@ export async function generateMarkdown(content: string) {
         h2: (props: HTMLProps<HTMLHeadingElement>) => (
           <StoryH2>{props.children}</StoryH2>
         ),
-        ul: (props: HTMLProps<HTMLUListElement>) => (<StoryUl>{props.children}</StoryUl>),
+        ul: (props: HTMLProps<HTMLUListElement>) => (
+          <StoryUl>{props.children}</StoryUl>
+        ),
         "large-image": (props: HTMLProps<HTMLElement>) => {
           if (typeof props.src === "string") {
             return (
