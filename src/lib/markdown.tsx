@@ -14,6 +14,7 @@ import remarkRetext from "remark-retext";
 import retextEnglish from "retext-english";
 import { unified } from "unified";
 import retextWordCount from "./retext-word-count";
+import StoryUl from "@/components/story-components/StoryUl";
 
 export async function generateMarkdown(content: string) {
   const wordStats: Record<string, number> = {};
@@ -52,6 +53,7 @@ export async function generateMarkdown(content: string) {
         h2: (props: HTMLProps<HTMLHeadingElement>) => (
           <StoryH2>{props.children}</StoryH2>
         ),
+        ul: (props: HTMLProps<HTMLUListElement>) => (<StoryUl>{props.children}</StoryUl>),
         "large-image": (props: HTMLProps<HTMLElement>) => {
           if (typeof props.src === "string") {
             return (
