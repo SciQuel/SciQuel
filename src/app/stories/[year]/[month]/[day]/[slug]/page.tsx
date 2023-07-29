@@ -1,15 +1,15 @@
 import { type GetStoryResult } from "@/app/api/stories/[year]/[month]/[day]/[slug]/route";
-import env from "@/lib/env";
-import { generateMarkdown } from "@/lib/markdown";
-import { type ReactNode } from "react";
 import Avatar from "@/components/Avatar";
 import FromThisSeries from "@/components/story-components/FromThisSeries";
 import ShareLinks from "@/components/story-components/ShareLinks";
 import TopicTag from "@/components/TopicTag";
 import { tagUser } from "@/lib/cache";
+import env from "@/lib/env";
+import { generateMarkdown } from "@/lib/markdown";
 import { type StoryTopic } from "@prisma/client";
 import { DateTime } from "luxon";
 import Image from "next/image";
+import { type ReactNode } from "react";
 
 interface Params {
   params: {
@@ -88,7 +88,7 @@ export default async function StoriesPage({ params }: Params) {
         </p>
       </div>
       <div className="mx-2 mt-2 flex flex-col items-center gap-5 md:mx-auto">
-        {htmlContent.result as ReactNode}
+        {file.result as ReactNode}
       </div>
       <p className="w-[calc( 100% - 1rem )] mx-2 my-5 border-t-2 border-[#616161]  text-sm text-[#616161] md:mx-auto md:w-[720px]">
         Animation provided by Source name 1. Sources provided by Source name 2.
