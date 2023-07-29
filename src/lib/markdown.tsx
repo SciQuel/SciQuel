@@ -32,7 +32,7 @@ export async function generateMarkdown(content: string) {
       ...defaultSchema,
       attributes: {
         ...defaultSchema.attributes,
-        "large-image": ["src"],
+        "large-image": ["src", "alt"],
       },
       tagNames: [
         ...(defaultSchema.tagNames ?? []),
@@ -59,7 +59,7 @@ export async function generateMarkdown(content: string) {
         "large-image": (props: HTMLProps<HTMLElement>) => {
           if (typeof props.src === "string") {
             return (
-              <StoryLargeImage src={props.src}>
+              <StoryLargeImage src={props.src} alt={props.alt}>
                 {props.children}
               </StoryLargeImage>
             );
