@@ -8,6 +8,7 @@ export default function StoryCaptionCitation({
     <span
       className={clsx(
         "font-sourceSerif4 text-xs font-[370] leading-8 text-sciquelCitation",
+        "[&>a]:brightness-75 [&>a]:hover:brightness-100",
       )}
     >
       {children}
