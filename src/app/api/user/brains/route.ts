@@ -19,6 +19,43 @@ const requestSchema = z.object({
     .regex(/^[0-9a-f]{24}$/, { message: "user_id must be a valid ObjectId" }),
 });
 
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const parsedParams = requestSchema.safeParse(
+    Object.fromEntries(searchParams),
+  );
+
+  if (!parsedParams.success) {
+    return NextResponse.json(parsedParams.error, { status: 400 });
+  }
+
+  const { story_id, user_id } = parsedParams.data;
+
+  try {
+    const brain = await prisma.brain.findFirst({
+      where: {
+        storyId: story_id,
+        userId: user_id,
+      },
+    });
+
+    if (brain === null) {
+      return NextResponse.json({ error: "Brain not found" }, { status: 404 });
+    }
+
+    return NextResponse.json(brain);
+
+  } catch (e) {
+    if (e instanceof Prisma.PrismaClientValidationError) {
+      console.log(e.message);
+      return NextResponse.json({ error: "Bad Request" }, { status: 400 });
+    }
+
+    // all other errors
+    return NextResponse.json({ error: e }, { status: 500 });
+  }
+}
+
 export async function POST(req: NextRequest) {
   let result;
   try {
