@@ -8,25 +8,33 @@ interface BrainIndex {
   };
 }
 
+interface BookmarkIndex {
+  cursor?: {
+    firstBatch?: Array<{ key: { userId?: number; storyId?: number } }>;
+  };
+}
+
+const userStoryIndex = {
+  key: {
+    userId: 1,
+    storyId: 1,
+  },
+  name: "user_id_story_id",
+  unique: true,
+};
+
 async function seed() {
-  // Create index
-  const response: BrainIndex = await prisma.$runCommandRaw({
+  let indexExists;
+
+  // Create brain index
+  const brainIndex: BrainIndex = await prisma.$runCommandRaw({
     listIndexes: "Brain",
   });
 
-  const brainUserStoryIndex = {
-    key: {
-      userId: 1,
-      storyId: 1,
-    },
-    name: "user_id_story_id",
-    unique: true,
-  };
-
-  const indexExists = response?.cursor?.firstBatch?.some(
+  indexExists = brainIndex?.cursor?.firstBatch?.some(
     (index) =>
-      index.key.userId === brainUserStoryIndex.key.userId &&
-      index.key.storyId === brainUserStoryIndex.key.storyId,
+      index.key.userId === userStoryIndex.key.userId &&
+      index.key.storyId === userStoryIndex.key.storyId,
   );
 
   if (indexExists) {
@@ -34,9 +42,30 @@ async function seed() {
   } else {
     await prisma.$runCommandRaw({
       createIndexes: "Brain",
-      indexes: [brainUserStoryIndex],
+      indexes: [userStoryIndex],
     });
     console.log("Created compound index in collection Brain");
+  }
+
+  // Create bookmark index
+  const bookmarkIndex: BookmarkIndex = await prisma.$runCommandRaw({
+    listIndexes: "Bookmark",
+  });
+
+  indexExists = bookmarkIndex?.cursor?.firstBatch?.some(
+    (index) =>
+      index.key.userId === userStoryIndex.key.userId &&
+      index.key.storyId === userStoryIndex.key.storyId,
+  );
+
+  if (indexExists) {
+    console.log("Found compound index in collection Bookmark");
+  } else {
+    await prisma.$runCommandRaw({
+      createIndexes: "Bookmark",
+      indexes: [userStoryIndex],
+    });
+    console.log("Created compound index in collection Bookmark");
   }
 }
 

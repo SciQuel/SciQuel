@@ -144,3 +144,14 @@ model Brain {
 
   @@unique([userId, storyId])
 }
+
+model Bookmark {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  userId  String @db.ObjectId
+  storyId String @db.ObjectId
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, storyId])
+}
