@@ -1,6 +1,60 @@
 import prisma from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 import { NextResponse, type NextRequest } from "next/server";
-import { postSchema } from "./schema";
+import { getSchema, postSchema } from "./schema";
+
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const parsedParams = getSchema.safeParse(Object.fromEntries(searchParams));
+
+  if (!parsedParams.success) {
+    return NextResponse.json(parsedParams.error, { status: 400 });
+  }
+
+  const { user_id } = parsedParams.data;
+
+  try {
+    const result = await prisma.pageView.groupBy({
+      by: ["storyId"],
+      _count: {
+        storyId: true,
+      },
+      orderBy: {
+        _count: {
+          storyId: "desc",
+        },
+      },
+      take: 10,
+      where: {
+        userId: user_id,
+      },
+    });
+
+    const storyIds = result.map((item) => item.storyId);
+
+    const stories = await prisma.story.findMany({
+      where: {
+        id: {
+          in: storyIds,
+        },
+      },
+    });
+
+    const sortedStories = storyIds.map((id) =>
+      stories.find((story) => story.id === id),
+    );
+
+    return NextResponse.json(sortedStories);
+  } catch (e) {
+    if (e instanceof Prisma.PrismaClientValidationError) {
+      console.log(e.message);
+      return NextResponse.json({ error: "Bad Request" }, { status: 400 });
+    }
+
+    // all other errors
+    return NextResponse.json({ error: e }, { status: 500 });
+  }
+}
 
 export async function POST(req: NextRequest) {
   let result;
