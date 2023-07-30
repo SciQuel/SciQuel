@@ -1,27 +1,11 @@
 import prisma from "@/lib/prisma";
 import { NextResponse, type NextRequest } from "next/server";
-import { z } from "zod";
-
-const bodySchema = z.object({
-  story_id: z
-    .string({
-      required_error: "story_id is required",
-      invalid_type_error: "story_id must be a ObjectId",
-    })
-    .regex(/^[0-9a-f]{24}$/, { message: "story_id must be a valid ObjectId" }),
-
-  user_id: z
-    .string({
-      required_error: "user_id is required",
-      invalid_type_error: "user_id must be a ObjectId",
-    })
-    .regex(/^[0-9a-f]{24}$/, { message: "user_id must be a valid ObjectId" }),
-});
+import { postSchema } from "./schema";
 
 export async function POST(req: NextRequest) {
   let result;
   try {
-    result = bodySchema.safeParse(await req.json());
+    result = postSchema.safeParse(await req.json());
     if (!result.success) {
       return NextResponse.json(result.error, { status: 400 });
     }
