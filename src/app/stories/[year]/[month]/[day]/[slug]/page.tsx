@@ -1,4 +1,7 @@
 import { type GetStoryResult } from "@/app/api/stories/[year]/[month]/[day]/[slug]/route";
+///testing
+import { type GetStoriesResult } from "@/app/api/stories/route";
+import MoreCard from "@/components/MoreCard";
 import StoryH1 from "@/components/story-components/StoryH1";
 import StoryH2 from "@/components/story-components/StoryH2";
 import StoryLargeImage from "@/components/story-components/StoryLargeImage";
@@ -23,11 +26,13 @@ interface Params {
 }
 
 export default async function StoriesPage({ params }: Params) {
+  const whatsNewArticles = await getWhatsNewArticles();
   const story = await retrieveStoryContent(params);
   const htmlContent = await generateMarkdown(story.storyContent[0].content);
   return (
     <div className="flex flex-col gap-5 pt-10">
       {htmlContent.result as ReactNode}
+      <MoreCard articles1={whatsNewArticles} articles2={whatsNewArticles} />
     </div>
   );
 }
@@ -94,4 +99,24 @@ async function generateMarkdown(content: string) {
     })
     .process(content);
   return file;
+}
+
+/// temporary
+async function getWhatsNewArticles() {
+  const res = await fetch(`${env.NEXT_PUBLIC_SITE_URL}/api/stories`, {
+    next: { revalidate: 60 },
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch data");
+  }
+
+  return res.json().then((value: GetStoriesResult) =>
+    value.map((story) => ({
+      ...story,
+      createdAt: new Date(story.createdAt),
+      publishedAt: new Date(story.publishedAt),
+      updatedAt: new Date(story.updatedAt),
+    })),
+  );
 }
