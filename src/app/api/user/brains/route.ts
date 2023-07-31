@@ -44,7 +44,6 @@ export async function GET(req: Request) {
     }
 
     return NextResponse.json(brain);
-
   } catch (e) {
     if (e instanceof Prisma.PrismaClientValidationError) {
       console.log(e.message);
