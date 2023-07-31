@@ -1,7 +1,7 @@
 import { type GetStoryResult } from "@/app/api/stories/[year]/[month]/[day]/[slug]/route";
 import { type GetStoriesResult } from "@/app/api/stories/route";
-import MoreCard from "@/components/MoreCard";
 import Avatar from "@/components/Avatar";
+import MoreCard from "@/components/MoreCard";
 import FromThisSeries from "@/components/story-components/FromThisSeries";
 import ShareLinks from "@/components/story-components/ShareLinks";
 import StoryH1 from "@/components/story-components/StoryH1";

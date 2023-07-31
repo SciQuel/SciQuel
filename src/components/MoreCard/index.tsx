@@ -1,10 +1,10 @@
-import { type GetStoriesResult } from "@/app/api/stories/route";
+import { type Stories } from "@/app/api/stories/route";
 import ArticleList from "@/components/ArticleList";
 import HomepageSection from "@/components/HomepageSection";
 
 interface Props {
-  articles1: GetStoriesResult;
-  articles2: GetStoriesResult;
+  articles1: Stories;
+  articles2: Stories;
 }
 
 export default function MoreCard({ articles1, articles2 }: Props) {
