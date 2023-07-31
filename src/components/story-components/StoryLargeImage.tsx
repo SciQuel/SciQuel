@@ -9,9 +9,16 @@ export default function StoryLargeImage({
   children,
 }: PropsWithChildren<Props>) {
   return (
-    <figure className="mx-80 flex flex-col justify-center gap-2">
-      <img src={src} />
-      <figcaption>{children}</figcaption>
-    </figure>
+    <div className="flex justify-center">
+      <figure className="mx-auto table gap-2 p-8 lg:w-min lg:p-0">
+        <img
+          src={src}
+          className="max-w-screen max-h-[900px] w-auto lg:max-w-[1000px]"
+        />
+        <figcaption className="table-caption w-full caption-bottom px-8 lg:px-0">
+          {children}
+        </figcaption>
+      </figure>
+    </div>
   );
 }

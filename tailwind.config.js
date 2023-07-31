@@ -13,19 +13,25 @@ module.exports = {
       },
       colors: {
         sciquelDarkText: "#333333",
-        sciquelTeal: "#69a297",
+        sciquelTeal: "#109191",
+        sciquelFooter: "#5C9EAD",
         sciquelHover: "#51726b",
         sciquelHeading: "rgba(52, 78, 65, 1)",
         sciquelMuted: "#878787",
         sciquelCardBg: "#f8f8ff",
         sciquelCardBorder: "#cccccc",
+        sciquelGreen: "#A3C9A8",
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic":
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
+      transitionProperty: {
+        spacing: "margin, padding",
+        position: "top, left, right, bottom",
+      },
     },
   },
-  plugins: [],
+  plugins: [require("tailwindcss-touch")()],
 };

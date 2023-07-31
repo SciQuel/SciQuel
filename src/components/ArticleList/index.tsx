@@ -1,11 +1,11 @@
-import { type GetStoriesResult } from "@/app/api/stories/route";
+import { type Stories } from "@/app/api/stories/route";
 import clsx from "clsx";
 import { DateTime } from "luxon";
 import ArticleCard from "../ArticleCard/ArticleCard";
 
 interface Props {
-  articles: GetStoriesResult;
   mini?: boolean;
+  articles: Stories;
   preferHorizontal?: boolean;
 }
 
