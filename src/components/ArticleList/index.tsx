@@ -1,10 +1,10 @@
-import { type GetStoriesResult } from "@/app/api/stories/route";
+import { type Stories } from "@/app/api/stories/route";
 import clsx from "clsx";
 import { DateTime } from "luxon";
 import ArticleCard from "../ArticleCard/ArticleCard";
 
 interface Props {
-  articles: GetStoriesResult;
+  articles: Stories;
   preferHorizontal?: boolean;
 }
 
@@ -22,7 +22,9 @@ export default function ArticleList({
       {articles.map((article) => (
         <ArticleCard
           href={(() => {
-            const publishDate = DateTime.fromJSDate(article.publishedAt);
+            const publishDate = DateTime.fromJSDate(
+              article.publishedAt,
+            ).toUTC();
             return `/stories/${publishDate.year}/${publishDate.toFormat(
               "LL",
             )}/${publishDate.toFormat("dd")}/${article.slug}`;

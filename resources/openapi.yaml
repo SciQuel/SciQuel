@@ -8,8 +8,8 @@ paths:
     get:
       tags:
         - Stories
-      summary: Return a list of stories with pagination
-      description: Return a list of stories given a page number and a page size
+      summary: Return a list of stories
+      description: Return a list of stories with pagination given optional parameters
       parameters:
         - in: query
           name: page
@@ -28,12 +28,53 @@ paths:
           required: false
           description: Number of stories per page
         - in: query
+          name: keyword
+          schema:
+            type: string
+          required: false
+          description: Filter by keyword on story title, summary
+        - in: query
           name: staff_pick
           schema:
             type: boolean
             default: false
           required: false
           description: Return only staff pick stories
+        - in: query
+          name: topic
+          schema:
+            type: string
+            example: "ASTRONOMY"
+          required: false
+          description: Filter stories by topic (non-case sensitive)
+        - in: query
+          name: type
+          schema:
+            type: string
+            example: "ARTICLE"
+          required: false
+          description: Filter stories by storyType (non-case sensitive)
+        - in: query
+          name: date_from
+          schema:
+            type: string
+            example: "2023-06-13"
+          required: false
+          description: Filter stories after or on this date
+        - in: query
+          name: date_to
+          schema:
+            type: string
+            example: "2023-06-13"
+          required: false
+          description: Filter stories before or on this date
+        - in: query
+          name: sort_by
+          schema:
+            type: string
+            example: "newest | oldest"
+          required: false
+          description: Sort stories with preset rules
       responses:
         "200":
           description: Successfully return a list of stories
@@ -44,7 +85,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/Story"
         "400":
-          description: User requested invalid page or page size
+          description: User requested invalid page or page size or topic
           content:
             application/json:
               schema:
@@ -117,6 +158,176 @@ paths:
                     type: string
                     example: Not Found
 
+  /api/user/page_views:
+    post:
+      tags:
+        - User
+      summary: Record user page view activity
+      description: Record the page view activity of a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                story_id:
+                  type: string
+                  example: "647ad74aa9efff3abe83045a"
+                user_id:
+                  type: string
+                  example: "647ad6fda9efff3abe83044f"
+      responses:
+        "200":
+          description: Successfully record the page view
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PageView"
+        "400":
+          description: Request body is invalid
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Bad Request
+        "404":
+          description: story_id or user_id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Story not found
+        "500":
+          description: Failed to insert record into database
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Failed to create db entry
+
+  /api/user/brains:
+    post:
+      tags:
+        - User
+      summary: User brain activity
+      description: User hit brain button at the story
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                story_id:
+                  type: string
+                  example: "647ad74aa9efff3abe83045a"
+                user_id:
+                  type: string
+                  example: "647ad6fda9efff3abe83044f"
+      responses:
+        "200":
+          description: Successfully record the brain activity
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Brain"
+        "400":
+          description: Request body is invalid, or try to record duplicate entries
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Bad Request
+        "404":
+          description: story_id or user_id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Story not found
+        "500":
+          description: Failed to insert record into database
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Failed to create db entry
+    delete:
+      tags:
+        - User
+      summary: User brain activity
+      description: User undo hit brain button at the story
+      parameters:
+        - in: path
+          name: story_id
+          schema:
+            type: string
+            example: "647ad74aa9efff3abe83045a"
+          required: true
+          description: Story ID
+        - in: path
+          name: user_id
+          schema:
+            type: string
+            example: "647ad6fda9efff3abe83044f"
+          required: true
+          description: User ID
+      responses:
+        "200":
+          description: Successfully record the brain activity
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Brain"
+        "400":
+          description: Query parameters are invalid
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Bad Request
+        "404":
+          description: story_id or user_id not found, or brain activity not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Story not found
+        "500":
+          description: Failed to delete record from database
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Failed to create db entry
 components:
   schemas:
     Story:
@@ -242,3 +453,27 @@ components:
         - AUTHOR
         - ILLUSTRATOR
         - ANIMATOR
+    PageView:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        storyId:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+    Brain:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        storyId:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
