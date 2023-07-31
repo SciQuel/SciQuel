@@ -9,7 +9,7 @@ interface Props {
 
 export default function MoreCard({ articles1, articles2 }: Props) {
   return (
-    <div className="flex w-full justify-center bg-white">
+    <div className="flex w-full justify-center bg-white pb-5 pt-5">
       <div className="grid max-w-screen-xl grid-cols-1 gap-36 md:grid-cols-2">
         {articles1 && (
           <div>
