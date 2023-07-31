@@ -13,7 +13,7 @@ import {
 import clsx from "clsx";
 import { useState, type HTMLProps, type PropsWithChildren } from "react";
 
-interface Props {
+export interface Props {
   tooltip?: string;
   disabled?: boolean;
   onClick?: HTMLProps<HTMLButtonElement>["onClick"];
