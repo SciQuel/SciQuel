@@ -239,7 +239,7 @@ async function getWhatsNewArticles() {
   }
 
   return res.json().then((value: GetStoriesResult) =>
-    value.map((story) => ({
+    value.stories.map((story) => ({
       ...story,
       createdAt: new Date(story.createdAt),
       publishedAt: new Date(story.publishedAt),
