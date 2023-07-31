@@ -29,8 +29,6 @@ const config = {
 
     "isaacscript/complete-sentences-jsdoc": "warn",
     "isaacscript/format-jsdoc-comments": "warn",
-    "react/no-unescaped-entities": "off",
-    "@next/next/no-page-custom-font": "off",
   },
 };
 
