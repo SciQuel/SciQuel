@@ -75,12 +75,16 @@ export default async function StoriesPage({ params }: Params) {
         </div>
         <div>
           {story.storyContributions.map((element, index) => {
-            return (
+            return (<div className="flex flex-row items-center">
+              <Avatar imageUrl={element.user.avatarUrl ?? undefined}
+                label={element.user.firstName[0]}
+               className="mr-2"
+                size="md" />
               <p key={`contributor-header-${index}`}>
                 {element.contributionType == "AUTHOR"
                   ? `by ${element.user.firstName} ${element.user.lastName}`
                   : `${element.contributionType} by ${element.user.firstName} ${element.user.lastName}`}
-              </p>
+              </p></div>
             );
           })}
         </div>
@@ -119,11 +123,8 @@ export default async function StoriesPage({ params }: Params) {
             size="4xl"
           />
           <div className="m-5 flex flex-[2.3] flex-col">
-            <p className="font-alegreyaSansSC text-4xl font-medium text-sciquelTeal">
-              {element.user.firstName} {element.user.lastName}
-            </p>
             <p className="flex-1 font-sourceSerif4 text-xl">
-              {element.user.bio}
+             <span className="font-alegreyaSansSC text-3xl font-medium text-sciquelTeal"> {element.user.firstName} {element.user.lastName} </span> {element.user.bio}
             </p>
           </div>
         </div>
