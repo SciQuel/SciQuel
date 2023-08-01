@@ -472,6 +472,176 @@ paths:
                   error:
                     type: string
                     example: Failed to create db entry
+  /api/user/bookmark:
+    get:
+      tags:
+        - User
+      summary: Get bookmark record given story and user
+      description: Get bookmark record given story_id and user_id
+      parameters:
+        - in: path
+          name: story_id
+          schema:
+            type: string
+            example: "647ad74aa9efff3abe83045a"
+          required: true
+          description: Story ID
+        - in: path
+          name: user_id
+          schema:
+            type: string
+            example: "647ad6fda9efff3abe83044f"
+          required: true
+          description: User ID
+      responses:
+        "200":
+          description: Found a bookmark record given story_id and user_id
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Bookmark"
+        "400":
+          description: Query parameters are invalid
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Bad Request
+        "404":
+          description: No matching bookmark record
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Bookmark not found
+        "500":
+          description: Failed to access database
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Failed to access database
+    post:
+      tags:
+        - User
+      summary: User bookmark activity
+      description: User hit bookmark button at the story
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                story_id:
+                  type: string
+                  example: "647ad74aa9efff3abe83045a"
+                user_id:
+                  type: string
+                  example: "647ad6fda9efff3abe83044f"
+      responses:
+        "200":
+          description: Successfully record the bookmark activity
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Bookmark"
+        "400":
+          description: Request body is invalid, or try to record duplicate entries
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Bad Request
+        "404":
+          description: story_id or user_id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Story not found
+        "500":
+          description: Failed to insert record into database
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Failed to create db entry
+    delete:
+      tags:
+        - User
+      summary: User bookmark activity
+      description: User undo hit bookmark button at the story
+      parameters:
+        - in: path
+          name: story_id
+          schema:
+            type: string
+            example: "647ad74aa9efff3abe83045a"
+          required: true
+          description: Story ID
+        - in: path
+          name: user_id
+          schema:
+            type: string
+            example: "647ad6fda9efff3abe83044f"
+          required: true
+          description: User ID
+      responses:
+        "200":
+          description: Successfully record the bookmark activity
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Bookmark"
+        "400":
+          description: Query parameters are invalid
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Bad Request
+        "404":
+          description: story_id or user_id not found, or bookmark activity not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Bookmark not found
+        "500":
+          description: Failed to delete record from database
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Failed to create db entry
 components:
   schemas:
     Story:
@@ -610,6 +780,18 @@ components:
           type: string
           format: date-time
     Brain:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        storyId:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+    Bookmark:
       type: object
       properties:
         id:
