@@ -8,9 +8,10 @@ import useSWR from "swr";
 
 const storyFetcher = (url: string) =>
   fetch(url).then((r) => r.json() as Promise<GetStoriesResult>);
+
 export default function PublishedTable() {
   const { data, isLoading } = useSWR(
-    `${env.NEXT_PUBLIC_SITE_URL}/api/stories`,
+    `${env.NEXT_PUBLIC_SITE_URL}/api/stories?published=true`,
     storyFetcher,
   );
   const [search, setSearch] = useState("");
@@ -79,7 +80,7 @@ export default function PublishedTable() {
                 </td>
               </tr>
             )}
-            {!data && !isLoading && (
+            {(!data || data.stories.length === 0) && !isLoading && (
               <tr>
                 <td colSpan={7} className="py-3 text-center italic">
                   No data

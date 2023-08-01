@@ -1,8 +1,19 @@
 "use client";
 
+import { type GetStoriesResult } from "@/app/api/stories/route";
+import env from "@/lib/env";
+import { DateTime } from "luxon";
 import { useState } from "react";
+import useSWR from "swr";
+
+const storyFetcher = (url: string) =>
+  fetch(url).then((r) => r.json() as Promise<GetStoriesResult>);
 
 export default function DraftTable() {
+  const { data, isLoading } = useSWR(
+    `${env.NEXT_PUBLIC_SITE_URL}/api/stories?published=false`,
+    storyFetcher,
+  );
   const [search, setSearch] = useState("");
   return (
     <div className="flex flex-col gap-2">
@@ -32,40 +43,44 @@ export default function DraftTable() {
               <th>Type</th>
               <th>Tags</th>
               <th>Creation Date</th>
-              <th className="w-44">Actions</th>
+              <th className="w-28">Actions</th>
             </tr>
           </thead>
           <tbody className="border-gray-300 [&>tr:not(:last-child)]:border-b">
-            <tr className="[&>td]:px-3 [&>td]:py-3">
-              <td>Lights. Camera. Action.</td>
-              <td>N/A</td>
-              <td>Essay</td>
-              <td>biology</td>
-              <td>1 January 2023</td>
-              <td>
-                <button className="mr-2 rounded-md bg-teal-600 px-2 py-1 text-sm font-semibold text-white hover:bg-teal-700">
-                  Edit
-                </button>
-                <button className="rounded-md bg-red-600 px-2 py-1 text-sm font-semibold text-white hover:bg-red-700">
-                  Delete
-                </button>
-              </td>
-            </tr>
-            <tr className="[&>td]:px-3 [&>td]:py-3">
-              <td>Lights. Camera. Action.</td>
-              <td>N/A</td>
-              <td>Essay</td>
-              <td>biology</td>
-              <td>1 January 2023</td>
-              <td>
-                <button className="mr-2 rounded-md bg-teal-600 px-2 py-1 text-sm font-semibold text-white hover:bg-teal-700">
-                  Edit
-                </button>
-                <button className="rounded-md bg-red-600 px-2 py-1 text-sm font-semibold text-white hover:bg-red-700">
-                  Delete
-                </button>
-              </td>
-            </tr>
+            {data?.stories.map((story) => (
+              <tr className="[&>td]:px-3 [&>td]:py-3">
+                <td>{story.title}</td>
+                <td>N/A</td>
+                <td>{`${story.storyType[0]}${story.storyType
+                  .slice(1)
+                  .toLowerCase()}`}</td>
+                <td>{story.tags.join(" ").toLowerCase()}</td>
+                <td>
+                  {DateTime.fromISO(
+                    story.createdAt as unknown as string,
+                  ).toLocaleString(DateTime.DATETIME_FULL)}
+                </td>
+                <td>
+                  <button className="mr-2 rounded-md bg-teal-600 px-2 py-1 text-sm font-semibold text-white hover:bg-teal-700">
+                    Edit
+                  </button>
+                </td>
+              </tr>
+            ))}
+            {!data && isLoading && (
+              <tr>
+                <td colSpan={7} className="py-3 text-center italic">
+                  Loading data
+                </td>
+              </tr>
+            )}
+            {(!data || data.stories.length === 0) && !isLoading && (
+              <tr>
+                <td colSpan={7} className="py-3 text-center italic">
+                  No data
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>

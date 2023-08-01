@@ -40,6 +40,10 @@ export const getStorySchema = z.object({
     .preprocess((value) => new Date(z.string().parse(value)), z.date())
     .optional(),
   sort_by: z.enum(["newest", "oldest"]).optional(),
+  published: z.preprocess(
+    (value) => (value === "true" ? true : false),
+    z.boolean().optional().default(true),
+  ),
 });
 
 export const postStorySchema = z.object({

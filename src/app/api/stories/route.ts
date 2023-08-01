@@ -6,19 +6,10 @@ import {
   StoryType,
   type Story,
 } from "@prisma/client";
+import { getServerSession } from "next-auth";
 import { NextResponse, type NextRequest } from "next/server";
 import slug from "slug";
 import { getStorySchema, postStorySchema } from "./schema";
-
-interface GetStoryQuery {
-  where: {
-    OR?: object[];
-    staffPick: boolean | undefined;
-    tags?: object;
-    storyType: StoryType | undefined;
-    createdAt: object;
-  };
-}
 
 export type Stories = (Story & {
   storyContributions: {
@@ -55,7 +46,20 @@ export async function GET(req: Request) {
     date_from,
     date_to,
     sort_by,
+    published,
   } = parsedParams.data;
+
+  // Can only retrieve unpublished stories if EDITOR
+  if (!published) {
+    const session = await getServerSession();
+    const user = await prisma.user.findUnique({
+      where: { email: session?.user.email ?? "noemail" },
+    });
+
+    if (!user || !user.roles.includes("EDITOR")) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+  }
 
   const numPagesToSkip = (page && page - 1) || 0;
   const numStoriesPerPage = page_size || 10; // default page size
@@ -64,7 +68,7 @@ export async function GET(req: Request) {
   date_to?.setDate(date_to.getDate() + 1);
 
   try {
-    const query: GetStoryQuery = {
+    const query: Prisma.StoryFindManyArgs = {
       where: {
         ...(keyword
           ? {
@@ -81,6 +85,7 @@ export async function GET(req: Request) {
           gte: date_from,
           lt: date_to,
         },
+        published,
       },
     };
 
