@@ -58,8 +58,8 @@ export default async function StoriesPage({ params }: Params) {
           </h2>
         </div>
       </div>
-      <div className="relative mx-2 mt-5 flex w-screen flex-col md:mx-auto md:w-[720px]">
-        <div className="absolute right-0 top-0 flex flex-1 flex-row justify-center xl:-left-24  xl:flex-col xl:pt-3">
+      <div className="relative mx-2 mt-5 flex w-screen flex-col sm:mx-auto md:w-[720px]">
+        <div className="pointer-events-none top-0 flex flex-1 flex-row justify-start xl:absolute xl:-left-24 xl:flex-col xl:pt-3">
           <ShareLinks />
         </div>
 
