@@ -43,6 +43,11 @@ enum AuthVerificationType {
   PASSWORD_RESET
 }
 
+enum UserRole {
+  AUTHOR
+  EDITOR
+}
+
 model Story {
   id        String    @id @default(auto()) @map("_id") @db.ObjectId
   storyType StoryType
@@ -101,6 +106,8 @@ model User {
 
   storyContributions StoryContribution[]
   authVerifications  AuthVerification[]
+
+  roles UserRole[] @default([])
 }
 
 model AuthVerification {
