@@ -1,15 +1,51 @@
+"use client";
+
+import { type ReadingHistory } from "@/app/user-settings/actions/getReadingHistory";
 import TopicTag from "@/components/TopicTag";
 import { StoryTopic, type User } from "@prisma/client";
 import Avatar from "/public/user-settings/ProfilePicture.png";
-import ArticleImage from "/public/user-settings/top_background_img.png";
 import Image from "next/image";
+import { useState } from "react";
 
-export default function GreetingCard({ user }: { user: any }) {
+type Reading = {
+  storyContributions: {
+    user: User;
+  }[];
+  title: string;
+  thumbnailUrl: string;
+};
+
+export default function GreetingCard({
+  user,
+  readingHistory,
+}: {
+  user: User;
+  readingHistory: ReadingHistory[];
+}) {
+  const [readingHistoryIndex, setReadingHistoryIndex] = useState(0);
   const getGreeting = () => {
     const currHr = new Date().getHours();
     if (currHr < 12) return "Good morning";
     else if (currHr < 18) return "Good afternoon";
     else return "Good Evening";
+  };
+
+  const stories: Reading[] = readingHistory.map((item) => item.story);
+
+  const handleNext = () => {
+    if (readingHistoryIndex < stories.length - 1) {
+      setReadingHistoryIndex(readingHistoryIndex + 1);
+    } else if (readingHistoryIndex === stories.length - 1) {
+      setReadingHistoryIndex(0);
+    }
+  };
+
+  const handlePrev = () => {
+    if (readingHistoryIndex > 0) {
+      setReadingHistoryIndex(readingHistoryIndex - 1);
+    } else if (readingHistoryIndex === 0) {
+      setReadingHistoryIndex(stories.length - 1);
+    }
   };
 
   return (
@@ -45,7 +81,11 @@ export default function GreetingCard({ user }: { user: any }) {
 
       <div className="flex h-[320px] basis-full flex-col lg:basis-5/12">
         <div className="relative grow object-cover">
-          <Image src={ArticleImage} alt="article image" fill />
+          <Image
+            src={stories[readingHistoryIndex].thumbnailUrl}
+            alt="article image"
+            fill
+          />
           <div className="absolute bottom-4 left-4 flex items-center gap-2 rounded-2xl bg-[#A3C9A8] p-2 px-4 backdrop-blur-md hover:scale-105 hover:bg-white">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -67,16 +107,27 @@ export default function GreetingCard({ user }: { user: any }) {
         <div className="flex justify-between bg-white px-6 py-4">
           <div className="h-fit basis-5/6">
             <p className="line-clamp-1 text-xl font-semibold">
-              Milankovitch cycles: what are akdsfjielj adf adfdai
+              {stories[readingHistoryIndex].title}
             </p>
             <p>
-              by <span className="text-[#69A297]">Harriet Patel_2</span>
+              by{" "}
+              <span className="text-[#69A297]">
+                {
+                  stories[readingHistoryIndex].storyContributions[0].user
+                    .firstName
+                }{" "}
+                {
+                  stories[readingHistoryIndex].storyContributions[0].user
+                    .lastName
+                }
+              </span>
             </p>
           </div>
           <div className="flex basis-1/6 items-center justify-center gap-2">
             <button
               className="h-8 rounded-lg bg-gray-100 px-2 hover:scale-105 hover:bg-gray-200"
               title="previous"
+              onClick={handlePrev}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -96,6 +147,7 @@ export default function GreetingCard({ user }: { user: any }) {
             <button
               title="next"
               className="h-8 rounded-lg bg-gray-100 px-2 hover:scale-105 hover:bg-gray-200"
+              onClick={handleNext}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
