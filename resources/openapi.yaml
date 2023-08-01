@@ -157,8 +157,95 @@ paths:
                   error:
                     type: string
                     example: Not Found
+  /api/stories/page_views:
+    get:
+      tags:
+        - Stories
+      summary: Get count of page views for a story
+      description: Get total number of page views given story_id
+      parameters:
+        - in: path
+          name: story_id
+          schema:
+            type: string
+            example: "647ad74aa9efff3abe83045a"
+          required: true
+          description: Story ID
+      responses:
+        "200":
+          description: Return total number of page views
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    example: 1
+        "400":
+          description: Query parameters are invalid
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Bad Request
+        "500":
+          description: Failed to access database
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Failed to access database
 
   /api/user/page_views:
+    get:
+      tags:
+        - User
+      summary: Get 10 most viewed articles for a user
+      description: Get 10 most viewed articles for a user
+      parameters:
+        - in: path
+          name: user_id
+          schema:
+            type: string
+            example: "647ad6fda9efff3abe83044f"
+          required: true
+          description: User ID
+      responses:
+        "200":
+          description: Successfully retrieve an array of stories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Story"
+        "400":
+          description: Query parameters are invalid
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Bad Request
+        "500":
+          description: Failed to access database
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Failed to access database
     post:
       tags:
         - User
@@ -216,6 +303,63 @@ paths:
                     example: Failed to create db entry
 
   /api/user/brains:
+    get:
+      tags:
+        - User
+      summary: Get brain record given story and user
+      description: Get brain record given story_id and user_id
+      parameters:
+        - in: path
+          name: story_id
+          schema:
+            type: string
+            example: "647ad74aa9efff3abe83045a"
+          required: true
+          description: Story ID
+        - in: path
+          name: user_id
+          schema:
+            type: string
+            example: "647ad6fda9efff3abe83044f"
+          required: true
+          description: User ID
+      responses:
+        "200":
+          description: Found a brain record given story_id and user_id
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Brain"
+        "400":
+          description: Query parameters are invalid
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Bad Request
+        "404":
+          description: No matching brain record
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Brain not found
+        "500":
+          description: Failed to access database
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Failed to access database
     post:
       tags:
         - User
