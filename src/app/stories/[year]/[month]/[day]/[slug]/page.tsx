@@ -1,5 +1,7 @@
 import { type GetStoryResult } from "@/app/api/stories/[year]/[month]/[day]/[slug]/route";
+import { type GetStoriesResult } from "@/app/api/stories/route";
 import Avatar from "@/components/Avatar";
+import MoreCard from "@/components/MoreCard";
 import FromThisSeries from "@/components/story-components/FromThisSeries";
 import ShareLinks from "@/components/story-components/ShareLinks";
 import StoryH1 from "@/components/story-components/StoryH1";
@@ -32,6 +34,7 @@ interface Params {
 }
 
 export default async function StoriesPage({ params }: Params) {
+  const whatsNewArticles = await getWhatsNewArticles();
   const story = await retrieveStoryContent(params);
   const htmlContent = await generateMarkdown(story.storyContent[0].content);
   return (
@@ -130,6 +133,7 @@ export default async function StoriesPage({ params }: Params) {
         </div>
       ))}
       <FromThisSeries />
+      <MoreCard articles1={whatsNewArticles} articles2={whatsNewArticles} />
     </div>
   );
 }
@@ -223,4 +227,24 @@ async function generateMarkdown(content: string) {
     })
     .process(content);
   return file;
+}
+
+/// temporary
+async function getWhatsNewArticles() {
+  const res = await fetch(`${env.NEXT_PUBLIC_SITE_URL}/api/stories`, {
+    next: { revalidate: 60 },
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch data");
+  }
+
+  return res.json().then((value: GetStoriesResult) =>
+    value.stories.map((story) => ({
+      ...story,
+      createdAt: new Date(story.createdAt),
+      publishedAt: new Date(story.publishedAt),
+      updatedAt: new Date(story.updatedAt),
+    })),
+  );
 }
