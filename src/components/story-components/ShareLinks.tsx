@@ -33,9 +33,7 @@ export default function ShareLinks() {
     <>
       <button
         className="h-fit w-fit rounded-full p-3 pointer-events-auto"
-        onClick={() => {
-          setShowOptions(!showOptions);
-        }}
+        
       >
         <Image
           src={shareIcon}
@@ -44,7 +42,7 @@ export default function ShareLinks() {
           height={45}
         />
       </button>
-      <button className="h-fit w-fit rounded-full p-3 pointer-events-auto">
+      <button className="h-fit w-fit rounded-full p-3 pointer-events-auto ">
         <Image
           src={shareIcon}
           alt="share to a link to this story"
@@ -73,23 +71,26 @@ export default function ShareLinks() {
           height={45}
         />
       </button>
+    
       <div
         className={`${
-          showOptions ? "pointer-events-auto" : "pointer-events-none opacity-0"
-        } fixed left-0  top-0 flex  h-screen w-screen items-end justify-center bg-neutral-800/75 transition ease-linear sm:absolute sm:-ml-2 sm:mt-20 sm:h-fit sm:w-fit sm:items-center sm:bg-transparent xl:static xl:mt-3`}
+          showOptions ? "  opacity-1" : " opacity-0"
+    
+        }  transition-opacity overflow-hidden  sm:w-fit sm:h-fit h-screen w-screen fixed left-0 sm:top-0 bottom-0   items-end sm:justify-center bg-neutral-800/75 sm:absolute sm:-ml-2 sm:mt-20 sm:items-start sm:bg-transparent xl:static xl:mt-3`}
       >
         <div
           ref={popupRef}
-          className={`${
-            showOptions ? "" : "translate-y-full sm:translate-y-6"
-          } relative flex w-screen flex-col pt-4 transition-transform sm:pl-5 sm:pr-1 sm:before:absolute sm:before:left-52 sm:before:top-0 sm:before:z-10 sm:before:ml-6 sm:before:h-8 sm:before:w-8 sm:before:rotate-45 sm:before:border-l-2 sm:before:border-t-2 sm:before:border-sciquelCardBorder sm:before:bg-sciquelCardBg  md:w-[720px] md:pl-0 md:pr-0 xl:w-fit xl:before:left-0 xl:before:ml-7`}
+          className={ `${
+          showOptions ? " max-h-[100vh] opacity-1" : "max-h-0 opacity-0"
+    
+        }  transition-[max-height] duration-500 sm:relative absolute bottom-0 flex w-screen flex-col pt-0 sm:pl-5 sm:pr-1 sm:before:absolute sm:before:left-52 sm:before:top-2 sm:before:z-[2] sm:before:ml-6 sm:before:h-8 sm:before:w-8 sm:before:rotate-45 sm:before:border-l-2 sm:before:border-t-2 sm:before:border-sciquelCardBorder sm:before:bg-sciquelCardBg  md:w-[720px] md:pl-0 md:pr-0 xl:w-fit xl:before:left-0 xl:before:ml-7`}
         >
-          <div className="relative h-full w-full sm:rounded rounded-t border-2 border-sciquelCardBorder bg-sciquelCardBg p-4">
-            <div className="my-2">
+          <div className={`relative xl:-left-4 w-full sm:rounded rounded-t sm:p-4`}>
+            <div className={` pointer-events-auto mt-2 p-4 pb-2 xl:pb-4 border-2 rounded-t rounded-r border-sciquelCardBorder bg-sciquelCardBg`}>
               <input
                 readOnly
                 type="text"
-                className="w-full border p-1 xl:w-96"
+                className="w-full border p-1 xl:w-96 mt-3 xl:mt-0"
                 value={`sciquel.org${pathname}`}
                 onClick={() => {
                   navigator.clipboard.writeText(`sciquel.org${pathname}`);
@@ -99,16 +100,14 @@ export default function ShareLinks() {
                 onClick={() => {
                   navigator.clipboard.writeText(`sciquel.org${pathname}`);
                 }}
-                className="m-2 rounded-md bg-sciquelTeal p-1 text-lg font-semibold text-slate-50"
+                className="mx-2 xl:my-2 mt-3 sm:mt-5 rounded-md bg-sciquelTeal p-1 text-lg font-semibold text-slate-50"
               >
                 Copy Url
               </button>
             </div>
-            <div className="flex flex-row xl:flex-col">
+            <div className={` pointer-events-auto xl:before:rounded-tl  xl:before:border-t-2 xl:before:border-l-2 xl:before:border-sciquelCardBorder before:pointer-events-none xl:before:z-[2] xl:before:absolute xl:before:top-0 xl:before:-right-10 xl:before:h-10 xl:before:w-10  flex sm:rounded-b flex-row xl:flex-col xl:w-fit xl:p-2 md:p-1 border-x-2 sm:border-b-2 border-sciquelCardBorder bg-sciquelCardBg relative top-[-2px]`}>
               <a
-                className={`${
-                  showOptions ? "" : "pointer-events-none opacity-0"
-                } h-fit w-fit rounded-full p-3 transition ease-linear`}
+                className={` h-fit w-fit rounded-full p-3`}
                 target="_blank"
                 href={`https://www.facebook.com/sharer/sharer.php?u=sciquel.org${pathname}`}
               >
@@ -121,9 +120,7 @@ export default function ShareLinks() {
               </a>
               <a
                 href={`mailto:?subject=Check Out This Article&body=sciquel.org${pathname}`}
-                className={`${
-                  showOptions ? "" : "pointer-events-none opacity-0"
-                } h-fit w-fit rounded-full p-3 transition ease-linear`}
+                className={` h-fit w-fit rounded-full p-3 transition ease-linear`}
                 target="_blank"
               >
                 <Image
@@ -135,9 +132,7 @@ export default function ShareLinks() {
               </a>
               <a
                 href={`https://www.linkedin.com/sharing/share-offsite/?url=sciquel.org${pathname}`}
-                className={`${
-                  showOptions ? "" : "pointer-events-none opacity-0"
-                }  h-fit w-fit rounded-full p-3 transition ease-linear`}
+                className={` h-fit w-fit rounded-full p-3 transition ease-linear`}
                 target="_blank"
               >
                 <Image
