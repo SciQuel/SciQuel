@@ -3,6 +3,7 @@
 import { type GetStoriesResult } from "@/app/api/stories/route";
 import env from "@/lib/env";
 import { DateTime } from "luxon";
+import Link from "next/link";
 import { useState } from "react";
 import useSWR from "swr";
 
@@ -64,9 +65,12 @@ export default function PublishedTable() {
                   ).toLocaleString(DateTime.DATETIME_FULL)}
                 </td>
                 <td>
-                  <button className="mr-2 rounded-md bg-teal-600 px-2 py-1 text-sm font-semibold text-white hover:bg-teal-700">
+                  <Link
+                    href={`/editor/story/info?id=${story.id}`}
+                    className="mr-2 rounded-md bg-teal-600 px-2 py-1 text-sm font-semibold text-white hover:bg-teal-700"
+                  >
                     Edit
-                  </button>
+                  </Link>
                   <button className="rounded-md bg-red-600 px-2 py-1 text-sm font-semibold text-white hover:bg-red-700">
                     Unpublish
                   </button>
