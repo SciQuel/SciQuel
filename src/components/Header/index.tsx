@@ -95,7 +95,11 @@ export default function Header() {
   const onSearch = (e: React.FormEvent) => {
     e.preventDefault();
     const encodedSearchQuery = encodeURI(searchQuery);
-    router.push(`/search/${encodedSearchQuery}`);
+    if (encodedSearchQuery != "") {
+      router.push(`/search?keyword=${encodedSearchQuery}`);
+    } else {
+      router.push(`/search`);
+    }
     console.log("current query ", encodedSearchQuery);
   };
   /** useEffect tell React that your component needs to do something after render.
