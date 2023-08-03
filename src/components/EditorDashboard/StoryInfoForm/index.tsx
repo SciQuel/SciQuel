@@ -4,7 +4,7 @@ import Form from "@/components/Form";
 import FormInput from "@/components/Form/FormInput";
 import axios from "axios";
 import clsx from "clsx";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useRef, useState, useTransition } from "react";
 
 interface Props {
@@ -21,6 +21,7 @@ export default function StoryInfoForm({
   image: initialImage,
 }: Props) {
   const fileUploadRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
 
   const [title, setTitle] = useState(initialTitle ?? "");
   const [summary, setSummary] = useState(initialSummary ?? "");
@@ -134,9 +135,12 @@ export default function StoryInfoForm({
                   },
                 );
 
-                return redirect(
-                  `/editor/story/contributors?id=${story.data.id}`,
-                );
+                const nextPage = `/editor/story/contributors?id=${story.data.id}`;
+                if (storyId) {
+                  router.push(nextPage);
+                } else {
+                  router.push(nextPage);
+                }
               });
             }}
           >

@@ -20,9 +20,12 @@ export default function DraftTable() {
     <div className="flex flex-col gap-2">
       <div className="flex flex-row items-center gap-5">
         <h4 className="text-lg font-semibold">Drafts</h4>
-        <button className="rounded-md bg-teal-600 px-2 py-1 text-sm font-semibold text-white hover:bg-teal-700">
+        <Link
+          href="/editor/story/info"
+          className="rounded-md bg-teal-600 px-2 py-1 text-sm font-semibold text-white hover:bg-teal-700"
+        >
           + Create
-        </button>
+        </Link>
         <div className="grow text-right">
           <input
             className={`peer w-64 rounded-md px-2 py-1 outline outline-1
