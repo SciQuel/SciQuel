@@ -2,16 +2,20 @@
 
 import Form from "@/components/Form";
 import FormInput from "@/components/Form/FormInput";
+import axios from "axios";
 import clsx from "clsx";
+import { redirect } from "next/navigation";
 import { useRef, useState, useTransition } from "react";
 
 interface Props {
+  id?: string;
   title?: string;
   summary?: string;
   image?: string;
 }
 
 export default function StoryInfoForm({
+  id: storyId,
   title: initialTitle,
   summary: initialSummary,
   image: initialImage,
@@ -106,7 +110,33 @@ export default function StoryInfoForm({
             onClick={(e) => {
               e.preventDefault();
               startTransition(async () => {
-                const story = await fetch();
+                const formData = new FormData();
+                if (storyId) {
+                  formData.append("id", storyId);
+                }
+                formData.append("title", title);
+                formData.append("summary", summary);
+                if (image === null) {
+                  return;
+                } else if (typeof image === "string") {
+                  formData.append("imageUrl", image);
+                } else {
+                  const file = new File([image], image.name);
+                  formData.append("image", file, file.name);
+                }
+                const story = await axios.put<{ id: string }>(
+                  "/api/stories",
+                  formData,
+                  {
+                    headers: {
+                      "Content-Type": "multipart/form-data",
+                    },
+                  },
+                );
+
+                return redirect(
+                  `/editor/story/contributors?id=${story.data.id}`,
+                );
               });
             }}
           >
