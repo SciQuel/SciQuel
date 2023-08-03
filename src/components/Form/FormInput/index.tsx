@@ -12,6 +12,7 @@ interface Props {
   minLength?: number;
   maxLength?: number;
   invalid?: boolean;
+  disabled?: boolean;
   onChange?: ChangeEventHandler<HTMLInputElement>;
 }
 
@@ -24,6 +25,7 @@ export default function FormInput({
   type = "text",
   value,
   invalid,
+  disabled = false,
   onChange,
 }: Props) {
   const [show, setShow] = useState(false);
@@ -37,6 +39,7 @@ export default function FormInput({
           invalid
             ? "outline-dashed outline-2 outline-red-400 hover:outline-red-400 focus:outline-red-400"
             : "outline-1 outline-gray-200 focus:outline-sciquelTeal",
+          "disabled:pointer-events-none disabled:bg-gray-50 disabled:text-gray-300",
         )}
         placeholder={title}
         type={type === "password" ? (show ? "text" : "password") : type}
@@ -44,6 +47,7 @@ export default function FormInput({
         minLength={minLength}
         maxLength={maxLength}
         onChange={onChange}
+        disabled={disabled}
       />
       <label
         className={`duration-400 pointer-events-none absolute -top-5 left-0 w-full

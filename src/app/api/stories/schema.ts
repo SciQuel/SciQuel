@@ -1,5 +1,6 @@
 import { StoryTopic, StoryType } from "@prisma/client";
 import { z } from "zod";
+import { zfd } from "zod-form-data";
 
 export const getStorySchema = z.object({
   page: z
@@ -49,4 +50,15 @@ export const getStorySchema = z.object({
 export const postStorySchema = z.object({
   title: z.string(),
   content: z.string(),
+});
+
+export const putStorySchema = zfd.formData({
+  id: zfd.text().optional(),
+  title: zfd.text(),
+  summary: zfd.text(),
+  image: z.preprocess(
+    (val) => (val instanceof Blob && val.size === 0 ? undefined : val),
+    z.instanceof(Blob).optional(),
+  ),
+  imageUrl: zfd.text().optional(),
 });

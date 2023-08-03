@@ -2,7 +2,8 @@
 
 import Form from "@/components/Form";
 import FormInput from "@/components/Form/FormInput";
-import { useRef, useState } from "react";
+import clsx from "clsx";
+import { useRef, useState, useTransition } from "react";
 
 interface Props {
   title?: string;
@@ -22,6 +23,8 @@ export default function StoryInfoForm({
   const [image, setImage] = useState<File | string | null>(
     initialImage ?? null,
   );
+  const [loading, startTransition] = useTransition();
+
   return (
     <div className="flex flex-col gap-2">
       <Form>
@@ -31,6 +34,7 @@ export default function StoryInfoForm({
           indicateRequired
           value={title}
           onChange={(e) => setTitle(e.target.value)}
+          disabled={loading}
         />
         <FormInput
           title="Summary"
@@ -38,17 +42,21 @@ export default function StoryInfoForm({
           indicateRequired
           value={summary}
           onChange={(e) => setSummary(e.target.value)}
+          disabled={loading}
         />
         <div className="mt-5">
           <h3 className="mb-2">Background Image</h3>
           <label
-            className="cursor-pointer rounded-md bg-teal-600 px-2 py-1 font-semibold text-white hover:bg-teal-700"
+            className={clsx(
+              "cursor-pointer select-none rounded-md bg-teal-600 px-2 py-1 font-semibold text-white hover:bg-teal-700",
+              loading && "pointer-events-none opacity-50",
+            )}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 fileUploadRef.current?.click();
               }
             }}
-            tabIndex={0}
+            tabIndex={loading ? undefined : 0}
           >
             <input
               type="file"
@@ -87,11 +95,20 @@ export default function StoryInfoForm({
             )}
           </div>
           <button
-            type="button"
+            type="submit"
             className="mt-5 select-none rounded-md bg-teal-600 px-2 py-1 font-semibold text-white disabled:pointer-events-none disabled:opacity-50"
             disabled={
-              title.length === 0 || summary.length === 0 || image === null
+              title.length === 0 ||
+              summary.length === 0 ||
+              image === null ||
+              loading
             }
+            onClick={(e) => {
+              e.preventDefault();
+              startTransition(async () => {
+                const story = await fetch();
+              });
+            }}
           >
             Continue
           </button>
