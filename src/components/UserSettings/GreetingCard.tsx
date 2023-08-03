@@ -1,13 +1,11 @@
-"use client";
-
 import { type ReadingHistory } from "@/app/user-settings/actions/getReadingHistory";
 import TopicTag from "@/components/TopicTag";
 import { StoryTopic, type User } from "@prisma/client";
 import Avatar from "/public/user-settings/ProfilePicture.png";
 import Image from "next/image";
-import { useState } from "react";
+import Carousel from "./Carousel";
 
-type Reading = {
+export type Reading = {
   storyContributions: {
     user: User;
   }[];
@@ -22,7 +20,6 @@ export default function GreetingCard({
   user: User;
   readingHistory: ReadingHistory[];
 }) {
-  const [readingHistoryIndex, setReadingHistoryIndex] = useState(0);
   const getGreeting = () => {
     const currHr = new Date().getHours();
     if (currHr < 12) return "Good morning";
@@ -31,22 +28,6 @@ export default function GreetingCard({
   };
 
   const stories: Reading[] = readingHistory.map((item) => item.story);
-
-  const handleNext = () => {
-    if (readingHistoryIndex < stories.length - 1) {
-      setReadingHistoryIndex(readingHistoryIndex + 1);
-    } else if (readingHistoryIndex === stories.length - 1) {
-      setReadingHistoryIndex(0);
-    }
-  };
-
-  const handlePrev = () => {
-    if (readingHistoryIndex > 0) {
-      setReadingHistoryIndex(readingHistoryIndex - 1);
-    } else if (readingHistoryIndex === 0) {
-      setReadingHistoryIndex(stories.length - 1);
-    }
-  };
 
   return (
     <section className="flex min-h-[320px] flex-wrap overflow-hidden rounded-md border bg-white">
@@ -80,92 +61,7 @@ export default function GreetingCard({
       </div>
 
       <div className="flex h-[320px] basis-full flex-col lg:basis-5/12">
-        <div className="relative grow object-cover">
-          <Image
-            src={stories[readingHistoryIndex].thumbnailUrl}
-            alt="article image"
-            fill
-          />
-          <div className="absolute bottom-4 left-4 flex items-center gap-2 rounded-2xl bg-[#A3C9A8] p-2 px-4 backdrop-blur-md hover:scale-105 hover:bg-white">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="h-5 w-5 text-[#69A297]"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"
-              />
-            </svg>
-            Read
-          </div>
-        </div>
-        <div className="flex justify-between bg-white px-6 py-4">
-          <div className="h-fit basis-5/6">
-            <p className="line-clamp-1 text-xl font-semibold">
-              {stories[readingHistoryIndex].title}
-            </p>
-            <p>
-              by{" "}
-              <span className="text-[#69A297]">
-                {
-                  stories[readingHistoryIndex].storyContributions[0].user
-                    .firstName
-                }{" "}
-                {
-                  stories[readingHistoryIndex].storyContributions[0].user
-                    .lastName
-                }
-              </span>
-            </p>
-          </div>
-          <div className="flex basis-1/6 items-center justify-center gap-2">
-            <button
-              className="h-8 rounded-lg bg-gray-100 px-2 hover:scale-105 hover:bg-gray-200"
-              title="previous"
-              onClick={handlePrev}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="h-6 w-6"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M15.75 19.5L8.25 12l7.5-7.5"
-                />
-              </svg>
-            </button>
-            <button
-              title="next"
-              className="h-8 rounded-lg bg-gray-100 px-2 hover:scale-105 hover:bg-gray-200"
-              onClick={handleNext}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="h-6 w-6"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M8.25 4.5l7.5 7.5-7.5 7.5"
-                />
-              </svg>
-            </button>
-          </div>
-        </div>
+        <Carousel stories={stories} autoSlide={true} />
       </div>
     </section>
   );
