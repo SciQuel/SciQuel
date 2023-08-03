@@ -46,8 +46,9 @@ export default function Carousel({
           className="flex h-full flex-nowrap transition-transform duration-500 ease-out"
           style={{ transform: `translateX(-${readingHistoryIndex * 100}%)` }}
         >
-          {stories.map((story) => (
+          {stories.map((story, idx) => (
             <img
+              key={idx}
               src={story.thumbnailUrl}
               alt="article image"
               className="h-full w-full flex-none"
