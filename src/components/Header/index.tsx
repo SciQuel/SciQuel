@@ -1,17 +1,16 @@
 "use client";
 
-import { signIn, signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import logo from "./logo.png";
+import ProfileButton from "./ProfileButton";
 import Search from "./search.svg";
 import SideBar from "./SideBar/SideBar";
 import Topic from "./Topic/Topic";
 
 export default function Header() {
-  const session = useSession();
   const [scroll, setScroll] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [y, setY] = useState(0);
@@ -128,30 +127,14 @@ export default function Header() {
 
             <form onSubmit={onSearch}>
               <input
-                className=" w-auto border border-x-transparent border-y-transparent bg-transparent outline-none focus:border-b-white"
+                className="w-auto border border-x-transparent border-y-transparent bg-transparent outline-none focus:border-b-white"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </form>
           </div>
           <div className="h-[2rem] grow" />
-          {session.status === "authenticated" ? (
-            <a
-              href="#"
-              onClick={() => void signOut()}
-              className="font-bold leading-[2rem]"
-            >
-              SIGN OUT
-            </a>
-          ) : (
-            <a
-              href="#"
-              onClick={() => void signIn()}
-              className="font-bold leading-[2rem]"
-            >
-              LOGIN
-            </a>
-          )}
+          <ProfileButton />
         </div>
       </div>
       <div

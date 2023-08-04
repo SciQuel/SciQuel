@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 interface Props {
-  searchParams: { [key: string]: string | "" };
+  searchParams: { [key: string]: string | undefined };
 }
 export default function Search({ searchParams }: Props) {
   console.log("searchParams", searchParams);
@@ -94,11 +94,11 @@ export default function Search({ searchParams }: Props) {
   );
 }
 type ParameterType = {
-  searchQuery: string;
-  type: string;
-  dateFrom: string;
-  dateTo: string;
-  sort: string;
+  searchQuery: string | undefined;
+  type: string | undefined;
+  dateFrom: string | undefined;
+  dateTo: string | undefined;
+  sort: string | undefined;
 };
 
 function filterRoute({
@@ -108,22 +108,26 @@ function filterRoute({
   dateTo,
   sort,
 }: ParameterType) {
-  const fillQuery = type != "" ? `keyword=${encodeURI(searchQuery)}` : ``;
-  const fillType = type != "" ? `type=${type}` : ``;
-  const fillSort = sort != "" ? `sort_by=${sort}` : ``;
+  const fillQuery =
+    searchQuery != ""
+      ? `keyword=${encodeURI(searchQuery != undefined ? searchQuery : "")}`
+      : ``;
+  const fillType = type != undefined ? `type=${type}` : ``;
+  const fillSort = sort != undefined ? `sort_by=${sort}` : ``;
 
   let filterDate;
-  if (dateFrom != `` && dateTo != ``) {
+  if (dateFrom != undefined && dateTo != undefined) {
     filterDate = `date_from=${dateFrom}&date_to=${dateTo}`;
   } else {
-    if (dateFrom != ``) {
+    if (dateFrom != undefined) {
       filterDate = `date_from=${dateFrom}`;
-    } else if (dateTo != ``) {
+    } else if (dateTo != undefined) {
       filterDate = `date_to=${dateTo}`;
     } else {
       filterDate = ``;
     }
   }
+
   let route;
   if (fillQuery != `` && fillType != `` && filterDate != `` && fillSort != ``) {
     route = `${fillQuery}&${fillType}&${filterDate}&${fillSort}`;

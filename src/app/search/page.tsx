@@ -4,7 +4,7 @@ import SearchArticle from "@/components/SearchArticle";
 import env from "@/lib/env";
 
 interface Params {
-  searchParams: { [key: string]: string | "" };
+  searchParams: { [key: string]: string | undefined };
 }
 
 export default async function SearchPage({ searchParams }: Params) {
@@ -31,26 +31,23 @@ async function retrieveDefaultContent({
   sort_by,
 }: Params["searchParams"]) {
   let storyRoute = ``;
-  const filterKeyword = keyword != "undefined" ? `keyword=${keyword}` : ``;
-  console.log("filterKeyword", filterKeyword);
-  const filterType = type != "undefined" ? `type=${type}` : ``;
-  console.log("filterType", type != "undefined", filterType);
+  const filterKeyword = keyword != undefined ? `keyword=${keyword}` : ``;
+  const filterType = type != undefined ? `type=${type}` : ``;
+
   let filterDate;
-  if (date_from != "undefined" && date_to != "") {
+  if (date_from != undefined && date_to != undefined) {
     filterDate = `date_from=${date_from}&date_to=${date_to}`;
   } else {
-    if (date_from != "undefined") {
+    if (date_from != undefined) {
       filterDate = `date_from=${date_from}`;
-    } else if (date_to != "undefined") {
+    } else if (date_to != undefined) {
       filterDate = `date_to=${date_to}`;
     } else {
       filterDate = ``;
     }
   }
-  console.log("filterDate", filterDate);
 
-  const filterSort = sort_by != "undefined" ? `sort_by=${sort_by}` : ``;
-  console.log("keyword", filterKeyword);
+  const filterSort = sort_by != undefined ? `sort_by=${sort_by}` : ``;
   if (
     filterKeyword != `` &&
     filterType != `` &&

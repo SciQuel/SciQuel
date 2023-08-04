@@ -6,16 +6,14 @@ interface Props {
   articles: Stories;
 }
 
-export default function StaffPicksSection({ articles }: Props) {
+export default function SearchArticle({ articles }: Props) {
   if (articles.length === 0) {
     return null;
   }
 
   return (
     <HomepageSection heading="Search Result....">
-      {articles && (
-        <ArticleList articles={articles.slice(0, 3)} preferHorizontal={true} />
-      )}
+      {articles && <ArticleList articles={articles} preferHorizontal={true} />}
     </HomepageSection>
   );
 }

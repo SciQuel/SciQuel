@@ -7,7 +7,7 @@ export default function Greeting() {
   const { data: session } = useSession();
   let userName = "James";
   if (session && session.user) {
-    userName = String(session.user.name);
+    userName = session.user.firstName;
   }
   return <GreetingCard name={userName} />;
 }

@@ -37,7 +37,9 @@ export const authOptions: AuthOptions = {
           return {
             id: user.id,
             email: user.email,
-            name: `${user.lastName}, ${user.firstName}`,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            image: user.avatarUrl,
           };
         }
         return null;
@@ -64,6 +66,31 @@ export const authOptions: AuthOptions = {
           : `/auth/verify?user=${userRecord.email}`;
       }
       return "/auth/login?error=CredentialsSignin";
+    },
+    session({ session, token }) {
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          firstName: token.firstName,
+          lastName: token.lastName,
+        },
+      };
+    },
+    async jwt({ token, user, account, trigger }) {
+      if (trigger === "update") {
+        const user = await prisma.user.findUnique({ where: { id: token.sub } });
+        if (user) {
+          token.firstName = user.firstName;
+          token.lastName = user.lastName;
+          token.email = user.email;
+          token.picture = user.avatarUrl;
+        }
+      } else if (trigger === "signIn" && account) {
+        token.firstName = user.firstName;
+        token.lastName = user.lastName;
+      }
+      return token;
     },
   },
 };
