@@ -1,4 +1,7 @@
 import { type GetStoryResult } from "@/app/api/stories/[year]/[month]/[day]/[slug]/route";
+import { type GetStoriesResult } from "@/app/api/stories/route";
+import Avatar from "@/components/Avatar";
+import MoreCard from "@/components/MoreCard";
 import FromThisSeries from "@/components/story-components/FromThisSeries";
 import ShareLinks from "@/components/story-components/ShareLinks";
 import StoryH1 from "@/components/story-components/StoryH1";
@@ -7,6 +10,7 @@ import StoryLargeImage from "@/components/story-components/StoryLargeImage";
 import StoryParagraph from "@/components/story-components/StoryParagraph";
 import StoryUl from "@/components/story-components/StoryUl";
 import TopicTag from "@/components/TopicTag";
+import { tagUser } from "@/lib/cache";
 import env from "@/lib/env";
 import remarkSciquelDirective from "@/lib/remark-sciquel-directive";
 import { type StoryTopic } from "@prisma/client";
@@ -30,6 +34,7 @@ interface Params {
 }
 
 export default async function StoriesPage({ params }: Params) {
+  const whatsNewArticles = await getWhatsNewArticles();
   const story = await retrieveStoryContent(params);
   const htmlContent = await generateMarkdown(story.storyContent[0].content);
   return (
@@ -110,9 +115,12 @@ export default async function StoriesPage({ params }: Params) {
           key={`contributor-footer-${index}`}
           className="w-[calc( 100% - 1rem )] mx-2 mb-3 flex flex-row items-stretch rounded-2xl border border-sciquelCardBorder p-3 shadow-md md:mx-auto md:w-[720px]"
         >
-          <div className="m-5 aspect-square h-full flex-1 rounded-full bg-slate-600 text-center">
-            temp
-          </div>
+          <Avatar
+            imageUrl={element.user.avatarUrl ?? undefined}
+            label={element.user.firstName[0]}
+            className="m-5"
+            size="4xl"
+          />
           <div className="m-5 flex flex-[2.3] flex-col">
             <p className="font-alegreyaSansSC text-4xl font-medium text-sciquelTeal">
               {element.user.firstName} {element.user.lastName}
@@ -124,6 +132,7 @@ export default async function StoriesPage({ params }: Params) {
         </div>
       ))}
       <FromThisSeries />
+      <MoreCard articles1={whatsNewArticles} articles2={whatsNewArticles} />
     </div>
   );
 }
@@ -135,10 +144,28 @@ async function retrieveStoryContent({
   slug,
 }: Params["params"]) {
   const storyRoute = `/stories/${year}/${month}/${day}/${slug}`;
+  const prefetchedMetadataRes = await fetch(
+    `${env.NEXT_PUBLIC_SITE_URL}/api${storyRoute}`,
+  );
+
+  if (!prefetchedMetadataRes.ok) {
+    throw new Error("Failed to fetch metadata");
+  }
+
+  const prefetchedMetadata =
+    (await prefetchedMetadataRes.json()) as GetStoryResult;
+
   const res = await fetch(
     `${env.NEXT_PUBLIC_SITE_URL}/api${storyRoute}?include_content=true`,
     {
-      next: { tags: [storyRoute] },
+      next: {
+        tags: [
+          storyRoute,
+          ...prefetchedMetadata.storyContributions.map((contribution) =>
+            tagUser(contribution.user.id),
+          ),
+        ],
+      },
     },
   );
 
@@ -199,4 +226,24 @@ async function generateMarkdown(content: string) {
     })
     .process(content);
   return file;
+}
+
+/// temporary
+async function getWhatsNewArticles() {
+  const res = await fetch(`${env.NEXT_PUBLIC_SITE_URL}/api/stories`, {
+    next: { revalidate: 60 },
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch data");
+  }
+
+  return res.json().then((value: GetStoriesResult) =>
+    value.stories.map((story) => ({
+      ...story,
+      createdAt: new Date(story.createdAt),
+      publishedAt: new Date(story.publishedAt),
+      updatedAt: new Date(story.updatedAt),
+    })),
+  );
 }

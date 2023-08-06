@@ -94,7 +94,8 @@ model User {
 
   firstName String
   lastName  String
-  email     String @unique
+  email     String  @unique
+  avatarUrl String?
 
   bio String
 
