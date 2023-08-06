@@ -1,13 +1,11 @@
 "use client";
 
+import { type QuizHistory } from "@/app/user-settings/actions/getQuizHistory";
 import TopicTag from "@/components/TopicTag";
-import { StoryTopic, type Quiz, type Story } from "@prisma/client";
 import * as d3 from "d3";
 import { useEffect } from "react";
 
-type QuizAndStory = Quiz & { story: Story };
-
-function createScoreDonut(quiz: QuizAndStory, idx: number) {
+function createScoreDonut(quiz: QuizHistory, idx: number) {
   const selector = "#" + `quiz-history-item-${idx}`;
   const height = 120;
   const width = 115;
@@ -72,7 +70,7 @@ export default function QuizCard({
   quiz,
   idx,
 }: {
-  quiz: QuizAndStory;
+  quiz: QuizHistory;
   idx: number;
 }) {
   const {
@@ -80,6 +78,11 @@ export default function QuizCard({
     date,
     story: { title, tags },
   } = quiz;
+
+  const quizTypeMap = {
+    POST_QUIZ: "Post-Quiz",
+    PRE_QUIZ: "Pre-Quiz",
+  };
   // render quiz score using d3 with useEffect
   useEffect(() => {
     createScoreDonut(quiz, idx);
@@ -92,7 +95,9 @@ export default function QuizCard({
       ></div>
       <div className="flex w-36 flex-col">
         <div className="line-clamp-2 text-lg font-semibold">{title}</div>
-        <div className="text-xs font-thin text-gray-400">{quizType}</div>
+        <div className="text-xs font-thin text-gray-400">
+          {quizTypeMap[quizType]}
+        </div>
         <div className="my-2 flex">
           <TopicTag name={tags[0]} />
         </div>

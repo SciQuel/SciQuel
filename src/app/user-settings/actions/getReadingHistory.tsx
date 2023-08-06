@@ -1,10 +1,5 @@
 import prisma from "@/lib/prisma";
-import {
-  type Quiz,
-  type Story,
-  type StoryContribution,
-  type User,
-} from "@prisma/client";
+import { type User } from "@prisma/client";
 import { getServerSession } from "next-auth";
 
 export type ReadingHistory = {

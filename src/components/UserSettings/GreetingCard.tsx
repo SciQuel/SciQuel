@@ -1,11 +1,12 @@
+"use client";
+
 import { type ReadingHistory } from "@/app/user-settings/actions/getReadingHistory";
 import TopicTag from "@/components/TopicTag";
 import { StoryTopic, type User } from "@prisma/client";
-import Image from "next/image";
-import Carousel from "./Carousel";
 import { useSession } from "next-auth/react";
-import AvatarEditorButton from "../Avatar/AvatarEditorButton";
 import Avatar from "../Avatar";
+import AvatarEditorButton from "../Avatar/AvatarEditorButton";
+import Carousel from "./Carousel";
 
 export type Reading = {
   storyContributions: {
@@ -40,7 +41,7 @@ export default function GreetingCard({
             <AvatarEditorButton />
             <Avatar
               imageUrl={session.data?.user.image ?? undefined}
-              label={user.firstName}
+              label={user.firstName[0]}
               size="2xl"
             />
           </div>

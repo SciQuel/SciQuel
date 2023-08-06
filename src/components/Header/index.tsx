@@ -108,7 +108,10 @@ export default function Header() {
           <SideBar />
           <div className="top-0 flex">
             <SearchIcon className="h-[2rem] w-auto" />
-            <input className="w-auto border border-x-transparent border-y-transparent bg-transparent outline-none focus:border-b-white" />
+            <input
+              title="search"
+              className="w-auto border border-x-transparent border-y-transparent bg-transparent outline-none focus:border-b-white"
+            />
           </div>
           <div className="h-[2rem] grow" />
           <ProfileButton />
