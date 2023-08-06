@@ -11,7 +11,8 @@ datasource db {
 }
 
 enum StoryType {
-  ARTICLE
+  DIGEST
+  ESSAY
 }
 
 enum Category {

@@ -145,7 +145,7 @@ export async function POST(request: NextRequest) {
       user: { connect: { id: user.id } },
       story: {
         create: {
-          storyType: StoryType.ARTICLE,
+          storyType: StoryType.ESSAY,
           category: Category.ARTICLE,
           title,
           titleColor: "#ffffff",
