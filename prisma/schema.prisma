@@ -14,6 +14,11 @@ enum StoryType {
   ARTICLE
 }
 
+enum Category {
+  ARTICLE
+  PODCAST
+}
+
 enum ContributionType {
   AUTHOR
   ILLUSTRATOR
@@ -46,6 +51,7 @@ enum AuthVerificationType {
 model Story {
   id        String    @id @default(auto()) @map("_id") @db.ObjectId
   storyType StoryType
+  category  Category
 
   title      String
   titleColor String
