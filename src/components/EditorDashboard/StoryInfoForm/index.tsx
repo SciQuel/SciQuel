@@ -28,6 +28,7 @@ export default function StoryInfoForm({
   const [image, setImage] = useState<File | string | null>(
     initialImage ?? null,
   );
+  const [dirty, setDirty] = useState(false);
   const [loading, startTransition] = useTransition();
 
   return (
@@ -38,7 +39,10 @@ export default function StoryInfoForm({
           required
           indicateRequired
           value={title}
-          onChange={(e) => setTitle(e.target.value)}
+          onChange={(e) => {
+            setDirty(true);
+            setTitle(e.target.value);
+          }}
           disabled={loading}
         />
         <FormInput
@@ -46,7 +50,10 @@ export default function StoryInfoForm({
           required
           indicateRequired
           value={summary}
-          onChange={(e) => setSummary(e.target.value)}
+          onChange={(e) => {
+            setDirty(true);
+            setSummary(e.target.value);
+          }}
           disabled={loading}
         />
         <div className="mt-5">
@@ -68,6 +75,7 @@ export default function StoryInfoForm({
               className="hidden"
               ref={fileUploadRef}
               onChange={(e) => {
+                setDirty(true);
                 setImage(e.target.files?.[0] ?? null);
               }}
               accept="image/jpeg, image/png, image/gif"
@@ -111,35 +119,38 @@ export default function StoryInfoForm({
             onClick={(e) => {
               e.preventDefault();
               startTransition(async () => {
-                const formData = new FormData();
-                if (storyId) {
-                  formData.append("id", storyId);
-                }
-                formData.append("title", title);
-                formData.append("summary", summary);
-                if (image === null) {
-                  return;
-                } else if (typeof image === "string") {
-                  formData.append("imageUrl", image);
-                } else {
-                  const file = new File([image], image.name);
-                  formData.append("image", file, file.name);
-                }
-                const story = await axios.put<{ id: string }>(
-                  "/api/stories",
-                  formData,
-                  {
-                    headers: {
-                      "Content-Type": "multipart/form-data",
+                if (dirty) {
+                  const formData = new FormData();
+                  if (storyId) {
+                    formData.append("id", storyId);
+                  }
+                  formData.append("title", title);
+                  formData.append("summary", summary);
+                  if (image === null) {
+                    return;
+                  } else if (typeof image === "string") {
+                    formData.append("imageUrl", image);
+                  } else {
+                    const file = new File([image], image.name);
+                    formData.append("image", file, file.name);
+                  }
+                  const story = await axios.put<{ id: string }>(
+                    "/api/stories",
+                    formData,
+                    {
+                      headers: {
+                        "Content-Type": "multipart/form-data",
+                      },
                     },
-                  },
-                );
-
-                const nextPage = `/editor/story/contributors?id=${story.data.id}`;
-                if (storyId) {
-                  router.push(nextPage);
+                  );
+                  const nextPage = `/editor/story/contributors?id=${story.data.id}`;
+                  if (storyId) {
+                    router.push(nextPage);
+                  } else {
+                    router.push(nextPage);
+                  }
                 } else {
-                  router.push(nextPage);
+                  router.push(`/editor/story/contributors?id=${storyId}`);
                 }
               });
             }}
