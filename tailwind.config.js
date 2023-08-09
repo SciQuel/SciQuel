@@ -20,6 +20,7 @@ module.exports = {
         sciquelMuted: "#878787",
         sciquelCardBg: "#f8f8ff",
         sciquelCardBorder: "#cccccc",
+        sciquelMuted2: "#58A4B0",
         sciquelGreen: "#A3C9A8",
       },
       backgroundImage: {
