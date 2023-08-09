@@ -18,6 +18,8 @@ module.exports = {
         sciquelHover: "#51726b",
         sciquelHeading: "rgba(52, 78, 65, 1)",
         sciquelMuted: "#878787",
+        sciquelCaption: "#565656",
+        sciquelCitation: "#8c8c8c",
         sciquelCardBg: "#f8f8ff",
         sciquelCardBorder: "#cccccc",
         sciquelMuted2: "#58A4B0",
@@ -34,5 +36,5 @@ module.exports = {
       },
     },
   },
-  plugins: [require("tailwindcss-touch")()],
+  plugins: [require("@tailwindcss/container-queries"), require("tailwindcss-touch")()],
 };
