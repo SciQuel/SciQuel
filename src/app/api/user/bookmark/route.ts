@@ -1,23 +1,7 @@
 import prisma from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 import { NextResponse, type NextRequest } from "next/server";
-import { z } from "zod";
-
-const requestSchema = z.object({
-  story_id: z
-    .string({
-      required_error: "story_id is required",
-      invalid_type_error: "story_id must be a ObjectId",
-    })
-    .regex(/^[0-9a-f]{24}$/, { message: "story_id must be a valid ObjectId" }),
-
-  user_id: z
-    .string({
-      required_error: "user_id is required",
-      invalid_type_error: "user_id must be a ObjectId",
-    })
-    .regex(/^[0-9a-f]{24}$/, { message: "user_id must be a valid ObjectId" }),
-});
+import { requestSchema } from "./schema";
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
@@ -32,18 +16,21 @@ export async function GET(req: Request) {
   const { story_id, user_id } = parsedParams.data;
 
   try {
-    const brain = await prisma.brain.findFirst({
+    const bookmark = await prisma.bookmark.findFirst({
       where: {
         storyId: story_id,
         userId: user_id,
       },
     });
 
-    if (brain === null) {
-      return NextResponse.json({ error: "Brain not found" }, { status: 404 });
+    if (bookmark === null) {
+      return NextResponse.json(
+        { error: "Bookmark not found" },
+        { status: 404 },
+      );
     }
 
-    return NextResponse.json(brain);
+    return NextResponse.json(bookmark);
   } catch (e) {
     if (e instanceof Prisma.PrismaClientValidationError) {
       console.log(e.message);
@@ -87,7 +74,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    const res = await prisma.brain.create({
+    const res = await prisma.bookmark.create({
       data: {
         userId: user_id,
         storyId: story_id,
@@ -164,7 +151,7 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    const res = await prisma.brain.deleteMany({
+    const res = await prisma.bookmark.deleteMany({
       where: {
         userId: user_id,
         storyId: story_id,
