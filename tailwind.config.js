@@ -22,6 +22,7 @@ module.exports = {
         sciquelCitation: "#8c8c8c",
         sciquelCardBg: "#f8f8ff",
         sciquelCardBorder: "#cccccc",
+        sciquelMuted2: "#58A4B0",
         sciquelGreen: "#A3C9A8",
       },
       backgroundImage: {
