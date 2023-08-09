@@ -153,18 +153,24 @@ model Brain {
 }
 
 model Quiz {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String   @db.ObjectId
+  storyId    String   @db.ObjectId
+  quizType   QuizType
+  totalScore Int
+  score      Int
+  date       DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id])
+  story      Story    @relation(fields: [storyId], references: [id])
+
+  @@unique([userId, storyId])
+}
+
+model Bookmark {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
   userId  String @db.ObjectId
   storyId String @db.ObjectId
 
-  quizType   QuizType
-  totalScore Int
-  score      Int
-  date       DateTime @default(now())
-
-  user  User  @relation(fields: [userId], references: [id])
-  story Story @relation(fields: [storyId], references: [id])
-
-  @@unique([userId, storyId])
+  createdAt DateTime @default(now())
 }
