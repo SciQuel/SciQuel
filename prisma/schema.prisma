@@ -107,7 +107,7 @@ model User {
 
   storyContributions StoryContribution[]
   authVerifications  AuthVerification[]
-  Quizs              Quiz[]
+  quizzes            Quiz[]
 }
 
 model AuthVerification {
@@ -153,15 +153,18 @@ model Brain {
 }
 
 model Quiz {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId     String   @db.ObjectId
-  storyId    String   @db.ObjectId
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  userId  String @db.ObjectId
+  storyId String @db.ObjectId
+
   quizType   QuizType
   totalScore Int
   score      Int
   date       DateTime @default(now())
-  user       User     @relation(fields: [userId], references: [id])
-  story      Story    @relation(fields: [storyId], references: [id])
+
+  user  User  @relation(fields: [userId], references: [id])
+  story Story @relation(fields: [storyId], references: [id])
 
   @@unique([userId, storyId])
 }
@@ -173,4 +176,6 @@ model Bookmark {
   storyId String @db.ObjectId
 
   createdAt DateTime @default(now())
+
+  @@unique([userId, storyId])
 }
