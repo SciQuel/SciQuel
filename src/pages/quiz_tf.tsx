@@ -4,7 +4,6 @@ import React from "react";
 
 import "tailwindcss/tailwind.css";
 import "../app/globals.css";
-import Header from "@/components/Header";
 import clsx from "clsx";
 import { Alegreya_Sans_SC, Quicksand, Source_Serif_4 } from "next/font/google";
 
@@ -109,8 +108,6 @@ const TestPage = () => {
       )}
       style={{ backgroundColor: "#f8f8ff" }}
     >
-      <Header />
-      {/* <RootLayout children={<></>} /> */}
       <h1 className="mb-16 mt-16 text-center">
         (This is a temporary page for testing the Quiz component)
       </h1>
@@ -133,9 +130,5 @@ const TestPage = () => {
     </div>
   );
 };
-
-// TestPage.getLayout = function getLayout(page: React.ReactNode) {
-//   return <RootLayout>{page}</RootLayout>;
-// };
 
 export default TestPage;

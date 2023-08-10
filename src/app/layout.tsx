@@ -1,7 +1,11 @@
 import "./globals.css";
+import Footer from "@/components/Footer";
 import Header from "@/components/Header";
+import { authOptions } from "@/lib/auth";
 import clsx from "clsx";
+import { getServerSession } from "next-auth";
 import { Alegreya_Sans_SC, Quicksand, Source_Serif_4 } from "next/font/google";
+import AuthProvider from "./AuthProvider";
 
 export const metadata = {
   title: "SciQuel",
@@ -28,11 +32,12 @@ const sourceSerif4 = Source_Serif_4({
   display: "swap",
 });
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = await getServerSession(authOptions);
   return (
     <html lang="en">
       <body
@@ -40,10 +45,14 @@ export default function RootLayout({
           quicksand.className,
           alegreyaSansSC.variable,
           sourceSerif4.variable,
+          "flex min-h-screen flex-col",
         )}
       >
-        <Header />
-        {children}
+        <AuthProvider session={session}>
+          <Header />
+          {children}
+          <Footer />
+        </AuthProvider>
       </body>
     </html>
   );

@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import { type ContributionType, type Story } from "@prisma/client";
 import { DateTime } from "luxon";
 import { NextResponse } from "next/server";
 
@@ -8,6 +9,22 @@ interface Params {
   month: unknown;
   day: unknown;
 }
+
+export type GetStoryResult = Story & {
+  storyContributions: {
+    user: {
+      id: string;
+      firstName: string;
+      lastName: string;
+      bio: string;
+      avatarUrl: string | null;
+    };
+    contributionType: ContributionType;
+  }[];
+  storyContent: {
+    content: string;
+  }[];
+};
 
 export async function GET(req: Request, { params }: { params: Params }) {
   const { searchParams } = new URL(req.url);
@@ -50,7 +67,15 @@ export async function GET(req: Request, { params }: { params: Params }) {
       storyContributions: {
         select: {
           contributionType: true,
-          user: { select: { firstName: true, lastName: true, bio: true } },
+          user: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              bio: true,
+              avatarUrl: true,
+            },
+          },
         },
       },
       storyContent:

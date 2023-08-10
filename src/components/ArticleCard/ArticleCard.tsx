@@ -1,5 +1,6 @@
 import TopicTag from "@/components/TopicTag";
 import { type StoryTopic } from "@prisma/client";
+import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -11,6 +12,8 @@ interface Props {
   author: string;
   date: string;
   thumbnailUrl: string;
+  mini: boolean;
+  preferHorizontal?: boolean;
 }
 
 export default function ArticleCard({
@@ -21,39 +24,96 @@ export default function ArticleCard({
   author,
   date,
   thumbnailUrl,
+  mini = false,
+  preferHorizontal = false,
 }: Props) {
   return (
     <Link href={href ?? "#"}>
       <div
-        className={`flex h-full min-w-[300px] cursor-pointer flex-col
-        overflow-clip rounded-lg border border-sciquelCardBorder bg-sciquelCardBg
-        transition hover:scale-[1.02]`}
+        className={clsx(
+          `flex h-full cursor-pointer overflow-clip rounded-lg transition hover:scale-[1.02]`,
+          {
+            "border border-sciquelCardBorder bg-sciquelCardBg": !(
+              mini && preferHorizontal
+            ),
+            "ml-auto w-[175px]": mini && preferHorizontal,
+          },
+          mini && !preferHorizontal ? "min-w-[275px]" : "min-w-[300px]",
+          preferHorizontal ? "flex-row" : "flex-col",
+        )}
       >
-        <div className="flex grow flex-col gap-4 p-5">
+        <div
+          className={clsx(
+            "flex flex-col gap-4 p-5",
+            mini
+              ? preferHorizontal
+                ? ""
+                : "grow"
+              : preferHorizontal
+              ? "w-2/3"
+              : "grow",
+          )}
+        >
           {/* Article Card Header */}
-          <div className="flex w-full flex-row">
-            <TopicTag name={topic} />
-            <div className="grow text-right">
-              <p className="m-0 text-[10px] text-sciquelMuted">ARTICLE</p>
+          {!mini || !preferHorizontal ? (
+            <div className="flex w-full flex-row">
+              <TopicTag name={topic} />
+              <div className="grow text-right">
+                <p
+                  className={clsx(
+                    "m-0 text-sciquelMuted",
+                    mini ? "text-sm" : "text-base",
+                  )}
+                >
+                  ARTICLE
+                </p>
+              </div>
             </div>
-          </div>
+          ) : null}
           {/* Article Content */}
           <div className="flex grow flex-col">
             <div className="grow">
-              <h1 className="line-clamp-2 font-alegreyaSansSC text-xl font-medium">
+              <h1
+                className={clsx(
+                  "line-clamp-2 font-alegreyaSansSC font-medium",
+                  mini
+                    ? preferHorizontal
+                      ? "text-lg leading-tight"
+                      : "text-lg leading-snug"
+                    : "text-xl",
+                )}
+              >
                 {title}
               </h1>
             </div>
             <div className="flex items-center">
-              <p className="line-clamp-3">{subtitle}</p>
+              <p className={clsx("line-clamp-3", mini ? "text-xs" : "")}>
+                {subtitle}
+              </p>
             </div>
           </div>
-          <div className="flex flex-row font-sourceSerif4 text-sm font-[350] text-sciquelMuted">
-            <p className="grow">By {author}</p>
+          <div
+            className={clsx(
+              "flex flex-row justify-between font-sourceSerif4 font-[350] text-sciquelMuted",
+              mini ? "text-xs" : "text-sm",
+            )}
+          >
+            <p>By {author}</p>
             <p>{date}</p>
           </div>
         </div>
-        <div className="relative h-44">
+        <div
+          className={clsx(
+            "relative",
+            mini
+              ? preferHorizontal
+                ? "hidden"
+                : "h-24"
+              : preferHorizontal
+              ? "w-1/3"
+              : "h-44",
+          )}
+        >
           <Image
             src={thumbnailUrl}
             fill={true}
