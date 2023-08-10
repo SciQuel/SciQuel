@@ -1,22 +1,16 @@
 import { type GetStoryResult } from "@/app/api/stories/[year]/[month]/[day]/[slug]/route";
 import { type GetStoriesResult } from "@/app/api/stories/route";
-import Avatar from "@/components/Avatar";
-import MoreCard from "@/components/MoreCard";
-import FromThisSeries from "@/components/story-components/FromThisSeries";
 import { PrintModeProvider } from "@/components/story-components/PrintContext";
-import ShareLinks from "@/components/story-components/ShareLinks";
 import StoryCredits from "@/components/story-components/StoryCredits";
+import StoryFooter from "@/components/story-components/StoryFooter";
 import StoryH1 from "@/components/story-components/StoryH1";
 import StoryH2 from "@/components/story-components/StoryH2";
 import StoryLargeImage from "@/components/story-components/StoryLargeImage";
 import StoryParagraph from "@/components/story-components/StoryParagraph";
 import StoryUl from "@/components/story-components/StoryUl";
-import TopicTag from "@/components/TopicTag";
 import { tagUser } from "@/lib/cache";
 import env from "@/lib/env";
 import remarkSciquelDirective from "@/lib/remark-sciquel-directive";
-import { DateTime } from "luxon";
-import Image from "next/image";
 import { createElement, Fragment, type HTMLProps, type ReactNode } from "react";
 import rehypeReact from "rehype-react";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
@@ -52,29 +46,11 @@ export default async function StoriesPage({ params }: Params) {
           guidance. Ex. Cover Image: “Hawaiian Bobtail Squid” is licensed under
           CC BY-NC 4.0.
         </p>
-        {story.storyContributions.map((element, index) => (
-          <div
-            key={`contributor-footer-${index}`}
-            className="w-[calc( 100% - 1rem )] mx-2 mb-3 flex flex-row items-stretch rounded-2xl border border-sciquelCardBorder p-3 shadow-md md:mx-auto md:w-[720px]"
-          >
-            <Avatar
-              imageUrl={element.user.avatarUrl ?? undefined}
-              label={element.user.firstName[0]}
-              className="m-5"
-              size="4xl"
-            />
-            <div className="m-5 flex flex-[2.3] flex-col">
-              <p className="flex-1 font-sourceSerif4 text-xl">
-                <span className="font-alegreyaSansSC text-3xl font-medium text-sciquelTeal">
-                  {element.user.firstName} {element.user.lastName}{" "}
-                </span>
-                {element.user.bio}
-              </p>
-            </div>
-          </div>
-        ))}
-        <FromThisSeries />
-        <MoreCard articles1={whatsNewArticles} articles2={whatsNewArticles} />
+        <StoryFooter
+          storyContributions={story.storyContributions}
+          articles1={whatsNewArticles}
+          articles2={whatsNewArticles}
+        />
       </div>
     </PrintModeProvider>
   );

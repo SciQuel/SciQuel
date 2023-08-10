@@ -104,7 +104,7 @@ export default function StoryCredits({ story }: Props) {
         </div>
       </div>
       <div className="h-fit w-screen">
-        <p className="fs-2 mx-20 my-0 p-0">
+        <p className="fs-2 mx-2 my-0 p-0">
           Title Image provided by Source name
         </p>
         <div className="relative mx-2 mt-0 flex w-screen flex-col sm:mx-auto md:w-[720px]">

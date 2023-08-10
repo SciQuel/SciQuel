@@ -1,8 +1,17 @@
-import { type PropsWithChildren } from "react";
+"use client";
+
+import { useContext, type PropsWithChildren } from "react";
+import { PrintContext } from "./PrintContext";
 
 export default function StoryH2({ children }: PropsWithChildren<unknown>) {
+  const isPrintMode = useContext(PrintContext);
+
   return (
-    <h2 className="mx-auto w-full  text-3xl font-medium text-sciquelTeal md:w-[720px]">
+    <h2
+      className={`${
+        isPrintMode ? "font-sourceSerif4 text-2xl" : "text-3xl text-sciquelTeal"
+      } mx-auto w-full font-medium md:w-[720px]`}
+    >
       {children}
     </h2>
   );

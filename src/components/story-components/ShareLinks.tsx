@@ -93,32 +93,26 @@ export default function ShareLinks() {
           }  absolute bottom-0 flex w-screen flex-col pt-0 transition-transform duration-500 sm:relative sm:pl-5 sm:pr-1 sm:before:absolute sm:before:left-52 sm:before:top-2 sm:before:z-[2] sm:before:ml-6 sm:before:h-8 sm:before:w-8 sm:before:rotate-45 sm:before:border-l-2 sm:before:border-t-2 sm:before:border-sciquelCardBorder sm:before:bg-sciquelCardBg  md:w-[720px] md:pl-0 md:pr-0 xl:w-fit xl:before:left-0 xl:before:ml-7`}
         >
           <div
-            className={`relative w-full rounded-t sm:rounded sm:p-4 xl:-left-4`}
+            className={`relative flex w-full flex-col-reverse sm:p-4 xl:-left-4 xl:flex-row`}
           >
+            {/* button + side-popout container */}
             <div
-              className={` pointer-events-auto mt-2 rounded-r rounded-t border-2 border-sciquelCardBorder bg-sciquelCardBg p-4 pb-2 xl:pb-4`}
+              className={`pointer-events-auto relative m-0 flex flex-row border-x-2 border-sciquelCardBorder bg-sciquelCardBg pb-4 before:pointer-events-none sm:rounded-b sm:border-b-2 sm:pb-2 md:px-1 lg:h-fit xl:top-2 xl:w-fit  xl:flex-col xl:rounded xl:border-t-2 xl:px-2 xl:py-4`}
             >
-              <input
-                readOnly
-                type="text"
-                className="mt-3 w-full border p-1 xl:mt-0 xl:w-96"
-                value={`sciquel.org${pathname}`}
-                onClick={() => {
-                  navigator.clipboard.writeText(`sciquel.org${pathname}`);
-                }}
-              />
+              {/* buttons container */}
               <button
                 onClick={() => {
                   navigator.clipboard.writeText(`sciquel.org${pathname}`);
                 }}
-                className="mx-2 mt-3 rounded-md bg-sciquelTeal p-1 text-lg font-semibold text-slate-50 sm:mt-5 xl:my-2"
+                className={` h-fit w-fit rounded-full p-3`}
               >
-                Copy Url
+                <Image
+                  src={shareIcon}
+                  alt="share to a link to this story"
+                  width={45}
+                  height={45}
+                />
               </button>
-            </div>
-            <div
-              className={` pointer-events-auto relative  top-[-2px] flex flex-row border-x-2 border-sciquelCardBorder bg-sciquelCardBg before:pointer-events-none sm:rounded-b sm:border-b-2 md:p-1  xl:w-fit xl:flex-col xl:p-2 xl:before:absolute xl:before:-right-10 xl:before:top-0 xl:before:z-[2] xl:before:h-10 xl:before:w-10 xl:before:rounded-tl xl:before:border-l-2 xl:before:border-t-2 xl:before:border-sciquelCardBorder`}
-            >
               <a
                 className={` h-fit w-fit rounded-full p-3`}
                 target="_blank"
@@ -155,6 +149,20 @@ export default function ShareLinks() {
                   height={45}
                 />
               </a>
+            </div>
+            <div
+              className={`pointer-events-auto m-0 mt-2 rounded-t border-x-2 border-t-2 border-sciquelCardBorder bg-sciquelCardBg p-4 pb-2 lg:h-fit xl:mx-3 xl:rounded xl:border-2 xl:pb-4`}
+            >
+              {/* floating input for copying link */}
+              <input
+                readOnly
+                type="text"
+                className="mt-3 w-full border p-1 xl:mt-0 xl:w-96"
+                value={`sciquel.org${pathname}`}
+                onClick={() => {
+                  navigator.clipboard.writeText(`sciquel.org${pathname}`);
+                }}
+              />
             </div>
           </div>
         </div>

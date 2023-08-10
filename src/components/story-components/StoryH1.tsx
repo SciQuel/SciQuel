@@ -1,16 +1,19 @@
-"use client"
+"use client";
 
-import {PrintContext,  } from "./PrintContext";
-import { useEffect, useRef, useState, useContext } from "react";
-
-import { type PropsWithChildren } from "react";
+import { useContext, type PropsWithChildren } from "react";
+import { PrintContext } from "./PrintContext";
 
 export default function StoryH1({ children }: PropsWithChildren<unknown>) {
   const isPrintMode = useContext(PrintContext);
 
-
   return (
-    <h1 className={`${isPrintMode ? "font-sourceSerif4 text-3xl" : "text-sciquelTeal text-4xl "} mx-auto w-full font-medium  md:w-[720px]`}>
+    <h1
+      className={`${
+        isPrintMode
+          ? "font-sourceSerif4 text-3xl"
+          : "text-4xl text-sciquelTeal "
+      } mx-auto w-full font-medium  md:w-[720px]`}
+    >
       {children}
     </h1>
   );
