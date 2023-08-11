@@ -51,7 +51,7 @@ paths:
           name: type
           schema:
             type: string
-            example: "ARTICLE"
+            example: "ESSAY"
           required: false
           description: Filter stories by storyType (non-case sensitive)
         - in: query
@@ -651,6 +651,8 @@ components:
           type: string
         storyType:
           $ref: "#/components/schemas/StoryType"
+        category:
+          $ref: "#/components/schemas/Category"
         title:
           type: string
         titleColor:
@@ -691,7 +693,13 @@ components:
     StoryType:
       type: string
       enum:
+        - ESSAY
+        - DIGEST
+    Category:
+      type: string
+      enum:
         - ARTICLE
+        - PODCAST
     StoryTopic:
       type: string
       enum:
