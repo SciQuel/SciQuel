@@ -4,25 +4,14 @@ import Avatar from "@/components/Avatar";
 import MoreCard from "@/components/MoreCard";
 import FromThisSeries from "@/components/story-components/FromThisSeries";
 import ShareLinks from "@/components/story-components/ShareLinks";
-import StoryH1 from "@/components/story-components/StoryH1";
-import StoryH2 from "@/components/story-components/StoryH2";
-import StoryLargeImage from "@/components/story-components/StoryLargeImage";
-import StoryParagraph from "@/components/story-components/StoryParagraph";
-import StoryUl from "@/components/story-components/StoryUl";
 import TopicTag from "@/components/TopicTag";
 import { tagUser } from "@/lib/cache";
 import env from "@/lib/env";
-import remarkSciquelDirective from "@/lib/remark-sciquel-directive";
+import { generateMarkdown } from "@/lib/markdown";
 import { type StoryTopic } from "@prisma/client";
 import { DateTime } from "luxon";
 import Image from "next/image";
-import { createElement, Fragment, type HTMLProps, type ReactNode } from "react";
-import rehypeReact from "rehype-react";
-import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
-import remarkDirective from "remark-directive";
-import remarkParse from "remark-parse";
-import remarkRehype from "remark-rehype";
-import { unified } from "unified";
+import { type ReactNode } from "react";
 
 interface Params {
   params: {
@@ -36,7 +25,7 @@ interface Params {
 export default async function StoriesPage({ params }: Params) {
   const whatsNewArticles = await getWhatsNewArticles();
   const story = await retrieveStoryContent(params);
-  const htmlContent = await generateMarkdown(story.storyContent[0].content);
+  const { file } = await generateMarkdown(story.storyContent[0].content);
   return (
     <div className="flex flex-col">
       <div className="relative h-screen">
@@ -102,7 +91,7 @@ export default async function StoriesPage({ params }: Params) {
         </p>
       </div>
       <div className="mx-2 mt-2 flex flex-col items-center gap-5 md:mx-auto">
-        {htmlContent.result as ReactNode}
+        {file.result as ReactNode}
       </div>
       <p className="w-[calc( 100% - 1rem )] mx-2 my-5 border-t-2 border-[#616161]  text-sm text-[#616161] md:mx-auto md:w-[720px]">
         Animation provided by Source name 1. Sources provided by Source name 2.
@@ -180,52 +169,6 @@ async function retrieveStoryContent({
     publishedAt: new Date(json.publishedAt),
     updatedAt: new Date(json.updatedAt),
   } as GetStoryResult;
-}
-
-async function generateMarkdown(content: string) {
-  const file = await unified()
-    .use(remarkParse)
-    .use(remarkDirective)
-    .use(remarkSciquelDirective)
-    .use(remarkRehype)
-    .use(rehypeSanitize, {
-      ...defaultSchema,
-      attributes: {
-        ...defaultSchema.attributes,
-        "large-image": ["src"],
-      },
-      tagNames: [...(defaultSchema.tagNames ?? []), "large-image"],
-    })
-    .use(rehypeReact, {
-      createElement,
-      Fragment,
-      components: {
-        p: (props: HTMLProps<HTMLParagraphElement>) => (
-          <StoryParagraph>{props.children}</StoryParagraph>
-        ),
-        h1: (props: HTMLProps<HTMLHeadingElement>) => (
-          <StoryH1>{props.children}</StoryH1>
-        ),
-        h2: (props: HTMLProps<HTMLHeadingElement>) => (
-          <StoryH2>{props.children}</StoryH2>
-        ),
-        ul: (props: HTMLProps<HTMLUListElement>) => (
-          <StoryUl>{props.children}</StoryUl>
-        ),
-        "large-image": (props: HTMLProps<HTMLElement>) => {
-          if (typeof props.src === "string") {
-            return (
-              <StoryLargeImage src={props.src}>
-                {props.children}
-              </StoryLargeImage>
-            );
-          }
-          return <></>;
-        },
-      },
-    })
-    .process(content);
-  return file;
 }
 
 /// temporary
