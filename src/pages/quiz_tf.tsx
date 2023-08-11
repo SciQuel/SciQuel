@@ -27,31 +27,8 @@ const sourceSerif4 = Source_Serif_4({
   display: "swap",
 });
 
-// export class Question {
-//   questionNumber: string;
-//   questionText: string;
-//   choices: string[];
-//   correctAnswer: string[];
-//   answerExplanation: string[];
-
-//   constructor(
-//     questionNumber: string,
-//     questionText: string,
-//     choices: string[],
-//     correctAnswer: string[],
-//     answerExplanation: string[],
-//   ) {
-//     this.questionNumber = questionNumber;
-//     this.questionText = questionText;
-//     this.choices = choices;
-//     this.correctAnswer = correctAnswer;
-//     this.answerExplanation = answerExplanation;
-//   }
-// }
-
 const questionList_TF1: Question[] = [
   {
-    questionNumber: "1",
     questionText:
       "Mark each statement as true or false. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
     choices: [
@@ -67,7 +44,6 @@ const questionList_TF1: Question[] = [
     ],
   },
   {
-    questionNumber: "2",
     questionText: "Mark each statement as true or false.",
     choices: [
       "Statement 1: this should be false",
@@ -82,7 +58,6 @@ const questionList_TF1: Question[] = [
     ],
   },
   {
-    questionNumber: "3",
     questionText: "Mark each statement as true or false.",
     choices: [
       "Statement 1: this should be true",

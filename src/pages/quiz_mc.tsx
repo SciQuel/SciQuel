@@ -28,31 +28,8 @@ const sourceSerif4 = Source_Serif_4({
   display: "swap",
 });
 
-// export class Question {
-//   questionNumber: string;
-//   questionText: string;
-//   choices: string[];
-//   correctAnswer: string[];
-//   answerExplanation: string[];
-
-//   constructor(
-//     questionNumber: string,
-//     questionText: string,
-//     choices: string[],
-//     correctAnswer: string[],
-//     answerExplanation: string[],
-//   ) {
-//     this.questionNumber = questionNumber;
-//     this.questionText = questionText;
-//     this.choices = choices;
-//     this.correctAnswer = correctAnswer;
-//     this.answerExplanation = answerExplanation;
-//   }
-// }
-
 const questionList_MC1: Question[] = [
   {
-    questionNumber: "1",
     questionText: "What are microglia? (this is question #1)",
     choices: [
       "The star-shaped cell that supports communication between neurons",
@@ -67,7 +44,6 @@ const questionList_MC1: Question[] = [
     ],
   },
   {
-    questionNumber: "2",
     questionText: "This is an example question (this is question #2)",
     choices: [
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ac sagittis tellus. Nam imperdiet, metus vel fringilla rhoncus, risus sapien mollis metus, ac lobortis velit velit vel magna. Quisque eget pretium nibh. Nulla facilisi. Aenean semper nunc id arcu molestie viverra.",
@@ -78,7 +54,6 @@ const questionList_MC1: Question[] = [
     answerExplanation: ["[answer explanation here]"],
   },
   {
-    questionNumber: "3",
     questionText: "This is an example question (this is question #3)",
     choices: [
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ac sagittis tellus. Nam imperdiet, metus vel fringilla rhoncus, risus sapien mollis metus, ac lobortis velit velit vel magna. Quisque eget pretium nibh. Nulla facilisi. Aenean semper nunc id arcu molestie viverra.",

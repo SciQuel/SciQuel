@@ -227,8 +227,7 @@ export default function Quiz({
               isPreQuiz ? "prequiz-question-number" : "postquiz-question-number"
             }
           >
-            {questionList[currentQuestion - 1].questionNumber} of{" "}
-            {questionList.length}
+            {currentQuestion} of {questionList.length}
           </div>
           <h1
             className="question-heading font-quicksand mb-5 mt-2 text-2xl font-bold"

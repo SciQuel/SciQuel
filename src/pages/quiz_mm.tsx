@@ -28,7 +28,6 @@ const sourceSerif4 = Source_Serif_4({
 
 const questionList_MM1: MultipleMatchQuestion[] = [
   {
-    questionNumber: "1",
     questionText:
       "Match each word to its category. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
     matchStatements: ["statement1", "statement2", "statement3"],
@@ -55,7 +54,6 @@ const questionList_MM1: MultipleMatchQuestion[] = [
     ],
   },
   {
-    questionNumber: "2",
     questionText: "Match each word to its category.",
     matchStatements: [
       "statement1. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
@@ -79,7 +77,6 @@ const questionList_MM1: MultipleMatchQuestion[] = [
     ],
   },
   {
-    questionNumber: "3",
     questionText: "Match each word to its category.",
     matchStatements: [
       "statement1. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
