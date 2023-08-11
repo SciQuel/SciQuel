@@ -11,7 +11,13 @@ datasource db {
 }
 
 enum StoryType {
+  DIGEST
+  ESSAY
+}
+
+enum Category {
   ARTICLE
+  PODCAST
 }
 
 enum ContributionType {
@@ -51,6 +57,7 @@ enum QuizType {
 model Story {
   id        String    @id @default(auto()) @map("_id") @db.ObjectId
   storyType StoryType
+  category  Category
 
   title      String
   titleColor String
