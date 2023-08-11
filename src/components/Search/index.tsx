@@ -12,14 +12,14 @@ export default function Search({ searchParams }: Props) {
   console.log("keyword", keyword);
   const [searchQuery, setSearchQuery] = useState(keyword);
   const [sort, setSort] = useState(sort_by);
-  const [show, setShow] = useState(false);
-  const [typeOf, setTypeOf] = useState(type);
+  const [mediaType, setMediaType] = useState(type);
   const [dateFrom, setDateFrom] = useState(date_from);
   const [dateTo, setDateTo] = useState(date_to);
   const router = useRouter();
   const onSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    const hi = { searchQuery, type, dateFrom, dateTo, sort };
+    console.log("type", type);
+    const hi = { searchQuery, mediaType, dateFrom, dateTo, sort };
     const path = filterRoute(hi);
     // console.log("keyword", searchQuery);
     console.log("path", path);
@@ -41,21 +41,15 @@ export default function Search({ searchParams }: Props) {
           placeholder="What are you searching for..."
         />
       </form>
-      <button className="mx-[10%] my-2 flex" onClick={() => setShow(!show)}>
-        Fillter
-      </button>
 
-      <div
-        className="duration-350 z-10 mx-[10%] rounded-lg text-center transition-all"
-        style={{ height: show ? "auto" : "0" }}
-      >
-        <div
-          className=" flex flex-row justify-between"
-          style={{ display: show ? "flex" : "none" }}
-        >
+      <div className="duration-350 z-10 mx-[10%] rounded-lg text-center transition-all">
+        <div className=" flex flex-row justify-between">
           <div>
             Media Type
-            <select value={typeOf} onChange={(e) => setTypeOf(e.target.value)}>
+            <select
+              value={mediaType}
+              onChange={(e) => setMediaType(e.target.value)}
+            >
               <option value=""></option>
               <option value="article">Article</option>
             </select>
@@ -95,7 +89,7 @@ export default function Search({ searchParams }: Props) {
 }
 type ParameterType = {
   searchQuery: string | undefined;
-  type: string | undefined;
+  mediaType: string | undefined;
   dateFrom: string | undefined;
   dateTo: string | undefined;
   sort: string | undefined;
@@ -103,19 +97,17 @@ type ParameterType = {
 
 function filterRoute({
   searchQuery,
-  type,
+  mediaType,
   dateFrom,
   dateTo,
   sort,
 }: ParameterType) {
   const fillQuery =
-    searchQuery != ""
-      ? `keyword=${encodeURI(searchQuery != undefined ? searchQuery : "")}`
-      : ``;
-  const fillType = type != undefined ? `type=${type}` : ``;
+    searchQuery != undefined ? `keyword=${encodeURI(searchQuery)}` : ``;
+  const fillType = mediaType != undefined ? `type=${mediaType}` : ``;
   const fillSort = sort != undefined ? `sort_by=${sort}` : ``;
 
-  let filterDate;
+  let filterDate = ``;
   if (dateFrom != undefined && dateTo != undefined) {
     filterDate = `date_from=${dateFrom}&date_to=${dateTo}`;
   } else {
@@ -128,7 +120,7 @@ function filterRoute({
     }
   }
 
-  let route;
+  let route = ``;
   if (fillQuery != `` && fillType != `` && filterDate != `` && fillSort != ``) {
     route = `${fillQuery}&${fillType}&${filterDate}&${fillSort}`;
   } else if (
