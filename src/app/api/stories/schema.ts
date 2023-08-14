@@ -1,4 +1,4 @@
-import { StoryTopic, StoryType } from "@prisma/client";
+import { ContributionType, StoryTopic, StoryType } from "@prisma/client";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 
@@ -61,4 +61,15 @@ export const putStorySchema = zfd.formData({
     z.instanceof(Blob).optional(),
   ),
   imageUrl: zfd.text().optional(),
+});
+
+export const patchStorySchema = z.object({
+  id: z.string(),
+  contributions: z.array(
+    z.object({
+      email: z.string(),
+      contributionType: z.nativeEnum(ContributionType),
+      bio: z.string(),
+    }),
+  ),
 });

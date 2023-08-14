@@ -33,7 +33,42 @@ export default function StoryInfoForm({
 
   return (
     <div className="flex flex-col gap-2">
-      <Form>
+      <Form
+        onSubmit={(e) => {
+          e.preventDefault();
+          startTransition(async () => {
+            if (dirty) {
+              const formData = new FormData();
+              if (storyId) {
+                formData.append("id", storyId);
+              }
+              formData.append("title", title);
+              formData.append("summary", summary);
+              if (image === null) {
+                return;
+              } else if (typeof image === "string") {
+                formData.append("imageUrl", image);
+              } else {
+                const file = new File([image], image.name);
+                formData.append("image", file, file.name);
+              }
+              const story = await axios.put<{ id: string }>(
+                "/api/stories",
+                formData,
+                {
+                  headers: {
+                    "Content-Type": "multipart/form-data",
+                  },
+                },
+              );
+              const nextPage = `/editor/story/contributors?id=${story.data.id}`;
+              router.push(nextPage);
+            } else {
+              router.push(`/editor/story/contributors?id=${storyId}`);
+            }
+          });
+        }}
+      >
         <FormInput
           title="Story Title"
           required
@@ -116,44 +151,6 @@ export default function StoryInfoForm({
               image === null ||
               loading
             }
-            onClick={(e) => {
-              e.preventDefault();
-              startTransition(async () => {
-                if (dirty) {
-                  const formData = new FormData();
-                  if (storyId) {
-                    formData.append("id", storyId);
-                  }
-                  formData.append("title", title);
-                  formData.append("summary", summary);
-                  if (image === null) {
-                    return;
-                  } else if (typeof image === "string") {
-                    formData.append("imageUrl", image);
-                  } else {
-                    const file = new File([image], image.name);
-                    formData.append("image", file, file.name);
-                  }
-                  const story = await axios.put<{ id: string }>(
-                    "/api/stories",
-                    formData,
-                    {
-                      headers: {
-                        "Content-Type": "multipart/form-data",
-                      },
-                    },
-                  );
-                  const nextPage = `/editor/story/contributors?id=${story.data.id}`;
-                  if (storyId) {
-                    router.push(nextPage);
-                  } else {
-                    router.push(nextPage);
-                  }
-                } else {
-                  router.push(`/editor/story/contributors?id=${storyId}`);
-                }
-              });
-            }}
           >
             Continue
           </button>

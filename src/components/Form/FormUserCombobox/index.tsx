@@ -179,6 +179,7 @@ export default function FormUserCombobox({
               className={clsx(
                 items.length > 0 &&
                   "w-full overflow-clip rounded-md border bg-white drop-shadow",
+                "z-10",
               )}
             >
               {items.map((item, index) => (

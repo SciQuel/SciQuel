@@ -12,7 +12,12 @@ import { getServerSession } from "next-auth";
 import { NextResponse, type NextRequest } from "next/server";
 import slug from "slug";
 import { type z } from "zod";
-import { getStorySchema, postStorySchema, putStorySchema } from "./schema";
+import {
+  getStorySchema,
+  patchStorySchema,
+  postStorySchema,
+  putStorySchema,
+} from "./schema";
 
 export type Stories = (Story & {
   storyContributions: {
@@ -276,6 +281,61 @@ export async function PUT(request: NextRequest) {
     });
 
     return NextResponse.json({ id: newStory.id });
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 },
+    );
+  }
+}
+
+export async function PATCH(request: NextRequest) {
+  try {
+    const session = await getServerSession();
+    const user = await prisma.user.findUnique({
+      where: { email: session?.user.email ?? "noemail" },
+    });
+
+    if (!user || !user.roles.includes("EDITOR")) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    const parsedBody = patchStorySchema.safeParse(await request.json());
+
+    if (!parsedBody.success) {
+      return NextResponse.json({ error: "Bad Request" }, { status: 400 });
+    }
+
+    await prisma.storyContribution.deleteMany({
+      where: {
+        storyId: parsedBody.data.id,
+      },
+    });
+
+    const storyContributionsPromises: Promise<null | Prisma.StoryContributionCreateManyInput>[] =
+      parsedBody.data.contributions.map(async (entry) => {
+        const user = await prisma.user.findUnique({
+          where: { email: entry.email },
+        });
+        if (user) {
+          return {
+            userId: user.id,
+            storyId: parsedBody.data.id,
+            contributionType: entry.contributionType,
+            bio: user.bio !== entry.bio ? entry.bio : undefined,
+          };
+        }
+        return null;
+      });
+
+    const storyContributions = (
+      await Promise.all(storyContributionsPromises)
+    ).filter((x): x is NonNullable<typeof x> => Boolean(x));
+
+    await prisma.storyContribution.createMany({ data: storyContributions });
+
+    return NextResponse.json({ id: parsedBody.data.id }, { status: 200 });
   } catch (err) {
     console.error(err);
     return NextResponse.json(

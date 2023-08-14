@@ -12,6 +12,7 @@ datasource db {
 
 enum StoryType {
   ARTICLE
+  ESSAY
 }
 
 enum ContributionType {
@@ -82,10 +83,12 @@ model StoryContribution {
   user   User   @relation(fields: [userId], references: [id])
   userId String @db.ObjectId
 
-  story   Story  @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  story   Story  @relation(fields: [storyId], references: [id], onDelete: NoAction)
   storyId String @db.ObjectId
 
   contributionType ContributionType
+
+  bio String?
 }
 
 model User {
