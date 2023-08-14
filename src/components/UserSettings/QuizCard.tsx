@@ -1,25 +1,16 @@
 "use client";
 
+import { type QuizHistory } from "@/app/user-settings/actions/getQuizHistory";
 import TopicTag from "@/components/TopicTag";
-import { type StoryTopic } from "@prisma/client";
 import * as d3 from "d3";
 import { useEffect } from "react";
 
-interface QuizItem {
-  title: string;
-  topic: StoryTopic;
-  date: string;
-  type: string;
-  total: number;
-  score: number;
-}
-
-function createScoreDonut(quiz_obj: QuizItem, id_str: string) {
-  const selector = "#" + id_str;
+function createScoreDonut(quiz: QuizHistory, idx: number) {
+  const selector = "#" + `quiz-history-item-${idx}`;
   const height = 120;
   const width = 115;
-  const score = `${quiz_obj.score}/${quiz_obj.total}`;
-  const endAngle = 2 * Math.PI * (quiz_obj.score / quiz_obj.total);
+  const score = `${quiz.score}/${quiz.totalScore}`;
+  const endAngle = 2 * Math.PI * (quiz.score / quiz.totalScore);
   const svgEl = d3.select(selector);
   svgEl.selectAll("*").remove();
 
@@ -67,43 +58,56 @@ function createScoreDonut(quiz_obj: QuizItem, id_str: string) {
       }),
     )
     .attr("fill", () => {
-      if (quiz_obj.score / quiz_obj.total < 0.5) {
+      if (quiz.score / quiz.totalScore < 0.5) {
         return "#E79595";
-      } else if (quiz_obj.score / quiz_obj.total < 0.75) return "#D66300";
+      } else if (quiz.score / quiz.totalScore < 0.75) return "#D66300";
       return "#A3C9A8";
     });
   svg.append("text").text(score).attr("x", -15).attr("y", 6);
 }
 
 export default function QuizCard({
+  quiz,
   idx,
-  quizItem,
 }: {
+  quiz: QuizHistory;
   idx: number;
-  quizItem: QuizItem;
 }) {
+  const {
+    quizType,
+    date,
+    story: { title, tags },
+  } = quiz;
+
+  const quizTypeMap = {
+    POST_QUIZ: "Post-Quiz",
+    PRE_QUIZ: "Pre-Quiz",
+  };
   // render quiz score using d3 with useEffect
   useEffect(() => {
-    createScoreDonut(quizItem, `quiz-history-item-${idx}`);
+    createScoreDonut(quiz, idx);
   }, []);
   return (
-    <div
-      className="flex w-80 flex-none items-center justify-center gap-4 rounded-md border bg-white"
-      key={idx}
-    >
+    <div className="flex w-80 flex-none items-center justify-center gap-4 rounded-md border bg-white">
       <div
         className="text-xl font-semibold"
         id={`quiz-history-item-${idx}`}
       ></div>
       <div className="flex w-36 flex-col">
-        <div className="line-clamp-2 text-lg font-semibold">
-          {quizItem.title}
+        <div className="line-clamp-2 text-lg font-semibold">{title}</div>
+        <div className="text-xs font-thin text-gray-400">
+          {quizTypeMap[quizType]}
         </div>
-        <div className="text-xs font-thin text-gray-400">{quizItem.type}</div>
         <div className="my-2 flex">
-          <TopicTag name={quizItem.topic} />
+          <TopicTag name={tags[0]} />
         </div>
-        <div className="text-xs font-thin text-gray-400">{quizItem.date}</div>
+        <div className="text-xs font-thin text-gray-400">
+          {date?.toLocaleDateString("en-us", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          })}
+        </div>
       </div>
     </div>
   );
