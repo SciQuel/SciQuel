@@ -19,7 +19,11 @@ export async function GET(req: Request) {
       },
     });
 
-    return NextResponse.json(series?.storyIDs);
+    if (series === null) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
+
+    return NextResponse.json(series);
   } catch (e) {
     if (e instanceof Prisma.PrismaClientValidationError) {
       console.log(e.message);
