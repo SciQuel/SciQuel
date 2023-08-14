@@ -82,6 +82,8 @@ model Story {
   publishedAt DateTime
   updatedAt   DateTime
   quizzes     Quiz[]
+  series      Series[] @relation(fields: [seriesIDs], references: [id])
+  seriesIDs   String[] @db.ObjectId
 }
 
 model StoryContribution {
@@ -185,4 +187,15 @@ model Bookmark {
   createdAt DateTime @default(now())
 
   @@unique([userId, storyId])
+}
+
+model Series {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  name String
+
+  stories  Story[]  @relation(fields: [storyIDs], references: [id])
+  storyIDs String[] @db.ObjectId
+
+  createdAt DateTime @default(now())
 }
