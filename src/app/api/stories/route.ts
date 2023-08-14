@@ -269,7 +269,8 @@ export async function PUT(request: NextRequest) {
       data: {
         title: parsedRequest.data.title,
         summary: parsedRequest.data.summary,
-        storyType: StoryType.ARTICLE,
+        storyType: StoryType.ESSAY,
+        category: Category.ARTICLE,
         titleColor: "#ffffff",
         slug: slug(parsedRequest.data.title),
         summaryColor: "#ffffff",
