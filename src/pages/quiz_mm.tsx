@@ -43,9 +43,12 @@ const questionList_MM1: MultipleMatchQuestion[] = [
     ],
     // correctAnswer: ["userAnswer1", "userAnswer2", "userAnswer3"],
     correctAnswerMap: new Map([
-      ["statement1", ["userAnswer1"]],
-      ["statement2", ["userAnswer2"]],
-      ["statement3", ["userAnswer3"]],
+      ["statement1", ["userAnswer1", "userAnswer5"]],
+      [
+        "statement2",
+        ["userAnswer2", "userAnswer4", "userAnswer6", "userAnswer8"],
+      ],
+      ["statement3", ["userAnswer3", "userAnswer7"]],
     ]),
     answerExplanation: [
       "Explanation for statement 1. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
@@ -66,9 +69,22 @@ const questionList_MM1: MultipleMatchQuestion[] = [
       "userAnswer2-3. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
     ],
     correctAnswerMap: new Map([
-      ["statement1", ["userAnswer1"]],
-      ["statement2", ["userAnswer2"]],
-      ["statement3", ["userAnswer3"]],
+      [
+        "statement1. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
+        ["userAnswer2-1"],
+      ],
+      [
+        "statement2",
+        [
+          "userAnswer2-2. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
+        ],
+      ],
+      [
+        "statement3. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
+        [
+          "userAnswer2-3. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
+        ],
+      ],
     ]),
     answerExplanation: [
       "Microglia are the smallest type of glial cell that make up about 10% of all brain cells.",
@@ -85,9 +101,12 @@ const questionList_MM1: MultipleMatchQuestion[] = [
     ],
     choices: ["userAnswer3-2", "userAnswer3-3", "userAnswer3-1"],
     correctAnswerMap: new Map([
-      ["statement1", ["userAnswer1"]],
-      ["statement2", ["userAnswer2"]],
-      ["statement3", ["userAnswer3"]],
+      [
+        "statement1. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
+        ["userAnswer3-1"],
+      ],
+      ["statement2", ["userAnswer3-2"]],
+      ["statement3", ["userAnswer3-3"]],
     ]),
     answerExplanation: [
       "Explanation for statement 1. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",

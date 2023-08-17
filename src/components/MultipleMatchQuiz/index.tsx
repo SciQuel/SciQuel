@@ -38,6 +38,9 @@ export default function MultipleMatchQuiz({
       Array.from({ length: choices.length }, () => null),
     ),
   );
+
+  // const [userSelectedAnswers, setUserSelectedAnswers] = useState<Record<string, string[]>>({});
+
   const [answerCorrectList, setAnswerCorrectList] = useState<
     Array<Array<boolean | null>>
   >(
@@ -45,37 +48,90 @@ export default function MultipleMatchQuiz({
       Array.from({ length: choices.length }, () => null),
     ),
   );
+
+  const initialMatchResultsList: string[][] = Array.from(
+    { length: totalQuestions },
+    () => [],
+  );
+  const [matchResultsList, setMatchResultsList] = useState(
+    initialMatchResultsList,
+  );
+
   const [showAnswerExplanation, setShowAnswerExplanation] = useState(false);
   const [hasAnsweredList, setHasAnsweredList] = useState<boolean[]>(
     Array(totalQuestions).fill(false),
   );
+
   const [draggedElement, setDraggedElement] = useState<HTMLElement | null>(
     null,
   );
-  const [draggedElementText, setDraggedElementText] =
-    useState<HTMLElement | null>(null);
+  // const [draggedFromCol, setDraggedFromCol] = useState(0);
+
+  const initialUserAnswers: string[][][] = new Array(totalQuestions)
+    .fill(null)
+    .map(() => new Array<string[]>());
+  const [userAnswersList, setUserAnswersList] = useState(initialUserAnswers);
+
+  const initialAnswerChoicesList: string[][] = Array.from(
+    { length: totalQuestions },
+    () => [],
+  );
+  const [answerChoicesList, setAnswerChoicesList] = useState(
+    initialAnswerChoicesList,
+  );
 
   const prevCurrentQuestion = useRef<number>(currentQuestion);
 
-  // const handleDragStart = (e: DragEvent) => {
+  /* Called when the user tries to drag a draggable item (answer choice) */
   const handleDragStart: React.DragEventHandler<HTMLDivElement> = (e) => {
-    const dragItem = e.target as HTMLElement; // the item being dragged
-    // const dragItemText = e.target?.lastChild as HTMLElement;
-    const dragItemText = (e.target as HTMLElement)?.lastChild as HTMLElement;
-    const dragBorder = dragItem?.parentElement as HTMLElement; // the original box/spot of the dragged item
+    const dragTarget = e.target as HTMLElement; // the item being dragged
+    let isAllowedDrag = false;
+    let parentElement = dragTarget;
+
+    while (parentElement) {
+      if (parentElement.classList.contains("answer-choice-border")) {
+        isAllowedDrag = true;
+        break;
+      }
+      if (parentElement.parentElement) {
+        parentElement = parentElement.parentElement;
+      }
+    }
+
+    if (!isAllowedDrag) {
+      return; // User is dragging outside of allowed elements
+    }
+
+    // const dragCell = dragTarget.closest(".grid-cell") as HTMLElement;
+    // if (!dragCell) {
+    //   return;
+    // }
+    // const dragBorder = dragCell.querySelector<HTMLElement>(
+    //   ".answer-choice-border",
+    // );
+
+    const dragBorder = dragTarget.closest(
+      ".answer-choice-border",
+    ) as HTMLElement;
+    if (!dragBorder) {
+      return;
+    }
+    const dragItem = dragBorder?.querySelector<HTMLElement>(
+      ".multiple-match-answer-choice-holder",
+    );
+
+    // const fromColString = dragBorder.getAttribute("from-col");
+    // const fromCol = fromColString ? parseInt(fromColString, 10) : 0;
+
+    // console.log("fromCol",fromCol);
 
     // console.log("selectedOptions:", selectedOptions);
-    // console.log("dragItem", dragItem?.innerHTML);
-    // console.log("dragItem.lastChild", dragItemText.lastChild);
-    // console.log("dragItemText.innerText", dragItemText.innerText);
+    console.log("dragItem", dragItem);
+    console.log("dragBorder", dragBorder);
 
-    setDraggedElement(dragItem);
-    setDraggedElementText(dragItemText);
-
-    // e.dataTransfer.setData("text/html", dragItem.innerHTML);
-    if (e.dataTransfer) {
-      e.dataTransfer.setData("text/html", dragItemText.innerText);
-    }
+    setDraggedElement(dragBorder);
+    // setDraggedElement(dragCell);
+    // setDraggedElementText(dragItemText);
 
     if (dragItem && dragBorder) {
       setTimeout(() => {
@@ -85,11 +141,13 @@ export default function MultipleMatchQuiz({
     }
   };
 
+  /* Handles the visual changes when the user stops dragging */
   const handleDragEnd = () => {
-    const dragBorder = draggedElement?.parentElement as HTMLElement;
+    const dragBorder = draggedElement;
+    const dragContainer = dragBorder?.firstChild as HTMLElement;
 
-    if (draggedElement) {
-      draggedElement.style.opacity = "1"; // Restore opacity when dragging ends
+    if (dragContainer) {
+      dragContainer.style.opacity = "1"; // Restore opacity when dragging ends
     }
 
     if (dragBorder) {
@@ -99,95 +157,224 @@ export default function MultipleMatchQuiz({
     setDraggedElement(null);
   };
 
-  // const handleDrop = (e: DragEvent) => {
-  const handleDrop: React.DragEventHandler<HTMLDivElement> = (e) => {
-    const switchElement = e.target as HTMLElement;
-    const dragBorder = draggedElement?.parentElement as HTMLElement;
+  /* Called when user drops a match option into one of the answer columns */
+  const handleColDrop: React.DragEventHandler<HTMLDivElement> = (e) => {
+    const dropTarget = e.target as HTMLElement;
 
-    const quizContainer = document.getElementById(quizContainerId);
-    const draggables = quizContainer?.querySelectorAll<HTMLElement>(
-      ".multiple-match-answer-choice-holder",
-    );
+    // Check if the drop target or any of its ancestors have the class "quiz-col"
+    let isAllowedDrop = false;
+    let parentElement = dropTarget;
 
-    // Create a copy of the current selectedOptions array
-    const updatedSelectedOptions = [...selectedOptions];
+    while (parentElement) {
+      if (parentElement.classList.contains("quiz-col")) {
+        isAllowedDrop = true;
+        break;
+      }
+      if (parentElement.parentElement) {
+        parentElement = parentElement.parentElement;
+      }
+    }
 
-    console.log("switchElement:", switchElement);
+    if (!isAllowedDrop) {
+      return; // User is dropping outside of allowed elements
+    }
 
-    e.stopPropagation();
+    // Get the nearest .quiz-col parent
+    const quizColParent = dropTarget.closest(".quiz-col") as HTMLElement;
+    if (!quizColParent) {
+      return;
+    }
 
-    if (
-      draggedElement !== switchElement &&
-      switchElement.classList.contains("match-text") &&
-      switchElement.lastChild
-    ) {
-      // draggedElement.innerHTML = switchElement.innerHTML;
-      if (
-        switchElement.lastChild &&
-        switchElement.lastChild.nodeType === Node.TEXT_NODE &&
-        draggedElementText
-      ) {
-        draggedElementText.innerText = switchElement.lastChild.nodeValue ?? "";
+    const colIndexString = quizColParent.getAttribute("col-index");
+    const colIndex = colIndexString ? parseInt(colIndexString, 10) : 0;
+
+    console.log("quizColParent", quizColParent);
+    console.log("colIndex", colIndex);
+
+    if (draggedElement) {
+      const fromColString = draggedElement.getAttribute("from-col");
+      const fromCol = fromColString ? parseInt(fromColString, 10) : 0;
+
+      console.log("fromCol", fromCol);
+
+      const updatedUserAnswersList = [...userAnswersList];
+      const currUserAnswers = updatedUserAnswersList[currentQuestion - 1];
+      const updatedAnswerChoicesList = [...answerChoicesList];
+      let currAnswerChoices = updatedAnswerChoicesList[currentQuestion - 1];
+
+      const matchText =
+        draggedElement.querySelector<HTMLElement>(".match-text")?.lastChild
+          ?.textContent;
+
+      if (!currUserAnswers[colIndex]) {
+        // Initialize the array if it's not already initialized
+        currUserAnswers[colIndex] = [];
       }
 
-      // console.log("draggedElement", draggedElement?.innerHTML);
-      // console.log(
-      //   "dataTransfer, draggedElement.innerHTML:",
-      //   e.dataTransfer.getData("text/html"),
-      // );
+      console.log("draggedElement", draggedElement);
+      console.log("matchText", matchText);
 
-      // switchElement.innerHTML = e.dataTransfer.getData("text/html");
-      switchElement.lastChild.nodeValue = e.dataTransfer.getData("text/html");
+      if (matchText) {
+        // remove the answer choice from answerChoices or userAnswers (for the current question)
+        if (!fromCol) {
+          currAnswerChoices = currAnswerChoices.filter(
+            (choice) => choice !== matchText,
+          );
+
+          if (
+            !currUserAnswers &&
+            !updatedAnswerChoicesList[currentQuestion - 1]
+          ) {
+            // Initialize the array if it's not already initialized AND if user hasn't touched answers
+            updatedAnswerChoicesList[currentQuestion - 1] = choices;
+          }
+        } else {
+          // remove from userAnswers (for curr question)
+          const draggedElementColIndexString =
+            draggedElement.parentElement?.getAttribute("col-index");
+          const draggedElementColIndex = draggedElementColIndexString
+            ? parseInt(draggedElementColIndexString, 10)
+            : 0;
+
+          console.log(
+            "draggedElementColIndexString",
+            draggedElementColIndexString,
+          );
+          console.log("draggedElementColIndex", draggedElementColIndex);
+
+          currUserAnswers[draggedElementColIndex] = currUserAnswers[
+            draggedElementColIndex
+          ].filter((answer) => answer !== matchText);
+        }
+
+        // get the dragged answer to update userAnswersList, update under appropriate statement
+        currUserAnswers[colIndex].push(matchText);
+        console.log("currUserAnswers", currUserAnswers);
+        console.log("updatedUserAnswersList", updatedUserAnswersList);
+        setUserAnswersList(updatedUserAnswersList);
+
+        updatedAnswerChoicesList[currentQuestion - 1] = currAnswerChoices;
+        console.log("updatedAnswerChoicesList", updatedAnswerChoicesList);
+        setAnswerChoicesList(updatedAnswerChoicesList);
+      }
     }
-
-    // update the new answers
-    draggables?.forEach((draggable, index) => {
-      // Update the specific question's selectedOptions with userAnswers
-      updatedSelectedOptions[currentQuestion - 1][index] = draggable.innerText;
-
-      // Set the state with the updated array
-      setSelectedOptions(updatedSelectedOptions);
-    });
-
-    console.log("selectedOptions:", selectedOptions);
-
-    e.preventDefault();
-
-    // Animate the item swap
-    switchElement.style.opacity = "1";
-    if (draggedElement) {
-      draggedElement.style.opacity = "1";
-    }
-    dragBorder.style.borderColor = "transparent";
   };
 
-  /* add drop shadow animation when hovering over rows */
+  const handleAnswerChoiceAreaDragOver = (
+    e: React.DragEvent<HTMLDivElement>,
+  ) => {
+    e.preventDefault();
+  };
+
+  /* Called when user drops answer back into answer choice area */
+  const handleAnswerChoiceAreaDrop: React.DragEventHandler<HTMLDivElement> = (
+    e,
+  ) => {
+    console.log("dropped back");
+    console.log("dropTarget", e.target);
+
+    const dropTarget = e.target as HTMLElement;
+
+    // Check if the drop target or any of its ancestors have the class "quiz-col"
+    let isAllowedDrop = false;
+    let parentElement = dropTarget;
+
+    while (parentElement) {
+      if (
+        parentElement.classList.contains("multiple-match-answer-choice-area")
+      ) {
+        isAllowedDrop = true;
+        break;
+      }
+      if (parentElement.parentElement) {
+        parentElement = parentElement.parentElement;
+      }
+    }
+
+    if (!isAllowedDrop) {
+      return; // User is dropping outside of allowed elements
+    }
+
+    const answerChoiceArea = dropTarget.closest(
+      ".multiple-match-answer-choice-area",
+    ) as HTMLElement;
+    if (!answerChoiceArea) {
+      return;
+    }
+
+    if (draggedElement) {
+      const fromColString = draggedElement.getAttribute("from-col");
+      const fromCol = fromColString ? parseInt(fromColString, 10) : 0;
+
+      const updatedUserAnswersList = [...userAnswersList];
+      const currUserAnswers = updatedUserAnswersList[currentQuestion - 1];
+      const updatedAnswerChoicesList = [...answerChoicesList];
+      const currAnswerChoices = updatedAnswerChoicesList[currentQuestion - 1];
+
+      const matchText =
+        draggedElement.querySelector<HTMLElement>(".match-text")?.lastChild
+          ?.textContent;
+
+      // console.log("draggedElement", draggedElement);
+      // console.log("matchText", matchText);
+
+      if (matchText) {
+        // remove the answer choice from answerChoices (for the current question)
+        if (!fromCol) {
+          return; // if dragging from answer choice area back into the area, do nothing
+        } else {
+          // remove from userAnswers (for curr question)
+          const draggedElementColIndexString =
+            draggedElement.parentElement?.getAttribute("col-index");
+          const draggedElementColIndex = draggedElementColIndexString
+            ? parseInt(draggedElementColIndexString, 10)
+            : 0;
+
+          console.log("draggedElementColIndex", draggedElementColIndex);
+
+          currAnswerChoices.push(matchText); // add back to area
+          currUserAnswers[draggedElementColIndex] = currUserAnswers[
+            draggedElementColIndex
+          ].filter((answer) => answer !== matchText); // remove from column
+
+          // get the dragged answer to update userAnswersList
+          // console.log("currUserAnswers", currUserAnswers);
+          console.log("updatedUserAnswersList", updatedUserAnswersList);
+          setUserAnswersList(updatedUserAnswersList);
+
+          updatedAnswerChoicesList[currentQuestion - 1] = currAnswerChoices;
+          console.log("updatedAnswerChoicesList", updatedAnswerChoicesList);
+          setAnswerChoicesList(updatedAnswerChoicesList);
+        }
+      }
+    }
+  };
+
+  /* add animation when hovering over droppable items */
   useEffect(() => {
-    const containers = document.querySelectorAll<HTMLElement>(".quiz-row");
+    // const containers = document.querySelectorAll<HTMLElement>(".quiz-col");
+    const emptySlots = document.querySelectorAll<HTMLElement>(
+      ".multiple-match-slot",
+    );
 
-    containers.forEach((container) => {
-      const switchElement = container.querySelector<HTMLElement>(
-        ".multiple-match-answer-choice-holder",
-      );
-
-      container.addEventListener("dragover", (e) => {
+    emptySlots.forEach((emptySlot) => {
+      emptySlot.addEventListener("dragover", (e) => {
         e.preventDefault();
-        switchElement?.classList.add("shadow-[0_0px_6px_2px_rgba(0,0,0,0.2)]");
+        // emptySlot?.classList.add("shadow-[0_0px_6px_2px_rgba(0,0,0,0.2)]");
+        emptySlot?.classList.add("!bg-gray-300");
       });
 
-      container.addEventListener("dragleave", () => {
-        switchElement?.classList.remove(
-          "shadow-[0_0px_6px_2px_rgba(0,0,0,0.2)]",
-        );
+      emptySlot.addEventListener("dragleave", () => {
+        // emptySlot?.classList.remove("shadow-[0_0px_6px_2px_rgba(0,0,0,0.2)]");
+        emptySlot?.classList.remove("!bg-gray-300");
       });
 
-      container.addEventListener("drop", () => {
-        switchElement?.classList.remove(
-          "shadow-[0_0px_6px_2px_rgba(0,0,0,0.2)]",
-        );
+      emptySlot.addEventListener("drop", () => {
+        // emptySlot?.classList.remove("shadow-[0_0px_6px_2px_rgba(0,0,0,0.2)]");
+        emptySlot?.classList.remove("!bg-gray-300");
       });
 
-      container.addEventListener("dragenter", (e) => {
+      emptySlot.addEventListener("dragenter", (e) => {
         e.preventDefault();
       });
     });
@@ -205,10 +392,23 @@ export default function MultipleMatchQuiz({
 
     const quizContainer = document.getElementById(quizContainerId);
     const draggables = quizContainer?.querySelectorAll<HTMLElement>(
-      ".one-match-answer-choice-holder",
+      ".multiple-match-answer-choice-holder",
     );
 
     const updatedSelectedOptions = [...selectedOptions]; // Create a copy of the current selectedOptions array
+    const updatedAnswerChoicesList = [...answerChoicesList]; // Create a copy of the current selectedOptions array
+
+    // console.log("updatedAnswerChoicesList", updatedAnswerChoicesList);
+
+    if (
+      !userAnswers[currentQuestion - 1] &&
+      !updatedAnswerChoicesList[currentQuestion - 1].length
+    ) {
+      // Initialize the array if it's not already initialized AND if user hasn't touched answers
+      updatedAnswerChoicesList[currentQuestion - 1] = choices;
+      console.log("updatedAnswerChoicesList", updatedAnswerChoicesList);
+      setAnswerChoicesList(updatedAnswerChoicesList);
+    }
 
     // for each statement, update the match statement display based on what user had before
     draggables?.forEach((draggable, index) => {
@@ -298,7 +498,9 @@ export default function MultipleMatchQuiz({
     onNext();
   };
 
-  const answerCorrect = answerCorrectList[currentQuestion - 1];
+  const answerCorrect = answerCorrectList[currentQuestion - 1]; // an array of strings, ex: ["00", "111"]
+  const userAnswers = userAnswersList[currentQuestion - 1];
+  const answerChoices = answerChoicesList[currentQuestion - 1];
   const hasAnswered = hasAnsweredList[currentQuestion - 1];
 
   // boolean values to determine which buttons to show, based on whether quiz is prequiz or not
@@ -317,29 +519,89 @@ export default function MultipleMatchQuiz({
         id={isPreQuiz ? "prequiz-mm" : "postquiz-mm"}
       >
         <div className="multiple-match-drop-area flex w-full flex-row items-start gap-3 pb-3">
-          {matchStatements.map((statement, index) => {
+          {matchStatements.map((statement, statementIndex) => {
             return (
-              <div className="quiz-col my-3.5 flex w-full flex-col gap-4">
-                <div className="multiple-match-statement min-w-100 flex w-full flex-wrap items-center justify-center overflow-hidden hyphens-auto rounded-[4px] border border-black bg-sciquelCardBg p-3 text-[18px]">
+              <div
+                className="quiz-col my-3.5 flex h-full w-full flex-col gap-4"
+                onDrop={handleColDrop}
+                col-index={statementIndex}
+                key={statementIndex}
+              >
+                <div className="multiple-match-statement flex w-full flex-wrap items-center justify-center overflow-hidden hyphens-auto rounded-[4px] border border-black bg-sciquelCardBg p-3 text-[18px]">
                   {statement}
                 </div>
-                <div className="multiple-match-slot h-[50px] rounded-[4px] border bg-gray-200 p-3"></div>
+
+                {/* for every user answer under this statement (based on index), render the answer choice holder/border */}
+                {userAnswers[statementIndex] &&
+                  userAnswers[statementIndex].map(
+                    (userAnswer, userAnswerIndex) => {
+                      return (
+                        <div
+                          className="answer-choice-border z-1 box-border flex h-full min-h-[50px] w-full rounded-[4px] border-2 border-dashed border-transparent transition-all"
+                          from-col="1"
+                        >
+                          <div
+                            className={`multiple-match-answer-choice-holder min-w-100 box-border flex h-full w-full cursor-move items-center break-words rounded-[4px] border border-black bg-sciquelCardBg text-center text-[18px] transition duration-300 ease-in-out`}
+                            draggable="true"
+                            onDragStart={handleDragStart}
+                            onDragEnd={handleDragEnd}
+                            key={userAnswerIndex}
+                          >
+                            <div
+                              className={`image-holder flex h-full w-[35%] max-w-[50px] items-center justify-center rounded-bl-[4px] rounded-tl-[4px] bg-[#e6e6fa] px-2 transition duration-300 ease-in-out`}
+                            >
+                              {!hasAnswered && (
+                                <span className="hamburger-menu flex h-4 w-6 flex-col justify-between rounded-[4px] border-none">
+                                  <span className="hamburger-line h-0.5 w-full bg-black"></span>
+                                  <span className="hamburger-line h-0.5 w-full bg-black"></span>
+                                  <span className="hamburger-line h-0.5 w-full bg-black"></span>
+                                </span>
+                              )}
+
+                              {hasAnswered &&
+                                (answerCorrect[userAnswerIndex] ? (
+                                  <Image
+                                    src={checkmark}
+                                    className="h-5 w-6 flex-grow-0"
+                                    alt="checkmark"
+                                  />
+                                ) : (
+                                  <Image
+                                    src={x_mark}
+                                    className="h-6 w-6 flex-grow-0"
+                                    alt="x_mark"
+                                  />
+                                ))}
+                            </div>
+                            <div className="match-text align-self-center w-full justify-self-center overflow-hidden hyphens-auto p-3">
+                              {userAnswer}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    },
+                  )}
+
+                <div className="multiple-match-slot h-[50px] rounded-[4px] border bg-gray-200 p-3 transition duration-300"></div>
               </div>
             );
           })}
         </div>
 
         <div
-          className="multiple-match-answer-choice-area grid w-full place-items-center gap-2 border-t-[1.75px] pt-6"
+          className="multiple-match-answer-choice-area grid min-h-[120px] w-full place-items-center gap-2 border-t-[1.75px] pt-6"
           style={{
             gridTemplateColumns: `repeat(${matchStatements.length}, 1fr)`,
-            gridTemplateRows: `repeat(${numRows}, auto)`, // Adjust auto to control row height
-            borderColor: `${themeColor}`
+            gridTemplateRows: `repeat(${numRows}, auto)`,
+            borderColor: `${themeColor}`,
           }}
+          onDragOver={handleAnswerChoiceAreaDragOver}
+          onDrop={handleAnswerChoiceAreaDrop}
         >
-          {choices.map((choice, choiceIndex) => (
+          {answerChoices.map((choice, choiceIndex) => (
             <div
               key={choiceIndex}
+              // choice-index={choiceIndex}
               className="grid-cell h-full w-full overflow-hidden"
               style={{
                 gridColumn: `${(choiceIndex % matchStatements.length) + 1}`,
@@ -348,40 +610,18 @@ export default function MultipleMatchQuiz({
                 }`,
               }}
             >
-              <div className="answer-choice-border z-1 box-border flex h-full min-h-[50px] w-full rounded-[4px] border-2 border-dashed border-transparent transition-all">
+              <div
+                className="answer-choice-border z-1 box-border flex h-full min-h-[50px] w-full rounded-[4px] border-2 border-dashed border-transparent transition-all"
+                from-col="0"
+              >
                 <div
-                  // className="one-match-answer-choice-holder min-w-100 box-border flex h-full w-full cursor-move items-center break-words rounded-[4px] border border-black bg-sciquelCardBg pr-3 text-center text-[18px] transition-all "
-                  className={`one-match-answer-choice-holder min-w-100 box-border flex h-full w-full cursor-move items-center break-words rounded-[4px] border border-black bg-sciquelCardBg text-center text-[18px] transition duration-300 ease-in-out 
-                  ${
-                    hasAnswered && !answerCorrect[choiceIndex]
-                      ? "select-incorrect !bg-sciquelIncorrectBG"
-                      : ""
-                  }  
-                  ${
-                    hasAnswered && answerCorrect[choiceIndex]
-                      ? "select-correct !bg-sciquelCorrectBG"
-                      : ""
-                  }`}
+                  className={`multiple-match-answer-choice-holder min-w-100 box-border flex h-full w-full cursor-move items-center break-words rounded-[4px] border border-black bg-sciquelCardBg text-center text-[18px] transition duration-300 ease-in-out`}
                   draggable="true"
                   onDragStart={handleDragStart}
                   onDragEnd={handleDragEnd}
                 >
-                  {/* <div className="image-holder mr-3 flex h-full w-[50px] items-center justify-center rounded-bl-[4px] rounded-tl-[4px] bg-[#e6e6fa] px-3"> */}
                   <div
-                    //   className={`image-holder mr-3 flex h-full w-[50px] items-center justify-center rounded-bl-[4px] rounded-tl-[4px] bg-[#e6e6fa] px-3 transition duration-300 ease-in-out
-                    //   ${hasAnswered ? "!bg-transparent" : ""}
-                    // `}
-                    className={`image-holder flex h-full w-[35%] max-w-[50px] items-center justify-center rounded-bl-[4px] rounded-tl-[4px] bg-[#e6e6fa] px-2 transition duration-300 ease-in-out                   
-                  ${
-                    hasAnswered && !answerCorrect[choiceIndex]
-                      ? "select-incorrect !bg-[#d09191]"
-                      : ""
-                  }  
-                  ${
-                    hasAnswered && answerCorrect[choiceIndex]
-                      ? "select-correct !bg-[#9dbda1]"
-                      : ""
-                  }`}
+                    className={`image-holder flex h-full w-[35%] max-w-[50px] items-center justify-center rounded-bl-[4px] rounded-tl-[4px] bg-[#e6e6fa] px-2 transition duration-300 ease-in-out`}
                   >
                     {!hasAnswered && (
                       <span className="hamburger-menu flex h-4 w-6 flex-col justify-between rounded-[4px] border-none">
@@ -411,8 +651,6 @@ export default function MultipleMatchQuiz({
                   </div>
                 </div>
               </div>
-
-              {/* <div className="answer-option">{choice}</div> */}
             </div>
           ))}
         </div>
