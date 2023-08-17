@@ -42,7 +42,7 @@ export const getStorySchema = z.object({
     .optional(),
   sort_by: z.enum(["newest", "oldest"]).optional(),
   published: z.preprocess(
-    (value) => (value === "true" ? true : false),
+    (value) => (value === "false" ? false : true),
     z.boolean().optional().default(true),
   ),
 });

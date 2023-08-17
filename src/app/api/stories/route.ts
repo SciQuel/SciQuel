@@ -59,7 +59,7 @@ export async function GET(req: NextRequest) {
   } = parsedParams.data;
 
   // Can only retrieve unpublished stories if EDITOR
-  if (!published) {
+  if (published === false) {
     const session = await getServerSession();
     const user = await prisma.user.findUnique({
       where: { email: session?.user.email ?? "noemail" },
