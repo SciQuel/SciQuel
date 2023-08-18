@@ -6,7 +6,7 @@ import x_mark from "../Quiz/xmark.png";
 
 interface Props {
   isPreQuiz: boolean; // Boolean value that determines if quiz is a pre- or post-quiz
-  themeColor: string;
+  themeColor: string; // Theme color of the quiz (hex), matching with story topic tag color
   matchStatements: string[]; // The statements the user must match choices to
   choices: string[]; // The available choices for the question. (in order of display as well)
   correctAnswerMap: Map<string, string[]>; // The correct answer for the question.
@@ -31,31 +31,16 @@ export default function MultipleMatchQuiz({
 }: Props) {
   const quizContainerId = isPreQuiz ? "prequiz-mm" : "postquiz-mm";
 
-  const [selectedOptions, setSelectedOptions] = useState<
-    Array<Array<string | null>>
-  >(
-    Array.from({ length: totalQuestions }, () =>
-      Array.from({ length: choices.length }, () => null),
-    ),
+  const initialSubmittedAnswers: Record<string, string[]>[] = new Array<
+    Record<string, string[]>
+  >(totalQuestions).fill({});
+  const [submittedAnswersList, setSubmittedAnswersList] = useState(
+    initialSubmittedAnswers,
   );
-
-  // const [userSelectedAnswers, setUserSelectedAnswers] = useState<Record<string, string[]>>({});
 
   const [answerCorrectList, setAnswerCorrectList] = useState<
-    Array<Array<boolean | null>>
-  >(
-    Array.from({ length: totalQuestions }, () =>
-      Array.from({ length: choices.length }, () => null),
-    ),
-  );
-
-  const initialMatchResultsList: string[][] = Array.from(
-    { length: totalQuestions },
-    () => [],
-  );
-  const [matchResultsList, setMatchResultsList] = useState(
-    initialMatchResultsList,
-  );
+    Array<boolean | null>
+  >(Array.from({ length: totalQuestions }, () => null));
 
   const [showAnswerExplanation, setShowAnswerExplanation] = useState(false);
   const [hasAnsweredList, setHasAnsweredList] = useState<boolean[]>(
@@ -65,7 +50,6 @@ export default function MultipleMatchQuiz({
   const [draggedElement, setDraggedElement] = useState<HTMLElement | null>(
     null,
   );
-  // const [draggedFromCol, setDraggedFromCol] = useState(0);
 
   const initialUserAnswers: string[][][] = new Array(totalQuestions)
     .fill(null)
@@ -102,14 +86,6 @@ export default function MultipleMatchQuiz({
       return; // User is dragging outside of allowed elements
     }
 
-    // const dragCell = dragTarget.closest(".grid-cell") as HTMLElement;
-    // if (!dragCell) {
-    //   return;
-    // }
-    // const dragBorder = dragCell.querySelector<HTMLElement>(
-    //   ".answer-choice-border",
-    // );
-
     const dragBorder = dragTarget.closest(
       ".answer-choice-border",
     ) as HTMLElement;
@@ -122,16 +98,11 @@ export default function MultipleMatchQuiz({
 
     // const fromColString = dragBorder.getAttribute("from-col");
     // const fromCol = fromColString ? parseInt(fromColString, 10) : 0;
-
     // console.log("fromCol",fromCol);
-
-    // console.log("selectedOptions:", selectedOptions);
     console.log("dragItem", dragItem);
     console.log("dragBorder", dragBorder);
 
     setDraggedElement(dragBorder);
-    // setDraggedElement(dragCell);
-    // setDraggedElementText(dragItemText);
 
     if (dragItem && dragBorder) {
       setTimeout(() => {
@@ -383,20 +354,14 @@ export default function MultipleMatchQuiz({
   /**
    * For updating the component when the user clicks the previous/next buttons: Updates match
    * statement display, sets showAnswerExplanation to the appropriate value for the new current
-   * question, and sets the class of the OM selection accordingly
+   * question, and sets the class of the MM selection accordingly
    */
   useEffect(() => {
-    const oneMatchQuizSelection = document.querySelector(
-      isPreQuiz ? "#prequiz-om" : "#postquiz-om",
+    const multipleMatchQuizSelection = document.querySelector(
+      isPreQuiz ? "#prequiz-mm" : "#postquiz-mm",
     );
-
     const quizContainer = document.getElementById(quizContainerId);
-    const draggables = quizContainer?.querySelectorAll<HTMLElement>(
-      ".multiple-match-answer-choice-holder",
-    );
-
-    const updatedSelectedOptions = [...selectedOptions]; // Create a copy of the current selectedOptions array
-    const updatedAnswerChoicesList = [...answerChoicesList]; // Create a copy of the current selectedOptions array
+    const updatedAnswerChoicesList = [...answerChoicesList];
 
     // console.log("updatedAnswerChoicesList", updatedAnswerChoicesList);
 
@@ -410,28 +375,15 @@ export default function MultipleMatchQuiz({
       setAnswerChoicesList(updatedAnswerChoicesList);
     }
 
-    // for each statement, update the match statement display based on what user had before
-    draggables?.forEach((draggable, index) => {
-      if (
-        draggable.lastChild &&
-        !updatedSelectedOptions[currentQuestion - 1].every(
-          (value) => value === null,
-        )
-      ) {
-        draggable.lastChild.textContent =
-          updatedSelectedOptions[currentQuestion - 1][index];
-      }
-    });
-
-    if (oneMatchQuizSelection) {
+    if (multipleMatchQuizSelection) {
       if (currentQuestion !== prevCurrentQuestion.current) {
         const hasAnswered = hasAnsweredList[currentQuestion - 1];
 
         if (hasAnswered && !isPreQuiz) {
-          oneMatchQuizSelection.classList.add("pointer-events-none");
+          multipleMatchQuizSelection.classList.add("pointer-events-none");
           setShowAnswerExplanation(true);
         } else {
-          oneMatchQuizSelection.classList.remove("pointer-events-none");
+          multipleMatchQuizSelection.classList.remove("pointer-events-none");
           setShowAnswerExplanation(false);
         }
       }
@@ -446,59 +398,126 @@ export default function MultipleMatchQuiz({
    * an array, sets current question as answered/submitted, and sets showAnswerExplanation to true
    */
   const handleSubmit = () => {
-    let userAnswers = selectedOptions[currentQuestion - 1];
+    const currUserAnswers = userAnswersList[currentQuestion - 1];
+    const updatedSubmittedAnswersList = [...submittedAnswersList];
 
-    // if userAnswers is empty (user did not move options), submit the initial answer order
-    if (userAnswers.every((value) => value === null)) {
-      // const updatedSelectedOptions = [...selectedOptions];
-      const updatedSelectedOptions = selectedOptions;
+    // save user's submitted answers
+    const updatedRecord = currUserAnswers.map(
+      (selectedAnswers, statementIndex) => {
+        const statement = matchStatements[statementIndex];
+        return {
+          [statement]: selectedAnswers,
+        };
+      },
+    );
 
-      userAnswers = choices;
-      updatedSelectedOptions[currentQuestion - 1] = choices;
-      setSelectedOptions(updatedSelectedOptions);
-    }
+    updatedSubmittedAnswersList[currentQuestion - 1] = Object.assign(
+      {},
+      updatedSubmittedAnswersList[currentQuestion - 1],
+      ...updatedRecord,
+    );
 
-    // for each T/F statement, check if the selected answer is correct
-    // const answerCorrect: boolean[] = userAnswers.map(
-    //   (userAnswer, index) => userAnswer === correctAnswer[index],
-    // );
+    console.log("updatedSubmittedAnswersList", updatedSubmittedAnswersList);
 
-    console.log("answerCorrect", answerCorrect);
+    setSubmittedAnswersList(updatedSubmittedAnswersList);
 
-    const updatedAnswerCorrectList = [...answerCorrectList];
-    updatedAnswerCorrectList[currentQuestion - 1] = answerCorrect; // save the results for the current question
+    // const updatedAnswerCorrectList = [...answerCorrectList];
+    // updatedAnswerCorrectList[currentQuestion - 1] = answerCorrect; // save the results for the current question
 
     const updatedHasAnsweredList = [...hasAnsweredList];
     updatedHasAnsweredList[currentQuestion - 1] = true; // set current question as answered
 
-    // set class to lock the OM selection
-    const oneMatchQuizSelection = document.querySelector(
-      isPreQuiz ? "#prequiz-om" : "#postquiz-om",
+    // set class to lock the MM selection
+    const multipleMatchQuizSelection = document.querySelector(
+      isPreQuiz ? "#prequiz-mm" : "#postquiz-mm",
     );
-    if (oneMatchQuizSelection) {
-      oneMatchQuizSelection.classList.add("pointer-events-none");
+    if (multipleMatchQuizSelection) {
+      console.log("locking pointer events");
+      multipleMatchQuizSelection.classList.add("pointer-events-none");
+
+      console.log("multipleMatchQuizSelection", multipleMatchQuizSelection);
     }
 
     // give the user points or update their score here ?
 
-    setAnswerCorrectList(updatedAnswerCorrectList);
+    // setAnswerCorrectList(updatedAnswerCorrectList);
     setShowAnswerExplanation(true);
     setHasAnsweredList(updatedHasAnsweredList);
   };
 
-  /** Handles the previous button of a OM question (called when user clicks "Previous" button). */
+  const statementCorrect = (statement: string) => {
+    const currSubmittedAnswers = submittedAnswersList[currentQuestion - 1];
+    const userAnswerArray = currSubmittedAnswers[statement] || [];
+    const correctAnswersForStatement = correctAnswerMap.get(statement) || [];
+
+    // Compare the user's answer array with the correct answers (answer key) array
+    const isCorrect =
+      JSON.stringify(userAnswerArray) ===
+      JSON.stringify(correctAnswersForStatement);
+
+    return isCorrect;
+  };
+
+  const matchOptionCorrect = (statement: string, userAnswer: string) => {
+    // const statement = matchStatements[statementIndex];
+    const correctAnswersForStatement = correctAnswerMap.get(statement) || [];
+
+    if (correctAnswersForStatement.includes(userAnswer)) {
+      // The target string is included in the array of correct answers for the given match statement
+      return true;
+    }
+
+    return false;
+  };
+
+  const answerChoiceExistsInCorrectAnswers = (answerChoice: string) => {
+    const correctAnswersArrays = Array.from(correctAnswerMap.values());
+
+    for (const correctAnswers of correctAnswersArrays) {
+      if (correctAnswers.includes(answerChoice)) {
+        return true; // User's answer is correct for at least one statement
+      }
+    }
+    return false; // User's answer is not correct for any statement
+  };
+
+  /** Handles the previous button of a MM question (called when user clicks "Previous" button). */
   const handlePrevious = () => {
     // call quiz's handle previous function to go back a question
     onPrevious();
   };
 
-  /** Handles the next button of an OM question (called when user clicks "Next" button). */
+  /** Handles the next button of an MM question (called when user clicks "Next" button). */
   const handleNext = () => {
     // call quiz's handle previous function to go forward a question
     onNext();
   };
 
-  const answerCorrect = answerCorrectList[currentQuestion - 1]; // an array of strings, ex: ["00", "111"]
+  // const matchStatementRefs = useRef([] as React.MutableRefObject<any>[]);
+
+  // const setEqualHeights = () => {
+  //   const statementElements = matchStatementRefs.current
+  //     .map((ref) => ref.current) // Get the actual elements
+  //     .filter((element) => element !== null); // Filter out null elements
+
+  //   if (statementElements.length === 0) {
+  //     return; // No elements to calculate
+  //   }
+
+  //   const tallestHeight = Math.max(
+  //     ...statementElements.map((element) => element.clientHeight),
+  //   );
+
+  //   statementElements.forEach((element) => {
+  //     element.style.height = `${tallestHeight}px`;
+  //   });
+  // };
+
+  // useEffect(() => {
+  //   setEqualHeights();
+  // }, []);
+
+  const answerCorrect = answerCorrectList[currentQuestion - 1];
   const userAnswers = userAnswersList[currentQuestion - 1];
   const answerChoices = answerChoicesList[currentQuestion - 1];
   const hasAnswered = hasAnsweredList[currentQuestion - 1];
@@ -514,24 +533,32 @@ export default function MultipleMatchQuiz({
 
   return (
     <div key={isPreQuiz ? "prequiz" : "postquiz"}>
+      {/* <div
+        className={`multiple-match-selection flex flex-col items-start ${
+          hasAnswered && answerChoices.length ? "mb-[20px]" : ""
+        }`}
+        id={isPreQuiz ? "prequiz-mm" : "postquiz-mm"}
+      > */}
       <div
         className="multiple-match-selection mb-[20px] flex flex-col items-start"
         id={isPreQuiz ? "prequiz-mm" : "postquiz-mm"}
       >
         <div className="multiple-match-drop-area flex w-full flex-row items-start gap-3 pb-3">
           {matchStatements.map((statement, statementIndex) => {
+            // const statementRef = useRef(null);
+            // matchStatementRefs.current[statementIndex] = statementRef;
+
             return (
               <div
-                className="quiz-col my-3.5 flex h-full w-full flex-col gap-4"
+                className="quiz-col my-3.5 flex h-full w-full shrink flex-col gap-4"
                 onDrop={handleColDrop}
                 col-index={statementIndex}
                 key={statementIndex}
               >
-                <div className="multiple-match-statement flex w-full flex-wrap items-center justify-center overflow-hidden hyphens-auto rounded-[4px] border border-black bg-sciquelCardBg p-3 text-[18px]">
+                <div className="multiple-match-statement flex h-full w-full flex-wrap items-center justify-center overflow-hidden hyphens-auto rounded-[4px] border border-black bg-sciquelCardBg p-3 text-[18px]">
                   {statement}
                 </div>
 
-                {/* for every user answer under this statement (based on index), render the answer choice holder/border */}
                 {userAnswers[statementIndex] &&
                   userAnswers[statementIndex].map(
                     (userAnswer, userAnswerIndex) => {
@@ -541,14 +568,38 @@ export default function MultipleMatchQuiz({
                           from-col="1"
                         >
                           <div
-                            className={`multiple-match-answer-choice-holder min-w-100 box-border flex h-full w-full cursor-move items-center break-words rounded-[4px] border border-black bg-sciquelCardBg text-center text-[18px] transition duration-300 ease-in-out`}
+                            className={`multiple-match-answer-choice-holder min-w-100 relative box-border flex h-full w-full cursor-move items-center justify-end break-words rounded-[4px] border border-black bg-sciquelCardBg text-center text-[18px] transition duration-300 ease-in-out 
+                            ${
+                              hasAnswered &&
+                              !matchOptionCorrect(statement, userAnswer)
+                                ? "select-incorrect !bg-sciquelIncorrectBG"
+                                : ""
+                            }  
+                            ${
+                              hasAnswered &&
+                              matchOptionCorrect(statement, userAnswer)
+                                ? "select-correct !bg-sciquelCorrectBG"
+                                : ""
+                            }`}
                             draggable="true"
                             onDragStart={handleDragStart}
                             onDragEnd={handleDragEnd}
                             key={userAnswerIndex}
                           >
                             <div
-                              className={`image-holder flex h-full w-[35%] max-w-[50px] items-center justify-center rounded-bl-[4px] rounded-tl-[4px] bg-[#e6e6fa] px-2 transition duration-300 ease-in-out`}
+                              className={`image-holder absolute inset-0 flex h-full w-[35%] max-w-[50px] grow items-center justify-center rounded-bl-[4px] rounded-tl-[4px] bg-[#e6e6fa] px-2 transition duration-300 ease-in-out
+                              ${
+                                hasAnswered &&
+                                !matchOptionCorrect(statement, userAnswer)
+                                  ? "select-incorrect !bg-[#d09191]"
+                                  : ""
+                              }  
+                              ${
+                                hasAnswered &&
+                                matchOptionCorrect(statement, userAnswer)
+                                  ? "select-correct !bg-[#9dbda1]"
+                                  : ""
+                              }`}
                             >
                               {!hasAnswered && (
                                 <span className="hamburger-menu flex h-4 w-6 flex-col justify-between rounded-[4px] border-none">
@@ -559,7 +610,7 @@ export default function MultipleMatchQuiz({
                               )}
 
                               {hasAnswered &&
-                                (answerCorrect[userAnswerIndex] ? (
+                                (matchOptionCorrect(statement, userAnswer) ? (
                                   <Image
                                     src={checkmark}
                                     className="h-5 w-6 flex-grow-0"
@@ -573,7 +624,8 @@ export default function MultipleMatchQuiz({
                                   />
                                 ))}
                             </div>
-                            <div className="match-text align-self-center w-full justify-self-center overflow-hidden hyphens-auto p-3">
+
+                            <div className="match-text align-self-center flex w-[70%] w-full items-center justify-end justify-self-end justify-self-center overflow-hidden hyphens-auto p-3">
                               {userAnswer}
                             </div>
                           </div>
@@ -581,15 +633,20 @@ export default function MultipleMatchQuiz({
                       );
                     },
                   )}
-
-                <div className="multiple-match-slot h-[50px] rounded-[4px] border bg-gray-200 p-3 transition duration-300"></div>
+                {/* 
+                {!hasAnswered && (
+                  <div className="multiple-match-slot h-[50px] w-full rounded-[4px] border bg-gray-200 p-3 transition duration-300"></div>
+                )} */}
+                <div className="multiple-match-slot h-[50px] w-full rounded-[4px] border bg-gray-200 p-3 transition duration-300"></div>
               </div>
             );
           })}
         </div>
 
         <div
-          className="multiple-match-answer-choice-area grid min-h-[120px] w-full place-items-center gap-2 border-t-[1.75px] pt-6"
+          className={`multiple-match-answer-choice-area grid w-full place-items-center gap-2 border-t-[1.75px] pt-6 ${
+            !hasAnswered ? "min-h-[120px]" : ""
+          }`}
           style={{
             gridTemplateColumns: `repeat(${matchStatements.length}, 1fr)`,
             gridTemplateRows: `repeat(${numRows}, auto)`,
@@ -615,13 +672,33 @@ export default function MultipleMatchQuiz({
                 from-col="0"
               >
                 <div
-                  className={`multiple-match-answer-choice-holder min-w-100 box-border flex h-full w-full cursor-move items-center break-words rounded-[4px] border border-black bg-sciquelCardBg text-center text-[18px] transition duration-300 ease-in-out`}
+                  className={`multiple-match-answer-choice-holder min-w-100 box-border flex h-full w-full cursor-move items-center break-words rounded-[4px] border border-black bg-sciquelCardBg text-center text-[18px] transition duration-300 ease-in-out 
+                  ${
+                    hasAnswered && answerChoiceExistsInCorrectAnswers(choice)
+                      ? "select-incorrect !bg-sciquelIncorrectBG"
+                      : ""
+                  }  
+                  ${
+                    hasAnswered && !answerChoiceExistsInCorrectAnswers(choice)
+                      ? "select-correct !bg-sciquelCorrectBG"
+                      : ""
+                  }`}
                   draggable="true"
                   onDragStart={handleDragStart}
                   onDragEnd={handleDragEnd}
                 >
                   <div
-                    className={`image-holder flex h-full w-[35%] max-w-[50px] items-center justify-center rounded-bl-[4px] rounded-tl-[4px] bg-[#e6e6fa] px-2 transition duration-300 ease-in-out`}
+                    className={`image-holder flex h-full w-[35%] max-w-[50px] items-center justify-center rounded-bl-[4px] rounded-tl-[4px] bg-[#e6e6fa] px-2 transition duration-300 ease-in-out 
+                    ${
+                      hasAnswered && answerChoiceExistsInCorrectAnswers(choice)
+                        ? "select-incorrect !bg-[#d09191]"
+                        : ""
+                    }  
+                    ${
+                      hasAnswered && !answerChoiceExistsInCorrectAnswers(choice)
+                        ? "select-correct !bg-[#9dbda1]"
+                        : ""
+                    }`}
                   >
                     {!hasAnswered && (
                       <span className="hamburger-menu flex h-4 w-6 flex-col justify-between rounded-[4px] border-none">
@@ -632,17 +709,17 @@ export default function MultipleMatchQuiz({
                     )}
 
                     {hasAnswered &&
-                      (answerCorrect[choiceIndex] ? (
-                        <Image
-                          src={checkmark}
-                          className="h-5 w-6 flex-grow-0"
-                          alt="checkmark"
-                        />
-                      ) : (
+                      (answerChoiceExistsInCorrectAnswers(choice) ? (
                         <Image
                           src={x_mark}
                           className="h-6 w-6 flex-grow-0"
                           alt="x_mark"
+                        />
+                      ) : (
+                        <Image
+                          src={checkmark}
+                          className="h-5 w-6 flex-grow-0"
+                          alt="checkmark"
                         />
                       ))}
                   </div>
@@ -656,40 +733,36 @@ export default function MultipleMatchQuiz({
         </div>
       </div>
 
-      {showAnswerExplanation && answerCorrect && (
+      {showAnswerExplanation && (
         <div className="answer-explanation-container-tf flex w-full flex-col">
           <ul className="explanation-list w-full list-none p-0">
-            {(answerCorrect as boolean[]).map(
-              (result: boolean, index: number) => (
+            {matchStatements.map((statement, statementIndex) => {
+              return (
                 <li
                   className={
-                    result
+                    statementCorrect(statement)
                       ? "answer-explanation-tf correct font-quicksand my-1 box-border w-full border-l-8 border-sciquelCorrectBG p-4 pl-8 text-[18px] font-medium leading-6  text-sciquelCorrectText"
                       : "answer-explanation-tf incorrect font-quicksand my-1 box-border w-full border-l-8 border-sciquelIncorrectBG p-4 pl-8 text-[18px] font-medium leading-6 text-sciquelIncorrectText"
                   }
                 >
-                  {result ? "Correct. " : "Incorrect. "}
-                  {answerExplanation[index]}
+                  {statementCorrect(statement) ? "Correct. " : "Incorrect. "}
+                  {answerExplanation[statementIndex]}
                 </li>
-              ),
-            )}
+              );
+            })}
           </ul>
 
           <div
             className="user-quiz-statistics  ml-auto mt-4 w-full text-right text-[14px] leading-normal text-gray-600"
             style={{ marginLeft: "auto" }}
           >
-            {answerCorrect.every(
-              (correct: boolean | null) => correct === true,
-            ) && (
+            {answerCorrect && (
               <>
                 You and 87.6% of SciQuel readers answered this question
                 correctly. Great job!
               </>
             )}
-            {!answerCorrect.every(
-              (correct: boolean | null) => correct === true,
-            ) && (
+            {!answerCorrect && (
               <>87.6% of SciQuel readers answered this question correctly.</>
             )}
           </div>
