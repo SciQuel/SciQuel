@@ -30,6 +30,7 @@ export default function MultipleMatchQuiz({
   onNext,
 }: Props) {
   const quizContainerId = isPreQuiz ? "prequiz-mm" : "postquiz-mm";
+  // const isTouchDevice = "ontouchstart" in window;
 
   const initialSubmittedAnswers: Record<string, string[]>[] = new Array<
     Record<string, string[]>
@@ -66,29 +67,20 @@ export default function MultipleMatchQuiz({
 
   const prevCurrentQuestion = useRef<number>(currentQuestion);
 
+  const getTargetParent = (target: HTMLElement, targetClass: string) => {
+    // Get the nearest targetClass parent
+    const targetParent = target.closest(targetClass) as HTMLElement;
+    if (!targetParent) {
+      return null;
+    }
+
+    return targetParent;
+  };
+
   /* Called when the user tries to drag a draggable item (answer choice) */
   const handleDragStart: React.DragEventHandler<HTMLDivElement> = (e) => {
     const dragTarget = e.target as HTMLElement; // the item being dragged
-    let isAllowedDrag = false;
-    let parentElement = dragTarget;
-
-    while (parentElement) {
-      if (parentElement.classList.contains("answer-choice-border")) {
-        isAllowedDrag = true;
-        break;
-      }
-      if (parentElement.parentElement) {
-        parentElement = parentElement.parentElement;
-      }
-    }
-
-    if (!isAllowedDrag) {
-      return; // User is dragging outside of allowed elements
-    }
-
-    const dragBorder = dragTarget.closest(
-      ".answer-choice-border",
-    ) as HTMLElement;
+    const dragBorder = getTargetParent(dragTarget, ".answer-choice-border");
     if (!dragBorder) {
       return;
     }
@@ -99,8 +91,8 @@ export default function MultipleMatchQuiz({
     // const fromColString = dragBorder.getAttribute("from-col");
     // const fromCol = fromColString ? parseInt(fromColString, 10) : 0;
     // console.log("fromCol",fromCol);
-    console.log("dragItem", dragItem);
-    console.log("dragBorder", dragBorder);
+    // console.log("dragItem", dragItem);
+    // console.log("dragBorder", dragBorder);
 
     setDraggedElement(dragBorder);
 
@@ -109,6 +101,49 @@ export default function MultipleMatchQuiz({
         dragItem.style.opacity = "0"; // Hide the original item after a short delay
         dragBorder.style.borderColor = themeColor;
       }, 0);
+    }
+  };
+
+  /* Called when match option is tapped (for mobile only, in place of drag/drop) */
+  const handleTap = (e: React.MouseEvent<HTMLDivElement>) => {
+    const isTouchDevice = "ontouchstart" in window;
+    // if (!isTouchDevice && !window.matchMedia("(max-width: 768px)").matches) {
+    if (!isTouchDevice) {
+      return; //  if not a mobile/touch device, do nothing
+    }
+    const tapTarget = e.target as HTMLElement;
+    const dragBorder = getTargetParent(tapTarget, ".answer-choice-border");
+
+    // if we are not already in process of selecting/moving match statements
+    if (!draggedElement) {
+      // console.log("we are selecting");
+
+      if (!dragBorder) {
+        console.log("dragBorder doesn't exist");
+        return;
+      }
+
+      setDraggedElement(dragBorder);
+    } else if (!dragBorder) {
+      // draggedElement has been set, so we are dropping (not selecting)
+      // console.log("draggedElement", draggedElement);
+      // console.log("we are dropping");
+
+      // determine if swapping (dropping) into column or answer area
+      const quizColParent = getTargetParent(tapTarget, ".quiz-col");
+      if (quizColParent) {
+        handleColDropOrTap(e, quizColParent); // we are dropping into a COLUMN
+      } else {
+        const answerChoiceArea = getTargetParent(
+          tapTarget,
+          ".multiple-match-answer-choice-area",
+        );
+        if (!answerChoiceArea) {
+          return;
+        }
+        handleAnswerChoiceAreaDropOrTap(e); // we are dropping into the ANSWER AREA
+      }
+      setDraggedElement(null);
     }
   };
 
@@ -131,31 +166,26 @@ export default function MultipleMatchQuiz({
   /* Called when user drops a match option into one of the answer columns */
   const handleColDrop: React.DragEventHandler<HTMLDivElement> = (e) => {
     const dropTarget = e.target as HTMLElement;
-
-    // Check if the drop target or any of its ancestors have the class "quiz-col"
-    let isAllowedDrop = false;
-    let parentElement = dropTarget;
-
-    while (parentElement) {
-      if (parentElement.classList.contains("quiz-col")) {
-        isAllowedDrop = true;
-        break;
-      }
-      if (parentElement.parentElement) {
-        parentElement = parentElement.parentElement;
-      }
-    }
-
-    if (!isAllowedDrop) {
-      return; // User is dropping outside of allowed elements
-    }
-
-    // Get the nearest .quiz-col parent
-    const quizColParent = dropTarget.closest(".quiz-col") as HTMLElement;
+    const quizColParent = getTargetParent(dropTarget, ".quiz-col");
     if (!quizColParent) {
       return;
     }
+    handleColDropOrTap(e, quizColParent);
+  };
 
+  const handleAnswerChoiceAreaDragOver = (
+    e: React.DragEvent<HTMLDivElement>,
+  ) => {
+    e.preventDefault();
+  };
+
+  /* Handles the logic behind dropping an answer into a column */
+  const handleColDropOrTap = (
+    e:
+      | React.DragEventHandler<HTMLDivElement>
+      | React.MouseEvent<HTMLDivElement>,
+    quizColParent: HTMLElement,
+  ) => {
     const colIndexString = quizColParent.getAttribute("col-index");
     const colIndex = colIndexString ? parseInt(colIndexString, 10) : 0;
 
@@ -231,48 +261,12 @@ export default function MultipleMatchQuiz({
     }
   };
 
-  const handleAnswerChoiceAreaDragOver = (
-    e: React.DragEvent<HTMLDivElement>,
+  /* Handles the logic behind dropping an answer into the answer choice area */
+  const handleAnswerChoiceAreaDropOrTap = (
+    e:
+      | React.DragEventHandler<HTMLDivElement>
+      | React.MouseEvent<HTMLDivElement>,
   ) => {
-    e.preventDefault();
-  };
-
-  /* Called when user drops answer back into answer choice area */
-  const handleAnswerChoiceAreaDrop: React.DragEventHandler<HTMLDivElement> = (
-    e,
-  ) => {
-    console.log("dropped back");
-    console.log("dropTarget", e.target);
-
-    const dropTarget = e.target as HTMLElement;
-
-    // Check if the drop target or any of its ancestors have the class "quiz-col"
-    let isAllowedDrop = false;
-    let parentElement = dropTarget;
-
-    while (parentElement) {
-      if (
-        parentElement.classList.contains("multiple-match-answer-choice-area")
-      ) {
-        isAllowedDrop = true;
-        break;
-      }
-      if (parentElement.parentElement) {
-        parentElement = parentElement.parentElement;
-      }
-    }
-
-    if (!isAllowedDrop) {
-      return; // User is dropping outside of allowed elements
-    }
-
-    const answerChoiceArea = dropTarget.closest(
-      ".multiple-match-answer-choice-area",
-    ) as HTMLElement;
-    if (!answerChoiceArea) {
-      return;
-    }
-
     if (draggedElement) {
       const fromColString = draggedElement.getAttribute("from-col");
       const fromCol = fromColString ? parseInt(fromColString, 10) : 0;
@@ -319,6 +313,21 @@ export default function MultipleMatchQuiz({
         }
       }
     }
+  };
+
+  /* Called when user drops answer back into answer choice area */
+  const handleAnswerChoiceAreaDrop: React.DragEventHandler<HTMLDivElement> = (
+    e,
+  ) => {
+    const dropTarget = e.target as HTMLElement;
+    const answerChoiceArea = getTargetParent(
+      dropTarget,
+      ".multiple-match-answer-choice-area",
+    );
+    if (!answerChoiceArea) {
+      return;
+    }
+    handleAnswerChoiceAreaDropOrTap(e);
   };
 
   /* add animation when hovering over droppable items */
@@ -450,10 +459,16 @@ export default function MultipleMatchQuiz({
     const userAnswerArray = currSubmittedAnswers[statement] || [];
     const correctAnswersForStatement = correctAnswerMap.get(statement) || [];
 
-    // Compare the user's answer array with the correct answers (answer key) array
+    // Sort the user's answer array and the correct answers array
+    const sortedUserAnswerArray = userAnswerArray.slice().sort();
+    const sortedCorrectAnswersForStatement = correctAnswersForStatement
+      .slice()
+      .sort();
+
+    // Compare the sorted arrays
     const isCorrect =
-      JSON.stringify(userAnswerArray) ===
-      JSON.stringify(correctAnswersForStatement);
+      JSON.stringify(sortedUserAnswerArray) ===
+      JSON.stringify(sortedCorrectAnswersForStatement);
 
     return isCorrect;
   };
@@ -466,7 +481,6 @@ export default function MultipleMatchQuiz({
       // The target string is included in the array of correct answers for the given match statement
       return true;
     }
-
     return false;
   };
 
@@ -493,30 +507,6 @@ export default function MultipleMatchQuiz({
     onNext();
   };
 
-  // const matchStatementRefs = useRef([] as React.MutableRefObject<any>[]);
-
-  // const setEqualHeights = () => {
-  //   const statementElements = matchStatementRefs.current
-  //     .map((ref) => ref.current) // Get the actual elements
-  //     .filter((element) => element !== null); // Filter out null elements
-
-  //   if (statementElements.length === 0) {
-  //     return; // No elements to calculate
-  //   }
-
-  //   const tallestHeight = Math.max(
-  //     ...statementElements.map((element) => element.clientHeight),
-  //   );
-
-  //   statementElements.forEach((element) => {
-  //     element.style.height = `${tallestHeight}px`;
-  //   });
-  // };
-
-  // useEffect(() => {
-  //   setEqualHeights();
-  // }, []);
-
   const answerCorrect = answerCorrectList[currentQuestion - 1];
   const userAnswers = userAnswersList[currentQuestion - 1];
   const answerChoices = answerChoicesList[currentQuestion - 1];
@@ -533,25 +523,17 @@ export default function MultipleMatchQuiz({
 
   return (
     <div key={isPreQuiz ? "prequiz" : "postquiz"}>
-      {/* <div
-        className={`multiple-match-selection flex flex-col items-start ${
-          hasAnswered && answerChoices.length ? "mb-[20px]" : ""
-        }`}
-        id={isPreQuiz ? "prequiz-mm" : "postquiz-mm"}
-      > */}
       <div
         className="multiple-match-selection mb-[20px] flex flex-col items-start"
         id={isPreQuiz ? "prequiz-mm" : "postquiz-mm"}
       >
         <div className="multiple-match-drop-area flex w-full flex-row items-start gap-3 pb-3">
           {matchStatements.map((statement, statementIndex) => {
-            // const statementRef = useRef(null);
-            // matchStatementRefs.current[statementIndex] = statementRef;
-
             return (
               <div
                 className="quiz-col my-3.5 flex h-full w-full shrink flex-col gap-4"
                 onDrop={handleColDrop}
+                onClick={handleTap}
                 col-index={statementIndex}
                 key={statementIndex}
               >
@@ -566,9 +548,20 @@ export default function MultipleMatchQuiz({
                         <div
                           className="answer-choice-border z-1 box-border flex h-full min-h-[50px] w-full rounded-[4px] border-2 border-dashed border-transparent transition-all"
                           from-col="1"
+                          key={userAnswerIndex}
                         >
                           <div
                             className={`multiple-match-answer-choice-holder min-w-100 relative box-border flex h-full w-full cursor-move items-center justify-end break-words rounded-[4px] border border-black bg-sciquelCardBg text-center text-[18px] transition duration-300 ease-in-out 
+                            ${
+                              "ontouchstart" in window &&
+                              !hasAnswered &&
+                              userAnswer ===
+                                draggedElement?.querySelector<HTMLElement>(
+                                  ".match-text",
+                                )?.lastChild?.textContent
+                                ? "selected !bg-gray-200"
+                                : ""
+                            }  
                             ${
                               hasAnswered &&
                               !matchOptionCorrect(statement, userAnswer)
@@ -588,6 +581,16 @@ export default function MultipleMatchQuiz({
                           >
                             <div
                               className={`image-holder absolute inset-0 flex h-full w-[35%] max-w-[50px] grow items-center justify-center rounded-bl-[4px] rounded-tl-[4px] bg-[#e6e6fa] px-2 transition duration-300 ease-in-out
+                              ${
+                                "ontouchstart" in window &&
+                                !hasAnswered &&
+                                userAnswer ===
+                                  draggedElement?.querySelector<HTMLElement>(
+                                    ".match-text",
+                                  )?.lastChild?.textContent
+                                  ? "selected !bg-[#c2bed0]"
+                                  : ""
+                              }
                               ${
                                 hasAnswered &&
                                 !matchOptionCorrect(statement, userAnswer)
@@ -625,7 +628,7 @@ export default function MultipleMatchQuiz({
                                 ))}
                             </div>
 
-                            <div className="match-text align-self-center flex w-[70%] w-full items-center justify-end justify-self-end justify-self-center overflow-hidden hyphens-auto p-3">
+                            <div className="match-text align-self-center flex w-[30%] w-full items-center justify-end justify-self-end justify-self-center hyphens-auto p-3">
                               {userAnswer}
                             </div>
                           </div>
@@ -645,7 +648,7 @@ export default function MultipleMatchQuiz({
 
         <div
           className={`multiple-match-answer-choice-area grid w-full place-items-center gap-2 border-t-[1.75px] pt-6 ${
-            !hasAnswered ? "min-h-[120px]" : ""
+            !hasAnswered ? "mb-14 min-h-[80px]" : ""
           }`}
           style={{
             gridTemplateColumns: `repeat(${matchStatements.length}, 1fr)`,
@@ -654,6 +657,7 @@ export default function MultipleMatchQuiz({
           }}
           onDragOver={handleAnswerChoiceAreaDragOver}
           onDrop={handleAnswerChoiceAreaDrop}
+          onClick={handleTap}
         >
           {answerChoices.map((choice, choiceIndex) => (
             <div
@@ -674,6 +678,15 @@ export default function MultipleMatchQuiz({
                 <div
                   className={`multiple-match-answer-choice-holder min-w-100 box-border flex h-full w-full cursor-move items-center break-words rounded-[4px] border border-black bg-sciquelCardBg text-center text-[18px] transition duration-300 ease-in-out 
                   ${
+                    "ontouchstart" in window &&
+                    !hasAnswered &&
+                    choice ===
+                      draggedElement?.querySelector<HTMLElement>(".match-text")
+                        ?.lastChild?.textContent
+                      ? "selected !bg-gray-200"
+                      : ""
+                  }  
+                  ${
                     hasAnswered && answerChoiceExistsInCorrectAnswers(choice)
                       ? "select-incorrect !bg-sciquelIncorrectBG"
                       : ""
@@ -684,11 +697,22 @@ export default function MultipleMatchQuiz({
                       : ""
                   }`}
                   draggable="true"
+                  onClick={handleTap}
                   onDragStart={handleDragStart}
                   onDragEnd={handleDragEnd}
                 >
                   <div
                     className={`image-holder flex h-full w-[35%] max-w-[50px] items-center justify-center rounded-bl-[4px] rounded-tl-[4px] bg-[#e6e6fa] px-2 transition duration-300 ease-in-out 
+                    ${
+                      "ontouchstart" in window &&
+                      !hasAnswered &&
+                      choice ===
+                        draggedElement?.querySelector<HTMLElement>(
+                          ".match-text",
+                        )?.lastChild?.textContent
+                        ? "selected !bg-[#c2bed0]"
+                        : ""
+                    }
                     ${
                       hasAnswered && answerChoiceExistsInCorrectAnswers(choice)
                         ? "select-incorrect !bg-[#d09191]"
