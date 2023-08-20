@@ -143,7 +143,7 @@ export default function Quiz({
         `#${isPreQuiz ? "prequiz" : "postquiz"}-question-number`,
       );
 
-      if (screenWidth > 820 && quizQuestionElement && quizNumberElement) {
+      if (screenWidth > 767 && quizQuestionElement && quizNumberElement) {
         const quizQuestionTop = quizQuestionElement.offsetTop;
         quizNumberElement.style.top = `${quizQuestionTop + 6}px`;
       }
@@ -174,7 +174,7 @@ export default function Quiz({
 
       <div
         id={isPreQuiz ? "prequiz-progress" : "postquiz-progress"}
-        className="quiz-progress-container mt-2"
+        className="quiz-progress-container mt-2 md:mb-4"
       >
         <div
           className="quiz-progress relative my-5 flex h-1 w-full items-center justify-center"
@@ -238,7 +238,7 @@ export default function Quiz({
           </h1>
         </div>
 
-        <div className="quiz-answers-container w-full sm:w-[120%] px-5 py-4 pb-1.5 pt-2.5">
+        <div className="quiz-answers-container w-full px-5 py-4 pb-1.5 pt-2.5 sm:w-[110%] xsm:w-[130%]">
           {(() => {
             switch (quizQuestionType) {
               case "Multiple Choice":
