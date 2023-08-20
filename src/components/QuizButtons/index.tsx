@@ -28,7 +28,7 @@ export default function QuizButtons({
         <button
           onClick={handlePrevious}
           className="font-quicksand border-radius-4 mr-auto flex h-10
-             cursor-pointer flex-row items-center justify-center gap-4 rounded-sm border border-black bg-sciquelCardBg px-4 py-1 text-lg font-medium text-black shadow-md transition duration-300 hover:bg-gray-200"
+             cursor-pointer flex-row items-center justify-center gap-4 rounded-sm border border-black bg-sciquelCardBg px-4 py-1 text-lg font-medium text-black transition duration-300 hover:bg-gray-200 md:text-base"
         >
           <Image src={prev_arrow} className="h-auto w-2" alt="prev arrow" />
           Previous
@@ -39,7 +39,7 @@ export default function QuizButtons({
         <button
           // disabled={!selectedOption}
           onClick={handleSubmit}
-          className="font-quicksand border-radius-4 ml-auto h-10 cursor-pointer rounded-sm border border-black bg-sciquelCardBg px-4 py-1 text-lg font-medium text-black shadow-md transition duration-300 hover:bg-gray-200"
+          className="font-quicksand border-radius-4 ml-auto h-10 cursor-pointer rounded-sm border border-black bg-sciquelCardBg px-4 py-1 text-lg font-medium text-black transition duration-300 hover:bg-gray-200 md:text-base"
         >
           Submit
         </button>
@@ -49,7 +49,7 @@ export default function QuizButtons({
         <button
           onClick={handleNext}
           className="font-quicksand border-radius-4 ml-auto flex h-10
-             cursor-pointer flex-row items-center justify-center gap-4 rounded-sm border border-black bg-sciquelCardBg px-4 py-1 text-lg font-medium text-black shadow-md transition duration-300 hover:bg-gray-200"
+             cursor-pointer flex-row items-center justify-center gap-4 rounded-sm border border-black bg-sciquelCardBg px-4 py-1 text-lg font-medium text-black transition duration-300 hover:bg-gray-200 md:text-base"
         >
           Next
           <Image src={next_arrow} className="h-auto w-2" alt="next arrow" />

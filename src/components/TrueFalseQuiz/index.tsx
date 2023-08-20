@@ -279,7 +279,7 @@ export default function TrueFalseQuiz({
         className="true-false-selection mb-3 flex flex-col items-start gap-3"
         id={isPreQuiz ? "prequiz-tf" : "postquiz-tf"}
       >
-        <div className="true-false-letters mb-[-35px] mt-[-35px] flex h-[-100px] w-full flex-row items-center justify-center gap-6">
+        <div className="true-false-letters mb-[-35px] mt-[-35px] flex h-[-100px] w-full flex-row items-center justify-center gap-6 md:mt-0">
           <div className="blankspace flex aspect-[8/1] basis-[80%] items-center justify-between gap-5"></div>
           <div className="true-letter flex aspect-[1/1] basis-[10%] items-center justify-center text-lg font-bold">
             T
@@ -294,7 +294,7 @@ export default function TrueFalseQuiz({
             key={`tf-option-${index}`}
             className="true-false-container flex h-full w-full flex-row items-center justify-center gap-6"
           >
-            <div className="true-false-statement flex aspect-[8/1] basis-[80%] items-center justify-between gap-5 rounded-md border border-black p-4 text-base font-medium">
+            <div className="true-false-statement 3text-base flex aspect-[8/1] basis-[80%] items-center justify-between gap-5 rounded-md border border-black p-4 font-medium md:p-0">
               <p className="p-5">{option}</p>
             </div>
 

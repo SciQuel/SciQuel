@@ -397,7 +397,7 @@ export default function OneMatchQuiz({
                     //   className={`image-holder mr-3 flex h-full w-[50px] items-center justify-center rounded-bl-[4px] rounded-tl-[4px] bg-[#e6e6fa] px-3 transition duration-300 ease-in-out
                     //   ${hasAnswered ? "!bg-transparent" : ""}
                     // `}
-                    className={`image-holder mr-3 flex h-full w-[75%] max-w-[50px] items-center justify-center rounded-bl-[4px] rounded-tl-[4px] bg-[#e6e6fa] px-3 transition duration-300 ease-in-out                   
+                    className={`image-holder flex h-full w-[35%] max-w-[50px] items-center justify-center rounded-bl-[4px] rounded-tl-[4px] bg-[#e6e6fa] px-2 transition duration-300 ease-in-out                   
                   ${
                     hasAnswered && !answerCorrect[index]
                       ? "select-incorrect !bg-[#d09191]"
@@ -432,7 +432,7 @@ export default function OneMatchQuiz({
                         />
                       ))}
                   </div>
-                  <div className="match-text align-self-center w-full justify-self-center p-1">
+                  <div className="match-text align-self-center w-full justify-self-center overflow-hidden hyphens-auto p-3">
                     {choices[index]}
                   </div>
                 </div>

@@ -165,12 +165,9 @@ export default function Quiz({
   }, [isPreQuiz]);
 
   return (
-    <div
-      className="quiz-body z-999 mx-auto flex w-[720px] max-w-screen-lg flex-col rounded-sm border border-sciquelCardBorder bg-sciquelCardBg"
-      // style={{ width: "720px" }}
-    >
-      <div className="quiz-subheader ml-5 mt-6">
-        <h2 className="font-sourceSerif4 text-base font-normal text-black">
+    <div className="quiz-body z-999 max-w-screen-lg mx-auto flex w-[720px] flex-col rounded-sm border border-sciquelCardBorder bg-sciquelCardBg md:w-full">
+      <div className="quiz-subheader ml-5 mt-6 md:mx-3">
+        <h2 className="w-full font-sourceSerif4 text-base font-normal text-black md:text-center">
           {quizSubheader}
         </h2>
       </div>
@@ -219,10 +216,10 @@ export default function Quiz({
         </div>
       </div>
 
-      <div className="quiz-content flex h-full flex-col items-center px-11 py-3">
-        <div className="question-container relative w-full px-5">
+      <div className="quiz-content flex h-full w-full flex-col items-center px-11 py-3 md:self-center">
+        <div className="question-container relative w-full px-5 md:flex md:flex-col md:p-0">
           <div
-            className="question-number font-sm absolute bottom-[15px] left-[-1.5rem] font-sourceSerif4 text-sm"
+            className="question-number font-sm absolute bottom-[15px] left-[-1.5rem] font-sourceSerif4 text-sm md:relative md:left-[0] md:mb-1.5 md:text-center "
             id={
               isPreQuiz ? "prequiz-question-number" : "postquiz-question-number"
             }
@@ -230,7 +227,7 @@ export default function Quiz({
             {currentQuestion} of {questionList.length}
           </div>
           <h1
-            className="question-heading font-quicksand mb-5 mt-2 text-2xl font-bold"
+            className="question-heading font-quicksand mb-5 mt-2 text-2xl font-bold md:my-5 md:text-center"
             id={
               isPreQuiz
                 ? "prequiz-question-heading"
@@ -241,7 +238,7 @@ export default function Quiz({
           </h1>
         </div>
 
-        <div className="quiz-answers-container w-full px-5 py-4 pb-1.5 pt-2.5">
+        <div className="quiz-answers-container w-full sm:w-[120%] px-5 py-4 pb-1.5 pt-2.5">
           {(() => {
             switch (quizQuestionType) {
               case "Multiple Choice":

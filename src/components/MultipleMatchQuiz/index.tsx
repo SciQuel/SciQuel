@@ -531,13 +531,13 @@ export default function MultipleMatchQuiz({
           {matchStatements.map((statement, statementIndex) => {
             return (
               <div
-                className="quiz-col my-3.5 flex h-full w-full shrink flex-col gap-4"
+                className="quiz-col my-3.5 flex h-full w-full  shrink flex-col gap-4"
                 onDrop={handleColDrop}
                 onClick={handleTap}
                 col-index={statementIndex}
                 key={statementIndex}
               >
-                <div className="multiple-match-statement flex h-full w-full flex-wrap items-center justify-center overflow-hidden hyphens-auto rounded-[4px] border border-black bg-sciquelCardBg p-3 text-[18px]">
+                <div className="multiple-match-statement flex h-full w-full flex-wrap items-center justify-center overflow-hidden hyphens-auto break-words rounded-[4px] border border-black bg-sciquelCardBg p-3 text-[18px]">
                   {statement}
                 </div>
 
