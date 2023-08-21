@@ -151,15 +151,12 @@ export default function MultipleMatchQuiz({
   const handleDragEnd = () => {
     const dragBorder = draggedElement;
     const dragContainer = dragBorder?.firstChild as HTMLElement;
-
     if (dragContainer) {
       dragContainer.style.opacity = "1"; // Restore opacity when dragging ends
     }
-
     if (dragBorder) {
       dragBorder.style.borderColor = "transparent";
     }
-
     setDraggedElement(null);
   };
 

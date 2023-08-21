@@ -29,24 +29,14 @@ export default function OneMatchQuiz({
   onPrevious,
   onNext,
 }: Props) {
-  // Split options into statements and userAnswers
-  // const statements: string[] = [];
-  // const userAnswers: string[] = [];
   const quizContainerId = isPreQuiz ? "prequiz-om" : "postquiz-om";
 
-  // choices.forEach((option) => {
-  //   const [statement, userAnswer] = option.split("; ");
-  //   statements.push(statement.trim());
-  //   userAnswers.push(userAnswer.trim());
-  // });
-
-  const [selectedOptions, setSelectedOptions] = useState<
-    Array<Array<string | null>>
-  >(
-    Array.from({ length: totalQuestions }, () =>
-      Array.from({ length: choices.length }, () => null),
-    ),
+  const initialUserAnswers: string[][] = Array.from(
+    { length: totalQuestions },
+    () => [],
   );
+  const [userAnswersList, setUserAnswersList] = useState(initialUserAnswers);
+
   const [answerCorrectList, setAnswerCorrectList] = useState<
     Array<Array<boolean | null>>
   >(
@@ -54,6 +44,7 @@ export default function OneMatchQuiz({
       Array.from({ length: choices.length }, () => null),
     ),
   );
+
   const [showAnswerExplanation, setShowAnswerExplanation] = useState(false);
   const [hasAnsweredList, setHasAnsweredList] = useState<boolean[]>(
     Array(totalQuestions).fill(false),
@@ -61,30 +52,30 @@ export default function OneMatchQuiz({
   const [draggedElement, setDraggedElement] = useState<HTMLElement | null>(
     null,
   );
-  const [draggedElementText, setDraggedElementText] =
-    useState<HTMLElement | null>(null);
 
   const prevCurrentQuestion = useRef<number>(currentQuestion);
 
-  // const handleDragStart = (e: DragEvent) => {
-  const handleDragStart: React.DragEventHandler<HTMLDivElement> = (e) => {
-    const dragItem = e.target as HTMLElement; // the item being dragged
-    // const dragItemText = e.target?.lastChild as HTMLElement;
-    const dragItemText = (e.target as HTMLElement)?.lastChild as HTMLElement;
-    const dragBorder = dragItem?.parentElement as HTMLElement; // the original box/spot of the dragged item
-
-    // console.log("selectedOptions:", selectedOptions);
-    // console.log("dragItem", dragItem?.innerHTML);
-    // console.log("dragItem.lastChild", dragItemText.lastChild);
-    // console.log("dragItemText.innerText", dragItemText.innerText);
-
-    setDraggedElement(dragItem);
-    setDraggedElementText(dragItemText);
-
-    // e.dataTransfer.setData("text/html", dragItem.innerHTML);
-    if (e.dataTransfer) {
-      e.dataTransfer.setData("text/html", dragItemText.innerText);
+  const getTargetParent = (target: HTMLElement, targetClass: string) => {
+    // Get the nearest targetClass parent
+    const targetParent = target.closest(targetClass) as HTMLElement;
+    if (!targetParent) {
+      return null;
     }
+    return targetParent;
+  };
+
+  /* Called when the user tries to drag a draggable item (answer choice) */
+  const handleDragStart: React.DragEventHandler<HTMLDivElement> = (e) => {
+    const dragTarget = e.target as HTMLElement; // the item being dragged
+    const dragBorder = getTargetParent(dragTarget, ".answer-choice-border");
+    if (!dragBorder) {
+      return;
+    }
+    const dragItem = dragBorder?.querySelector<HTMLElement>(
+      ".one-match-answer-choice-holder",
+    );
+
+    setDraggedElement(dragBorder);
 
     if (dragItem && dragBorder) {
       setTimeout(() => {
@@ -94,80 +85,95 @@ export default function OneMatchQuiz({
     }
   };
 
+  /* Handles the visual changes when the user stops dragging */
   const handleDragEnd = () => {
-    const dragBorder = draggedElement?.parentElement as HTMLElement;
-
-    if (draggedElement) {
-      draggedElement.style.opacity = "1"; // Restore opacity when dragging ends
+    const dragBorder = draggedElement;
+    const dragContainer = dragBorder?.firstChild as HTMLElement;
+    if (dragContainer) {
+      dragContainer.style.opacity = "1"; // Restore opacity when dragging ends
     }
-
     if (dragBorder) {
       dragBorder.style.borderColor = "transparent";
     }
-
     setDraggedElement(null);
   };
 
-  // const handleDrop = (e: DragEvent) => {
+  /* Called when user drops a match option into one of the answer columns */
   const handleDrop: React.DragEventHandler<HTMLDivElement> = (e) => {
-    const switchElement = e.target as HTMLElement;
-    const dragBorder = draggedElement?.parentElement as HTMLElement;
+    const dropTarget = e.target as HTMLElement;
+    const quizRowParent = getTargetParent(dropTarget, ".quiz-row");
 
-    const quizContainer = document.getElementById(quizContainerId);
-    const draggables = quizContainer?.querySelectorAll<HTMLElement>(
-      ".one-match-answer-choice-holder",
-    );
-
-    // Create a copy of the current selectedOptions array
-    const updatedSelectedOptions = [...selectedOptions];
-
-    console.log("switchElement:", switchElement);
-
-    e.stopPropagation();
+    const dropRowIndexString = quizRowParent?.getAttribute("row-index");
+    const draggedElementRowIndexString =
+      draggedElement?.parentElement?.getAttribute("row-index");
 
     if (
-      draggedElement !== switchElement &&
-      switchElement.classList.contains("match-text") &&
-      switchElement.lastChild
+      !quizRowParent ||
+      !dropRowIndexString ||
+      !draggedElementRowIndexString
     ) {
-      // draggedElement.innerHTML = switchElement.innerHTML;
-      if (
-        switchElement.lastChild &&
-        switchElement.lastChild.nodeType === Node.TEXT_NODE &&
-        draggedElementText
-      ) {
-        draggedElementText.innerText = switchElement.lastChild.nodeValue ?? "";
-      }
-
-      // console.log("draggedElement", draggedElement?.innerHTML);
-      // console.log(
-      //   "dataTransfer, draggedElement.innerHTML:",
-      //   e.dataTransfer.getData("text/html"),
-      // );
-
-      // switchElement.innerHTML = e.dataTransfer.getData("text/html");
-      switchElement.lastChild.nodeValue = e.dataTransfer.getData("text/html");
+      console.log("no quiz row found -- invalid drop area");
+      return;
     }
 
-    // update the new answers
-    draggables?.forEach((draggable, index) => {
-      // Update this question's selectedOptions after the swap/drop
-      updatedSelectedOptions[currentQuestion - 1][index] = draggable.innerText;
+    const dropRowIndex = dropRowIndexString
+      ? parseInt(dropRowIndexString, 10)
+      : 0; // index of the row user drops into
+    const draggedElementRowIndex = draggedElementRowIndexString
+      ? parseInt(draggedElementRowIndexString, 10)
+      : 0;
 
-      // Set the state with the updated array
-      setSelectedOptions(updatedSelectedOptions);
-    });
-
-    console.log("selectedOptions:", selectedOptions);
-
-    e.preventDefault();
-
-    // Animate the item swap
-    switchElement.style.opacity = "1";
-    if (draggedElement) {
-      draggedElement.style.opacity = "1";
+    // if the row indices of the drop target and dragged element are different, swap
+    if (draggedElementRowIndex !== dropRowIndex) {
+      handleSwitch(e, quizRowParent);
     }
-    dragBorder.style.borderColor = "transparent";
+  };
+
+  /* Handles the logic behind dropping (or tapping to switch) a match option */
+  const handleSwitch = (
+    e:
+      | React.DragEventHandler<HTMLDivElement>
+      | React.MouseEvent<HTMLDivElement>,
+    quizRowParent: HTMLElement,
+  ) => {
+    console.log("handling a drop/tap");
+
+    const rowIndexString = quizRowParent.getAttribute("row-index");
+    const rowIndex = rowIndexString ? parseInt(rowIndexString, 10) : 0; // index of the row user drops into
+
+    console.log("quizRowParent", quizRowParent);
+    console.log("rowIndex", rowIndex);
+
+    // const updatedUserAnswersList = [...userAnswersList];
+    const currUserAnswers = [...userAnswersList][currentQuestion - 1];
+    const matchText =
+      draggedElement?.querySelector<HTMLElement>(".match-text")?.lastChild
+        ?.textContent;
+
+    if (draggedElement && matchText) {
+      const draggedElementRowIndexString =
+        draggedElement.parentElement?.getAttribute("row-index");
+      const draggedElementRowIndex = draggedElementRowIndexString
+        ? parseInt(draggedElementRowIndexString, 10)
+        : 0;
+
+      const updatedUserAnswersList = userAnswersList.map(
+        (userAnswers, questionIndex) => {
+          if (questionIndex === currentQuestion - 1) {
+            return userAnswers.map((answer, answerIndex) => {
+              if (answerIndex === draggedElementRowIndex) {
+                return currUserAnswers[rowIndex];
+              } else if (answerIndex === rowIndex) {
+                return matchText;
+              }
+              return answer;
+            });
+          }
+          return userAnswers;
+        },
+      );
+      setUserAnswersList(updatedUserAnswersList);
+    }
   };
 
   /* add drop shadow animation when hovering over rows */
@@ -212,25 +218,15 @@ export default function OneMatchQuiz({
       isPreQuiz ? "#prequiz-om" : "#postquiz-om",
     );
 
-    const quizContainer = document.getElementById(quizContainerId);
-    const draggables = quizContainer?.querySelectorAll<HTMLElement>(
-      ".one-match-answer-choice-holder",
-    );
-
-    const updatedSelectedOptions = [...selectedOptions]; // Create a copy of the current selectedOptions array
-
-    // for each statement, update the match statement display based on what user had before
-    draggables?.forEach((draggable, index) => {
-      if (
-        draggable.lastChild &&
-        !updatedSelectedOptions[currentQuestion - 1].every(
-          (value) => value === null,
-        )
-      ) {
-        draggable.lastChild.textContent =
-          updatedSelectedOptions[currentQuestion - 1][index];
-      }
-    });
+    // const updatedUserAnswersList = [...userAnswersList];
+    const userAnswers = userAnswersList[currentQuestion - 1];
+    if (!userAnswers.length) {
+      // Initialize the array if it's not already initialized / if user hasn't touched answers
+      const updatedUserAnswersList = [...userAnswersList];
+      updatedUserAnswersList[currentQuestion - 1] = choices;
+      console.log("updatedUserAnswersList", updatedUserAnswersList);
+      setUserAnswersList(updatedUserAnswersList);
+    }
 
     if (oneMatchQuizSelection) {
       if (currentQuestion !== prevCurrentQuestion.current) {
@@ -255,19 +251,9 @@ export default function OneMatchQuiz({
    * an array, sets current question as answered/submitted, and sets showAnswerExplanation to true
    */
   const handleSubmit = () => {
-    let userAnswers = selectedOptions[currentQuestion - 1];
+    const userAnswers = userAnswersList[currentQuestion - 1];
 
-    // if userAnswers is empty (user did not move options), submit the initial answer order
-    if (userAnswers.every((value) => value === null)) {
-      // const updatedSelectedOptions = [...selectedOptions];
-      const updatedSelectedOptions = selectedOptions;
-
-      userAnswers = choices;
-      updatedSelectedOptions[currentQuestion - 1] = choices;
-      setSelectedOptions(updatedSelectedOptions);
-    }
-
-    // for each T/F statement, check if the selected answer is correct
+    // for each statement, check if the selected answer is correct
     const answerCorrect: boolean[] = userAnswers.map(
       (userAnswer, index) => userAnswer === correctAnswer[index],
     );
@@ -307,6 +293,7 @@ export default function OneMatchQuiz({
     onNext();
   };
 
+  const userAnswers = userAnswersList[currentQuestion - 1];
   const answerCorrect = answerCorrectList[currentQuestion - 1];
   const hasAnswered = hasAnsweredList[currentQuestion - 1];
 
@@ -350,6 +337,7 @@ export default function OneMatchQuiz({
               className="quiz-row my-3.5 flex w-full flex-row"
               onDrop={handleDrop}
               key={index}
+              row-index={index}
             >
               <div
                 className={`one-match-answer-option min-w-100 flex w-[40%] flex-wrap items-center justify-center rounded-[4px] border border-black bg-sciquelCardBg p-3`}
@@ -432,8 +420,11 @@ export default function OneMatchQuiz({
                         />
                       ))}
                   </div>
-                  <div className="match-text align-self-center w-full justify-self-center overflow-hidden hyphens-auto p-3">
-                    {choices[index]}
+                  <div
+                    className="match-text align-self-center w-full justify-self-center overflow-hidden hyphens-auto p-3"
+                    key={`match_${index}`}
+                  >
+                    {userAnswers[index]}
                   </div>
                 </div>
               </div>
@@ -453,6 +444,7 @@ export default function OneMatchQuiz({
                       ? "answer-explanation-tf correct font-quicksand my-1 box-border w-full border-l-8 border-sciquelCorrectBG p-4 pl-8 text-[18px] font-medium leading-6  text-sciquelCorrectText"
                       : "answer-explanation-tf incorrect font-quicksand my-1 box-border w-full border-l-8 border-sciquelIncorrectBG p-4 pl-8 text-[18px] font-medium leading-6 text-sciquelIncorrectText"
                   }
+                  key={index}
                 >
                   {result ? "Correct. " : "Incorrect. "}
                   {answerExplanation[index]}
