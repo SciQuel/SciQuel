@@ -21,8 +21,14 @@ module.exports = {
 
       'sm': {'max': '639px'},
       // => @media (max-width: 639px) { ... }
+
+      'sm-mm': {'max': '510px'},
+      // => @media (max-width: 639px) { ... }
       
       'xsm': {'max': '439px'},
+      // => @media (max-width: 639px) { ... }
+
+      'xsm-mm': {'max': '370px'},
       // => @media (max-width: 639px) { ... }
     },
     extend: {

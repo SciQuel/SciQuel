@@ -5,8 +5,8 @@ import x_mark from "../Quiz/xmark.png";
 
 interface Props {
   isPreQuiz: boolean; // Boolean value that determines if quiz is a pre- or post-quiz
-  choices: string[]; // The available choices for the question.
-  correctAnswer: string[]; // The correct answer for the question.
+  choices: string[]; // The available choices for the question. (the T/F statements)
+  correctAnswer: string[]; // The correct answer for each T/F statement. (containing either "true"/"false")
   answerExplanation: string[]; // List containing the explanation(s) for the question.
   currentQuestion: number; // The question # the user is looking at.
   totalQuestions: number; // The total number of questions.
@@ -24,107 +24,56 @@ export default function TrueFalseQuiz({
   onPrevious,
   onNext,
 }: Props) {
-  const [selectedOptions, setSelectedOptions] = useState<
+  const [selectedOptionsList, setSelectedOptionsList] = useState<
     Array<Array<boolean | null>>
-  >(
-    Array.from({ length: totalQuestions }, () =>
-      Array.from({ length: choices.length }, () => null),
-    ),
-  );
+  >(Array.from({ length: totalQuestions }, () => []));
   const [answerCorrectList, setAnswerCorrectList] = useState<
     Array<Array<boolean | null>>
-  >(
-    Array.from({ length: totalQuestions }, () =>
-      Array.from({ length: choices.length }, () => null),
-    ),
-  );
-
+  >(Array.from({ length: totalQuestions }, () => []));
   const [showAnswerExplanation, setShowAnswerExplanation] = useState(false);
   const [hasAnsweredList, setHasAnsweredList] = useState<boolean[]>(
     Array(totalQuestions).fill(false),
   );
-
   const prevCurrentQuestion = useRef<number>(currentQuestion);
 
   /**
-   * For updating the component when the user clicks the previous/next buttons: Sets
-   * showAnswerExplanation to the appropriate value for the new current question, and sets the class
-   * of the MC selection accordingly
+   * For updating the component when the user clicks the previous/next buttons: Initializes
+   * updatedSelectedOptionsList and updatedAnswerCorrectList if needed, and locks quiz pointer
+   * events if question was previously submitted
    */
   useEffect(() => {
     const trueFalseQuizSelection = document.querySelector(
       isPreQuiz ? "#prequiz-tf" : "#postquiz-tf",
     );
-    const trueFalseContainers = document.querySelectorAll(
-      isPreQuiz
-        ? "#prequiz-tf .true-false-container"
-        : "#postquiz-tf .true-false-container",
-    );
+    const selectedOptions = selectedOptionsList[currentQuestion - 1];
+    const answerCorrect = answerCorrectList[currentQuestion - 1];
 
-    // if the question was previously submitted, update the display showing answers/feedback
+    if (!selectedOptions.length) {
+      // Initialize the array for the current question if it's not already initialized
+      const updatedSelectedOptionsList = [...selectedOptionsList];
+      updatedSelectedOptionsList[currentQuestion - 1] = Array.from(
+        { length: choices.length },
+        () => null,
+      );
+      console.log("updatedSelectedOptionsList", updatedSelectedOptionsList);
+      setSelectedOptionsList(updatedSelectedOptionsList);
+    }
+
+    if (!answerCorrect.length) {
+      // Initialize the array for the current question if it's not already initialized
+      const updatedAnswerCorrectList = [...answerCorrectList];
+      updatedAnswerCorrectList[currentQuestion - 1] = Array.from(
+        { length: choices.length },
+        () => null,
+      );
+      console.log("updatedAnswerCorrectList", updatedAnswerCorrectList);
+      setAnswerCorrectList(updatedAnswerCorrectList);
+    }
+
+    // if the question was previously submitted, lock quiz pointer events
     if (trueFalseQuizSelection) {
       if (currentQuestion !== prevCurrentQuestion.current) {
         const hasAnswered = hasAnsweredList[currentQuestion - 1];
-        const answerCorrect = answerCorrectList[currentQuestion - 1];
-
-        // Selects or deselects a given T/F box
-        const setSelectBoxState = (
-          element: HTMLElement | null, // either a selectBoxTrue or selectBoxFalse
-          selected: boolean, // true when selecting, false when deselecting
-          index: number, // index of given T/F box
-        ) => {
-          if (element) {
-            if (selected) {
-              element.classList.add("selected");
-              if (!hasAnswered) {
-                // user hasn't submitted yet, so leave selected answers as checks
-                element.style.backgroundImage = `url('${checkmark.src}')`;
-              } else {
-                // user has submitted, determine whether the T/F box should display check or x-mark
-                element.style.backgroundImage = answerCorrect[index]
-                  ? `url('${checkmark.src}')`
-                  : `url('${x_mark.src}')`;
-              }
-            } else {
-              element.classList.remove("selected");
-              element.style.backgroundImage = "none";
-            }
-          }
-        };
-
-        // Indices of the T/F statements that have not been answered
-        const unselectedIndices = selectedOptions[currentQuestion - 1]
-          .map((option, index) => {
-            if (option === null) {
-              return index;
-            }
-          })
-          .filter((index): index is number => index !== undefined);
-
-        // Update the classes for each true/false box for the current question (to update the display)
-        trueFalseContainers.forEach((container, index) => {
-          const selectBoxTrue =
-            container.querySelector<HTMLElement>(".select-box-true");
-          const selectBoxFalse =
-            container.querySelector<HTMLElement>(".select-box-false");
-
-          if (unselectedIndices.includes(index)) {
-            // Remove ".selected" classes if T/F box was originally unselected
-            setSelectBoxState(selectBoxFalse, false, index);
-            setSelectBoxState(selectBoxTrue, false, index);
-          } else {
-            // Set ".selected" class to appropriate T/F boxes and update check/x-mark display
-            if (selectedOptions[currentQuestion - 1][index]) {
-              setSelectBoxState(selectBoxFalse, false, index);
-              setSelectBoxState(selectBoxTrue, true, index);
-            } else {
-              setSelectBoxState(selectBoxTrue, false, index);
-              setSelectBoxState(selectBoxFalse, true, index);
-            }
-          }
-        });
-
-        // if the question was previously submitted, update the display showing answers/feedback
         if (hasAnswered && !isPreQuiz) {
           trueFalseQuizSelection.classList.add("pointer-events-none");
           setShowAnswerExplanation(true);
@@ -133,93 +82,50 @@ export default function TrueFalseQuiz({
           setShowAnswerExplanation(false);
         }
       }
-
       prevCurrentQuestion.current = currentQuestion;
     }
   }, [currentQuestion, isPreQuiz, hasAnsweredList]);
 
   /**
-   * Handles the selection of an answer option (called when user clicks a one of the choices):
-   * Updates selectedOptions, the array containing the answers that the user has selected.
+   * Handles the selection of an answer option (called when user clicks one of the boxes): Updates
+   * selectedOptionsList, the array containing the answers that the user has selected.
    *
-   * @param {string} option - The MC option selected by the user.
+   * @param {string} optionIndex - The index of the T/F box selected by the user.
+   * @param {boolean} trueFalseOption - The T/F box selected by the user (true or false).
    */
   const handleOptionSelect = (
     optionIndex: number,
     trueFalseOption: boolean,
   ) => {
-    // console.log("this option # was clicked on:", optionIndex);
-    // console.log("this option was clicked on:", trueFalseOption);
-
-    if (hasAnsweredList[currentQuestion - 1]) {
-      return; // Prevent selecting an answer if the question has already been submitted
-    }
-
-    // the container of the t/f statement that the user has selected an answer choice for
-    const trueFalseContainer = document.querySelectorAll(
-      isPreQuiz
-        ? "#prequiz-tf .true-false-container"
-        : "#postquiz-tf .true-false-container",
-    )[optionIndex] as HTMLElement;
-    const selectBoxTrue = trueFalseContainer.querySelector(
-      ".select-box-true",
-    ) as HTMLElement;
-    const selectBoxFalse = trueFalseContainer.querySelector(
-      ".select-box-false",
-    ) as HTMLElement;
-
-    // // if true was selected, add .selected to select-box-true and remove it from select-box-false, and vice versa
-    if (trueFalseOption) {
-      // add .selected to .select-box-true and remove it from .select-box-false
-      if (selectBoxFalse.classList.contains("selected")) {
-        selectBoxFalse.classList.remove("selected");
-        selectBoxFalse.style.backgroundImage = "none";
-      }
-      selectBoxTrue.classList.add("selected");
-      Object.assign(selectBoxTrue.style, {
-        backgroundImage: `url('${checkmark.src}')`,
-        backgroundSize: "65%",
-        backgroundRepeat: "no-repeat",
-        backgroundPosition: "center",
-      });
-    } else {
-      // add .selected to .select-box-true and remove it from .select-box-false
-      if (selectBoxTrue.classList.contains("selected")) {
-        selectBoxTrue.classList.remove("selected");
-        selectBoxTrue.style.backgroundImage = "none";
-      }
-      selectBoxFalse.classList.add("selected");
-      Object.assign(selectBoxFalse.style, {
-        backgroundImage: `url('${checkmark.src}')`,
-        backgroundSize: "65%",
-        backgroundRepeat: "no-repeat",
-        backgroundPosition: "center",
-      });
-    }
-
-    setSelectedOptions((prevState) => {
-      const newSelectedOptions = prevState.map((options, questionIndex) => {
+    const updatedSelectedOptionsList = selectedOptionsList.map(
+      (selectedOptions, questionIndex) => {
         if (questionIndex === currentQuestion - 1) {
-          return options.map((option, index) => {
+          return selectedOptions.map((option, index) => {
+            // update T/F selection at optionIndex
             if (index === optionIndex) {
-              return trueFalseOption;
+              if (option === trueFalseOption) {
+                return null; // deselect the T/F option (was selected before)
+              } else {
+                return trueFalseOption; // select T/F (was unselected before)
+              }
             }
-            return option;
+            return option; // leave the others as they were
           });
         }
-        return options;
-      });
-      return newSelectedOptions;
-    });
+        return selectedOptions;
+      },
+    );
+    console.log("updatedSelectedOptionsList", updatedSelectedOptionsList);
+    setSelectedOptionsList(updatedSelectedOptionsList);
   };
 
   /**
-   * Handles the submission of a MC question (called when user clicks "Submit" button): Checks the
+   * Handles the submission of a T/F question (called when user clicks "Submit" button): Checks the
    * user's selected answers for the current question against the solution, stores the result into
    * an array, sets current question as answered/submitted, and sets showAnswerExplanation to true
    */
   const handleSubmit = () => {
-    const userAnswers = selectedOptions[currentQuestion - 1];
+    const userAnswers = selectedOptionsList[currentQuestion - 1];
 
     // make sure that user has answered each box, otherwise do nothing
     if (userAnswers.every((answer) => answer !== null)) {
@@ -250,19 +156,19 @@ export default function TrueFalseQuiz({
     }
   };
 
-  /** Handles the previous button of a MC question (called when user clicks "Previous" button). */
+  /** Handles the previous button of a T/F question (called when user clicks "Previous" button). */
   const handlePrevious = () => {
     // call quiz's handle previous function to go back a question
     onPrevious();
   };
 
-  /** Handles the next button of a MC question (called when user clicks "Next" button). */
+  /** Handles the next button of a T/F question (called when user clicks "Next" button). */
   const handleNext = () => {
     // call quiz's handle previous function to go forward a question
     onNext();
   };
 
-  const selectedOption = selectedOptions[currentQuestion - 1];
+  const selectedOption = selectedOptionsList[currentQuestion - 1];
   const answerCorrect = answerCorrectList[currentQuestion - 1];
   const hasAnswered = hasAnsweredList[currentQuestion - 1];
 
@@ -291,7 +197,8 @@ export default function TrueFalseQuiz({
 
         {choices.map((option: string, index: number) => (
           <div
-            key={`tf-option-${index}`}
+            key={index}
+            option-index={index}
             className="true-false-container flex h-full w-full flex-row items-center justify-center gap-6"
           >
             <div className="true-false-statement 3text-base flex aspect-[8/1] basis-[80%] items-center justify-between gap-5 rounded-md border border-black p-4 font-medium md:p-0">
@@ -300,7 +207,7 @@ export default function TrueFalseQuiz({
 
             <div
               id={isPreQuiz ? "prequiz-box" : "postquiz-box"}
-              className={`select-box-true flex aspect-[1/1] basis-[10%] cursor-pointer items-center justify-between rounded-md bg-gray-200 bg-contain bg-[65%] bg-no-repeat transition duration-300 hover:bg-gray-300
+              className={`select-box-true flex aspect-[1/1] basis-[10%] cursor-pointer items-center justify-between rounded-md bg-gray-200 bg-[length:65%] bg-center bg-no-repeat transition duration-300 hover:bg-gray-300
               ${
                 hasAnswered && answerCorrect?.[index] && selectedOption[index]
                   ? "select-correct-tf bg-sciquelCorrectBG"
@@ -318,6 +225,8 @@ export default function TrueFalseQuiz({
                       ? `url('${checkmark.src}')`
                       : `url('${x_mark.src}')`
                     : "none"
+                  : selectedOption[index]
+                  ? `url('${checkmark.src}')`
                   : "none",
               }}
               onClick={() => handleOptionSelect(index, true)}
@@ -325,7 +234,7 @@ export default function TrueFalseQuiz({
 
             <div
               id={isPreQuiz ? "prequiz-box" : "postquiz-box"}
-              className={`select-box-false flex aspect-[1/1] basis-[10%] cursor-pointer items-center justify-between rounded-md bg-gray-200 bg-contain bg-[65%] bg-no-repeat transition duration-300 hover:bg-gray-300 ${
+              className={`select-box-false flex aspect-[1/1] basis-[10%] cursor-pointer items-center justify-between rounded-md bg-gray-200 bg-[length:65%] bg-center bg-no-repeat transition duration-300 hover:bg-gray-300 ${
                 hasAnswered && answerCorrect?.[index] && !selectedOption[index]
                   ? "select-correct-tf bg-sciquelCorrectBG"
                   : ""
@@ -342,6 +251,8 @@ export default function TrueFalseQuiz({
                       ? `url('${checkmark.src}')`
                       : `url('${x_mark.src}')`
                     : "none"
+                  : selectedOption[index] === false
+                  ? `url('${checkmark.src}')`
                   : "none",
               }}
               onClick={() => handleOptionSelect(index, false)}
@@ -356,10 +267,11 @@ export default function TrueFalseQuiz({
             {(answerCorrect as boolean[]).map(
               (result: boolean, index: number) => (
                 <li
+                  key={index}
                   className={
                     result
-                      ? "answer-explanation-tf correct font-quicksand my-1 box-border w-full border-l-8 border-sciquelCorrectBG p-4 pl-8 text-[18px] font-medium leading-6  text-sciquelCorrectText"
-                      : "answer-explanation-tf incorrect font-quicksand my-1 box-border w-full border-l-8 border-sciquelIncorrectBG p-4 pl-8 text-[18px] font-medium leading-6 text-sciquelIncorrectText"
+                      ? "answer-explanation-tf correct font-quicksand my-1 box-border w-full border-l-8 border-sciquelCorrectBG p-4 pl-8 text-[18px] sm:text-[16px] font-medium leading-6  text-sciquelCorrectText"
+                      : "answer-explanation-tf incorrect font-quicksand my-1 box-border w-full border-l-8 border-sciquelIncorrectBG p-4 pl-8 text-[18px] sm:text-[16px] font-medium leading-6 text-sciquelIncorrectText"
                   }
                 >
                   {result ? "Correct. " : "Incorrect. "}

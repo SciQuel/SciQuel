@@ -227,7 +227,7 @@ export default function Quiz({
             {currentQuestion} of {questionList.length}
           </div>
           <h1
-            className="question-heading font-quicksand mb-5 mt-2 text-2xl font-bold md:my-5 md:text-center"
+            className="question-heading font-quicksand mb-5 mt-2 text-2xl font-bold md:my-5 md:text-center sm:text-[22px] "
             id={
               isPreQuiz
                 ? "prequiz-question-heading"
@@ -238,7 +238,7 @@ export default function Quiz({
           </h1>
         </div>
 
-        <div className="quiz-answers-container w-full px-5 py-4 pb-1.5 pt-2.5 sm:w-[110%] xsm:w-[130%]">
+        <div className="quiz-answers-container w-full px-5 py-4 pb-1.5 pt-2.5 sm:w-[110%] xsm:w-[125%]">
           {(() => {
             switch (quizQuestionType) {
               case "Multiple Choice":

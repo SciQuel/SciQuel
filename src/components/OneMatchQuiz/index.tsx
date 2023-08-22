@@ -30,6 +30,7 @@ export default function OneMatchQuiz({
   onNext,
 }: Props) {
   const quizContainerId = isPreQuiz ? "prequiz-om" : "postquiz-om";
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
 
   const initialUserAnswers: string[][] = Array.from(
     { length: totalQuestions },
@@ -129,6 +130,37 @@ export default function OneMatchQuiz({
     }
   };
 
+  /* Called when match option is tapped (for mobile only, in place of drag/drop) */
+  const handleTap = (e: React.MouseEvent<HTMLDivElement>) => {
+    // const isTouchDevice = "ontouchstart" in window;
+    // if (!isTouchDevice && !window.matchMedia("(max-width: 768px)").matches) {
+    if (!isTouchDevice) {
+      return; //  if not a mobile/touch device, do nothing
+    }
+    const tapTarget = e.target as HTMLElement;
+    const dragBorder = getTargetParent(tapTarget, ".answer-choice-border");
+
+    // if we are not already in process of selecting/moving match statements
+    if (!draggedElement) {
+      console.log("we are selecting");
+
+      if (!dragBorder) {
+        console.log("dragBorder doesn't exist");
+        return;
+      }
+      setDraggedElement(dragBorder);
+    } else {
+      // draggedElement has been set, so we are dropping (not selecting)
+      console.log("we are dropping");
+
+      const quizRowParent = getTargetParent(tapTarget, ".quiz-row");
+      if (quizRowParent) {
+        handleSwitch(e, quizRowParent);
+      }
+      setDraggedElement(null);
+    }
+  };
+
   /* Handles the logic behind dropping (or tapping to switch) a match option */
   const handleSwitch = (
     e:
@@ -178,6 +210,7 @@ export default function OneMatchQuiz({
 
   /* add drop shadow animation when hovering over rows */
   useEffect(() => {
+    setIsTouchDevice("ontouchstart" in window);
     const containers = document.querySelectorAll<HTMLElement>(".quiz-row");
 
     containers.forEach((container) => {
@@ -367,6 +400,15 @@ export default function OneMatchQuiz({
                   // className="one-match-answer-choice-holder min-w-100 box-border flex h-full w-full cursor-move items-center break-words rounded-[4px] border border-black bg-sciquelCardBg pr-3 text-center text-[18px] transition-all "
                   className={`one-match-answer-choice-holder min-w-100 box-border flex h-full w-full cursor-move items-center break-words rounded-[4px] border border-black bg-sciquelCardBg pr-3 text-center text-[18px] transition transition-all duration-300 ease-in-out 
                   ${
+                    isTouchDevice &&
+                    !hasAnswered &&
+                    userAnswers[index] ===
+                      draggedElement?.querySelector<HTMLElement>(".match-text")
+                        ?.lastChild?.textContent
+                      ? "selected !bg-gray-200"
+                      : ""
+                  }  
+                  ${
                     hasAnswered && !answerCorrect[index]
                       ? "select-incorrect !bg-sciquelIncorrectBG"
                       : ""
@@ -378,6 +420,7 @@ export default function OneMatchQuiz({
                   }`}
                   draggable="true"
                   onDragStart={handleDragStart}
+                  onClick={handleTap}
                   onDragEnd={handleDragEnd}
                 >
                   {/* <div className="image-holder mr-3 flex h-full w-[50px] items-center justify-center rounded-bl-[4px] rounded-tl-[4px] bg-[#e6e6fa] px-3"> */}
@@ -386,11 +429,21 @@ export default function OneMatchQuiz({
                     //   ${hasAnswered ? "!bg-transparent" : ""}
                     // `}
                     className={`image-holder flex h-full w-[35%] max-w-[50px] items-center justify-center rounded-bl-[4px] rounded-tl-[4px] bg-[#e6e6fa] px-2 transition duration-300 ease-in-out                   
-                  ${
-                    hasAnswered && !answerCorrect[index]
-                      ? "select-incorrect !bg-[#d09191]"
-                      : ""
-                  }  
+                    ${
+                      isTouchDevice &&
+                      !hasAnswered &&
+                      userAnswers[index] ===
+                        draggedElement?.querySelector<HTMLElement>(
+                          ".match-text",
+                        )?.lastChild?.textContent
+                        ? "selected !bg-[#c2bed0]"
+                        : ""
+                    }
+                    ${
+                      hasAnswered && !answerCorrect[index]
+                        ? "select-incorrect !bg-[#d09191]"
+                        : ""
+                    }  
                   ${
                     hasAnswered && answerCorrect[index]
                       ? "select-correct !bg-[#9dbda1]"

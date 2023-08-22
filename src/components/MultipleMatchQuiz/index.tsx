@@ -176,7 +176,7 @@ export default function MultipleMatchQuiz({
     e.preventDefault();
   };
 
-  /* Handles the logic behind dropping an answer into a column */
+  /* Handles the logic behind dropping/tapping an answer into a column */
   const handleColDropOrTap = (
     e:
       | React.DragEventHandler<HTMLDivElement>
@@ -258,7 +258,7 @@ export default function MultipleMatchQuiz({
     }
   };
 
-  /* Handles the logic behind dropping an answer into the answer choice area */
+  /* Handles the logic behind dropping/tapping an answer into the answer choice area */
   const handleAnswerChoiceAreaDropOrTap = (
     e:
       | React.DragEventHandler<HTMLDivElement>
@@ -524,17 +524,17 @@ export default function MultipleMatchQuiz({
         className="multiple-match-selection mb-[20px] flex flex-col items-start"
         id={isPreQuiz ? "prequiz-mm" : "postquiz-mm"}
       >
-        <div className="multiple-match-drop-area flex w-full flex-row items-start gap-3 pb-3">
+        <div className="multiple-match-drop-area flex-wrap flex w-full flex-row items-start justify-center gap-3 pb-3">
           {matchStatements.map((statement, statementIndex) => {
             return (
               <div
-                className="quiz-col my-3.5 flex h-full w-full  shrink flex-col gap-4"
+                className="quiz-col my-3.5 basis-[30%] flex h-full h-full w-full shrink flex-col gap-4 sm-mm:w-[120px] xsm:w-[110px] xsm-mm:w-[100px]"
                 onDrop={handleColDrop}
                 onClick={handleTap}
                 col-index={statementIndex}
                 key={statementIndex}
               >
-                <div className="multiple-match-statement flex h-full w-full flex-wrap items-center justify-center overflow-hidden hyphens-auto break-words rounded-[4px] border border-black bg-sciquelCardBg p-3 text-[18px]">
+                <div className="multiple-match-statement flex h-full w-full flex-wrap items-center justify-center hyphens-auto break-words rounded-[4px] border border-black bg-sciquelCardBg p-3 text-center text-[18px] xsm:inline-block xsm-mm:text-[16px]">
                   {statement}
                 </div>
 
@@ -625,7 +625,7 @@ export default function MultipleMatchQuiz({
                                 ))}
                             </div>
 
-                            <div className="match-text align-self-center flex w-[30%] w-full items-center justify-end justify-self-end justify-self-center hyphens-auto p-3">
+                            <div className="match-text align-self-center flex w-[72%] max-w-full items-center justify-end justify-self-end hyphens-auto break-words p-3 text-center !inline-block md:inline-block sm-mm:w-[65%] xsm-mm:w-[73%] xsm-mm:text-[16px]">
                               {userAnswer}
                             </div>
                           </div>
@@ -744,7 +744,7 @@ export default function MultipleMatchQuiz({
                         />
                       ))}
                   </div>
-                  <div className="match-text align-self-center w-full justify-self-center overflow-hidden hyphens-auto p-3">
+                  <div className="match-text align-self-center w-full justify-self-center overflow-hidden hyphens-auto break-words p-3 xsm-mm:text-[16px]">
                     {choice}
                   </div>
                 </div>
@@ -762,8 +762,8 @@ export default function MultipleMatchQuiz({
                 <li
                   className={
                     statementCorrect(statement)
-                      ? "answer-explanation-tf correct font-quicksand my-1 box-border w-full border-l-8 border-sciquelCorrectBG p-4 pl-8 text-[18px] font-medium leading-6  text-sciquelCorrectText"
-                      : "answer-explanation-tf incorrect font-quicksand my-1 box-border w-full border-l-8 border-sciquelIncorrectBG p-4 pl-8 text-[18px] font-medium leading-6 text-sciquelIncorrectText"
+                      ? "answer-explanation-tf correct font-quicksand my-1 box-border w-full border-l-8 border-sciquelCorrectBG p-4 pl-8 text-[18px] xsm-mm:text-[16px] font-medium leading-6  text-sciquelCorrectText"
+                      : "answer-explanation-tf incorrect font-quicksand my-1 box-border w-full border-l-8 border-sciquelIncorrectBG p-4 pl-8 text-[18px] xsm-mm:text-[16px] font-medium leading-6 text-sciquelIncorrectText"
                   }
                 >
                   {statementCorrect(statement) ? "Correct. " : "Incorrect. "}
