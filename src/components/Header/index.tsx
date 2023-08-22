@@ -98,7 +98,7 @@ export default function Header() {
     };
   }, [handleNavigation]);
   return (
-    <div className="sticky top-0 z-10 flex flex-col bg-sciquelTeal text-white">
+    <div className="sticky top-0 z-20 flex flex-col bg-sciquelTeal text-white">
       <div className="absolute top-0 flex w-full justify-center px-10 py-4 text-xl font-thin leading-[2rem]">
         <Image src={logo} className="h-[2rem] w-auto" alt="SciQuel" />
         <p>SCIQUEL</p>
@@ -108,7 +108,10 @@ export default function Header() {
           <SideBar />
           <div className="top-0 flex">
             <SearchIcon className="h-[2rem] w-auto" />
-            <input className="w-auto border border-x-transparent border-y-transparent bg-transparent outline-none focus:border-b-white" />
+            <input
+              title="search"
+              className="w-auto border border-x-transparent border-y-transparent bg-transparent outline-none focus:border-b-white"
+            />
           </div>
           <div className="h-[2rem] grow" />
           <ProfileButton />

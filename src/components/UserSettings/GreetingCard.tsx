@@ -1,12 +1,28 @@
-import Avatar from "@/components/Avatar";
-import TopicTag from "@/components/TopicTag";
-import { StoryTopic } from "@prisma/client";
-import ArticleImage from "/public/user-settings/top_background_img.png";
-import { useSession } from "next-auth/react";
-import Image from "next/image";
-import AvatarEditorButton from "../Avatar/AvatarEditorButton";
+"use client";
 
-export default function GreetingCard(props: { name: string }) {
+import { type ReadingHistory } from "@/app/user-settings/actions/getReadingHistory";
+import TopicTag from "@/components/TopicTag";
+import { StoryTopic, type User } from "@prisma/client";
+import { useSession } from "next-auth/react";
+import Avatar from "../Avatar";
+import AvatarEditorButton from "../Avatar/AvatarEditorButton";
+import Carousel from "./Carousel";
+
+export type Reading = {
+  storyContributions: {
+    user: User;
+  }[];
+  title: string;
+  thumbnailUrl: string;
+};
+
+export default function GreetingCard({
+  user,
+  readingHistory,
+}: {
+  user: User;
+  readingHistory: ReadingHistory[];
+}) {
   const session = useSession();
   const getGreeting = () => {
     const currHr = new Date().getHours();
@@ -14,6 +30,8 @@ export default function GreetingCard(props: { name: string }) {
     else if (currHr < 18) return "Good afternoon";
     else return "Good Evening";
   };
+
+  const stories: Reading[] = readingHistory.map((item) => item.story);
 
   return (
     <section className="flex min-h-[320px] flex-wrap overflow-hidden rounded-md border bg-white">
@@ -23,14 +41,14 @@ export default function GreetingCard(props: { name: string }) {
             <AvatarEditorButton />
             <Avatar
               imageUrl={session.data?.user.image ?? undefined}
-              label={props.name.trim()[0]}
+              label={user.firstName[0]}
               size="2xl"
             />
           </div>
         </div>
         <div className="mt-2 sm:ml-6">
           <p className="line-clamp-2 text-2xl font-semibold sm:text-3xl">
-            {getGreeting()}, {props.name}
+            {getGreeting()}, {user.firstName}
           </p>
           <div className="mt-3 flex max-h-[24px] flex-wrap justify-start gap-2 text-xs">
             <TopicTag name={StoryTopic.MATHEMATICS} />
@@ -39,75 +57,16 @@ export default function GreetingCard(props: { name: string }) {
           </div>
         </div>
         <p className="absolute bottom-4 left-6 font-thin">
-          A member since September of 2022
+          A member since{" "}
+          {user.joinedAt.toLocaleDateString("en-us", {
+            year: "numeric",
+            month: "short",
+          })}
         </p>
       </div>
 
       <div className="flex h-[320px] basis-full flex-col lg:basis-5/12">
-        <div className="relative grow object-cover">
-          <Image src={ArticleImage} alt="article image" fill />
-          <div className="absolute bottom-4 left-4 flex items-center gap-2 rounded-2xl bg-[#A3C9A8] p-2 px-4 backdrop-blur-md hover:scale-105 hover:bg-white">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="h-5 w-5 text-[#69A297]"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"
-              />
-            </svg>
-            Read
-          </div>
-        </div>
-        <div className="flex justify-between bg-white px-6 py-4">
-          <div className="h-fit basis-5/6">
-            <p className="line-clamp-1 text-xl font-semibold">
-              Milankovitch cycles: what are akdsfjielj adf adfdai
-            </p>
-            <p>
-              by <span className="text-[#69A297]">Harriet Patel_2</span>
-            </p>
-          </div>
-          <div className="flex basis-1/6 items-center justify-center gap-2">
-            <button className="h-8 rounded-lg bg-gray-100 px-2 hover:scale-105 hover:bg-gray-200">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="h-6 w-6"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M15.75 19.5L8.25 12l7.5-7.5"
-                />
-              </svg>
-            </button>
-            <button className="h-8 rounded-lg bg-gray-100 px-2 hover:scale-105 hover:bg-gray-200">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="h-6 w-6"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M8.25 4.5l7.5 7.5-7.5 7.5"
-                />
-              </svg>
-            </button>
-          </div>
-        </div>
+        <Carousel stories={stories} autoSlide={true} />
       </div>
     </section>
   );
