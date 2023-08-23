@@ -17,5 +17,5 @@ export default async function Layout({ children }: { children: ReactNode }) {
     return redirect("/");
   }
 
-  return <div className="min-h-screen bg-[#F8F8FF]">{children}</div>;
+  return <>{children}</>;
 }

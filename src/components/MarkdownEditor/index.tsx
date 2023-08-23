@@ -21,8 +21,12 @@ const Editor = dynamic(
 
 const inter = Inter({ subsets: ["latin"] });
 
-export default function MarkdownEditor() {
-  const [value, setValue] = useState("");
+interface Props {
+  initialValue?: string;
+}
+
+export default function MarkdownEditor({ initialValue }: Props) {
+  const [value, setValue] = useState(initialValue ?? "");
   const [renderedContent, setRenderedContent] = useState<ReactNode>(null);
   const [editor, setEditor] = useState<editor.IStandaloneCodeEditor | null>(
     null,
