@@ -81,7 +81,7 @@ export default function ShareLinks() {
 
       <div
         className={`${
-          showOptions ? "  opacity-1" : "opacity-0 sm:-translate-y-2"
+          showOptions ? "opacity-1" : "opacity-0 sm:-translate-y-2"
         }  fixed bottom-0  left-0 h-screen w-screen items-end overflow-hidden bg-neutral-800/75 transition-all sm:absolute   sm:top-0 sm:-ml-2 sm:mt-20 sm:h-fit sm:w-fit sm:items-start sm:justify-center sm:bg-transparent xl:static xl:mt-3`}
       >
         <div

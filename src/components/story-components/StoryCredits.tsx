@@ -114,9 +114,12 @@ export default function StoryCredits({ story }: Props) {
 
           <div className="flex flex-row">
             <p className="mr-2">
+              {story.category.slice(0, 1) +
+                story.category.slice(1).toLowerCase()}{" "}
+              |{" "}
               {story.storyType.slice(0, 1) +
-                story.storyType.slice(1).toLowerCase()}
-              | we need to add article type |
+                story.storyType.slice(1).toLowerCase()}{" "}
+              |
             </p>
             {story.tags.map((item: StoryTopic, index: number) => {
               return <TopicTag name={item} key={`${item}-${index}`} />;
@@ -125,7 +128,10 @@ export default function StoryCredits({ story }: Props) {
           <div>
             {story.storyContributions.map((element, index) => {
               return (
-                <div className="flex flex-row items-center">
+                <div
+                  className="my-1 flex flex-row items-center"
+                  key={`${element.contributionType}-${element.user.id}`}
+                >
                   <Avatar
                     imageUrl={element.user.avatarUrl ?? undefined}
                     label={element.user.firstName[0]}
