@@ -120,7 +120,11 @@ export default function MarkdownEditor({ initialValue, id }: Props) {
   return (
     <div className="flex h-full grow flex-row">
       <div className={clsx("flex w-1/2 flex-col border-r", inter.className)}>
-        <Toolbar editor={editor} onSubmit={handleEditorSubmit} />
+        <Toolbar
+          editor={editor}
+          onSubmit={handleEditorSubmit}
+          loading={loading}
+        />
         <div className="grow">
           <Editor
             language="markdown"
@@ -132,6 +136,7 @@ export default function MarkdownEditor({ initialValue, id }: Props) {
             }}
             options={{
               wordWrap: "on",
+              readOnly: loading,
               padding: { top: 10 },
               minimap: { enabled: false },
               lineNumbers: "off",

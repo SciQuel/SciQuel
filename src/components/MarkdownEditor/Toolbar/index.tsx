@@ -16,14 +16,15 @@ import ToolbarRule from "./ToolbarRule";
 interface Props {
   editor: editor.IStandaloneCodeEditor | null;
   onSubmit?: () => void;
+  loading: boolean;
 }
 
-export default function Toolbar({ editor, onSubmit }: Props) {
+export default function Toolbar({ editor, onSubmit, loading }: Props) {
   return (
     <div className="flex flex-row border-b bg-gray-100">
       <div className="flex grow flex-row gap-1 p-2">
         <ToolbarDropdown
-          disabled={editor === null}
+          disabled={editor === null || loading}
           dropdownItems={new Array(6).fill(null, 0, 6).map((_value, index) => ({
             label: `Heading ${index + 1}`,
             onClick: () => {
@@ -37,7 +38,7 @@ export default function Toolbar({ editor, onSubmit }: Props) {
         </ToolbarDropdown>
         <ToolbarRule />
         <ToolbarButton
-          disabled={editor === null}
+          disabled={editor === null || loading}
           tooltip="Bold (Ctrl/⌘+B)"
           onClick={() => {
             if (editor) {
@@ -48,7 +49,7 @@ export default function Toolbar({ editor, onSubmit }: Props) {
           <span className="font-bold">B</span>
         </ToolbarButton>
         <ToolbarButton
-          disabled={editor === null}
+          disabled={editor === null || loading}
           tooltip="Italic (Ctrl/⌘+I)"
           onClick={() => {
             if (editor) {
@@ -59,7 +60,7 @@ export default function Toolbar({ editor, onSubmit }: Props) {
           <span className="mr-[0.1rem] font-sourceSerif4 italic">I</span>
         </ToolbarButton>
         <ToolbarButton
-          disabled={editor === null}
+          disabled={editor === null || loading}
           tooltip="Quote (Ctrl/⌘+Shift+9)"
           onClick={() => {
             if (editor) {
@@ -74,7 +75,7 @@ export default function Toolbar({ editor, onSubmit }: Props) {
           </div>
         </ToolbarButton>
         <ToolbarButton
-          disabled={editor === null}
+          disabled={editor === null || loading}
           tooltip="Insert Link (Ctrl/⌘+K)"
           onClick={() => {
             if (editor) {
@@ -87,7 +88,7 @@ export default function Toolbar({ editor, onSubmit }: Props) {
           </div>
         </ToolbarButton>
         <ToolbarButton
-          disabled={editor === null}
+          disabled={editor === null || loading}
           tooltip="Insert Image (Ctrl/⌘+Shift+I)"
           onClick={() => {
             if (editor) {
@@ -103,6 +104,7 @@ export default function Toolbar({ editor, onSubmit }: Props) {
       <div className="flex h-full items-center px-2">
         <button
           onClick={onSubmit}
+          disabled={editor === null || loading}
           className="select-none rounded-md bg-teal-600 px-2 py-1 text-sm font-semibold text-white disabled:pointer-events-none disabled:opacity-50"
         >
           Submit
