@@ -24,16 +24,17 @@ export default function TrueFalseQuiz({
   onPrevious,
   onNext,
 }: Props) {
+  /* component state variables */
   const [selectedOptionsList, setSelectedOptionsList] = useState<
     Array<Array<boolean | null>>
-  >(Array.from({ length: totalQuestions }, () => []));
+  >(Array.from({ length: totalQuestions }, () => [])); // an array of boolean arrays to store the user's selected T/F choices (for ea/ T/F statement, for ea/ question)
   const [answerCorrectList, setAnswerCorrectList] = useState<
     Array<Array<boolean | null>>
-  >(Array.from({ length: totalQuestions }, () => []));
-  const [showAnswerExplanation, setShowAnswerExplanation] = useState(false);
+  >(Array.from({ length: totalQuestions }, () => [])); // an array of boolean arrays to store answer results (for ea/ T/F statement, for ea/ question)
+  const [showAnswerExplanation, setShowAnswerExplanation] = useState(false); // determines if explanations should be shown
   const [hasAnsweredList, setHasAnsweredList] = useState<boolean[]>(
     Array(totalQuestions).fill(false),
-  );
+  ); // an array of booleans to store whether user has submitted (for each question)
   const prevCurrentQuestion = useRef<number>(currentQuestion);
 
   /**
@@ -168,9 +169,9 @@ export default function TrueFalseQuiz({
     onNext();
   };
 
-  const selectedOption = selectedOptionsList[currentQuestion - 1];
-  const answerCorrect = answerCorrectList[currentQuestion - 1];
-  const hasAnswered = hasAnsweredList[currentQuestion - 1];
+  const selectedOption = selectedOptionsList[currentQuestion - 1]; // current question's selected T/F options (bool array. null where not selected)
+  const answerCorrect = answerCorrectList[currentQuestion - 1]; // current question's results for ea/ statement (bool array. null if not submitted)
+  const hasAnswered = hasAnsweredList[currentQuestion - 1]; // if current question has been submitted or not
 
   // boolean values to determine which buttons to show, based on whether quiz is prequiz or not
   const showPreviousButton = currentQuestion > 1;

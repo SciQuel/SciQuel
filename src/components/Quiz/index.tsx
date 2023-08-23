@@ -5,19 +5,18 @@ import {
 } from "@/lib/Question";
 import { type StoryTopic } from "@prisma/client";
 import React, { useEffect, useState } from "react";
-// import { type Question } from "../../pages/quiz_mc";
 import MultipleChoiceQuiz from "../MulitpleChoiceQuiz";
 import MultipleMatchQuiz from "../MultipleMatchQuiz";
 import OneMatchQuiz from "../OneMatchQuiz";
 import TrueFalseQuiz from "../TrueFalseQuiz";
 
 interface Props {
-  isPreQuiz: boolean;
-  topic: StoryTopic;
-  quizObjective: string;
-  quizQuestionType: string;
+  isPreQuiz: boolean; // true/false value to determine if quiz component is prequiz/postquiz
+  topic: StoryTopic; // topic of the story article this quiz is part of
+  quizObjective: string; // objective that displays at the top of the quiz (above progress bar)
+  quizQuestionType: string; // determines type of quiz: "Multiple Choice", "True/False", "One Match", or "Multiple Match"
   questionList: Question[] | OneMatchQuestion[] | MultipleMatchQuestion[];
-}
+} // list of questions for this quiz
 
 export default function Quiz({
   isPreQuiz,
@@ -26,8 +25,7 @@ export default function Quiz({
   quizQuestionType,
   questionList,
 }: Props) {
-  const quizSubheader = quizObjective;
-
+  const [currentQuestion, setCurrentQuestion] = useState<number>(1);
   const themeColors: Record<StoryTopic, string> = {
     ASTRONOMY: "#A44A3F",
     BIOLOGY: "#D15B2B",
@@ -66,8 +64,6 @@ export default function Quiz({
       return themeColor;
     }
   };
-
-  const [currentQuestion, setCurrentQuestion] = useState<number>(1);
 
   /** Updates the current question after the next button is pressed. */
   const handleNext: () => void = () => {
@@ -167,9 +163,9 @@ export default function Quiz({
   return (
     <div className="quiz-body z-999 max-w-screen-lg mx-auto flex w-[720px] flex-col rounded-sm border border-sciquelCardBorder bg-sciquelCardBg md:w-full">
       <div className="quiz-subheader ml-5 mt-6 md:mx-3">
-        <h2 className="w-full font-sourceSerif4 text-base font-normal text-black md:text-center">
-          {quizSubheader}
-        </h2>
+        <h3 className="w-full font-sourceSerif4 text-base font-normal text-black md:text-center">
+          {quizObjective}
+        </h3>
       </div>
 
       <div
@@ -226,7 +222,7 @@ export default function Quiz({
           >
             {currentQuestion} of {questionList.length}
           </div>
-          <h1
+          <h2
             className="question-heading font-quicksand mb-5 mt-2 text-2xl font-bold md:my-5 md:text-center sm:text-[22px] "
             id={
               isPreQuiz
@@ -235,7 +231,7 @@ export default function Quiz({
             }
           >
             {questionList[currentQuestion - 1].questionText}
-          </h1>
+          </h2>
         </div>
 
         <div className="quiz-answers-container w-full px-5 py-4 pb-1.5 pt-2.5 sm:w-[110%] xsm:w-[125%]">
@@ -313,46 +309,10 @@ export default function Quiz({
                     onPrevious={handlePrevious}
                     onNext={handleNext}
                   />
-                  // <MultipleMatchQuiz
-                  //   isPreQuiz={isPreQuiz}
-                  //   themeColor={getThemeColor(false)}
-                  //   statements={questionList[currentQuestion - 1].statements}
-                  //   matchOptions={
-                  //     questionList[currentQuestion - 1].matchOptions
-                  //   }
-                  //   correctAnswer={
-                  //     questionList[currentQuestion - 1].correctAnswer
-                  //   }
-                  //   answerExplanation={
-                  //     questionList[currentQuestion - 1].answerExplanation
-                  //   }
-                  //   currentQuestion={currentQuestion}
-                  //   totalQuestions={questionList.length}
-                  //   onPrevious={handlePrevious}
-                  //   onNext={handleNext}
-                  // />
                 );
 
               case "One Match":
                 return (
-                  // <OneMatchQuiz
-                  //   isPreQuiz={isPreQuiz}
-                  //   themeColor={getThemeColor(false)}
-                  //   choices={
-                  //     (questionList[currentQuestion - 1] as Question).choices
-                  //   }
-                  //   correctAnswer={
-                  //     questionList[currentQuestion - 1].correctAnswer
-                  //   }
-                  //   answerExplanation={
-                  //     questionList[currentQuestion - 1].answerExplanation
-                  //   }
-                  //   currentQuestion={currentQuestion}
-                  //   totalQuestions={questionList.length}
-                  //   onPrevious={handlePrevious}
-                  //   onNext={handleNext}
-                  // />
-
                   <OneMatchQuiz
                     isPreQuiz={isPreQuiz}
                     themeColor={getThemeColor(false)}

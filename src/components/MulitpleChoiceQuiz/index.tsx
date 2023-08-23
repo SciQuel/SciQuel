@@ -6,7 +6,7 @@ import x_mark from "../Quiz/xmark.png";
 
 interface Props {
   isPreQuiz: boolean; // Boolean value that determines if quiz is a pre- or post-quiz
-  choices: string[]; // The available choices for the question.
+  choices: string[]; // The available MC choices for the question.
   correctAnswer: string[]; // The correct answer for the question.
   answerExplanation: string[]; // List containing the explanation(s) for the question.
   currentQuestion: number; // The question # the user is looking at.
@@ -25,33 +25,32 @@ export default function MultipleChoiceQuiz({
   onPrevious,
   onNext,
 }: Props) {
+  /* component state variables */
   const [selectedOptions, setSelectedOptions] = useState<(string | null)[]>(
     Array(totalQuestions).fill(null),
-  );
+  ); // an array of strings to store the user's selected MC choice (for each question)
   const [answerCorrectList, setAnswerCorrectList] = useState<
     (boolean | null)[]
-  >(Array(totalQuestions).fill(null));
-  const [showAnswerExplanation, setShowAnswerExplanation] = useState(false);
+  >(Array(totalQuestions).fill(null)); // an array of booleans to store answer results (for each question)
+  const [showAnswerExplanation, setShowAnswerExplanation] = useState(false); // determines if explanation should be shown
   const [hasAnsweredList, setHasAnsweredList] = useState<boolean[]>(
     Array(totalQuestions).fill(false),
-  );
+  ); // an array of booleans to store whether user has submitted (for each question)
 
   const prevCurrentQuestion = useRef<number>(currentQuestion);
 
   /**
    * For updating the component when the user clicks the previous/next buttons: Sets
    * showAnswerExplanation to the appropriate value for the new current question, and sets the class
-   * of the MC selection accordingly
+   * of the MC selection accordingly (to allow/prevent pointer events)
    */
   useEffect(() => {
     const multChoiceQuizSelection = document.querySelector(
       isPreQuiz ? "#prequiz-mc" : "#postquiz-mc",
     );
-
     if (multChoiceQuizSelection) {
       if (currentQuestion !== prevCurrentQuestion.current) {
         const hasAnswered = hasAnsweredList[currentQuestion - 1];
-
         if (hasAnswered && !isPreQuiz) {
           multChoiceQuizSelection.classList.add("pointer-events-none");
           setShowAnswerExplanation(true);
@@ -60,7 +59,6 @@ export default function MultipleChoiceQuiz({
           setShowAnswerExplanation(false);
         }
       }
-
       prevCurrentQuestion.current = currentQuestion;
     }
   }, [currentQuestion, isPreQuiz, hasAnsweredList]);
@@ -72,16 +70,7 @@ export default function MultipleChoiceQuiz({
    * @param {string} option - The MC option selected by the user.
    */
   const handleOptionSelect = (option: string) => {
-    console.log("this option was clicked on:", option);
-
-    if (hasAnsweredList[currentQuestion - 1]) {
-      console.log(
-        "this is hasAnsweredList:",
-        hasAnsweredList[currentQuestion - 1],
-      );
-      return; // Prevent selecting an answer if the question has already been submitted
-    }
-
+    // console.log("this option was clicked on:", option);
     setSelectedOptions((prevState) => {
       const newSelectedOptions = [...prevState];
       newSelectedOptions[currentQuestion - 1] =
@@ -99,14 +88,11 @@ export default function MultipleChoiceQuiz({
    */
   const handleSubmit = () => {
     const userAnswer = selectedOptions[currentQuestion - 1];
-
     if (userAnswer === null) {
-      return;
+      return; // prevent user from submitting without selecting an answer
     }
-
     const answerCorrect =
       selectedOptions[currentQuestion - 1] === correctAnswer[0];
-
     const updatedAnswerCorrectList = [...answerCorrectList];
     updatedAnswerCorrectList[currentQuestion - 1] = answerCorrect; // save the results for the current question
 
@@ -117,7 +103,6 @@ export default function MultipleChoiceQuiz({
     const multChoiceQuizSelection = document.querySelector(
       isPreQuiz ? "#prequiz-mc" : "#postquiz-mc",
     );
-
     if (multChoiceQuizSelection) {
       multChoiceQuizSelection.classList.add("pointer-events-none");
     }
@@ -141,9 +126,9 @@ export default function MultipleChoiceQuiz({
     onNext();
   };
 
-  const selectedOption = selectedOptions[currentQuestion - 1];
-  const answerCorrect = answerCorrectList[currentQuestion - 1];
-  const hasAnswered = hasAnsweredList[currentQuestion - 1];
+  const selectedOption = selectedOptions[currentQuestion - 1]; // current question's selected MC option (a string)
+  const answerCorrect = answerCorrectList[currentQuestion - 1]; // current question's result (boolean. null if not submitted)
+  const hasAnswered = hasAnsweredList[currentQuestion - 1]; // if current question has been submitted or not
 
   // boolean values to determine which buttons to show, based on whether quiz is prequiz or not
   const showPreviousButton = currentQuestion > 1;

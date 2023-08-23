@@ -6,7 +6,7 @@ import x_mark from "../Quiz/xmark.png";
 
 interface Props {
   isPreQuiz: boolean; // Boolean value that determines if quiz is a pre- or post-quiz
-  themeColor: string;
+  themeColor: string; // Theme color of the quiz (hex), matching with story topic tag color
   matchStatements: string[]; // The statements the user must match choices to
   choices: string[]; // The available choices for the question. (in order of display as well)
   correctAnswer: string[]; // The correct answer for the question.
@@ -29,14 +29,13 @@ export default function OneMatchQuiz({
   onPrevious,
   onNext,
 }: Props) {
-  const quizContainerId = isPreQuiz ? "prequiz-om" : "postquiz-om";
-  const [isTouchDevice, setIsTouchDevice] = useState(false);
-
+  /* component state variables */
+  const [isTouchDevice, setIsTouchDevice] = useState(false); // whether the user is using a touch(mobile) device or not
   const initialUserAnswers: string[][] = Array.from(
     { length: totalQuestions },
     () => [],
   );
-  const [userAnswersList, setUserAnswersList] = useState(initialUserAnswers);
+  const [userAnswersList, setUserAnswersList] = useState(initialUserAnswers); // stores the user's answers (for ea/ question)
 
   const [answerCorrectList, setAnswerCorrectList] = useState<
     Array<Array<boolean | null>>
@@ -44,18 +43,24 @@ export default function OneMatchQuiz({
     Array.from({ length: totalQuestions }, () =>
       Array.from({ length: choices.length }, () => null),
     ),
-  );
+  ); // an array of booleans arrays to store results for ea/ statement (for ea/ question)
 
-  const [showAnswerExplanation, setShowAnswerExplanation] = useState(false);
+  const [showAnswerExplanation, setShowAnswerExplanation] = useState(false); // determines if explanations should be shown
   const [hasAnsweredList, setHasAnsweredList] = useState<boolean[]>(
     Array(totalQuestions).fill(false),
-  );
+  ); // an array of booleans to store whether user has submitted (for each question)
   const [draggedElement, setDraggedElement] = useState<HTMLElement | null>(
     null,
-  );
+  ); // the element user is in process of dragging (null when not dragging)
 
   const prevCurrentQuestion = useRef<number>(currentQuestion);
 
+  /**
+   * Finds/returns the nearest ancestor of an element with a given class.
+   *
+   * @param {HTMLElement} target - The starting/child element to find the ancestor of.
+   * @param {string} targetClass - The class of the ancestor element to find.
+   */
   const getTargetParent = (target: HTMLElement, targetClass: string) => {
     // Get the nearest targetClass parent
     const targetParent = target.closest(targetClass) as HTMLElement;
@@ -65,7 +70,12 @@ export default function OneMatchQuiz({
     return targetParent;
   };
 
-  /* Called when the user tries to drag a draggable item (answer choice) */
+  /**
+   * Called when the user tries to drag a draggable item (answer choice). Sets the draggedElement
+   * state variable appropriately and handles the drag animation (for non-mobile devices).
+   *
+   * @param {React.DragEventHandler<HTMLDivElement>} e - The drag event.
+   */
   const handleDragStart: React.DragEventHandler<HTMLDivElement> = (e) => {
     const dragTarget = e.target as HTMLElement; // the item being dragged
     const dragBorder = getTargetParent(dragTarget, ".answer-choice-border");
@@ -86,7 +96,7 @@ export default function OneMatchQuiz({
     }
   };
 
-  /* Handles the visual changes when the user stops dragging */
+  /** Handles the visual changes when the user stops dragging (for non-mobile devices). */
   const handleDragEnd = () => {
     const dragBorder = draggedElement;
     const dragContainer = dragBorder?.firstChild as HTMLElement;
@@ -99,7 +109,11 @@ export default function OneMatchQuiz({
     setDraggedElement(null);
   };
 
-  /* Called when user drops a match option into one of the answer columns */
+  /**
+   * Called when user drops a match option (for non-mobile/touch devices).
+   *
+   * @param {React.DragEventHandler<HTMLDivElement>} e - The drag(drop) event.
+   */
   const handleDrop: React.DragEventHandler<HTMLDivElement> = (e) => {
     const dropTarget = e.target as HTMLElement;
     const quizRowParent = getTargetParent(dropTarget, ".quiz-row");
@@ -130,7 +144,13 @@ export default function OneMatchQuiz({
     }
   };
 
-  /* Called when match option is tapped (for mobile only, in place of drag/drop) */
+  /**
+   * Called when user taps a match option (for mobile/touch device only). Performs same actions as a
+   * drag if draggedElement is not set, otherwise performs the same actions as a drop if
+   * draggedElement is already set.
+   *
+   * @param {React.MouseEvent<HTMLDivElement>} e - The tap(click) event.
+   */
   const handleTap = (e: React.MouseEvent<HTMLDivElement>) => {
     // const isTouchDevice = "ontouchstart" in window;
     // if (!isTouchDevice && !window.matchMedia("(max-width: 768px)").matches) {
@@ -161,7 +181,12 @@ export default function OneMatchQuiz({
     }
   };
 
-  /* Handles the logic behind dropping (or tapping to switch) a match option */
+  /**
+   * Handles the logic behind switching options after dropping/tapping onto another match option.
+   *
+   * @param {React.DragEventHandler<HTMLDivElement> | React.MouseEvent<HTMLDivElement>} e - The
+   *        drag(drop) OR tap(click) event.
+   */
   const handleSwitch = (
     e:
       | React.DragEventHandler<HTMLDivElement>
@@ -208,7 +233,7 @@ export default function OneMatchQuiz({
     }
   };
 
-  /* add drop shadow animation when hovering over rows */
+  /** Add drop shadow animation when hovering over rows. */
   useEffect(() => {
     setIsTouchDevice("ontouchstart" in window);
     const containers = document.querySelectorAll<HTMLElement>(".quiz-row");
@@ -242,9 +267,9 @@ export default function OneMatchQuiz({
   }, []);
 
   /**
-   * For updating the component when the user clicks the previous/next buttons: Updates match
-   * statement display, sets showAnswerExplanation to the appropriate value for the new current
-   * question, and sets the class of the OM selection accordingly
+   * For updating the component when the user clicks the previous/next buttons: Sets
+   * showAnswerExplanation to the appropriate value for the new current question, and sets the class
+   * of the OM selection accordingly (to lock/unlock pointer events).
    */
   useEffect(() => {
     const oneMatchQuizSelection = document.querySelector(
@@ -279,7 +304,7 @@ export default function OneMatchQuiz({
   }, [currentQuestion, isPreQuiz, hasAnsweredList]);
 
   /**
-   * Handles the submission of a MC question (called when user clicks "Submit" button): Checks the
+   * Handles the submission of an OM question (called when user clicks "Submit" button): Checks the
    * user's selected answers for the current question against the solution, stores the result into
    * an array, sets current question as answered/submitted, and sets showAnswerExplanation to true
    */
@@ -326,9 +351,9 @@ export default function OneMatchQuiz({
     onNext();
   };
 
-  const userAnswers = userAnswersList[currentQuestion - 1];
-  const answerCorrect = answerCorrectList[currentQuestion - 1];
-  const hasAnswered = hasAnsweredList[currentQuestion - 1];
+  const userAnswers = userAnswersList[currentQuestion - 1]; // user's answers for current question's (string array)
+  const answerCorrect = answerCorrectList[currentQuestion - 1]; // for ea/ statement, if current question was answered correctly or not (bool array)
+  const hasAnswered = hasAnsweredList[currentQuestion - 1]; // if current question has been submitted or not
 
   // boolean values to determine which buttons to show, based on whether quiz is prequiz or not
   const showPreviousButton = currentQuestion > 1;
