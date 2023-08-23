@@ -34,5 +34,7 @@ export default async function StoryContentEditorPage({
     },
     null,
   );
-  return <MarkdownEditor initialValue={latestRevision?.content} />;
+  return (
+    <MarkdownEditor initialValue={latestRevision?.content} id={story.id} />
+  );
 }

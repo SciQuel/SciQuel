@@ -310,33 +310,49 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ error: "Bad Request" }, { status: 400 });
     }
 
-    await prisma.storyContribution.deleteMany({
-      where: {
-        storyId: parsedBody.data.id,
-      },
-    });
-
-    const storyContributionsPromises: Promise<null | Prisma.StoryContributionCreateManyInput>[] =
-      parsedBody.data.contributions.map(async (entry) => {
-        const user = await prisma.user.findUnique({
-          where: { email: entry.email },
-        });
-        if (user) {
-          return {
-            userId: user.id,
-            storyId: parsedBody.data.id,
-            contributionType: entry.contributionType,
-            bio: user.bio !== entry.bio ? entry.bio : undefined,
-          };
-        }
-        return null;
+    if (parsedBody.data.contributions) {
+      await prisma.storyContribution.deleteMany({
+        where: {
+          storyId: parsedBody.data.id,
+        },
       });
 
-    const storyContributions = (
-      await Promise.all(storyContributionsPromises)
-    ).filter((x): x is NonNullable<typeof x> => Boolean(x));
+      const storyContributionsPromises: Promise<null | Prisma.StoryContributionCreateManyInput>[] =
+        parsedBody.data.contributions.map(async (entry) => {
+          const user = await prisma.user.findUnique({
+            where: { email: entry.email },
+          });
+          if (user) {
+            return {
+              userId: user.id,
+              storyId: parsedBody.data.id,
+              contributionType: entry.contributionType,
+              bio: user.bio !== entry.bio ? entry.bio : undefined,
+            };
+          }
+          return null;
+        });
 
-    await prisma.storyContribution.createMany({ data: storyContributions });
+      const storyContributions = (
+        await Promise.all(storyContributionsPromises)
+      ).filter((x): x is NonNullable<typeof x> => Boolean(x));
+
+      await prisma.storyContribution.createMany({ data: storyContributions });
+    }
+
+    if (parsedBody.data.content) {
+      const storyContent = await prisma.storyContent.findFirst({
+        where: { storyId: parsedBody.data.id },
+        orderBy: { createdAt: "desc" },
+      });
+
+      await prisma.storyContent.update({
+        where: { id: storyContent?.id ?? "" },
+        data: {
+          content: parsedBody.data.content,
+        },
+      });
+    }
 
     return NextResponse.json({ id: parsedBody.data.id }, { status: 200 });
   } catch (err) {

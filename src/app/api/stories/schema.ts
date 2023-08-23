@@ -65,11 +65,16 @@ export const putStorySchema = zfd.formData({
 
 export const patchStorySchema = z.object({
   id: z.string(),
-  contributions: z.array(
-    z.object({
-      email: z.string(),
-      contributionType: z.nativeEnum(ContributionType),
-      bio: z.string(),
-    }),
-  ),
+  contributions: z
+    .array(
+      z.object({
+        email: z.string(),
+        contributionType: z.nativeEnum(ContributionType),
+        bio: z.string(),
+      }),
+    )
+    .optional(),
+  content: z.string().optional(),
+  footer: z.string().optional(),
+  cover_caption: z.string().optional(),
 });
