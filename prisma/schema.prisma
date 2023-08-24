@@ -11,7 +11,13 @@ datasource db {
 }
 
 enum StoryType {
+  DIGEST
+  ESSAY
+}
+
+enum Category {
   ARTICLE
+  PODCAST
 }
 
 enum ContributionType {
@@ -43,9 +49,15 @@ enum AuthVerificationType {
   PASSWORD_RESET
 }
 
+enum QuizType {
+  PRE_QUIZ
+  POST_QUIZ
+}
+
 model Story {
   id        String    @id @default(auto()) @map("_id") @db.ObjectId
   storyType StoryType
+  category  Category
 
   title      String
   titleColor String
@@ -69,6 +81,7 @@ model Story {
   createdAt   DateTime
   publishedAt DateTime
   updatedAt   DateTime
+  quizzes     Quiz[]
 }
 
 model StoryContribution {
@@ -101,6 +114,7 @@ model User {
 
   storyContributions StoryContribution[]
   authVerifications  AuthVerification[]
+  quizzes            Quiz[]
 }
 
 model AuthVerification {
@@ -141,6 +155,23 @@ model Brain {
   storyId String @db.ObjectId
 
   createdAt DateTime @default(now())
+
+  @@unique([userId, storyId])
+}
+
+model Quiz {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  userId  String @db.ObjectId
+  storyId String @db.ObjectId
+
+  quizType   QuizType
+  totalScore Int
+  score      Int
+  date       DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id])
+  story Story @relation(fields: [storyId], references: [id])
 
   @@unique([userId, storyId])
 }

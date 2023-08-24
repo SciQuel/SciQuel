@@ -1,5 +1,6 @@
 import prisma from "@/lib/prisma";
 import {
+  Category,
   ContributionType,
   Prisma,
   StoryTopic,
@@ -95,7 +96,7 @@ export async function GET(req: Request) {
           },
         },
       },
-      where: query.where,
+      where: { ...query.where, category: Category.ARTICLE },
       orderBy: {
         updatedAt: "desc",
         ...(sort_by === "newest" ? { updatedAt: "desc" } : {}),
@@ -144,7 +145,8 @@ export async function POST(request: NextRequest) {
       user: { connect: { id: user.id } },
       story: {
         create: {
-          storyType: StoryType.ARTICLE,
+          storyType: StoryType.ESSAY,
+          category: Category.ARTICLE,
           title,
           titleColor: "#ffffff",
           slug: slug(title),

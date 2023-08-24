@@ -1,13 +1,12 @@
-"use client";
-
+import getCurrentUser from "@/app/user-settings/actions/getCurrentUser";
 import GreetingCard from "@/components/UserSettings/GreetingCard";
-import { useSession } from "next-auth/react";
+import { type User } from "@prisma/client";
+import getReadingHistory from "../../actions/getReadingHistory";
 
-export default function Greeting() {
-  const { data: session } = useSession();
-  let userName = "James";
-  if (session && session.user) {
-    userName = session.user.firstName;
-  }
-  return <GreetingCard name={userName} />;
+export default async function Greeting() {
+  const currUser: User | null = await getCurrentUser();
+  const readingHistory = await getReadingHistory();
+  if (currUser === null) return null;
+  if (readingHistory === null) return null;
+  return <GreetingCard user={currUser} readingHistory={readingHistory} />;
 }
