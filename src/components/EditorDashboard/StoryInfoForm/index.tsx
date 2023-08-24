@@ -12,6 +12,7 @@ interface Props {
   title?: string;
   summary?: string;
   image?: string;
+  caption?: string;
 }
 
 export default function StoryInfoForm({
@@ -19,6 +20,7 @@ export default function StoryInfoForm({
   title: initialTitle,
   summary: initialSummary,
   image: initialImage,
+  caption: initialCaption,
 }: Props) {
   const fileUploadRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
@@ -28,6 +30,7 @@ export default function StoryInfoForm({
   const [image, setImage] = useState<File | string | null>(
     initialImage ?? null,
   );
+  const [caption, setCaption] = useState(initialCaption ?? "");
   const [dirty, setDirty] = useState(false);
   const [loading, startTransition] = useTransition();
 
@@ -44,6 +47,7 @@ export default function StoryInfoForm({
               }
               formData.append("title", title);
               formData.append("summary", summary);
+              formData.append("imageCaption", caption);
               if (image === null) {
                 return;
               } else if (typeof image === "string") {
@@ -142,6 +146,17 @@ export default function StoryInfoForm({
               <p className="italic">No image uploaded</p>
             )}
           </div>
+          <FormInput
+            title="Image Caption"
+            required
+            indicateRequired
+            value={caption}
+            onChange={(e) => {
+              setDirty(true);
+              setCaption(e.target.value);
+            }}
+            disabled={loading}
+          />
           <button
             type="submit"
             className="mt-5 select-none rounded-md bg-teal-600 px-2 py-1 font-semibold text-white disabled:pointer-events-none disabled:opacity-50"
@@ -149,6 +164,7 @@ export default function StoryInfoForm({
               title.length === 0 ||
               summary.length === 0 ||
               image === null ||
+              caption.length === 0 ||
               loading
             }
           >

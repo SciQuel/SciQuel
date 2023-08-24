@@ -82,6 +82,7 @@ model Story {
   staffPick Boolean
 
   thumbnailUrl String
+  coverCaption String @default("")
 
   createdAt   DateTime
   publishedAt DateTime

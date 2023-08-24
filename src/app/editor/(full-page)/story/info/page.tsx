@@ -23,6 +23,7 @@ export default async function StoryInfoEditorPage({
         summary={story?.summary}
         image={story?.thumbnailUrl}
         id={story?.id}
+        caption={story?.coverCaption}
       />
     </div>
   );

@@ -61,6 +61,7 @@ export const putStorySchema = zfd.formData({
     z.instanceof(Blob).optional(),
   ),
   imageUrl: zfd.text().optional(),
+  imageCaption: zfd.text(),
 });
 
 export const patchStorySchema = z.object({
@@ -76,5 +77,4 @@ export const patchStorySchema = z.object({
     .optional(),
   content: z.string().optional(),
   footer: z.string().optional(),
-  cover_caption: z.string().optional(),
 });

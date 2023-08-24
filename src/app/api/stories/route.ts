@@ -3,22 +3,16 @@ import { bucket, bucketUrlPrefix } from "@/lib/gcs";
 import prisma from "@/lib/prisma";
 import {
   Category,
-  ContributionType,
   Prisma,
-  StoryTopic,
   StoryType,
+  type ContributionType,
   type Story,
 } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { NextResponse, type NextRequest } from "next/server";
 import slug from "slug";
 import { type z } from "zod";
-import {
-  getStorySchema,
-  patchStorySchema,
-  postStorySchema,
-  putStorySchema,
-} from "./schema";
+import { getStorySchema, patchStorySchema, putStorySchema } from "./schema";
 
 export type Stories = (Story & {
   storyContributions: {
@@ -139,56 +133,6 @@ export async function GET(req: NextRequest) {
   }
 }
 
-export async function POST(request: NextRequest) {
-  const timestamp = new Date();
-  const parsedBody = postStorySchema.safeParse(await request.json());
-  if (!parsedBody.success) {
-    return NextResponse.json({ error: "Bad Request" }, { status: 400 });
-  }
-
-  const { title, content } = parsedBody.data;
-
-  const user = await prisma.user.findFirst({});
-  if (!user) {
-    return NextResponse.json({ error: "No user available" }, { status: 500 });
-  }
-
-  const storyContribution = await prisma.storyContribution.create({
-    data: {
-      user: { connect: { id: user.id } },
-      story: {
-        create: {
-          storyType: StoryType.ESSAY,
-          category: Category.ARTICLE,
-          title,
-          titleColor: "#ffffff",
-          slug: slug(title),
-          summary: `summary of ${title}`,
-          summaryColor: "#ffffff",
-          tags: [StoryTopic.ASTRONOMY],
-          published: true,
-          staffPick: Math.random() > 0.5,
-          thumbnailUrl: "/assets/images/bobtail.png",
-          createdAt: timestamp,
-          publishedAt: timestamp,
-          updatedAt: timestamp,
-        },
-      },
-      contributionType: ContributionType.AUTHOR,
-    },
-  });
-
-  await prisma.storyContent.create({
-    data: {
-      story: { connect: { id: storyContribution.storyId } },
-      content,
-      createdAt: timestamp,
-    },
-  });
-
-  return NextResponse.json({}, { status: 201 });
-}
-
 async function processThumbnailImage(
   data: z.infer<typeof putStorySchema>,
 ): Promise<string | null> {
@@ -258,6 +202,7 @@ export async function PUT(request: NextRequest) {
           title: parsedRequest.data.title,
           summary: parsedRequest.data.summary,
           thumbnailUrl,
+          coverCaption: parsedRequest.data.imageCaption,
           updatedAt: timestamp,
         },
       });
@@ -280,6 +225,7 @@ export async function PUT(request: NextRequest) {
         staffPick: false,
         published: false,
         thumbnailUrl,
+        coverCaption: parsedRequest.data.imageCaption,
       },
     });
 
