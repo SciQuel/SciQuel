@@ -7,19 +7,39 @@ import image from "./actions/image";
 import italic from "./actions/italic";
 import link from "./actions/link";
 import quote from "./actions/quote";
+import EditFooterForm from "./EditFooterForm";
 import ImageIcon from "./icons/ImageIcon";
 import LinkIcon from "./icons/LinkIcon";
 import ToolbarButton from "./ToolbarButton";
 import ToolbarDropdown from "./ToolbarDropdown";
 import ToolbarRule from "./ToolbarRule";
+import withDialog from "./withDialog";
 
 interface Props {
   editor: editor.IStandaloneCodeEditor | null;
   onSubmit?: () => void;
   loading: boolean;
+  storyId: string;
 }
 
-export default function Toolbar({ editor, onSubmit, loading }: Props) {
+export default function Toolbar({ editor, onSubmit, loading, storyId }: Props) {
+  const ToolbarEditFooterButton = withDialog({
+    disabled: editor === null || loading,
+    tooltip: "Edit Story Footer",
+    children: "Footer",
+    modalBody: (labelId, _descriptionId, setIsOpen) => (
+      <>
+        <div className="flex flex-col p-4">
+          <h2 id={labelId} className="text-lg font-semibold">
+            Edit Story Footer
+          </h2>
+        </div>
+        <hr />
+        <EditFooterForm storyId={storyId} setIsOpen={setIsOpen} />
+      </>
+    ),
+  });
+
   return (
     <div className="flex flex-row border-b bg-gray-100">
       <div className="flex grow flex-row gap-1 p-2">
@@ -100,6 +120,8 @@ export default function Toolbar({ editor, onSubmit, loading }: Props) {
             <ImageIcon />
           </div>
         </ToolbarButton>
+        <ToolbarRule />
+        <ToolbarEditFooterButton />
       </div>
       <div className="flex h-full items-center px-2">
         <button

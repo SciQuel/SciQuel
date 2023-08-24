@@ -65,7 +65,6 @@ export const putStorySchema = zfd.formData({
 });
 
 export const patchStorySchema = z.object({
-  id: z.string(),
   contributions: z
     .array(
       z.object({
@@ -76,5 +75,5 @@ export const patchStorySchema = z.object({
     )
     .optional(),
   content: z.string().optional(),
-  footer: z.string().optional(),
+  footer: z.string().nullable().optional(),
 });

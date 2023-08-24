@@ -40,35 +40,39 @@ export default function StoryInfoForm({
         onSubmit={(e) => {
           e.preventDefault();
           startTransition(async () => {
-            if (dirty) {
-              const formData = new FormData();
-              if (storyId) {
-                formData.append("id", storyId);
-              }
-              formData.append("title", title);
-              formData.append("summary", summary);
-              formData.append("imageCaption", caption);
-              if (image === null) {
-                return;
-              } else if (typeof image === "string") {
-                formData.append("imageUrl", image);
-              } else {
-                const file = new File([image], image.name);
-                formData.append("image", file, file.name);
-              }
-              const story = await axios.put<{ id: string }>(
-                "/api/stories",
-                formData,
-                {
-                  headers: {
-                    "Content-Type": "multipart/form-data",
+            try {
+              if (dirty) {
+                const formData = new FormData();
+                if (storyId) {
+                  formData.append("id", storyId);
+                }
+                formData.append("title", title);
+                formData.append("summary", summary);
+                formData.append("imageCaption", caption);
+                if (image === null) {
+                  return;
+                } else if (typeof image === "string") {
+                  formData.append("imageUrl", image);
+                } else {
+                  const file = new File([image], image.name);
+                  formData.append("image", file, file.name);
+                }
+                const story = await axios.put<{ id: string }>(
+                  "/api/stories",
+                  formData,
+                  {
+                    headers: {
+                      "Content-Type": "multipart/form-data",
+                    },
                   },
-                },
-              );
-              const nextPage = `/editor/story/contributors?id=${story.data.id}`;
-              router.push(nextPage);
-            } else {
-              router.push(`/editor/story/contributors?id=${storyId}`);
+                );
+                const nextPage = `/editor/story/contributors?id=${story.data.id}`;
+                router.push(nextPage);
+              } else {
+                router.push(`/editor/story/contributors?id=${storyId}`);
+              }
+            } catch (err) {
+              console.error(err);
             }
           });
         }}

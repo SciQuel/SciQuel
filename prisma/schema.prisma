@@ -145,6 +145,7 @@ model StoryContent {
   storyId String @db.ObjectId
 
   content String
+  footer  String?
 
   createdAt DateTime
 }

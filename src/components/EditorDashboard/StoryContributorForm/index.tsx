@@ -132,22 +132,22 @@ export default function StoryContributorForm({
         onSubmit={(e) => {
           e.preventDefault();
           startTransition(async () => {
-            if (dirty) {
-              const story = await axios.patch<z.infer<typeof patchStorySchema>>(
-                "/api/stories",
-                {
-                  id,
-                  contributions: state.map((entry) => ({
-                    contributionType: entry.contributionType,
-                    email: entry.author.email,
-                    bio: entry.bio,
-                  })),
-                },
-              );
-              const nextPage = `/editor/story/content?id=${story.data.id}`;
-              router.push(nextPage);
-            } else {
+            try {
+              if (dirty) {
+                await axios.patch<z.infer<typeof patchStorySchema>>(
+                  `/api/stories/id/${id}`,
+                  {
+                    contributions: state.map((entry) => ({
+                      contributionType: entry.contributionType,
+                      email: entry.author.email,
+                      bio: entry.bio,
+                    })),
+                  },
+                );
+              }
               router.push(`/editor/story/content?id=${id}`);
+            } catch (err) {
+              console.error(err);
             }
           });
         }}

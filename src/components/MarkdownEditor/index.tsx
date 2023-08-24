@@ -124,6 +124,7 @@ export default function MarkdownEditor({ initialValue, id }: Props) {
           editor={editor}
           onSubmit={handleEditorSubmit}
           loading={loading}
+          storyId={id}
         />
         <div className="grow">
           <Editor
