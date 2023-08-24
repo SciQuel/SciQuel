@@ -586,7 +586,7 @@ export default function MultipleMatchQuiz({
                 col-index={statementIndex}
                 key={statementIndex}
               >
-                <div className="multiple-match-statement flex h-full w-full flex-wrap items-center justify-center hyphens-auto break-words rounded-[4px] border border-black bg-sciquelCardBg p-3 text-center text-[18px] xsm:inline-block xsm-mm:text-[16px]">
+                <div className="multiple-match-statement flex h-full w-full flex-wrap items-center justify-center hyphens-auto break-words rounded-[4px] border border-black bg-white p-3 text-center text-[18px] xsm:inline-block xsm-mm:text-[16px]">
                   {statement}
                 </div>
 
@@ -600,7 +600,7 @@ export default function MultipleMatchQuiz({
                           key={userAnswerIndex}
                         >
                           <div
-                            className={`multiple-match-answer-choice-holder min-w-100 relative box-border flex h-full w-full cursor-move items-center justify-end break-words rounded-[4px] border border-black bg-sciquelCardBg text-center text-[18px] transition duration-300 ease-in-out 
+                            className={`multiple-match-answer-choice-holder min-w-100 relative box-border flex h-full w-full cursor-move items-center justify-end break-words rounded-[4px] border border-black bg-white text-center text-[18px] transition duration-300 ease-in-out 
                             ${
                               isTouchDevice &&
                               !hasAnswered &&
@@ -726,7 +726,7 @@ export default function MultipleMatchQuiz({
                 from-col="0"
               >
                 <div
-                  className={`multiple-match-answer-choice-holder min-w-100 box-border flex h-full w-full cursor-move items-center break-words rounded-[4px] border border-black bg-sciquelCardBg text-center text-[18px] transition duration-300 ease-in-out 
+                  className={`multiple-match-answer-choice-holder min-w-100 box-border flex h-full w-full cursor-move items-center break-words rounded-[4px] border border-black bg-white text-center text-[18px] transition duration-300 ease-in-out 
                   ${
                     isTouchDevice &&
                     !hasAnswered &&
@@ -813,6 +813,7 @@ export default function MultipleMatchQuiz({
             {matchStatements.map((statement, statementIndex) => {
               return (
                 <li
+                key={statementIndex}
                   className={
                     statementCorrect(statement)
                       ? "answer-explanation-tf correct font-quicksand my-1 box-border w-full border-l-8 border-sciquelCorrectBG p-4 pl-8 text-[18px] font-medium leading-6 text-sciquelCorrectText  xsm-mm:text-[16px]"

@@ -398,7 +398,7 @@ export default function OneMatchQuiz({
               row-index={index}
             >
               <div
-                className={`one-match-answer-option min-w-100 flex w-[40%] flex-wrap items-center justify-center rounded-[4px] border border-black bg-sciquelCardBg p-3`}
+                className={`one-match-answer-option min-w-100 flex w-[40%] flex-wrap items-center justify-center rounded-[4px] border border-black bg-white p-3`}
               >
                 <p className="match-statement-text w-full break-words text-center text-[18px]">
                   {statement}
@@ -422,8 +422,8 @@ export default function OneMatchQuiz({
               />
               <div className="answer-choice-border z-1 box-border flex w-1/2 rounded-[4px] border-2 border-dashed border-transparent transition-all">
                 <div
-                  // className="one-match-answer-choice-holder min-w-100 box-border flex h-full w-full cursor-move items-center break-words rounded-[4px] border border-black bg-sciquelCardBg pr-3 text-center text-[18px] transition-all "
-                  className={`one-match-answer-choice-holder min-w-100 box-border flex h-full w-full cursor-move items-center break-words rounded-[4px] border border-black bg-sciquelCardBg pr-3 text-center text-[18px] transition transition-all duration-300 ease-in-out 
+                  // className="one-match-answer-choice-holder min-w-100 box-border flex h-full w-full cursor-move items-center break-words rounded-[4px] border border-black bg-white pr-3 text-center text-[18px] transition-all "
+                  className={`one-match-answer-choice-holder min-w-100 box-border flex h-full w-full cursor-move items-center break-words rounded-[4px] border border-black bg-white pr-3 text-center text-[18px] transition transition-all duration-300 ease-in-out 
                   ${
                     isTouchDevice &&
                     !hasAnswered &&

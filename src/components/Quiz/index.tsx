@@ -1,3 +1,5 @@
+"use client";
+
 import {
   type MultipleMatchQuestion,
   type OneMatchQuestion,
@@ -161,7 +163,7 @@ export default function Quiz({
   }, [isPreQuiz]);
 
   return (
-    <div className="quiz-body z-999 max-w-screen-lg mx-auto flex w-[720px] flex-col rounded-sm border border-sciquelCardBorder bg-sciquelCardBg md:w-full">
+    <div className="quiz-body max-w-screen-lg mx-auto flex w-[720px] flex-col rounded-sm border border-sciquelCardBorder bg-white md:w-full my-6">
       <div className="quiz-subheader ml-5 mt-6 md:mx-3">
         <h3 className="w-full font-sourceSerif4 text-base font-normal text-black md:text-center">
           {quizObjective}
@@ -173,23 +175,23 @@ export default function Quiz({
         className="quiz-progress-container mt-2 md:mb-4"
       >
         <div
-          className="quiz-progress relative my-5 flex h-1 w-full items-center justify-center"
+          className="quiz-progress z[0] relative my-5 flex h-1 w-full items-center justify-center"
           style={{
             backgroundColor: getThemeColor(true),
           }}
         >
           <div
-            className="progress-bar absolute left-0 top-1/2 z-10 h-1 w-0 -translate-y-1/2 transform transition-all duration-500"
+            className="progress-bar absolute left-0 top-1/2 z-[1] h-1 w-0 -translate-y-1/2 transform transition-all duration-500"
             id="progress-bar"
             style={{
               backgroundColor: getThemeColor(false),
             }}
           ></div>
 
-          <div className="progress-circles z-20 flex w-full justify-evenly">
+          <div className="progress-circles flex w-full justify-evenly">
             {questionList.map((_, index) => (
               <div
-                className={`progress-circle-outer box-border flex h-6 w-6 items-center justify-center rounded-full border-2 border-gray-300 bg-sciquelCardBg`}
+                className={`progress-circle-outer z-[2] box-border flex h-6 w-6 items-center justify-center rounded-full border-2 border-gray-300 bg-white`}
                 key={index}
                 style={{
                   border: `2px solid ${getThemeColor(true)}`,
@@ -276,6 +278,18 @@ export default function Quiz({
                 );
 
               case "Multiple Match":
+                const multMatchQuestionList =
+                  questionList as MultipleMatchQuestion[];
+                const correctAnswerMapData =
+                  multMatchQuestionList[currentQuestion - 1].correctAnswerMap;
+                const correctAnswerMap = new Map(correctAnswerMapData);
+
+                console.log("correctAnswerMap", correctAnswerMap);
+                console.log(
+                  "correctAnswerMap map?",
+                  correctAnswerMap instanceof Map,
+                );
+
                 return (
                   <MultipleMatchQuiz
                     isPreQuiz={isPreQuiz}
@@ -294,13 +308,7 @@ export default function Quiz({
                         ] as MultipleMatchQuestion
                       ).choices
                     }
-                    correctAnswerMap={
-                      (
-                        questionList[
-                          currentQuestion - 1
-                        ] as MultipleMatchQuestion
-                      ).correctAnswerMap
-                    }
+                    correctAnswerMap={correctAnswerMap}
                     answerExplanation={
                       questionList[currentQuestion - 1].answerExplanation
                     }
