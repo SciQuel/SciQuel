@@ -163,7 +163,7 @@ export default function Quiz({
   }, [isPreQuiz]);
 
   return (
-    <div className="quiz-body max-w-screen-lg mx-auto flex w-[720px] flex-col rounded-sm border border-sciquelCardBorder bg-white md:w-full my-6">
+    <div className="quiz-body max-w-screen-lg mx-auto my-6 flex w-[720px] flex-col rounded-sm border border-sciquelCardBorder bg-white md:w-full">
       <div className="quiz-subheader ml-5 mt-6 md:mx-3">
         <h3 className="w-full font-sourceSerif4 text-base font-normal text-black md:text-center">
           {quizObjective}
