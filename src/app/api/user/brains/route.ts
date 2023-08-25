@@ -1,5 +1,6 @@
 import prisma from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
+import { getServerSession } from "next-auth";
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 
@@ -11,12 +12,9 @@ const requestSchema = z.object({
     })
     .regex(/^[0-9a-f]{24}$/, { message: "story_id must be a valid ObjectId" }),
 
-  user_id: z
-    .string({
-      required_error: "user_id is required",
-      invalid_type_error: "user_id must be a ObjectId",
-    })
-    .regex(/^[0-9a-f]{24}$/, { message: "user_id must be a valid ObjectId" }),
+  user_email: z.string({
+    required_error: "user_email is required",
+  }),
 });
 
 export async function GET(req: Request) {
@@ -29,13 +27,28 @@ export async function GET(req: Request) {
     return NextResponse.json(parsedParams.error, { status: 400 });
   }
 
-  const { story_id, user_id } = parsedParams.data;
+  const { story_id, user_email } = parsedParams.data;
+
+  const session = await getServerSession();
+  if (session?.user.email !== user_email) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
 
   try {
+    const user = await prisma.user.findUnique({
+      where: {
+        email: user_email,
+      },
+    });
+
+    if (user === null) {
+      return NextResponse.json({ error: "Brain not found" }, { status: 404 });
+    }
+
     const brain = await prisma.brain.findFirst({
       where: {
         storyId: story_id,
-        userId: user_id,
+        userId: user.id,
       },
     });
 
@@ -63,7 +76,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(result.error, { status: 400 });
     }
 
-    const { story_id, user_id } = result.data;
+    const { story_id, user_email } = result.data;
+
+    const session = await getServerSession();
+    if (session?.user.email !== user_email) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
 
     // validate story_id
     const story = await prisma.story.findUnique({
@@ -79,7 +97,7 @@ export async function POST(req: NextRequest) {
     // validate user_id
     const user = await prisma.user.findUnique({
       where: {
-        id: user_id,
+        email: user_email,
       },
     });
 
@@ -89,7 +107,7 @@ export async function POST(req: NextRequest) {
 
     const res = await prisma.brain.create({
       data: {
-        userId: user_id,
+        userId: user.id,
         storyId: story_id,
       },
     });
@@ -132,7 +150,7 @@ export async function DELETE(req: NextRequest) {
 
     const params = {
       story_id: searchParams.get("story_id"),
-      user_id: searchParams.get("user_id"),
+      user_email: searchParams.get("user_email"),
     };
 
     const result = requestSchema.safeParse(params);
@@ -140,7 +158,7 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json(result.error, { status: 400 });
     }
 
-    const { story_id, user_id } = result.data;
+    const { story_id, user_email } = result.data;
 
     // validate story_id
     const story = await prisma.story.findUnique({
@@ -156,7 +174,7 @@ export async function DELETE(req: NextRequest) {
     // validate user_id
     const user = await prisma.user.findUnique({
       where: {
-        id: user_id,
+        email: user_email,
       },
     });
 
@@ -166,7 +184,7 @@ export async function DELETE(req: NextRequest) {
 
     const res = await prisma.brain.deleteMany({
       where: {
-        userId: user_id,
+        userId: user.id,
         storyId: story_id,
       },
     });
