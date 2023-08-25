@@ -160,6 +160,11 @@ export async function DELETE(req: NextRequest) {
 
     const { story_id, user_email } = result.data;
 
+    const session = await getServerSession();
+    if (session?.user.email !== user_email) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
     // validate story_id
     const story = await prisma.story.findUnique({
       where: {
