@@ -133,7 +133,7 @@ export default function Quiz({
   useEffect(() => {
     // Updates the position of the quiz number element.
     const updateQuizNumberPosition = () => {
-      const screenWidth = window.innerWidth;
+      // const screenWidth = window.innerWidth;
       const quizQuestionElement = document.querySelector<HTMLElement>(
         `#${isPreQuiz ? "prequiz" : "postquiz"}-question-heading`,
       );
@@ -141,19 +141,20 @@ export default function Quiz({
         `#${isPreQuiz ? "prequiz" : "postquiz"}-question-number`,
       );
 
-      if (screenWidth > 767 && quizQuestionElement && quizNumberElement) {
+      if (quizQuestionElement && quizNumberElement) {
         const quizQuestionTop = quizQuestionElement.offsetTop;
         quizNumberElement.style.top = `${quizQuestionTop + 6}px`;
       }
     };
 
     const handleResize = () => {
-      if (window.innerWidth > 820) {
-        updateQuizNumberPosition();
-      }
+      // if (window.innerWidth > 767) {
+      updateQuizNumberPosition();
+      // }
     };
 
     updateQuizNumberPosition(); // Initial update of the quiz number position
+
     window.addEventListener("resize", handleResize); // Add event listener for window resize
 
     // Remove the event listener on component unmount
@@ -163,16 +164,16 @@ export default function Quiz({
   }, [isPreQuiz]);
 
   return (
-    <div className="quiz-body max-w-screen-lg mx-auto my-6 flex w-[720px] flex-col rounded-sm border border-sciquelCardBorder bg-white md:w-full">
-      <div className="quiz-subheader ml-5 mt-6 md:mx-3">
-        <h3 className="w-full font-sourceSerif4 text-base font-normal text-black md:text-center">
+    <div className="quiz-body mx-auto my-6 flex w-[720px] max-w-screen-lg flex-col rounded-sm border border-sciquelCardBorder bg-white md-qz:w-full">
+      <div className="quiz-subheader ml-5 mt-6 md-qz:mx-3">
+        <h3 className="w-full font-sourceSerif4 text-base font-normal text-black md-qz:text-center">
           {quizObjective}
         </h3>
       </div>
 
       <div
         id={isPreQuiz ? "prequiz-progress" : "postquiz-progress"}
-        className="quiz-progress-container mt-2 md:mb-4"
+        className="quiz-progress-container mt-2 md-qz:mb-4"
       >
         <div
           className="quiz-progress z[0] relative my-5 flex h-1 w-full items-center justify-center"
@@ -214,10 +215,10 @@ export default function Quiz({
         </div>
       </div>
 
-      <div className="quiz-content flex h-full w-full flex-col items-center px-11 py-3 md:self-center">
-        <div className="question-container relative w-full px-5 md:flex md:flex-col md:p-0">
+      <div className="quiz-content flex h-full w-full flex-col items-center px-11 py-3 md-qz:self-center">
+        <div className="question-container relative w-full px-5 md-qz:flex md-qz:flex-col md-qz:p-0">
           <div
-            className="question-number font-sm absolute bottom-[15px] left-[-1.5rem] font-sourceSerif4 text-sm md:relative md:left-[0] md:mb-1.5 md:text-center "
+            className="question-number font-sm absolute bottom-[15px] left-[-1.5rem] font-sourceSerif4 text-sm md-qz:relative md-qz:!top-0 md-qz:left-[0] md-qz:mb-1.5 md-qz:text-center "
             id={
               isPreQuiz ? "prequiz-question-number" : "postquiz-question-number"
             }
@@ -225,7 +226,7 @@ export default function Quiz({
             {currentQuestion} of {questionList.length}
           </div>
           <h2
-            className="question-heading font-quicksand mb-5 mt-2 text-2xl font-bold md:my-5 md:text-center sm:text-[22px] "
+            className="question-heading font-quicksand mb-5 mt-2 text-2xl font-bold md-qz:my-5 md-qz:text-center sm-qz:text-[22px] "
             id={
               isPreQuiz
                 ? "prequiz-question-heading"
@@ -236,7 +237,7 @@ export default function Quiz({
           </h2>
         </div>
 
-        <div className="quiz-answers-container w-full px-5 py-4 pb-1.5 pt-2.5 sm:w-[110%] xsm:w-[125%]">
+        <div className="quiz-answers-container w-full px-5 py-4 pb-1.5 pt-2.5 sm-qz:w-[110%] xsm-qz:w-[125%]">
           {(() => {
             switch (quizQuestionType) {
               case "Multiple Choice":

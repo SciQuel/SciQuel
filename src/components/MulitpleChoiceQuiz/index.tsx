@@ -185,7 +185,7 @@ export default function MultipleChoiceQuiz({
       {showAnswerExplanation && (
         <div className="answer-explanation-container flex flex-col">
           {answerCorrect ? (
-            <div className="answer-explanation correct font-quicksand my-4 box-border w-full border-l-8 border-sciquelCorrectBG p-5 pl-8 text-base font-medium leading-7 text-sciquelCorrectText md:text-lg">
+            <div className="answer-explanation correct font-quicksand my-4 box-border w-full border-l-8 border-sciquelCorrectBG p-5 pl-8 text-base font-medium leading-7 text-sciquelCorrectText md-qz:text-lg">
               Correct. {answerExplanation}
               <div className="user-quiz-statistics ml-auto mt-4 w-full text-right text-xs leading-normal text-gray-600">
                 You and 87.6% of SciQuel readers answered this question
@@ -193,7 +193,7 @@ export default function MultipleChoiceQuiz({
               </div>
             </div>
           ) : (
-            <div className="answer-explanation incorrect font-quicksand my-4 box-border w-full border-l-8 border-sciquelIncorrectBG p-5 pl-8 text-base font-medium leading-7 text-sciquelIncorrectText md:text-lg">
+            <div className="answer-explanation incorrect font-quicksand my-4 box-border w-full border-l-8 border-sciquelIncorrectBG p-5 pl-8 text-base font-medium leading-7 text-sciquelIncorrectText md-qz:text-lg">
               Incorrect. {answerExplanation}
               <div className="user-quiz-statistics ml-auto mt-4 w-full text-right text-xs leading-normal text-gray-600">
                 87.6% of SciQuel readers answered this question correctly.

@@ -81,7 +81,7 @@ const TestPage = () => {
         alegreyaSansSC.variable,
         sourceSerif4.variable,
       )}
-      style={{ backgroundColor: "#f8f8ff" }}
+      style={{ backgroundColor: "white" }}
     >
       <h1 className="mb-16 mt-16 text-center">
         (This is a temporary page for testing the Quiz component)

@@ -186,7 +186,7 @@ export default function TrueFalseQuiz({
         className="true-false-selection mb-3 flex flex-col items-start gap-3"
         id={isPreQuiz ? "prequiz-tf" : "postquiz-tf"}
       >
-        <div className="true-false-letters mb-[-35px] mt-[-35px] flex h-[-100px] w-full flex-row items-center justify-center gap-6 md:mt-0">
+        <div className="true-false-letters mb-[-35px] mt-[-35px] flex h-[-100px] w-full flex-row items-center justify-center gap-6 md-qz:mt-0">
           <div className="blankspace flex aspect-[8/1] basis-[80%] items-center justify-between gap-5"></div>
           <div className="true-letter flex aspect-[1/1] basis-[10%] items-center justify-center text-lg font-bold">
             T
@@ -202,7 +202,7 @@ export default function TrueFalseQuiz({
             option-index={index}
             className="true-false-container flex h-full w-full flex-row items-center justify-center gap-6"
           >
-            <div className="true-false-statement 3text-base flex aspect-[8/1] basis-[80%] items-center justify-between gap-5 rounded-md border border-black p-4 font-medium md:p-0">
+            <div className="true-false-statement 3text-base flex aspect-[8/1] basis-[80%] items-center justify-between gap-5 rounded-md border border-black p-4 font-medium md-qz:p-0">
               <p className="p-5">{option}</p>
             </div>
 
@@ -271,8 +271,8 @@ export default function TrueFalseQuiz({
                   key={index}
                   className={
                     result
-                      ? "answer-explanation-tf correct font-quicksand my-1 box-border w-full border-l-8 border-sciquelCorrectBG p-4 pl-8 text-[18px] sm:text-[16px] font-medium leading-6  text-sciquelCorrectText"
-                      : "answer-explanation-tf incorrect font-quicksand my-1 box-border w-full border-l-8 border-sciquelIncorrectBG p-4 pl-8 text-[18px] sm:text-[16px] font-medium leading-6 text-sciquelIncorrectText"
+                      ? "answer-explanation-tf correct font-quicksand my-1 box-border w-full border-l-8 border-sciquelCorrectBG p-4 pl-8 text-[18px] sm-qz:text-[16px] font-medium leading-6  text-sciquelCorrectText"
+                      : "answer-explanation-tf incorrect font-quicksand my-1 box-border w-full border-l-8 border-sciquelIncorrectBG p-4 pl-8 text-[18px] sm-qz:text-[16px] font-medium leading-6 text-sciquelIncorrectText"
                   }
                 >
                   {result ? "Correct. " : "Incorrect. "}

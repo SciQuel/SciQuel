@@ -580,13 +580,13 @@ export default function MultipleMatchQuiz({
           {matchStatements.map((statement, statementIndex) => {
             return (
               <div
-                className="quiz-col my-3.5 flex h-full h-full w-full shrink basis-[30%] flex-col gap-4 sm-mm:w-[120px] xsm:w-[110px] xsm-mm:w-[100px]"
+                className="quiz-col my-3.5 flex h-full h-full w-full shrink basis-[30%] flex-col gap-4 sm-mm:w-[120px] xsm-qz:w-[110px] xsm-mm:w-[100px]"
                 onDrop={handleColDrop}
                 onClick={handleTap}
                 col-index={statementIndex}
                 key={statementIndex}
               >
-                <div className="multiple-match-statement flex h-full w-full flex-wrap items-center justify-center hyphens-auto break-words rounded-[4px] border border-black bg-white p-3 text-center text-[18px] xsm:inline-block xsm-mm:text-[16px]">
+                <div className="multiple-match-statement flex h-full w-full flex-wrap items-center justify-center hyphens-auto break-words rounded-[4px] border border-black bg-white p-3 text-center text-[18px] xsm-qz:inline-block xsm-mm:text-[16px]">
                   {statement}
                 </div>
 
@@ -677,7 +677,7 @@ export default function MultipleMatchQuiz({
                                 ))}
                             </div>
 
-                            <div className="match-text align-self-center !inline-block flex w-[72%] max-w-full items-center justify-end justify-self-end hyphens-auto break-words p-3 text-center md:inline-block sm-mm:w-[65%] xsm-mm:w-[73%] xsm-mm:text-[16px]">
+                            <div className="match-text align-self-center !inline-block flex w-[72%] max-w-full items-center justify-end justify-self-end hyphens-auto break-words p-3 text-center md-qz:inline-block sm-mm:w-[65%] xsm-mm:w-[73%] xsm-mm:text-[16px]">
                               {userAnswer}
                             </div>
                           </div>
