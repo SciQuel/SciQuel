@@ -64,13 +64,16 @@ export default function DraftTable() {
                     story.createdAt as unknown as string,
                   ).toLocaleString(DateTime.DATETIME_FULL)}
                 </td>
-                <td>
+                <td className="flex flex-row">
                   <Link
                     href={`/editor/story/info?id=${story.id}`}
                     className="mr-2 rounded-md bg-teal-600 px-2 py-1 text-sm font-semibold text-white hover:bg-teal-700"
                   >
                     Edit
                   </Link>
+                  <button className="rounded-md bg-blue-600 px-2 py-1 text-sm font-semibold text-white hover:bg-blue-700">
+                    Publish
+                  </button>
                 </td>
               </tr>
             ))}
