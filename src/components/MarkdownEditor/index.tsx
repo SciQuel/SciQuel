@@ -113,7 +113,7 @@ export default function MarkdownEditor({ initialValue, id }: Props) {
           content: value,
         });
       }
-      router.push(`/editor/story/preview?id=${id}`);
+      router.push(`/editor/dashboard`);
     });
   }, [value]);
 
