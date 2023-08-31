@@ -1,5 +1,6 @@
 import prisma from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
+import { getServerSession } from "next-auth";
 import { NextResponse, type NextRequest } from "next/server";
 import { requestSchema } from "./schema";
 
@@ -13,13 +14,26 @@ export async function GET(req: Request) {
     return NextResponse.json(parsedParams.error, { status: 400 });
   }
 
-  const { story_id, user_id } = parsedParams.data;
+  const { story_id, user_email } = parsedParams.data;
 
   try {
+    const session = await getServerSession();
+    if (session?.user.email !== user_email) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email: user_email },
+    });
+
+    if (user === null) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
     const bookmark = await prisma.bookmark.findFirst({
       where: {
         storyId: story_id,
-        userId: user_id,
+        userId: user.id,
       },
     });
 
@@ -50,7 +64,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(result.error, { status: 400 });
     }
 
-    const { story_id, user_id } = result.data;
+    const { story_id, user_email } = result.data;
+
+    const session = await getServerSession();
+    if (session?.user.email !== user_email) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
 
     // validate story_id
     const story = await prisma.story.findUnique({
@@ -66,7 +85,7 @@ export async function POST(req: NextRequest) {
     // validate user_id
     const user = await prisma.user.findUnique({
       where: {
-        id: user_id,
+        email: user_email,
       },
     });
 
@@ -76,7 +95,7 @@ export async function POST(req: NextRequest) {
 
     const res = await prisma.bookmark.create({
       data: {
-        userId: user_id,
+        userId: user.id,
         storyId: story_id,
       },
     });
@@ -127,7 +146,12 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json(result.error, { status: 400 });
     }
 
-    const { story_id, user_id } = result.data;
+    const { story_id, user_email } = result.data;
+
+    const session = await getServerSession();
+    if (session?.user.email !== user_email) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
 
     // validate story_id
     const story = await prisma.story.findUnique({
@@ -143,7 +167,7 @@ export async function DELETE(req: NextRequest) {
     // validate user_id
     const user = await prisma.user.findUnique({
       where: {
-        id: user_id,
+        email: user_email,
       },
     });
 
@@ -153,7 +177,7 @@ export async function DELETE(req: NextRequest) {
 
     const res = await prisma.bookmark.deleteMany({
       where: {
-        userId: user_id,
+        userId: user.id,
         storyId: story_id,
       },
     });
