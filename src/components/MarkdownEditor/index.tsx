@@ -108,14 +108,16 @@ export default function MarkdownEditor({ initialValue, id }: Props) {
   const handleEditorSubmit = useCallback(() => {
     startTransition(async () => {
       if (dirty) {
-        await axios.patch<z.infer<typeof patchStorySchema>>("/api/stories", {
-          id,
-          content: value,
-        });
+        await axios.patch<z.infer<typeof patchStorySchema>>(
+          `/api/stories/id/${id}`,
+          {
+            content: value,
+          },
+        );
       }
       router.push(`/editor/dashboard`);
     });
-  }, [value]);
+  }, [value, id]);
 
   return (
     <div className="flex h-full grow flex-row">

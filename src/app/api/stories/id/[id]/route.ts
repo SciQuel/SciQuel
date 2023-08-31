@@ -139,13 +139,24 @@ export async function PATCH(
         orderBy: { createdAt: "desc" },
       });
 
-      await prisma.storyContent.update({
-        where: { id: storyContent?.id ?? "" },
-        data: {
-          content: parsedBody.data.content,
-          footer: parsedBody.data.footer,
-        },
-      });
+      if (storyContent) {
+        await prisma.storyContent.update({
+          where: { id: storyContent.id },
+          data: {
+            content: parsedBody.data.content,
+            footer: parsedBody.data.footer,
+          },
+        });
+      } else {
+        await prisma.storyContent.create({
+          data: {
+            content: parsedBody.data.content ?? "",
+            footer: parsedBody.data.footer,
+            createdAt: new Date(),
+            storyId: id,
+          },
+        });
+      }
     }
 
     return NextResponse.json({ id }, { status: 200 });
