@@ -255,6 +255,7 @@ export default function StoryContributorForm({
             className="mt-5 select-none rounded-md bg-teal-600 px-2 py-1 font-semibold text-white disabled:pointer-events-none disabled:opacity-50"
             disabled={
               state.some((entry) => !entry.author.email || entry.bio === "") ||
+              state.length === 0 ||
               loading
             }
           >
