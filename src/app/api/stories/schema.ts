@@ -76,4 +76,5 @@ export const patchStorySchema = z.object({
     .optional(),
   content: z.string().optional(),
   footer: z.string().nullable().optional(),
+  published: z.boolean().optional(),
 });

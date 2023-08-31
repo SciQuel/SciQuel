@@ -159,6 +159,15 @@ export async function PATCH(
       }
     }
 
+    if (parsedBody.data.published !== undefined) {
+      await prisma.story.update({
+        where: { id },
+        data: {
+          published: parsedBody.data.published,
+        },
+      });
+    }
+
     return NextResponse.json({ id }, { status: 200 });
   } catch (err) {
     console.error(err);
