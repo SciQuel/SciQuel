@@ -1,63 +1,13 @@
 import QuizCard from "@/components/UserSettings/QuizCard";
-import { StoryTopic } from "@prisma/client";
+import getQuizHistory, { type QuizHistory } from "../../actions/getQuizHistory";
 
-// mock data
-const mock_quiz_history = [
-  {
-    title: "Lights, Camera, Action!",
-    topic: StoryTopic.PHYSICS,
-    date: "May 15, 2022",
-    type: "Pre-Quiz",
-    total: 3,
-    score: 1,
-  },
-  {
-    title: "Lights, Camera, Action!",
-    topic: StoryTopic.PHYSICS,
-    date: "May 15, 2022",
-    type: "Post-Quiz",
-    total: 3,
-    score: 3,
-  },
-  {
-    title: "Lights, Camera, Action!",
-    topic: StoryTopic.PHYSICS,
-    date: "May 15, 2022",
-    type: "Pre-Quiz",
-    total: 3,
-    score: 1,
-  },
-  {
-    title: "Lights, Camera, Action!",
-    topic: StoryTopic.PHYSICS,
-    date: "May 15, 2022",
-    type: "Post-Quiz",
-    total: 3,
-    score: 3,
-  },
-  {
-    title: "Lights, Camera, Action!",
-    topic: StoryTopic.PHYSICS,
-    date: "May 15, 2022",
-    type: "Pre-Quiz",
-    total: 3,
-    score: 1,
-  },
-  {
-    title: "Lights, Camera, Action!",
-    topic: StoryTopic.PHYSICS,
-    date: "May 15, 2022",
-    type: "Post-Quiz",
-    total: 3,
-    score: 3,
-  },
-];
-
-export default function QuizHistory() {
+export default async function QuizHistory() {
+  const quizzes: QuizHistory[] | null = await getQuizHistory();
+  if (!quizzes) return null;
   return (
     <section className="mt-6 flex min-h-[180px] w-full flex-nowrap gap-4 overflow-auto ">
-      {mock_quiz_history.map((quizItem, idx) => (
-        <QuizCard idx={idx} quizItem={quizItem} />
+      {quizzes?.map((quizItem: QuizHistory, idx) => (
+        <QuizCard idx={idx} quiz={quizItem} key={idx} />
       ))}
     </section>
   );

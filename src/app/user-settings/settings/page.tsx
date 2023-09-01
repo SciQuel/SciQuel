@@ -148,9 +148,14 @@ export default function Settings() {
           Pick the curated content you want to see most.
         </p>
         <div className="grid max-h-64 auto-rows-max grid-cols-1 gap-2 overflow-auto rounded-md border bg-white p-4 md:grid-cols-2">
-          {Object.keys(StoryTopic).map((topic) => (
-            <div className="flex items-center gap-1">
-              <input type="checkbox" value={topic} className="mr-2" />
+          {Object.keys(StoryTopic).map((topic, idx) => (
+            <div className="flex items-center gap-1" key={idx}>
+              <input
+                placeholder="topic"
+                type="checkbox"
+                value={topic}
+                className="mr-2"
+              />
               {iconMap[topic as keyof typeof StoryTopic]}
               {topic.charAt(0) +
                 topic.slice(1).replace(/_/g, " ").toLowerCase()}
