@@ -307,7 +307,7 @@ paths:
       tags:
         - User
       summary: Get brain record given story and user
-      description: Get brain record given story_id and user_id
+      description: Get brain record given story_id and user_email
       parameters:
         - in: path
           name: story_id
@@ -317,12 +317,12 @@ paths:
           required: true
           description: Story ID
         - in: path
-          name: user_id
+          name: user_email
           schema:
             type: string
-            example: "647ad6fda9efff3abe83044f"
+            example: "john@example.com"
           required: true
-          description: User ID
+          description: User Email
       responses:
         "200":
           description: Found a brain record given story_id and user_id
@@ -340,6 +340,16 @@ paths:
                   error:
                     type: string
                     example: Bad Request
+        "403":
+          description: user_email does not match session
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Forbidden
         "404":
           description: No matching brain record
           content:
@@ -375,9 +385,9 @@ paths:
                 story_id:
                   type: string
                   example: "647ad74aa9efff3abe83045a"
-                user_id:
+                user_email:
                   type: string
-                  example: "647ad6fda9efff3abe83044f"
+                  example: "john@example.com"
       responses:
         "200":
           description: Successfully record the brain activity
@@ -395,8 +405,18 @@ paths:
                   error:
                     type: string
                     example: Bad Request
+        "403":
+          description: user_email does not match session
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Forbidden
         "404":
-          description: story_id or user_id not found
+          description: story_id or user_email not found
           content:
             application/json:
               schema:
@@ -429,12 +449,12 @@ paths:
           required: true
           description: Story ID
         - in: path
-          name: user_id
+          name: user_email
           schema:
             type: string
-            example: "647ad6fda9efff3abe83044f"
+            example: "john@example.com"
           required: true
-          description: User ID
+          description: User Email
       responses:
         "200":
           description: Successfully record the brain activity
@@ -452,8 +472,18 @@ paths:
                   error:
                     type: string
                     example: Bad Request
+        "403":
+          description: user_email does not match session
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Forbidden
         "404":
-          description: story_id or user_id not found, or brain activity not found
+          description: story_id or user_email not found, or brain activity not found
           content:
             application/json:
               schema:
@@ -477,7 +507,7 @@ paths:
       tags:
         - User
       summary: Get bookmark record given story and user
-      description: Get bookmark record given story_id and user_id
+      description: Get bookmark record given story_id and user_email
       parameters:
         - in: path
           name: story_id
@@ -487,15 +517,15 @@ paths:
           required: true
           description: Story ID
         - in: path
-          name: user_id
+          name: user_email
           schema:
             type: string
-            example: "647ad6fda9efff3abe83044f"
+            example: "john@example.com"
           required: true
-          description: User ID
+          description: User Email
       responses:
         "200":
-          description: Found a bookmark record given story_id and user_id
+          description: Found a bookmark record given story_id and user_email
           content:
             application/json:
               schema:
@@ -510,6 +540,16 @@ paths:
                   error:
                     type: string
                     example: Bad Request
+        "403":
+          description: user_email does not match session
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Forbidden
         "404":
           description: No matching bookmark record
           content:
@@ -565,8 +605,18 @@ paths:
                   error:
                     type: string
                     example: Bad Request
+        "403":
+          description: user_email does not match session
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Forbidden
         "404":
-          description: story_id or user_id not found
+          description: story_id or user_email not found
           content:
             application/json:
               schema:
@@ -599,12 +649,12 @@ paths:
           required: true
           description: Story ID
         - in: path
-          name: user_id
+          name: user_email
           schema:
             type: string
-            example: "647ad6fda9efff3abe83044f"
+            example: "john@example.com"
           required: true
-          description: User ID
+          description: User Email
       responses:
         "200":
           description: Successfully record the bookmark activity
@@ -622,8 +672,18 @@ paths:
                   error:
                     type: string
                     example: Bad Request
+        "403":
+          description: user_email does not match session
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Forbidden
         "404":
-          description: story_id or user_id not found, or bookmark activity not found
+          description: story_id or user_email not found, or bookmark activity not found
           content:
             application/json:
               schema:
