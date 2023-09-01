@@ -8,7 +8,7 @@ interface Params {
 }
 
 export default async function SearchPage({ searchParams }: Params) {
-  console.log("searchParams", searchParams);
+  // console.log("searchParams", searchParams);
   const search = await retrieveDefaultContent(searchParams);
 
   return (

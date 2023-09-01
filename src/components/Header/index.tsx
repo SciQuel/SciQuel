@@ -22,17 +22,14 @@ export default function Header() {
       const maxY = document.documentElement.scrollHeight - window.innerHeight;
       if (window.location.pathname.split("/")[1] === "stories") {
         /**
-         * y > window.scrollY : last saved Y > current scrollY means scrolling up
-         * window.scrollY > 800(height of imag): scrolling event only apply after 800(heigh of imag )
-         * window.scrollY == 0 : if scroll Y  = 0 means hit the top apply the scroll up.
+         * y > window.scrollY : last saved Y > current scrollY means scrolling up window.scrollY >
+         * 800(height of imag): scrolling event only apply after 800(heigh of imag ) window.scrollY
+         * == 0 : if scroll Y = 0 means hit the top apply the scroll up.
          */
         if (y > window.scrollY && window.scrollY > 650) {
           // console.log("scrolling up");
 
-          /**
-           * Safari case
-           * if Y greather maxY( whole page ) set as scrolling down style
-           */
+          /** Safari case if Y greather maxY( whole page ) set as scrolling down style */
           if (y > maxY) {
             // console.log("scrolling down");
             setScroll(true);
@@ -41,9 +38,7 @@ export default function Header() {
           }
         } else {
           /**
-           * Safari case
-           * if Y is less than equal to 0 (top of page)  set as scrolling up style
-           * else
+           * Safari case if Y is less than equal to 0 (top of page) set as scrolling up style else
            * regular case scrolling down style
            */
           if (window.scrollY <= 10) {
@@ -91,6 +86,10 @@ export default function Header() {
     },
     [counter, y],
   );
+  const onProfile = (e: React.FormEvent) => {
+    e.preventDefault();
+    router.push(`/profile`);
+  };
   const onSearch = (e: React.FormEvent) => {
     e.preventDefault();
     const encodedSearchQuery = encodeURI(searchQuery);
@@ -101,9 +100,9 @@ export default function Header() {
     }
     console.log("current query ", encodedSearchQuery);
   };
-  /** useEffect tell React that your component needs to do something after render.
-   * EventListener for function handleNavigation
-   * and clean up after it.
+  /**
+   * useEffect tell React that your component needs to do something after render. EventListener for
+   * function handleNavigation and clean up after it.
    */
   useEffect(() => {
     setY(window.scrollY);
@@ -166,7 +165,8 @@ export default function Header() {
           className="grow cursor-pointer py-2 transition-colors hover:bg-sciquelHover"
           style={{ display: scroll ? "none" : "block" }}
         >
-          <Link href="/">ABOUT</Link>
+          {/* <Link href="/">ABOUT</Link> */}
+          <p onClick={onProfile}>ABOUT</p>
         </div>
       </div>
     </div>

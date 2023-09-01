@@ -51,7 +51,8 @@ export default function Search({ searchParams }: Props) {
               onChange={(e) => setMediaType(e.target.value)}
             >
               <option value=""></option>
-              <option value="article">Article</option>
+              <option value="essay">Essay</option>
+              <option value="digest">Digest</option>
             </select>
           </div>
           <div>
