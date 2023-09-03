@@ -4,7 +4,14 @@ import { GetStoryResult } from "@/app/api/stories/[year]/[month]/[day]/[slug]/ro
 import { type StoryTopic } from "@prisma/client";
 import { DateTime } from "luxon";
 import Image from "next/image";
-import { useContext } from "react";
+import {
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useReducer,
+  useRef,
+  useState,
+} from "react";
 import Avatar from "../Avatar";
 import TopicTag from "../TopicTag";
 import { PrintContext } from "./PrintContext";
@@ -14,8 +21,68 @@ interface Props {
   story: GetStoryResult;
 }
 
+interface FontAction {
+  type: "window update";
+}
+
 export default function StoryCredits({ story }: Props) {
   const isPrintMode = useContext(PrintContext);
+  const headerRef = useRef<HTMLDivElement>(null);
+
+  //72
+  const [headerFont, dispatchHeaderFont] = useReducer(
+    (state: number, action: FontAction) => {
+      switch (action.type) {
+        case "window update":
+          if (
+            headerRef.current &&
+            headerRef.current.clientHeight > window.innerHeight * 0.9 - 90 &&
+            state > 14
+          ) {
+            return state - 2;
+          } else if (
+            headerRef.current &&
+            headerRef.current.clientHeight +
+              state +
+              Math.max(state - 23, 14) +
+              32 <
+              window.innerHeight * 0.9 - 90 &&
+            state < 72
+          ) {
+            return state + 2;
+          } else {
+            return state;
+          }
+
+        default:
+          throw Error("unknown action in header font reducer");
+      }
+    },
+    72,
+  );
+
+  function handleWindowResize() {
+    if (headerRef.current) {
+      dispatchHeaderFont({ type: "window update" });
+    }
+  }
+
+  useEffect(() => {
+    console.log("is print mode? : ", isPrintMode);
+    if (!isPrintMode) {
+      window.addEventListener("resize", handleWindowResize);
+    } else {
+      window.removeEventListener("resize", handleWindowResize);
+    }
+
+    return () => {
+      window.removeEventListener("resize", handleWindowResize);
+    };
+  }, [isPrintMode]);
+
+  useLayoutEffect(() => {
+    dispatchHeaderFont({ type: "window update" });
+  }, [headerFont]);
 
   return isPrintMode ? (
     <>
@@ -81,28 +148,42 @@ export default function StoryCredits({ story }: Props) {
     </>
   ) : (
     <>
-      <div className="relative h-screen">
+      <div className="absolute top-0 flex h-screen w-full items-end">
         <Image
           src={story.thumbnailUrl}
           className="-z-10 h-full object-cover"
           fill={true}
           alt={story.title}
         />
-        <div className="relative flex h-full flex-col justify-end px-12 pb-24 pt-10">
+        <div
+          ref={headerRef}
+          className={`relative mx-12 my-20 flex min-h-0 w-full flex-col justify-end overflow-hidden `}
+        >
           <h1
-            className="w-4/5 p-8 font-alegreyaSansSC text-6xl font-bold sm:text-8xl"
-            style={{ color: story.titleColor }}
+            className="mb-0 p-8 pb-0 font-alegreyaSansSC text-6xl font-bold sm:text-8xl lg:w-4/5"
+            style={{
+              color: story.titleColor,
+
+              fontSize: `${Math.max(headerFont, 14)}px`,
+              lineHeight: `${Math.max(headerFont + 3, 14)}px`,
+            }}
           >
             {story.title}
           </h1>
           <h2
-            className="w-5/6 p-8 pt-0 font-alegreyaSansSC text-4xl font-semibold"
-            style={{ color: story.summaryColor }}
+            className="p-8 pt-0 font-alegreyaSansSC text-4xl font-semibold lg:w-5/6"
+            style={{
+              color: story.summaryColor,
+
+              fontSize: `${Math.max(headerFont - 28, 14)}px`,
+              lineHeight: `${Math.max(headerFont - 25, 14)}px`,
+            }}
           >
             {story.summary}
           </h2>
         </div>
       </div>
+      <div className="w-100 h-[calc(100vh_-_4rem)]" />
       <div className="h-fit w-screen">
         <p className="fs-2 mx-2 my-0 p-0">
           Title Image provided by Source name
@@ -114,12 +195,16 @@ export default function StoryCredits({ story }: Props) {
 
           <div className="flex flex-row">
             <p className="mr-2">
-              {story.category.slice(0, 1) +
-                story.category.slice(1).toLowerCase()}{" "}
+              {story.category
+                ? story.category.slice(0, 1) +
+                  story.category.slice(1).toLowerCase()
+                : ""}{" "}
               |{" "}
-              {story.storyType.slice(0, 1) +
-                story.storyType.slice(1).toLowerCase()}{" "}
-              |
+              {story.storyType
+                ? story.storyType.slice(0, 1) +
+                  story.storyType.slice(1).toLowerCase() +
+                  " | "
+                : ""}
             </p>
             {story.tags.map((item: StoryTopic, index: number) => {
               return <TopicTag name={item} key={`${item}-${index}`} />;

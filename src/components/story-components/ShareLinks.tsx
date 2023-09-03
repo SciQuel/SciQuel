@@ -1,5 +1,6 @@
 "use client";
 
+import { signIn, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -9,12 +10,18 @@ import instagramIcon from "../../../public/assets/images/story-ig.png";
 import shareIcon from "../../../public/assets/images/story-share.png";
 import { PrintContext, PrintToggleContext } from "./PrintContext";
 
+type modalOptions = "none" | "brain-login" | "bookmark-login" | "share";
+
 export default function ShareLinks() {
-  const [showOptions, setShowOptions] = useState(false);
+  const [showOptions, setShowOptions] = useState<modalOptions>("none");
+  const [optionText, setOptionText] = useState(" bookmark ");
+  const [isBrained, setIsBrained] = useState(false);
   const popupRef = useRef<HTMLDivElement>(null);
+  const popupRef2 = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   const isPrintMode = useContext(PrintContext);
   const toggleFunction = useContext(PrintToggleContext);
+  const { data: session, status } = useSession();
 
   useEffect(() => {
     document.addEventListener("mousedown", handleClick);
@@ -25,10 +32,39 @@ export default function ShareLinks() {
   }, []);
 
   function handleClick(e: MouseEvent) {
-    if (popupRef.current) {
-      if (!popupRef.current.contains(e.target as Node)) {
-        setShowOptions(false);
-      }
+    let shouldShut = true;
+
+    if (popupRef.current?.contains(e.target as Node)) {
+      shouldShut = false;
+    }
+
+    if (popupRef2.current?.contains(e.target as Node)) {
+      // setShowOptions("none");
+      shouldShut = false;
+    }
+
+    if (shouldShut) {
+      setShowOptions("none");
+    }
+  }
+
+  function handleBrain() {
+    if (status != "authenticated") {
+      setShowOptions("brain-login");
+      setOptionText(" brain ");
+      // alert("you must login to brain an article!");
+    } else {
+      console.log(session);
+    }
+  }
+
+  function handleBookmark() {
+    if (status != "authenticated") {
+      setShowOptions("bookmark-login");
+      setOptionText(" bookmark ");
+      // alert("you must login to brain an article!");
+    } else {
+      console.log(session);
     }
   }
 
@@ -49,26 +85,34 @@ export default function ShareLinks() {
           height={45}
         />
       </button>
-      <button className="pointer-events-auto h-fit w-fit rounded-full p-3 ">
+      <button
+        onClick={handleBrain}
+        className="pointer-events-auto h-fit w-fit rounded-full p-3 "
+      >
         <Image
           src={shareIcon}
           alt="share to a link to this story"
           width={45}
           height={45}
         />
+        <p>{isBrained ? "undo" : "Brain"}</p>
       </button>
-      <button className="pointer-events-auto h-fit w-fit rounded-full p-3">
+      <button
+        onClick={handleBookmark}
+        className="pointer-events-auto h-fit w-fit rounded-full p-3"
+      >
         <Image
           src={shareIcon}
           alt="share to a link to this story"
           width={45}
           height={45}
         />
+        <p>book</p>
       </button>
       <button
         className="pointer-events-auto h-fit w-fit rounded-full p-3"
         onClick={() => {
-          setShowOptions(!showOptions);
+          setShowOptions("share");
         }}
       >
         <Image
@@ -78,16 +122,50 @@ export default function ShareLinks() {
           height={45}
         />
       </button>
+      <div
+        className={`${
+          showOptions == "brain-login" || showOptions == "bookmark-login"
+            ? "opacity-1 pointer-events-auto"
+            : "opacity-0 sm:-translate-y-2"
+        }  fixed bottom-0 left-0 h-screen w-screen items-end overflow-hidden bg-neutral-800/75 transition-all sm:absolute sm:top-16 sm:mt-3 sm:h-auto sm:min-h-fit sm:overflow-visible sm:bg-transparent`}
+        // sm:absolute   sm:top-0 sm:-ml-2 sm:mt-20 sm:h-fit sm:w-fit sm:items-start sm:justify-center sm:bg-transparent xl:static xl:mt-3
+      >
+        {/* brain / bookmark login modal */}
+        <div
+          ref={popupRef2}
+          className={
+            (showOptions == "brain-login"
+              ? " sm:before:left-16 xl:-top-1 "
+              : "") +
+            (showOptions == "bookmark-login"
+              ? " sm:before:right-28 xl:top-20 xl:mt-[1.1rem] "
+              : "") +
+            `absolute bottom-0 h-fit w-screen rounded-t border-x-2 border-t-2 border-sciquelCardBorder bg-sciquelCardBg px-5 py-5 sm:relative sm:ml-2 sm:mt-3 sm:w-fit sm:rounded sm:border-2 sm:before:absolute sm:before:-top-4 sm:before:z-[2] sm:before:ml-4 sm:before:h-7 sm:before:w-7 sm:before:rotate-45 sm:before:border-l-2 sm:before:border-t-2 sm:before:border-sciquelCardBorder sm:before:bg-sciquelCardBg xl:left-24 xl:before:-left-7 xl:before:top-1/2 xl:before:ml-[0.9rem]  xl:before:h-6 xl:before:w-6 xl:before:-translate-y-1/2 xl:before:-rotate-45`
+          }
+        >
+          {/**/}
+          <p className="text-center text-lg">
+            <a
+              href="#"
+              onClick={() => signIn()}
+              className=" text-xl font-bold underline"
+            >
+              login
+            </a>{" "}
+            to {optionText} this article
+          </p>
+        </div>
+      </div>
 
       <div
         className={`${
-          showOptions ? "opacity-1" : "opacity-0 sm:-translate-y-2"
+          showOptions == "share" ? "opacity-1" : "opacity-0 sm:-translate-y-2"
         }  fixed bottom-0  left-0 h-screen w-screen items-end overflow-hidden bg-neutral-800/75 transition-all sm:absolute   sm:top-0 sm:-ml-2 sm:mt-20 sm:h-fit sm:w-fit sm:items-start sm:justify-center sm:bg-transparent xl:static xl:mt-3`}
       >
         <div
           ref={popupRef}
           className={`${
-            showOptions
+            showOptions == "share"
               ? "translate-y-0"
               : "max-h-0 translate-y-full opacity-0 sm:-translate-y-0"
           }  absolute bottom-0 flex w-screen flex-col pt-0 transition-transform duration-500 sm:relative sm:pl-5 sm:pr-1 sm:before:absolute sm:before:left-52 sm:before:top-2 sm:before:z-[2] sm:before:ml-6 sm:before:h-8 sm:before:w-8 sm:before:rotate-45 sm:before:border-l-2 sm:before:border-t-2 sm:before:border-sciquelCardBorder sm:before:bg-sciquelCardBg  md:w-[720px] md:pl-0 md:pr-0 xl:w-fit xl:before:left-0 xl:before:ml-7`}
@@ -151,7 +229,7 @@ export default function ShareLinks() {
               </a>
             </div>
             <div
-              className={`pointer-events-auto m-0 mt-2 rounded-t border-x-2 border-t-2 border-sciquelCardBorder bg-sciquelCardBg p-4 pb-2 lg:h-fit xl:mx-3 xl:rounded xl:border-2 xl:pb-4`}
+              className={`pointer-events-auto m-0 mt-2 rounded-t border-x-2 border-t-2 border-sciquelCardBorder bg-sciquelCardBg p-4 pb-2 lg:h-fit xl:mx-3 xl:rounded   xl:border-2 xl:p-3`}
             >
               {/* floating input for copying link */}
               <input

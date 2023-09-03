@@ -24,7 +24,7 @@ export default function AuthorCredits({ storyContributions }: Props) {
   return isPrintMode ? (
     <div>
       {storyContributions.map((element, index) => (
-        <>
+        <div key={element.user.id}>
           <p className="w-[calc( 100% - 1rem )] mx-2 mb-1 p-0 font-sourceSerif4 text-xl font-semibold md:mx-auto md:w-[720px]">
             {element.contributionType.slice(0, 1) +
               element.contributionType.slice(1).toLowerCase()}
@@ -37,7 +37,7 @@ export default function AuthorCredits({ storyContributions }: Props) {
             </span>
             {element.user.bio}
           </p>
-        </>
+        </div>
       ))}
     </div>
   ) : (
