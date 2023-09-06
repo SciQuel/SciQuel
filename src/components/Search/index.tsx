@@ -4,12 +4,10 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 interface Props {
-  searchParams: { [key: string]: string | undefined };
+  searchParams: { [key: string]: string };
 }
 export default function Search({ searchParams }: Props) {
-  console.log("searchParams", searchParams);
   const { keyword, type, date_from, date_to, sort_by } = searchParams;
-  console.log("keyword", keyword);
   const [searchQuery, setSearchQuery] = useState(keyword);
   const [sort, setSort] = useState(sort_by);
   const [mediaType, setMediaType] = useState(type);
@@ -18,14 +16,20 @@ export default function Search({ searchParams }: Props) {
   const router = useRouter();
   const onSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("type", type);
-    const hi = { searchQuery, mediaType, dateFrom, dateTo, sort };
-    const path = filterRoute(hi);
-    // console.log("keyword", searchQuery);
-    console.log("path", path);
-    // const encodedSearchQuery = encodeURI(searchQuery);
-    router.push(`/search?${path}`);
-    // router.push(`/search?keyword=${encodedSearchQuery}`);
+    const keyword = searchQuery;
+    const type = mediaType;
+    const date_from = dateFrom;
+    const date_to = dateTo;
+    const sort_by = sort;
+    const update = {
+      ...(keyword ? { keyword } : {}),
+      ...(type ? { type } : {}),
+      ...(date_from ? { date_from } : {}),
+      ...(date_to ? { date_to } : {}),
+      ...(sort_by ? { sort_by } : {}),
+    };
+    const searchParams = new URLSearchParams(update);
+    router.push(`/search?${searchParams.toString()}`);
   };
 
   return (
@@ -87,144 +91,4 @@ export default function Search({ searchParams }: Props) {
       </div>
     </div>
   );
-}
-type ParameterType = {
-  searchQuery: string | undefined;
-  mediaType: string | undefined;
-  dateFrom: string | undefined;
-  dateTo: string | undefined;
-  sort: string | undefined;
-};
-
-function filterRoute({
-  searchQuery,
-  mediaType,
-  dateFrom,
-  dateTo,
-  sort,
-}: ParameterType) {
-  const fillQuery =
-    searchQuery != undefined ? `keyword=${encodeURI(searchQuery)}` : ``;
-  const fillType = mediaType != undefined ? `type=${mediaType}` : ``;
-  const fillSort = sort != undefined ? `sort_by=${sort}` : ``;
-
-  let filterDate = ``;
-  if (dateFrom != undefined && dateTo != undefined) {
-    filterDate = `date_from=${dateFrom}&date_to=${dateTo}`;
-  } else {
-    if (dateFrom != undefined) {
-      filterDate = `date_from=${dateFrom}`;
-    } else if (dateTo != undefined) {
-      filterDate = `date_to=${dateTo}`;
-    } else {
-      filterDate = ``;
-    }
-  }
-
-  let route = ``;
-  if (fillQuery != `` && fillType != `` && filterDate != `` && fillSort != ``) {
-    route = `${fillQuery}&${fillType}&${filterDate}&${fillSort}`;
-  } else if (
-    fillQuery != `` &&
-    fillType != `` &&
-    filterDate != `` &&
-    fillSort == ``
-  ) {
-    route = `${fillQuery}&${fillType}&${filterDate}`;
-  } else if (
-    fillQuery != `` &&
-    fillType != `` &&
-    filterDate == `` &&
-    fillSort != ``
-  ) {
-    route = `${fillQuery}&${fillType}&${fillSort}`;
-  } else if (
-    fillQuery != `` &&
-    fillType != `` &&
-    filterDate == `` &&
-    fillSort == ``
-  ) {
-    route = `${fillQuery}&${fillType}`;
-  } else if (
-    fillQuery != `` &&
-    fillType == `` &&
-    filterDate != `` &&
-    fillSort != ``
-  ) {
-    route = `${fillQuery}&${filterDate}&${fillSort}`;
-  } else if (
-    fillQuery != `` &&
-    fillType == `` &&
-    filterDate != `` &&
-    fillSort == ``
-  ) {
-    route = `${fillQuery}&${filterDate}`;
-  } else if (
-    fillQuery != `` &&
-    fillType == `` &&
-    filterDate == `` &&
-    fillSort != ``
-  ) {
-    route = `${fillQuery}&${fillSort}`;
-  } else if (
-    fillQuery != `` &&
-    fillType == `` &&
-    filterDate == `` &&
-    fillSort == ``
-  ) {
-    route = `${fillQuery}`;
-  } else if (
-    fillQuery == `` &&
-    fillType != `` &&
-    filterDate != `` &&
-    fillSort != ``
-  ) {
-    route = `${fillType}&${filterDate}&${fillSort}`;
-  } else if (
-    fillQuery == `` &&
-    fillType != `` &&
-    filterDate != `` &&
-    fillSort == ``
-  ) {
-    route = `${fillType}&${filterDate}`;
-  } else if (
-    fillQuery == `` &&
-    fillType != `` &&
-    filterDate == `` &&
-    fillSort != ``
-  ) {
-    route = `${fillType}&${fillSort}`;
-  } else if (
-    fillQuery == `` &&
-    fillType != `` &&
-    filterDate == `` &&
-    fillSort == ``
-  ) {
-    route = `${fillType}`;
-  } else if (
-    fillQuery == `` &&
-    fillType == `` &&
-    filterDate != `` &&
-    fillSort != ``
-  ) {
-    route = `${filterDate}&${fillSort}`;
-  } else if (
-    fillQuery == `` &&
-    fillType == `` &&
-    filterDate != `` &&
-    fillSort == ``
-  ) {
-    route = `${filterDate}`;
-  } else if (
-    fillQuery == `` &&
-    fillType == `` &&
-    filterDate == `` &&
-    fillSort != ``
-  ) {
-    route = `${fillSort}`;
-  } else {
-    route = ``;
-  }
-  console.log("client side route ", route);
-  return route;
 }
