@@ -3,24 +3,81 @@ import TopicIcon from "./TopicIcon";
 
 export default function Topic() {
   const topics = [
-    { Topic: "Astronomy", Image: <TopicIcon type="Astronomy" /> },
-    { Topic: "Biology", Image: <TopicIcon type="Biology" /> },
-    { Topic: "Chemistry", Image: <TopicIcon type="Chemistry" /> },
-    { Topic: "Computer Science", Image: <TopicIcon type="ComputerS" /> },
-    { Topic: "Chemical", Image: <TopicIcon type="Chemical" /> },
-    { Topic: "Electrical", Image: <TopicIcon type="Electrical" /> },
+    {
+      Topic: "Astronomy",
+      Image: <TopicIcon type="Astronomy" />,
+      Hover: <TopicIcon type="AstronomyAct" />,
+    },
+    {
+      Topic: "Biology",
+      Image: <TopicIcon type="Biology" />,
+      Hover: <TopicIcon type="BiologyAct" />,
+    },
+    {
+      Topic: "Chemistry",
+      Image: <TopicIcon type="Chemistry" />,
+      Hover: <TopicIcon type="ChemistryAct" />,
+    },
+    {
+      Topic: "Computer Science",
+      Image: <TopicIcon type="ComputerS" />,
+      Hover: <TopicIcon type="ComputerSAct" />,
+    },
+    {
+      Topic: "Chemical",
+      Image: <TopicIcon type="Chemical" />,
+      Hover: <TopicIcon type="ChemicalAct" />,
+    },
+    {
+      Topic: "Electrical",
+      Image: <TopicIcon type="Electrical" />,
+      Hover: <TopicIcon type="ElectricalAct" />,
+    },
     {
       Topic: "Environmental Science",
       Image: <TopicIcon type="Environmental" />,
+      Hover: <TopicIcon type="EnvironmentalAct" />,
     },
-    { Topic: "Geology", Image: <TopicIcon type="Geology" /> },
-    { Topic: "Mathematics", Image: <TopicIcon type="Math" /> },
-    { Topic: "Mechanical Engineering", Image: <TopicIcon type="Mechanical" /> },
-    { Topic: "Medicine", Image: <TopicIcon type="Medicine" /> },
-    { Topic: "Physics", Image: <TopicIcon type="Physics" /> },
-    { Topic: "Psychology", Image: <TopicIcon type="Psychology" /> },
-    { Topic: "Sociology", Image: <TopicIcon type="Sociology" /> },
-    { Topic: "Technology", Image: <TopicIcon type="Technology" /> },
+    {
+      Topic: "Geology",
+      Image: <TopicIcon type="Geology" />,
+      Hover: <TopicIcon type="GeologyAct" />,
+    },
+    {
+      Topic: "Mathematics",
+      Image: <TopicIcon type="Math" />,
+      Hover: <TopicIcon type="MathAct" />,
+    },
+    {
+      Topic: "Mechanical Engineering",
+      Image: <TopicIcon type="Mechanical" />,
+      Hover: <TopicIcon type="MechanicalAct" />,
+    },
+    {
+      Topic: "Medicine",
+      Image: <TopicIcon type="Medicine" />,
+      Hover: <TopicIcon type="MedicineAct" />,
+    },
+    {
+      Topic: "Physics",
+      Image: <TopicIcon type="Physics" />,
+      Hover: <TopicIcon type="PhysicsAct" />,
+    },
+    {
+      Topic: "Psychology",
+      Image: <TopicIcon type="Psychology" />,
+      Hover: <TopicIcon type="PsychologyAct" />,
+    },
+    {
+      Topic: "Sociology",
+      Image: <TopicIcon type="Sociology" />,
+      Hover: <TopicIcon type="SociologyAct" />,
+    },
+    {
+      Topic: "Technology",
+      Image: <TopicIcon type="Technology" />,
+      Hover: <TopicIcon type="TechnologyAct" />,
+    },
   ];
   const [showTopic, setShowTopic] = useState(false);
   const topicRef = useRef<HTMLDivElement>(null);
@@ -70,7 +127,10 @@ export default function Topic() {
                           color: currentTopic === topic.Topic ? "#ad2319" : "",
                         }}
                       >
-                        {topic.Image}
+                        {currentTopic === topic.Topic
+                          ? topic.Hover
+                          : topic.Image}
+
                         <span>{topic.Topic}</span>
                       </li>
                     </>
