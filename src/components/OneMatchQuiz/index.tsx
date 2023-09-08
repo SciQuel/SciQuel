@@ -15,6 +15,10 @@ interface Props {
   totalQuestions: number; // The total number of questions.
   onPrevious: () => void; // The function called when using the previous button.
   onNext: () => void; // The function called when using the next button.
+  toQuizResultsScreen: (
+    preQuizResults: boolean[],
+    postQuizResults: boolean[],
+  ) => void; // The function called when using the next button after the final question.
 }
 
 export default function OneMatchQuiz({
@@ -28,6 +32,7 @@ export default function OneMatchQuiz({
   totalQuestions,
   onPrevious,
   onNext,
+  toQuizResultsScreen,
 }: Props) {
   /* component state variables */
   const [isTouchDevice, setIsTouchDevice] = useState(false); // whether the user is using a touch(mobile) device or not
@@ -44,6 +49,9 @@ export default function OneMatchQuiz({
       Array.from({ length: choices.length }, () => null),
     ),
   ); // an array of booleans arrays to store results for ea/ statement (for ea/ question)
+  const [questionResultList, setQuestionResultList] = useState<boolean[]>(
+    Array(totalQuestions).fill(false),
+  );
 
   const [showAnswerExplanation, setShowAnswerExplanation] = useState(false); // determines if explanations should be shown
   const [hasAnsweredList, setHasAnsweredList] = useState<boolean[]>(
@@ -315,11 +323,15 @@ export default function OneMatchQuiz({
     const answerCorrect: boolean[] = userAnswers.map(
       (userAnswer, index) => userAnswer === correctAnswer[index],
     );
+    const questionResult = answerCorrect.every((isCorrect) => isCorrect);
 
     console.log("answerCorrect", answerCorrect);
 
     const updatedAnswerCorrectList = [...answerCorrectList];
     updatedAnswerCorrectList[currentQuestion - 1] = answerCorrect; // save the results for the current question
+
+    const updatedQuestionResultList = [...questionResultList];
+    updatedQuestionResultList[currentQuestion - 1] = questionResult; // save the overall result for the current question
 
     const updatedHasAnsweredList = [...hasAnsweredList];
     updatedHasAnsweredList[currentQuestion - 1] = true; // set current question as answered
@@ -335,6 +347,7 @@ export default function OneMatchQuiz({
     // give the user points or update their score here ?
 
     setAnswerCorrectList(updatedAnswerCorrectList);
+    setQuestionResultList(updatedQuestionResultList);
     setShowAnswerExplanation(true);
     setHasAnsweredList(updatedHasAnsweredList);
   };
@@ -347,8 +360,14 @@ export default function OneMatchQuiz({
 
   /** Handles the next button of an OM question (called when user clicks "Next" button). */
   const handleNext = () => {
-    // call quiz's handle previous function to go forward a question
-    onNext();
+    if (currentQuestion == totalQuestions) {
+      // get results from prequiz?
+      const preQuizResults = [true, false, false];
+      toQuizResultsScreen(preQuizResults, questionResultList);
+    } else {
+      // call quiz's handle next function to go forward a question
+      onNext();
+    }
   };
 
   const userAnswers = userAnswersList[currentQuestion - 1]; // user's answers for current question's (string array)
@@ -359,7 +378,7 @@ export default function OneMatchQuiz({
   const showPreviousButton = currentQuestion > 1;
   const showNextButton =
     (currentQuestion < totalQuestions && isPreQuiz) ||
-    (currentQuestion < totalQuestions && hasAnswered);
+    (currentQuestion <= totalQuestions && hasAnswered);
   const showSubmitButton = !showAnswerExplanation && !isPreQuiz;
   let shortenMatchLine = false;
 
@@ -466,12 +485,12 @@ export default function OneMatchQuiz({
                     }
                     ${
                       hasAnswered && !answerCorrect[index]
-                        ? "select-incorrect !bg-[#d09191]"
+                        ? "select-incorrect !bg-[#E29899]"
                         : ""
                     }  
                   ${
                     hasAnswered && answerCorrect[index]
-                      ? "select-correct !bg-[#9dbda1]"
+                      ? "select-correct !bg-[#A0C99C]"
                       : ""
                   }`}
                   >

@@ -10,6 +10,7 @@ import React, { useEffect, useState } from "react";
 import MultipleChoiceQuiz from "../MulitpleChoiceQuiz";
 import MultipleMatchQuiz from "../MultipleMatchQuiz";
 import OneMatchQuiz from "../OneMatchQuiz";
+import QuizResultsChart from "../Quiz/QuizResultsChart";
 import TrueFalseQuiz from "../TrueFalseQuiz";
 
 interface Props {
@@ -28,6 +29,17 @@ export default function Quiz({
   questionList,
 }: Props) {
   const [currentQuestion, setCurrentQuestion] = useState<number>(1);
+  const [atQuizResults, setAtQuizResults] = useState(false);
+  // const [preQuizResults, setPreQuizResults] = useState<boolean[]>();
+  const [preQuizResults, setPreQuizResults] = useState<(boolean | null)[]>([]);
+  // const [postQuizResults, setPostQuizResults] = useState<boolean[]>();
+  const [postQuizResults, setPostQuizResults] = useState<(boolean | null)[]>(
+    [],
+  );
+
+  // let preQuizResults: boolean[] = [];
+  // let postQuizResults: boolean[] = [];
+
   const themeColors: Record<StoryTopic, string> = {
     ASTRONOMY: "#A44A3F",
     BIOLOGY: "#D15B2B",
@@ -77,6 +89,26 @@ export default function Quiz({
     setCurrentQuestion((prevQuestion: number) => prevQuestion - 1);
   };
 
+  const toQuizResultsScreen = (
+    preQuizQuestionResults: boolean[],
+    postQuizQuestionResults: boolean[],
+  ) => {
+    if (!preQuizResults.length && !postQuizResults.length) {
+      console.log("pre", preQuizQuestionResults);
+      console.log("post", postQuizQuestionResults);
+      // preQuizResults = preQuizQuestionResults;
+      // postQuizResults = postQuizQuestionResults;
+      setPreQuizResults(preQuizQuestionResults);
+      setPostQuizResults(postQuizQuestionResults);
+    }
+    setAtQuizResults(true);
+  };
+
+  const jumpToQuestion = (questionNumber: number) => {
+    setCurrentQuestion(questionNumber);
+    setAtQuizResults(false);
+  };
+
   /**
    * Updates the progress bar and circle visuals based on the current question the user is viewing.
    */
@@ -97,7 +129,7 @@ export default function Quiz({
         progressContainer.querySelector<HTMLElement>("#progress-bar");
       const isComplete = isPreQuiz
         ? currentQuestion === questionList.length
-        : false; // change this later for the post quiz results screen
+        : atQuizResults; // change this later for the post quiz results screen
       let activeCircles: NodeListOf<HTMLElement> | null = null;
       let barWidth = "";
 
@@ -124,7 +156,7 @@ export default function Quiz({
         progress.style.width = barWidth;
       }
     }
-  }, [currentQuestion]);
+  }, [currentQuestion, atQuizResults]);
 
   /**
    * Sets the position of the quiz number element based on the quiz question element. The position
@@ -217,14 +249,19 @@ export default function Quiz({
 
       <div className="quiz-content flex h-full w-full flex-col items-center px-11 py-3 md-qz:self-center">
         <div className="question-container relative w-full px-5 md-qz:flex md-qz:flex-col md-qz:p-0">
-          <div
-            className="question-number font-sm absolute bottom-[15px] left-[-1.5rem] font-sourceSerif4 text-sm md-qz:relative md-qz:!top-0 md-qz:left-[0] md-qz:mb-1.5 md-qz:text-center "
-            id={
-              isPreQuiz ? "prequiz-question-number" : "postquiz-question-number"
-            }
-          >
-            {currentQuestion} of {questionList.length}
-          </div>
+          {!atQuizResults && (
+            <div
+              className="question-number font-sm absolute bottom-[15px] left-[-1.5rem] font-sourceSerif4 text-sm md-qz:relative md-qz:!top-0 md-qz:left-[0] md-qz:mb-1.5 md-qz:text-center "
+              id={
+                isPreQuiz
+                  ? "prequiz-question-number"
+                  : "postquiz-question-number"
+              }
+            >
+              {currentQuestion} of {questionList.length}
+            </div>
+          )}
+
           <h2
             className="question-heading font-quicksand mb-5 mt-2 text-2xl font-bold md-qz:my-5 md-qz:text-center sm-qz:text-[22px] "
             id={
@@ -233,125 +270,185 @@ export default function Quiz({
                 : "postquiz-question-heading"
             }
           >
-            {questionList[currentQuestion - 1].questionText}
+            {!atQuizResults
+              ? questionList[currentQuestion - 1].questionText
+              : "Quiz Results"}
           </h2>
         </div>
 
-        <div className="quiz-answers-container w-full px-5 py-4 pb-1.5 pt-2.5 sm-qz:w-[110%] xsm-qz:w-[125%]">
-          {(() => {
-            switch (quizQuestionType) {
-              case "Multiple Choice":
-                return (
-                  <MultipleChoiceQuiz
-                    isPreQuiz={isPreQuiz}
-                    choices={questionList[currentQuestion - 1].choices}
-                    correctAnswer={
-                      (questionList[currentQuestion - 1] as Question)
-                        .correctAnswer
-                    }
-                    answerExplanation={
-                      questionList[currentQuestion - 1].answerExplanation
-                    }
-                    currentQuestion={currentQuestion}
-                    totalQuestions={questionList.length}
-                    onPrevious={handlePrevious}
-                    onNext={handleNext}
-                  />
-                );
+        {!atQuizResults ? (
+          <div className="quiz-answers-container w-full px-5 py-4 pb-1.5 pt-2.5 sm-qz:w-[110%] xsm-qz:w-[125%]">
+            {(() => {
+              switch (quizQuestionType) {
+                case "Multiple Choice":
+                  return (
+                    <MultipleChoiceQuiz
+                      isPreQuiz={isPreQuiz}
+                      choices={questionList[currentQuestion - 1].choices}
+                      correctAnswer={
+                        (questionList[currentQuestion - 1] as Question)
+                          .correctAnswer
+                      }
+                      answerExplanation={
+                        questionList[currentQuestion - 1].answerExplanation
+                      }
+                      currentQuestion={currentQuestion}
+                      totalQuestions={questionList.length}
+                      onPrevious={handlePrevious}
+                      onNext={handleNext}
+                    />
+                  );
 
-              case "True/False":
-                return (
-                  <TrueFalseQuiz
-                    isPreQuiz={isPreQuiz}
-                    choices={questionList[currentQuestion - 1].choices}
-                    correctAnswer={
-                      (questionList[currentQuestion - 1] as Question)
-                        .correctAnswer
-                    }
-                    answerExplanation={
-                      questionList[currentQuestion - 1].answerExplanation
-                    }
-                    currentQuestion={currentQuestion}
-                    totalQuestions={questionList.length}
-                    onPrevious={handlePrevious}
-                    onNext={handleNext}
-                  />
-                );
+                case "True/False":
+                  return (
+                    <TrueFalseQuiz
+                      isPreQuiz={isPreQuiz}
+                      choices={questionList[currentQuestion - 1].choices}
+                      correctAnswer={
+                        (questionList[currentQuestion - 1] as Question)
+                          .correctAnswer
+                      }
+                      answerExplanation={
+                        questionList[currentQuestion - 1].answerExplanation
+                      }
+                      currentQuestion={currentQuestion}
+                      totalQuestions={questionList.length}
+                      onPrevious={handlePrevious}
+                      onNext={handleNext}
+                    />
+                  );
 
-              case "Multiple Match":
-                const multMatchQuestionList =
-                  questionList as MultipleMatchQuestion[];
-                const correctAnswerMapData =
-                  multMatchQuestionList[currentQuestion - 1].correctAnswerMap;
-                const correctAnswerMap = new Map(correctAnswerMapData);
+                case "Multiple Match":
+                  const multMatchQuestionList =
+                    questionList as MultipleMatchQuestion[];
+                  const correctAnswerMapData =
+                    multMatchQuestionList[currentQuestion - 1].correctAnswerMap;
+                  const correctAnswerMap = new Map(correctAnswerMapData);
+                  return (
+                    <MultipleMatchQuiz
+                      isPreQuiz={isPreQuiz}
+                      themeColor={getThemeColor(false)}
+                      matchStatements={
+                        (
+                          questionList[
+                            currentQuestion - 1
+                          ] as MultipleMatchQuestion
+                        ).matchStatements
+                      }
+                      choices={
+                        (
+                          questionList[
+                            currentQuestion - 1
+                          ] as MultipleMatchQuestion
+                        ).choices
+                      }
+                      correctAnswerMap={correctAnswerMap}
+                      answerExplanation={
+                        questionList[currentQuestion - 1].answerExplanation
+                      }
+                      currentQuestion={currentQuestion}
+                      totalQuestions={questionList.length}
+                      onPrevious={handlePrevious}
+                      onNext={handleNext}
+                    />
+                  );
 
-                console.log("correctAnswerMap", correctAnswerMap);
-                console.log(
-                  "correctAnswerMap map?",
-                  correctAnswerMap instanceof Map,
-                );
+                case "One Match":
+                  return (
+                    <OneMatchQuiz
+                      isPreQuiz={isPreQuiz}
+                      themeColor={getThemeColor(false)}
+                      matchStatements={
+                        (questionList[currentQuestion - 1] as OneMatchQuestion)
+                          .matchStatements
+                      }
+                      choices={
+                        (questionList[currentQuestion - 1] as OneMatchQuestion)
+                          .choices
+                      }
+                      correctAnswer={
+                        (questionList[currentQuestion - 1] as OneMatchQuestion)
+                          .correctAnswer
+                      }
+                      answerExplanation={
+                        questionList[currentQuestion - 1].answerExplanation
+                      }
+                      currentQuestion={currentQuestion}
+                      totalQuestions={questionList.length}
+                      onPrevious={handlePrevious}
+                      onNext={handleNext}
+                      toQuizResultsScreen={toQuizResultsScreen}
+                    />
+                  );
 
-                return (
-                  <MultipleMatchQuiz
-                    isPreQuiz={isPreQuiz}
-                    themeColor={getThemeColor(false)}
-                    matchStatements={
-                      (
-                        questionList[
-                          currentQuestion - 1
-                        ] as MultipleMatchQuestion
-                      ).matchStatements
-                    }
-                    choices={
-                      (
-                        questionList[
-                          currentQuestion - 1
-                        ] as MultipleMatchQuestion
-                      ).choices
-                    }
-                    correctAnswerMap={correctAnswerMap}
-                    answerExplanation={
-                      questionList[currentQuestion - 1].answerExplanation
-                    }
-                    currentQuestion={currentQuestion}
-                    totalQuestions={questionList.length}
-                    onPrevious={handlePrevious}
-                    onNext={handleNext}
-                  />
-                );
+                default:
+                  return <>not a valid type of quiz</>;
+              }
+            })()}
+          </div>
+        ) : (
+          <div className="quiz-results-container flex h-full w-full flex-col items-center gap-12 px-11 py-3 md-qz:self-center">
+            <div className="quiz-results-graphs flex h-full w-full flex-row items-center justify-center gap-6">
+              {/* <figure id="prequiz-results"></figure> */}
+              <QuizResultsChart
+                isPreQuiz={true}
+                quizResults={preQuizResults}
+                themeColor={getThemeColor(false)}
+              />
 
-              case "One Match":
-                return (
-                  <OneMatchQuiz
-                    isPreQuiz={isPreQuiz}
-                    themeColor={getThemeColor(false)}
-                    matchStatements={
-                      (questionList[currentQuestion - 1] as OneMatchQuestion)
-                        .matchStatements
-                    }
-                    choices={
-                      (questionList[currentQuestion - 1] as OneMatchQuestion)
-                        .choices
-                    }
-                    correctAnswer={
-                      (questionList[currentQuestion - 1] as OneMatchQuestion)
-                        .correctAnswer
-                    }
-                    answerExplanation={
-                      questionList[currentQuestion - 1].answerExplanation
-                    }
-                    currentQuestion={currentQuestion}
-                    totalQuestions={questionList.length}
-                    onPrevious={handlePrevious}
-                    onNext={handleNext}
-                  />
-                );
+              {/* <div
+                id="results-key"
+                className=" flex h-full w-full flex-col content-start gap-1"
+              >
+                <div className="flex flex-row items-center gap-1 text-left">
+                  <div className="h-[20px] w-[20px] bg-sciquelCorrectBG"></div>
+                  Correct
+                </div>
+                <div className="flex flex-row items-center gap-1 text-left">
+                  <div className="h-[20px] w-[20px] bg-sciquelIncorrectBG"></div>
+                  Incorrect
+                </div>
+                <div className="flex flex-row items-center gap-1 text-left">
+                  <div className="h-[20px] w-[20px] bg-gray-200"></div>
+                  Unanswered
+                </div>
+              </div> */}
 
-              default:
-                return <>not a valid type of quiz</>;
-            }
-          })()}
-        </div>
+              {/* <figure id="postquiz-results"></figure> */}
+              <QuizResultsChart
+                isPreQuiz={false}
+                quizResults={postQuizResults}
+                themeColor={getThemeColor(false)}
+              />
+            </div>
+
+            <div className="quiz-question-buttons flex h-full w-full flex-row items-center justify-start gap-5">
+              {postQuizResults?.map((result: boolean | null, index: number) => (
+                <button
+                  // className="text-center "
+                  className={`flex h-[72px] w-[72px] items-center justify-center rounded-sm border border-black bg-white text-center text-[22px] font-semibold transition duration-300 hover:bg-gray-100
+                    ${
+                      result
+                        ? " text-sciquelCorrectText"
+                        : " text-sciquelIncorrectText"
+                    }
+                  `}
+                  key={index}
+                  // onClick={() => jumpToQuestion(index + 1)}
+                >
+                  Q{index + 1}
+                </button>
+              ))}
+            </div>
+
+            {/* {preQuizResults?.map((result: boolean | null, index: number) => (
+              <div key={index}>
+                Pre: {result?.toString()}; Post:{" "}
+                {postQuizResults?.[index]?.toString()}
+              </div>
+            ))} */}
+          </div>
+        )}
       </div>
     </div>
   );

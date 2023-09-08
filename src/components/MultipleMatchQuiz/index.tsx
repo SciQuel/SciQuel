@@ -643,13 +643,13 @@ export default function MultipleMatchQuiz({
                               ${
                                 hasAnswered &&
                                 !matchOptionCorrect(statement, userAnswer)
-                                  ? "select-incorrect !bg-[#d09191]"
+                                  ? "select-incorrect !bg-[#E18E8F]"
                                   : ""
                               }  
                               ${
                                 hasAnswered &&
                                 matchOptionCorrect(statement, userAnswer)
-                                  ? "select-correct !bg-[#9dbda1]"
+                                  ? "select-correct !bg-[#9FD09B]"
                                   : ""
                               }`}
                             >
@@ -765,12 +765,12 @@ export default function MultipleMatchQuiz({
                     }
                     ${
                       hasAnswered && answerChoiceExistsInCorrectAnswers(choice)
-                        ? "select-incorrect !bg-[#d09191]"
+                        ? "select-incorrect !bg-[#E18E8F]"
                         : ""
                     }  
                     ${
                       hasAnswered && !answerChoiceExistsInCorrectAnswers(choice)
-                        ? "select-correct !bg-[#9dbda1]"
+                        ? "select-correct !bg-[#9FD09B]"
                         : ""
                     }`}
                   >
