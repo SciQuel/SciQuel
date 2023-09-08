@@ -397,13 +397,13 @@ export default async function StoriesPage({ params }: Params) {
 
         {file.result as ReactNode}
 
-        {/* <Quiz
+        <Quiz
           isPreQuiz={false}
           topic={story.tags[0]}
           quizObjective={"How much do you know already know about microglia?"}
           quizQuestionType={"Multiple Match"}
           questionList={questionList_MM1}
-        /> */}
+        />
 
         <Quiz
           isPreQuiz={false}
@@ -413,21 +413,21 @@ export default async function StoriesPage({ params }: Params) {
           questionList={questionList_OM2}
         />
 
-        {/* <Quiz
+        <Quiz
           isPreQuiz={false}
           topic={story.tags[0]}
           quizObjective={"How much do you know already know about microglia?"}
           quizQuestionType={"True/False"}
           questionList={questionList_TF1}
-        /> */}
+        />
 
-        {/* <Quiz
+        <Quiz
           isPreQuiz={false}
           topic={story.tags[0]}
           quizObjective={"How much do you know already know about microglia?"}
           quizQuestionType={"Multiple Choice"}
           questionList={questionList_MC1}
-        /> */}
+        />
       </div>
       <p className="w-[calc( 100% - 1rem )] mx-2 my-5 border-t-2 border-[#616161]  text-sm text-[#616161] md:mx-auto md:w-[720px]">
         Animation provided by Source name 1. Sources provided by Source name 2.
