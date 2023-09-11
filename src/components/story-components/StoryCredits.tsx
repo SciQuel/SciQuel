@@ -103,7 +103,7 @@ export default function StoryCredits({ story }: Props) {
 
       <div className="relative mx-2 mt-5 flex w-screen flex-col sm:mx-auto md:w-[720px]">
         <div className="pointer-events-none top-0 flex flex-1 flex-row justify-start xl:absolute xl:-left-24 xl:flex-col xl:pt-3">
-          <ShareLinks />
+          <ShareLinks storyId={story.id} />
         </div>
 
         <div className="flex flex-row">
@@ -157,7 +157,7 @@ export default function StoryCredits({ story }: Props) {
         />
         <div
           ref={headerRef}
-          className={`relative mx-12 my-20 flex min-h-0 w-full flex-col justify-end overflow-hidden `}
+          className={`relative m-10 flex min-h-0 w-full flex-col justify-end overflow-hidden `}
         >
           <h1
             className="mb-0 p-8 pb-0 font-alegreyaSansSC text-6xl font-bold sm:text-8xl lg:w-4/5"
@@ -190,7 +190,7 @@ export default function StoryCredits({ story }: Props) {
         </p>
         <div className="relative mx-2 mt-0 flex w-screen flex-col sm:mx-auto md:w-[720px]">
           <div className="pointer-events-none top-0 flex flex-1 flex-row justify-start xl:absolute xl:-left-24 xl:flex-col xl:pt-3">
-            <ShareLinks />
+            <ShareLinks storyId={story.id} />
           </div>
 
           <div className="flex flex-row">

@@ -1,5 +1,6 @@
 "use client";
 
+import axios from "axios";
 import { signIn, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -12,10 +13,17 @@ import { PrintContext, PrintToggleContext } from "./PrintContext";
 
 type modalOptions = "none" | "brain-login" | "bookmark-login" | "share";
 
-export default function ShareLinks() {
+interface Props {
+  storyId: string;
+}
+
+export default function ShareLinks({ storyId }: Props) {
   const [showOptions, setShowOptions] = useState<modalOptions>("none");
-  const [optionText, setOptionText] = useState(" bookmark ");
+  const [optionText, setOptionText] = useState<" bookmark " | " brain ">(
+    " bookmark ",
+  );
   const [isBrained, setIsBrained] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(false);
   const popupRef = useRef<HTMLDivElement>(null);
   const popupRef2 = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
@@ -31,6 +39,61 @@ export default function ShareLinks() {
     };
   }, []);
 
+  useEffect(() => {
+    if (status == "authenticated") {
+      getBookmark();
+      getBrain();
+    }
+  }, [status]);
+
+  async function getBookmark() {
+    if (status == "authenticated" && session.user.email) {
+      try {
+        const bookmarkResponse = await axios.get("/api/user/bookmark", {
+          params: {
+            story_id: storyId,
+            user_email: session.user.email,
+          },
+        });
+
+        if (bookmarkResponse.status == 200) {
+          setIsBookmarked(true);
+        }
+      } catch (err) {
+        if (axios.isAxiosError(err) && err.response?.status == 404) {
+          setIsBookmarked(false);
+          //not bookmarked
+        } else {
+          console.log("get bookmark error: ", err);
+        }
+      }
+    }
+  }
+
+  async function getBrain() {
+    if (status == "authenticated" && session.user.email) {
+      try {
+        const brainResponse = await axios.get("/api/user/brains", {
+          params: {
+            story_id: storyId,
+            user_email: session.user.email,
+          },
+        });
+
+        if (brainResponse.status == 200) {
+          setIsBrained(true);
+        }
+      } catch (err) {
+        if (axios.isAxiosError(err) && err.response?.status == 404) {
+          setIsBrained(false);
+          //not brained
+        } else {
+          console.log("get brain error: ", err);
+        }
+      }
+    }
+  }
+
   function handleClick(e: MouseEvent) {
     let shouldShut = true;
 
@@ -39,7 +102,6 @@ export default function ShareLinks() {
     }
 
     if (popupRef2.current?.contains(e.target as Node)) {
-      // setShowOptions("none");
       shouldShut = false;
     }
 
@@ -48,23 +110,101 @@ export default function ShareLinks() {
     }
   }
 
-  function handleBrain() {
+  async function handleBrain() {
     if (status != "authenticated") {
       setShowOptions("brain-login");
       setOptionText(" brain ");
-      // alert("you must login to brain an article!");
-    } else {
-      console.log(session);
+    } else if (session.user.email) {
+      if (isBrained == false) {
+        try {
+          const response = await axios.post("/api/user/brains", {
+            story_id: storyId,
+            user_email: session.user.email,
+          });
+
+          if (response.status == 200) {
+            setIsBrained(true);
+          }
+        } catch (err) {
+          if (
+            axios.isAxiosError(err) &&
+            err.response?.data.error ==
+              "story_id and user_id combination already exists"
+          ) {
+            setIsBrained(true);
+          }
+        }
+      } else {
+        // already brained, un-brain
+        try {
+          const response = await axios.delete("/api/user/brains", {
+            params: {
+              story_id: storyId,
+              user_email: session.user.email,
+            },
+          });
+          if (response.status == 200) {
+            setIsBrained(false);
+          }
+        } catch (err) {
+          if (
+            axios.isAxiosError(err) &&
+            err.response?.data.error == "No entries found"
+          ) {
+            setIsBrained(false);
+          }
+        }
+      }
     }
   }
 
-  function handleBookmark() {
+  async function handleBookmark() {
     if (status != "authenticated") {
       setShowOptions("bookmark-login");
       setOptionText(" bookmark ");
-      // alert("you must login to brain an article!");
-    } else {
-      console.log(session);
+    } else if (session.user.email) {
+      console.log(session.user.email);
+
+      if (isBookmarked == false) {
+        try {
+          const response = await axios.post("/api/user/bookmark", {
+            story_id: storyId,
+            user_email: session.user.email,
+          });
+
+          if (response.status == 200) {
+            setIsBookmarked(true);
+          }
+        } catch (err) {
+          if (
+            axios.isAxiosError(err) &&
+            err.response?.data.error ==
+              "story_id and user_id combination already exists"
+          ) {
+            setIsBookmarked(true);
+          }
+        }
+      } else {
+        //already booked, un-book
+        try {
+          const response = await axios.delete("/api/user/bookmark", {
+            params: {
+              story_id: storyId,
+              user_email: session.user.email,
+            },
+          });
+          if (response.status == 200) {
+            setIsBookmarked(false);
+          }
+        } catch (err) {
+          if (
+            axios.isAxiosError(err) &&
+            err.response?.data.error == "No entries found"
+          ) {
+            setIsBookmarked(false);
+          }
+        }
+      }
     }
   }
 
@@ -95,7 +235,7 @@ export default function ShareLinks() {
           width={45}
           height={45}
         />
-        <p>{isBrained ? "undo" : "Brain"}</p>
+        <p>{isBrained ? "un-brain" : "Brain"}</p>
       </button>
       <button
         onClick={handleBookmark}
@@ -107,7 +247,7 @@ export default function ShareLinks() {
           width={45}
           height={45}
         />
-        <p>book</p>
+        <p>{isBookmarked ? "un-book" : "book"}</p>
       </button>
       <button
         className="pointer-events-auto h-fit w-fit rounded-full p-3"
@@ -128,7 +268,6 @@ export default function ShareLinks() {
             ? "opacity-1 pointer-events-auto"
             : "opacity-0 sm:-translate-y-2"
         }  fixed bottom-0 left-0 h-screen w-screen items-end overflow-hidden bg-neutral-800/75 transition-all sm:absolute sm:top-16 sm:mt-3 sm:h-auto sm:min-h-fit sm:overflow-visible sm:bg-transparent`}
-        // sm:absolute   sm:top-0 sm:-ml-2 sm:mt-20 sm:h-fit sm:w-fit sm:items-start sm:justify-center sm:bg-transparent xl:static xl:mt-3
       >
         {/* brain / bookmark login modal */}
         <div
@@ -229,7 +368,7 @@ export default function ShareLinks() {
               </a>
             </div>
             <div
-              className={`pointer-events-auto m-0 mt-2 rounded-t border-x-2 border-t-2 border-sciquelCardBorder bg-sciquelCardBg p-4 pb-2 lg:h-fit xl:mx-3 xl:rounded   xl:border-2 xl:p-3`}
+              className={`pointer-events-auto m-0 mt-2 rounded-t border-x-2 border-t-2 border-sciquelCardBorder bg-sciquelCardBg p-4 pb-2 lg:h-fit xl:mx-3 xl:mt-7 xl:rounded xl:border-2 xl:p-3`}
             >
               {/* floating input for copying link */}
               <input

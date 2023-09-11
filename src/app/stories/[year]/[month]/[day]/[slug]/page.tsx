@@ -8,6 +8,7 @@ import env from "@/lib/env";
 import { generateMarkdown } from "@/lib/markdown";
 import { type StoryTopic } from "@prisma/client";
 import { DateTime } from "luxon";
+import { getServerSession } from "next-auth";
 import Image from "next/image";
 import { type ReactNode } from "react";
 
@@ -23,6 +24,8 @@ interface Params {
 export default async function StoriesPage({ params }: Params) {
   const whatsNewArticles = await getWhatsNewArticles();
   const story = await retrieveStoryContent(params);
+  // retrieveUserInteractions(story.id);
+
   const { file } = await generateMarkdown(story.storyContent[0].content);
   return (
     <PrintModeProvider>
@@ -46,6 +49,41 @@ export default async function StoriesPage({ params }: Params) {
       </div>
     </PrintModeProvider>
   );
+}
+
+async function retrieveUserInteractions(storyId: string) {
+  const userSession = await getServerSession();
+  if (userSession?.user.email) {
+    let bookmarked = false;
+    let brained = false;
+
+    const searchParams = new URLSearchParams({
+      story_id: storyId,
+      user_email: userSession.user.email,
+    });
+
+    console.log("search params are: ", searchParams.toString());
+
+    const bookmarkUrl = `${
+      env.NEXT_PUBLIC_SITE_URL
+    }/api/user/bookmark?${searchParams.toString()}`;
+    // const bookmarkUrl = `${env.NEXT_PUBLIC_SITE_URL}/api/user/bookmark?story_id=${storyId}&user_email=${userSession.user.email}}`;
+    const brainUrl = `${
+      env.NEXT_PUBLIC_SITE_URL
+    }/api/user/brains?${searchParams.toString()}`;
+
+    console.log("bookmark url: ", bookmarkUrl);
+    console.log("brain url: ", brainUrl);
+
+    const bookRes = await fetch(brainUrl, {
+      next: {
+        revalidate: 0,
+      },
+    });
+    console.log("bookres: ", bookRes);
+    const json = await bookRes.json();
+    console.log("bookres error: ", json);
+  }
 }
 
 async function retrieveStoryContent({
