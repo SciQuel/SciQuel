@@ -10,10 +10,24 @@ import {
   useInteractions,
   useRole,
 } from "@floating-ui/react";
-import { useState, type PropsWithChildren } from "react";
+import {
+  useState,
+  type Dispatch,
+  type PropsWithChildren,
+  type ReactNode,
+  type SetStateAction,
+} from "react";
 import ToolbarButton, { type Props } from "./ToolbarButton";
 
-export default function withDialog(props: PropsWithChildren<Props>) {
+interface DialogProps extends Props {
+  modalBody: (
+    labelId: string,
+    descriptionId: string,
+    setIsOpen: Dispatch<SetStateAction<boolean>>,
+  ) => ReactNode;
+}
+
+export default function withDialog(props: PropsWithChildren<DialogProps>) {
   function DialogWrapper() {
     const [isOpen, setIsOpen] = useState(false);
 
@@ -44,7 +58,7 @@ export default function withDialog(props: PropsWithChildren<Props>) {
         {isOpen && (
           <FloatingOverlay
             lockScroll
-            className="z-50"
+            className="z-50 flex items-center justify-center"
             style={{ background: "rgba(0, 0, 0, 0.8)" }}
           >
             <FloatingFocusManager context={context}>
@@ -53,10 +67,9 @@ export default function withDialog(props: PropsWithChildren<Props>) {
                 aria-labelledby={labelId}
                 aria-describedby={descriptionId}
                 {...getFloatingProps()}
+                className="rounded-lg bg-white md:w-[35rem]"
               >
-                <h2 id={labelId}>Heading element</h2>
-                <p id={descriptionId}>Description element</p>
-                <button onClick={() => setIsOpen(false)}>Close</button>
+                {props.modalBody(labelId, descriptionId, setIsOpen)}
               </div>
             </FloatingFocusManager>
           </FloatingOverlay>

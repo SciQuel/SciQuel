@@ -1,37 +1,34 @@
 "use client";
 
 import clsx from "clsx";
-import { useState, type ChangeEventHandler, type HTMLProps } from "react";
+import { type ChangeEventHandler, type HTMLProps } from "react";
 
 interface Props {
   title: string;
   required?: boolean;
   indicateRequired?: boolean;
-  type?: "text" | "password" | "email";
-  value?: HTMLProps<HTMLInputElement>["value"];
+  value?: HTMLProps<HTMLTextAreaElement>["value"];
   minLength?: number;
   maxLength?: number;
   invalid?: boolean;
   disabled?: boolean;
-  onChange?: ChangeEventHandler<HTMLInputElement>;
+  onChange?: ChangeEventHandler<HTMLTextAreaElement>;
 }
 
-export default function FormInput({
+export default function FormTextArea({
   title,
   minLength,
   maxLength,
   required = false,
   indicateRequired = true,
-  type = "text",
   value,
   invalid,
   disabled = false,
   onChange,
 }: Props) {
-  const [show, setShow] = useState(false);
   return (
     <div className="relative mt-6 w-full">
-      <input
+      <textarea
         className={clsx(
           `peer w-full rounded-md px-2 py-1 placeholder-transparent outline invalid:outline-dashed
           invalid:outline-2 invalid:outline-red-400 hover:outline-sciquelTeal
@@ -42,7 +39,6 @@ export default function FormInput({
           "disabled:pointer-events-none disabled:bg-gray-50 disabled:text-gray-300",
         )}
         placeholder={title}
-        type={type === "password" ? (show ? "text" : "password") : type}
         value={value}
         minLength={minLength}
         maxLength={maxLength}
@@ -58,15 +54,6 @@ export default function FormInput({
         {title}
         {required && indicateRequired ? " *" : null}
       </label>
-      {type === "password" && (
-        <label
-          className={`absolute -top-5 right-0 cursor-pointer text-sm text-sciquelTeal
-          hover:brightness-75`}
-          onClick={() => setShow(!show)}
-        >
-          {show ? "Hide password" : "Show password"}
-        </label>
-      )}
     </div>
   );
 }
