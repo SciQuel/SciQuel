@@ -69,6 +69,7 @@ export default function StoryCredits({ story }: Props) {
 
   useEffect(() => {
     console.log("is print mode? : ", isPrintMode);
+    console.log(story);
     if (!isPrintMode) {
       window.addEventListener("resize", handleWindowResize);
     } else {
@@ -84,6 +85,233 @@ export default function StoryCredits({ story }: Props) {
     dispatchHeaderFont({ type: "window update" });
   }, [headerFont]);
 
+  const buildAuthors = () => {
+    let authors: string[] = [];
+
+    let authorIcons: (string | null)[] = [];
+
+    let illustrators: string[] = [];
+    let illustratorIcons: (string | null)[] = [];
+
+    let animators: string[] = [];
+    let animatorIcons: (string | null)[] = [];
+
+    story.storyContributions.forEach((contributor, index) => {
+      switch (contributor.contributionType) {
+        case "AUTHOR":
+          authors.push(
+            `${contributor.user.firstName} ${contributor.user.lastName}`,
+          );
+          authorIcons.push(contributor.user.avatarUrl);
+          break;
+        case "ILLUSTRATOR":
+          illustrators.push(
+            `${contributor.user.firstName} ${contributor.user.lastName}`,
+          );
+          illustratorIcons.push(contributor.user.avatarUrl);
+          break;
+        case "ANIMATOR":
+          animators.push(
+            `${contributor.user.firstName} ${contributor.user.lastName}`,
+          );
+          animatorIcons.push(contributor.user.avatarUrl);
+          break;
+        default:
+          authors.push(
+            `${contributor.user.firstName} ${contributor.user.lastName}`,
+          );
+          authorIcons.push(contributor.user.avatarUrl);
+          break;
+      }
+    });
+
+    return (
+      <div>
+        {authors.length > 0 ? (
+          <div className="flex flex-row items-center">
+            {authorIcons.map((icon, index) => (
+              <div
+                className={
+                  index < authorIcons.length - 1 ? "max-w-[1.5rem]" : ""
+                }
+                key={`author-icons-${icon}-${index}`}
+              >
+                <Avatar
+                  imageUrl={icon ? icon : undefined}
+                  label={authors[index].slice(0, 1)}
+                  className="mr-2"
+                  size="md"
+                />
+              </div>
+            ))}
+            <p>
+              by{" "}
+              {authors.slice(0, -1).map((author, index) => {
+                if (authors.length > 2) {
+                  return `${author}, `;
+                } else {
+                  return `${author} `;
+                }
+              })}{" "}
+              {authors.length > 1 ? "and " : ""} {authors.slice(-1)}
+            </p>
+          </div>
+        ) : (
+          ""
+        )}
+        {illustrators.length > 0 ? (
+          <div className="flex flex-row items-center">
+            {illustratorIcons.map((icon, index) => (
+              <div
+                className={
+                  index < illustratorIcons.length - 1 ? "max-w-[1.5rem]" : ""
+                }
+                key={`illust-icons-${icon}-${index}`}
+              >
+                <Avatar
+                  imageUrl={icon ? icon : undefined}
+                  label={illustrators[index].slice(0, 1)}
+                  className="mr-2"
+                  size="md"
+                />
+              </div>
+            ))}
+            <p className={`ml-[${illustrators.length}rem]`}>
+              Illustrations by{" "}
+              {illustrators.slice(0, -1).map((illustrator, index) => {
+                if (illustrators.length > 2) {
+                  return `${illustrator}, `;
+                } else {
+                  return `${illustrator} `;
+                }
+              })}{" "}
+              {illustrators.length > 1 ? "and " : ""} {illustrators.slice(-1)}
+            </p>
+          </div>
+        ) : (
+          ""
+        )}
+
+        {animators.length > 0 ? (
+          <div className="flex flex-row items-center">
+            {animatorIcons.map((icon, index) => (
+              <div
+                className={
+                  index < animatorIcons.length - 1 ? "max-w-[1.5rem]" : ""
+                }
+                key={`anim-icons-${icon}-${index}`}
+              >
+                <Avatar
+                  imageUrl={icon ? icon : undefined}
+                  label={animators[index].slice(0, 1)}
+                  className="mr-2"
+                  size="md"
+                />
+              </div>
+            ))}
+            <p className={`ml-[${animators.length}rem]`}>
+              Animations by{" "}
+              {animators.slice(0, -1).map((animator, index) => {
+                if (animators.length > 2) {
+                  return `${animator}, `;
+                } else {
+                  return `${animator} `;
+                }
+              })}{" "}
+              {animators.length > 1 ? "and " : ""} {animators.slice(-1)}
+            </p>
+          </div>
+        ) : (
+          ""
+        )}
+      </div>
+    );
+  };
+
+  const buildPrintAuthors = () => {
+    let authors: string[] = [];
+    let illustrators: string[] = [];
+    let animators: string[] = [];
+    story.storyContributions.forEach((contributor, index) => {
+      switch (contributor.contributionType) {
+        case "AUTHOR":
+          authors.push(
+            `${contributor.user.firstName} ${contributor.user.lastName}`,
+          );
+
+          break;
+        case "ILLUSTRATOR":
+          illustrators.push(
+            `${contributor.user.firstName} ${contributor.user.lastName}`,
+          );
+
+          break;
+        case "ANIMATOR":
+          animators.push(
+            `${contributor.user.firstName} ${contributor.user.lastName}`,
+          );
+
+          break;
+        default:
+          authors.push(
+            `${contributor.user.firstName} ${contributor.user.lastName}`,
+          );
+
+          break;
+      }
+    });
+
+    return (
+      <div>
+        {authors.length > 0 ? (
+          <p>
+            by{" "}
+            {authors.slice(0, -1).map((author, index) => {
+              if (authors.length > 2) {
+                return `${author}, `;
+              } else {
+                return `${author} `;
+              }
+            })}{" "}
+            {authors.length > 1 ? "and " : ""} {authors.slice(-1)}
+          </p>
+        ) : (
+          ""
+        )}
+        {illustrators.length > 0 ? (
+          <p>
+            Illustrations by{" "}
+            {illustrators.slice(0, -1).map((illustrator, index) => {
+              if (illustrators.length > 2) {
+                return `${illustrator}, `;
+              } else {
+                return `${illustrator} `;
+              }
+            })}{" "}
+            {illustrators.length > 1 ? "and " : ""} {illustrators.slice(-1)}
+          </p>
+        ) : (
+          ""
+        )}
+        {animators.length > 0 ? (
+          <p>
+            Animations by{" "}
+            {animators.slice(0, -1).map((animator, index) => {
+              if (animators.length > 2) {
+                return `${animator}, `;
+              } else {
+                return `${animator} `;
+              }
+            })}{" "}
+            {animators.length > 1 ? "and " : ""} {animators.slice(-1)}
+          </p>
+        ) : (
+          ""
+        )}
+      </div>
+    );
+  };
+
   return isPrintMode ? (
     <>
       <div className="relative mx-auto w-screen max-w-[720px] pt-10">
@@ -94,7 +322,7 @@ export default function StoryCredits({ story }: Props) {
           height={400}
           alt={story.title}
         />
-        <p className="my-2  font-sourceSerif4 ">
+        <p className="my-1 font-sourceSerif4">
           Title Image provided by Source name
         </p>
         <h1 className="my-4 font-sourceSerif4 text-4xl">{story.title}</h1>
@@ -108,9 +336,16 @@ export default function StoryCredits({ story }: Props) {
 
         <div className="flex flex-row">
           <p className="mr-2">
-            {story.storyType.slice(0, 1) +
-              story.storyType.slice(1).toLowerCase()}{" "}
-            | we need to add article type |
+            {story.category
+              ? story.category.slice(0, 1) +
+                story.category.slice(1).toLowerCase()
+              : ""}{" "}
+            |{" "}
+            {story.storyType
+              ? story.storyType.slice(0, 1) +
+                story.storyType.slice(1).toLowerCase() +
+                " | "
+              : ""}
           </p>
           {story.tags.map((item: StoryTopic, index: number) => {
             return (
@@ -120,7 +355,8 @@ export default function StoryCredits({ story }: Props) {
             );
           })}
         </div>
-        <div>
+        {buildPrintAuthors()}
+        {/* <div>
           {story.storyContributions.map((element, index) => {
             return (
               <p key={`contributor-header-${index}`}>
@@ -130,18 +366,17 @@ export default function StoryCredits({ story }: Props) {
               </p>
             );
           })}
-        </div>
+        </div> */}
+
         <p>
-          {DateTime.fromJSDate(story.publishedAt).toLocaleString({
-            ...DateTime.DATETIME_MED,
-            timeZoneName: "short",
-          })}
-          {story.updatedAt != story.publishedAt
+          {DateTime.fromJSDate(story.publishedAt).toFormat(
+            "LLLL d',' y t ZZZZ",
+          )}
+          {story.updatedAt.toString() != story.publishedAt.toString()
             ? " | " +
-              DateTime.fromJSDate(story.updatedAt).toLocaleString({
-                ...DateTime.DATETIME_MED,
-                timeZoneName: "short",
-              })
+              DateTime.fromJSDate(story.updatedAt).toFormat(
+                "LLLL d',' y t ZZZZ",
+              )
             : ""}
         </p>
       </div>
@@ -151,7 +386,7 @@ export default function StoryCredits({ story }: Props) {
       <div className="absolute top-0 flex h-screen w-full items-end">
         <Image
           src={story.thumbnailUrl}
-          className="-z-10 h-full object-cover"
+          className="h-full object-cover"
           fill={true}
           alt={story.title}
         />
@@ -185,7 +420,7 @@ export default function StoryCredits({ story }: Props) {
       </div>
       <div className="w-100 h-[calc(100vh_-_4rem)]" />
       <div className="h-fit w-screen">
-        <p className="fs-2 mx-2 my-0 p-0">
+        <p className="fs-2 mx-2 my-0 p-0 font-sourceSerif4">
           Title Image provided by Source name
         </p>
         <div className="relative mx-2 mt-0 flex w-screen flex-col sm:mx-auto md:w-[720px]">
@@ -210,7 +445,7 @@ export default function StoryCredits({ story }: Props) {
               return <TopicTag name={item} key={`${item}-${index}`} />;
             })}
           </div>
-          <div>
+          {/* <div>
             {story.storyContributions.map((element, index) => {
               return (
                 <div
@@ -231,18 +466,17 @@ export default function StoryCredits({ story }: Props) {
                 </div>
               );
             })}
-          </div>
+          </div> */}
+          {buildAuthors()}
           <p>
-            {DateTime.fromJSDate(story.publishedAt).toLocaleString({
-              ...DateTime.DATETIME_MED,
-              timeZoneName: "short",
-            })}
-            {story.updatedAt != story.publishedAt
+            {DateTime.fromJSDate(story.publishedAt).toFormat(
+              "LLLL d',' y t ZZZZ",
+            )}
+            {story.updatedAt.toString() != story.publishedAt.toString()
               ? " | " +
-                DateTime.fromJSDate(story.updatedAt).toLocaleString({
-                  ...DateTime.DATETIME_MED,
-                  timeZoneName: "short",
-                })
+                DateTime.fromJSDate(story.updatedAt).toFormat(
+                  "LLLL d',' y t ZZZZ",
+                )
               : ""}
           </p>
         </div>

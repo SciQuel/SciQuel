@@ -3,6 +3,7 @@ declare global {
     interface IntrinsicElements {
       "large-image": React.HTMLAttributes & { src: string };
       "caption-citation": React.HTMLAttributes;
+      dropdown: React.HTMLAttributes;
     }
   }
 }

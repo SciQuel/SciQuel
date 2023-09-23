@@ -24,17 +24,36 @@ interface Params {
 export default async function StoriesPage({ params }: Params) {
   const whatsNewArticles = await getWhatsNewArticles();
   const story = await retrieveStoryContent(params);
-  // retrieveUserInteractions(story.id);
 
   const { file } = await generateMarkdown(story.storyContent[0].content);
+  const testContent = await generateMarkdown(
+    `>blockquote   "It’s really interesting for us because now we’re showing that not only the Northern Hemisphere was burning, but the Southern Hemisphere too,” he said. “It was global."`,
+  );
+  const testCode = await generateMarkdown(
+    "a paragraph with a `code snippet` inside [and a link](https://www.google.com)",
+  );
+  const testCode2 = await generateMarkdown(
+    "```\n fenced code block \n //comment \n console.log('hello world');\n```",
+  );
+
+  const testDropdown = await generateMarkdown(
+    ":::dropdown[test label **bolded stuff**]\ntest paragraph of text *inside the dropdown*\n:::",
+  );
+
   return (
     <PrintModeProvider>
       <div className="flex flex-col">
         <StoryCredits story={story} />
 
         <div className="mx-2 mt-2 flex flex-col items-center gap-5 md:mx-auto">
+          {/* {testContent.file.result as ReactNode} */}
           {file.result as ReactNode}
+          {testContent.file.result as ReactNode}
+          {testCode.file.result as ReactNode}
+          {testCode2.file.result as ReactNode}
+          {testDropdown.file.result as ReactNode}
         </div>
+
         <p className="w-[calc( 100% - 1rem )] mx-2 my-5 border-t-2 border-[#616161]  text-sm text-[#616161] md:mx-auto md:w-[720px]">
           Animation provided by Source name 1. Sources provided by Source name
           2. We thank Funding 1 for their support, and Professor 2 for their

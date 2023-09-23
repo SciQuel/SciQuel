@@ -1,9 +1,15 @@
-import StoryCaptionCitation from "@/components/story-components/StoryCaptionCitation";
-import StoryH1 from "@/components/story-components/StoryH1";
-import StoryH2 from "@/components/story-components/StoryH2";
-import StoryLargeImage from "@/components/story-components/StoryLargeImage";
-import StoryParagraph from "@/components/story-components/StoryParagraph";
-import StoryUl from "@/components/story-components/StoryUl";
+import StoryBlockquote from "@/components/story-components/markdown/StoryBlockquote";
+import StoryCaptionCitation from "@/components/story-components/markdown/StoryCaptionCitation";
+import StoryCode from "@/components/story-components/markdown/StoryCode";
+import StoryDropdown from "@/components/story-components/markdown/StoryDropdown";
+import StoryH1 from "@/components/story-components/markdown/StoryH1";
+import StoryH2 from "@/components/story-components/markdown/StoryH2";
+import StoryLargeImage from "@/components/story-components/markdown/StoryLargeImage";
+import StoryLink from "@/components/story-components/markdown/StoryLink";
+import StoryOl from "@/components/story-components/markdown/StoryOl";
+import StoryParagraph from "@/components/story-components/markdown/StoryParagraph";
+import StoryPre from "@/components/story-components/markdown/StoryPre";
+import StoryUl from "@/components/story-components/markdown/StoryUl";
 import remarkSciquelDirective from "@/lib/remark-sciquel-directive";
 import { createElement, Fragment, type HTMLProps } from "react";
 import rehypeReact from "rehype-react";
@@ -38,6 +44,7 @@ export async function generateMarkdown(content: string) {
         ...(defaultSchema.tagNames ?? []),
         "large-image",
         "caption-citation",
+        "dropdown",
       ],
     })
     .use(rehypeReact, {
@@ -56,6 +63,28 @@ export async function generateMarkdown(content: string) {
         ul: (props: HTMLProps<HTMLUListElement>) => (
           <StoryUl>{props.children}</StoryUl>
         ),
+        ol: (props: HTMLProps<HTMLOListElement>) => (
+          <StoryOl>{props.children}</StoryOl>
+        ),
+        blockquote: (props: HTMLProps<HTMLElement>) => (
+          <StoryBlockquote>{props.children}</StoryBlockquote>
+        ),
+        code: (props: HTMLProps<HTMLElement>) => (
+          <StoryCode>{props.children}</StoryCode>
+        ),
+
+        pre: (props: HTMLProps<HTMLElement>) => (
+          <StoryPre>{props.children}</StoryPre>
+        ),
+
+        a: (props: HTMLProps<HTMLAnchorElement>) => (
+          <StoryLink href={props.href}>{props.children}</StoryLink>
+        ),
+
+        dropdown: (props: HTMLProps<HTMLElement>) => (
+          <StoryDropdown>{props.children}</StoryDropdown>
+        ),
+
         "large-image": (props: HTMLProps<HTMLElement>) => {
           if (typeof props.src === "string") {
             return (
@@ -67,8 +96,14 @@ export async function generateMarkdown(content: string) {
           return <></>;
         },
         "caption-citation": (props: HTMLProps<HTMLElement>) => {
-          console.log(1);
-          return <StoryCaptionCitation>{props.children}</StoryCaptionCitation>;
+          if (props.children) {
+            let children = props.children as [];
+            return (
+              <StoryCaptionCitation>{props.children}</StoryCaptionCitation>
+            );
+          } else {
+            return <></>;
+          }
         },
       },
     })

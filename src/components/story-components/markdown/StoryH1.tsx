@@ -1,7 +1,7 @@
 "use client";
 
 import { useContext, type PropsWithChildren } from "react";
-import { PrintContext } from "./PrintContext";
+import { PrintContext } from "../PrintContext";
 
 export default function StoryH1({ children }: PropsWithChildren<unknown>) {
   const isPrintMode = useContext(PrintContext);

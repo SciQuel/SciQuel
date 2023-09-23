@@ -1,7 +1,7 @@
 "use client";
 
 import { useContext, type PropsWithChildren } from "react";
-import { PrintContext } from "./PrintContext";
+import { PrintContext } from "../PrintContext";
 
 interface Props {
   src: string;
