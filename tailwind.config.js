@@ -7,6 +7,12 @@ module.exports = {
   ],
   theme: {
     extend: {
+      keyframes: {
+        shrink: {
+          "0%": { width: "100%" },
+          "100%": { width: "0%" },
+        },
+      },
       fontFamily: {
         alegreyaSansSC: "var(--font-alegreya-sans-sc)",
         sourceSerif4: "var(--font-source-serif-4)",
@@ -36,5 +42,8 @@ module.exports = {
       },
     },
   },
-  plugins: [require("@tailwindcss/container-queries"), require("tailwindcss-touch")()],
+  plugins: [
+    require("@tailwindcss/container-queries"),
+    require("tailwindcss-touch")(),
+  ],
 };
