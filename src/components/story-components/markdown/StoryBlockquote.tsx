@@ -44,7 +44,7 @@ export default function StoryBlockquote({
       className={`${
         isPrintMode
           ? "h-fit w-screen justify-center py-3   [&>*]:text-2xl"
-          : "h-screen min-h-fit w-screen items-center bg-gradient-to-b from-[#196E8C] to-[#65A69E] py-16 text-sciquelCardBg [&>*]:font-alegreyaSansSC [&>*]:text-5xl [&>*]:md:w-screen [&>*]:md:px-36"
+          : "h-fit min-h-screen w-screen items-center bg-gradient-to-b from-[#196E8C] to-[#65A69E] py-16 text-sciquelCardBg [&>*]:font-alegreyaSansSC [&>*]:text-5xl [&>*]:md:w-screen [&>*]:md:px-36"
       } mx-0  flex  text-center  [&>*]:px-2 `}
     >
       {children}
