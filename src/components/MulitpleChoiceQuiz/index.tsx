@@ -11,8 +11,20 @@ interface Props {
   answerExplanation: string[]; // List containing the explanation(s) for the question.
   currentQuestion: number; // The question # the user is looking at.
   totalQuestions: number; // The total number of questions.
-  onPrevious: () => void; // The function called when using the previous button.
-  onNext: () => void; // The function called when using the next button.
+  onPrevious: (
+    userAnswersList:
+      | (string | null)[]
+      | (boolean | null)[][]
+      | string[][]
+      | string[][][],
+  ) => void; // The function called when using the previous button.
+  onNext: (
+    userAnswersList:
+      | (string | null)[]
+      | (boolean | null)[][]
+      | string[][]
+      | string[][][],
+  ) => void; // The function called when using the next button.
 }
 
 export default function MultipleChoiceQuiz({
@@ -26,7 +38,7 @@ export default function MultipleChoiceQuiz({
   onNext,
 }: Props) {
   /* component state variables */
-  const [selectedOptions, setSelectedOptions] = useState<(string | null)[]>(
+  const [userAnswers, setuserAnswers] = useState<(string | null)[]>(
     Array(totalQuestions).fill(null),
   ); // an array of strings to store the user's selected MC choice (for each question)
   const [answerCorrectList, setAnswerCorrectList] = useState<
@@ -65,19 +77,19 @@ export default function MultipleChoiceQuiz({
 
   /**
    * Handles the selection of an answer option (called when user clicks a one of the choices):
-   * Updates selectedOptions, the array containing the answers that the user has selected.
+   * Updates userAnswers, the array containing the answers that the user has selected.
    *
    * @param {string} option - The MC option selected by the user.
    */
   const handleOptionSelect = (option: string) => {
     // console.log("this option was clicked on:", option);
-    setSelectedOptions((prevState) => {
-      const newSelectedOptions = [...prevState];
-      newSelectedOptions[currentQuestion - 1] =
-        newSelectedOptions[currentQuestion - 1] === option
+    setuserAnswers((prevState) => {
+      const newuserAnswers = [...prevState];
+      newuserAnswers[currentQuestion - 1] =
+        newuserAnswers[currentQuestion - 1] === option
           ? null // if the user clicks on the option clicked on previously, unselect it
           : option; // otherwise, select the option that was clicked
-      return newSelectedOptions;
+      return newuserAnswers;
     });
   };
 
@@ -87,12 +99,11 @@ export default function MultipleChoiceQuiz({
    * an array, sets current question as answered/submitted, and sets showAnswerExplanation to true
    */
   const handleSubmit = () => {
-    const userAnswer = selectedOptions[currentQuestion - 1];
+    const userAnswer = userAnswers[currentQuestion - 1];
     if (userAnswer === null) {
       return; // prevent user from submitting without selecting an answer
     }
-    const answerCorrect =
-      selectedOptions[currentQuestion - 1] === correctAnswer[0];
+    const answerCorrect = userAnswers[currentQuestion - 1] === correctAnswer[0];
     const updatedAnswerCorrectList = [...answerCorrectList];
     updatedAnswerCorrectList[currentQuestion - 1] = answerCorrect; // save the results for the current question
 
@@ -117,16 +128,16 @@ export default function MultipleChoiceQuiz({
   /** Handles the previous button of a MC question (called when user clicks "Previous" button). */
   const handlePrevious = () => {
     // call quiz's handle previous function to go back a question
-    onPrevious();
+    onPrevious(userAnswers);
   };
 
   /** Handles the next button of a MC question (called when user clicks "Next" button). */
   const handleNext = () => {
     // call quiz's handle previous function to go forward a question
-    onNext();
+    onNext(userAnswers);
   };
 
-  const selectedOption = selectedOptions[currentQuestion - 1]; // current question's selected MC option (a string)
+  const selectedOption = userAnswers[currentQuestion - 1]; // current question's selected MC option (a string)
   const answerCorrect = answerCorrectList[currentQuestion - 1]; // current question's result (boolean. null if not submitted)
   const hasAnswered = hasAnsweredList[currentQuestion - 1]; // if current question has been submitted or not
 

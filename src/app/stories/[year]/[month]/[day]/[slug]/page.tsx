@@ -3,6 +3,7 @@ import { type GetStoriesResult } from "@/app/api/stories/route";
 import Avatar from "@/components/Avatar";
 import MoreCard from "@/components/MoreCard";
 import Quiz from "@/components/Quiz";
+import { QuizProvider } from "@/components/Quiz/QuizContext";
 import FromThisSeries from "@/components/story-components/FromThisSeries";
 import ShareLinks from "@/components/story-components/ShareLinks";
 import TopicTag from "@/components/TopicTag";
@@ -16,8 +17,9 @@ import {
 } from "@/lib/Question";
 import { type StoryTopic } from "@prisma/client";
 import { DateTime } from "luxon";
+import dynamic from "next/dynamic"; // Import dynamic from next/dynamic
 import Image from "next/image";
-import { type ReactNode } from "react";
+import React, { useState, type ReactNode } from "react";
 
 interface Params {
   params: {
@@ -26,6 +28,54 @@ interface Params {
     day: string;
     slug: string;
   };
+}
+
+// const QuizComponent = dynamic(() => import("@/components/Quiz"), {
+//   ssr: false, // This ensures that the Quiz component is not server-rendered
+// });
+
+// function useQuiz(id: string) {
+function useQuiz(
+  story: GetStoryResult,
+  questions: Question[] | MultipleMatchQuestion[] | MultipleMatchQuestion[],
+) {
+  // const [preQuizAnswers, setPreQuizAnswers] = useState();
+  const quizObjective = "How much do you know already know about microglia?";
+  const quizQuestionType = "One Match";
+  const questionList = questions;
+
+  // Update the preQuiz answers
+  // const updatePreQuizAnswers = (preQuizAnswers) => {
+  //   setPreQuizAnswers(preQuizAnswers);
+  // };
+
+  // const preQuizComponent = <Quiz prequizAns={prequiz} setPrequizAns={setPrequiz} />
+
+  const preQuizComponent = (
+    <Quiz
+      isPreQuiz={true}
+      topic={story.tags[0]}
+      quizObjective={quizObjective}
+      quizQuestionType={quizQuestionType}
+      questionList={questionList}
+      // updatePreQuizAnswers={updatePreQuizAnswers}
+      // preQuizAnswers={null}
+    />
+  );
+
+  const postQuizComponent = (
+    <Quiz
+      isPreQuiz={false}
+      topic={story.tags[0]}
+      quizObjective={quizObjective}
+      quizQuestionType={quizQuestionType}
+      questionList={questionList}
+      // updatePreQuizAnswers={null}
+      // preQuizAnswers={preQuizAnswers}
+    />
+  );
+
+  return [preQuizComponent, postQuizComponent];
 }
 
 export default async function StoriesPage({ params }: Params) {
@@ -298,6 +348,8 @@ export default async function StoriesPage({ params }: Params) {
     },
   ];
 
+  const [preQuiz, postQuiz] = useQuiz(story, questionList_OM2);
+
   return (
     <div className="flex flex-col">
       <div className="relative h-screen">
@@ -363,7 +415,10 @@ export default async function StoriesPage({ params }: Params) {
         </p>
       </div>
       <div className="mx-2 mt-2 flex flex-col items-center gap-5 md:mx-auto">
-        {/* <Quiz
+        <QuizProvider>
+          {preQuiz}
+
+          {/* <Quiz
           isPreQuiz={true}
           topic={story.tags[0]}
           quizObjective={"How much do you know already know about microglia?"}
@@ -371,15 +426,15 @@ export default async function StoriesPage({ params }: Params) {
           questionList={questionList_MM1}
         /> */}
 
-        <Quiz
+          {/* <Quiz
           isPreQuiz={true}
           topic={story.tags[0]}
           quizObjective={"How much do you know already know about microglia?"}
           quizQuestionType={"One Match"}
           questionList={questionList_OM2}
-        />
+        /> */}
 
-        {/* <Quiz
+          {/* <Quiz
           isPreQuiz={true}
           topic={story.tags[0]}
           quizObjective={"How much do you know already know about microglia?"}
@@ -387,7 +442,7 @@ export default async function StoriesPage({ params }: Params) {
           questionList={questionList_TF1}
         /> */}
 
-        {/* <Quiz
+          {/* <Quiz
           isPreQuiz={true}
           topic={story.tags[0]}
           quizObjective={"How much do you know already know about microglia?"}
@@ -395,39 +450,42 @@ export default async function StoriesPage({ params }: Params) {
           questionList={questionList_MC1}
         /> */}
 
-        {file.result as ReactNode}
+          {file.result as ReactNode}
 
-        <Quiz
+          {postQuiz}
+
+          {/* <Quiz
           isPreQuiz={false}
           topic={story.tags[0]}
           quizObjective={"How much do you know already know about microglia?"}
           quizQuestionType={"Multiple Match"}
           questionList={questionList_MM1}
-        />
+        /> */}
 
-        <Quiz
+          {/* <Quiz
           isPreQuiz={false}
           topic={story.tags[0]}
           quizObjective={"How much do you know already know about microglia?"}
           quizQuestionType={"One Match"}
           questionList={questionList_OM2}
-        />
+        /> */}
 
-        <Quiz
+          {/* <Quiz
           isPreQuiz={false}
           topic={story.tags[0]}
           quizObjective={"How much do you know already know about microglia?"}
           quizQuestionType={"True/False"}
           questionList={questionList_TF1}
-        />
+        /> */}
 
-        <Quiz
+          {/* <Quiz
           isPreQuiz={false}
           topic={story.tags[0]}
           quizObjective={"How much do you know already know about microglia?"}
           quizQuestionType={"Multiple Choice"}
           questionList={questionList_MC1}
-        />
+        /> */}
+        </QuizProvider>
       </div>
       <p className="w-[calc( 100% - 1rem )] mx-2 my-5 border-t-2 border-[#616161]  text-sm text-[#616161] md:mx-auto md:w-[720px]">
         Animation provided by Source name 1. Sources provided by Source name 2.

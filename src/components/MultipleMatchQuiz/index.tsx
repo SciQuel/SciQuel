@@ -13,8 +13,20 @@ interface Props {
   answerExplanation: string[]; // List containing the explanation(s) for the question.
   currentQuestion: number; // The question # the user is looking at.
   totalQuestions: number; // The total number of questions.
-  onPrevious: () => void; // The function called when using the previous button.
-  onNext: () => void; // The function called when using the next button.
+  onPrevious: (
+    userAnswersList:
+      | (string | null)[]
+      | (boolean | null)[][]
+      | string[][]
+      | string[][][],
+  ) => void; // The function called when using the previous button.
+  onNext: (
+    userAnswersList:
+      | (string | null)[]
+      | (boolean | null)[][]
+      | string[][]
+      | string[][][],
+  ) => void; // The function called when using the next button.
 }
 
 export default function MultipleMatchQuiz({
@@ -547,13 +559,13 @@ export default function MultipleMatchQuiz({
   /** Handles the previous button of a MM question (called when user clicks "Previous" button). */
   const handlePrevious = () => {
     // call quiz's handle previous function to go back a question
-    onPrevious();
+    onPrevious(userAnswersList);
   };
 
   /** Handles the next button of an MM question (called when user clicks "Next" button). */
   const handleNext = () => {
     // call quiz's handle previous function to go forward a question
-    onNext();
+    onNext(userAnswersList);
   };
 
   const answerCorrect = answerCorrectList[currentQuestion - 1]; // if current question was answered fully correctly or not
@@ -813,7 +825,7 @@ export default function MultipleMatchQuiz({
             {matchStatements.map((statement, statementIndex) => {
               return (
                 <li
-                key={statementIndex}
+                  key={statementIndex}
                   className={
                     statementCorrect(statement)
                       ? "answer-explanation-tf correct font-quicksand my-1 box-border w-full border-l-8 border-sciquelCorrectBG p-4 pl-8 text-[18px] font-medium leading-6 text-sciquelCorrectText  xsm-mm:text-[16px]"

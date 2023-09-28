@@ -1,3 +1,4 @@
+import { useQuizContext } from "@/components/Quiz/QuizContext";
 import QuizButtons from "@/components/QuizButtons";
 import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
@@ -13,12 +14,30 @@ interface Props {
   answerExplanation: string[]; // List containing the explanation(s) for the question.
   currentQuestion: number; // The question # the user is looking at.
   totalQuestions: number; // The total number of questions.
-  onPrevious: () => void; // The function called when using the previous button.
-  onNext: () => void; // The function called when using the next button.
+  storedUserAnswersList:
+    | (string | null)[]
+    | (boolean | null)[][]
+    | string[][]
+    | string[][][];
+  onPrevious: (
+    userAnswersList:
+      | (string | null)[]
+      | (boolean | null)[][]
+      | string[][]
+      | string[][][],
+  ) => void; // The function called when using the previous button.
+  onNext: (
+    userAnswersList:
+      | (string | null)[]
+      | (boolean | null)[][]
+      | string[][]
+      | string[][][],
+  ) => void; // The function called when using the next button.
   toQuizResultsScreen: (
     preQuizResults: boolean[],
     postQuizResults: boolean[],
   ) => void; // The function called when using the next button after the final question.
+  quizComplete: boolean;
 }
 
 export default function OneMatchQuiz({
@@ -30,17 +49,35 @@ export default function OneMatchQuiz({
   answerExplanation,
   currentQuestion,
   totalQuestions,
+  storedUserAnswersList,
   onPrevious,
   onNext,
   toQuizResultsScreen,
+  quizComplete,
 }: Props) {
   /* component state variables */
   const [isTouchDevice, setIsTouchDevice] = useState(false); // whether the user is using a touch(mobile) device or not
-  const initialUserAnswers: string[][] = Array.from(
-    { length: totalQuestions },
-    () => [],
-  );
+  // const initialUserAnswers: string[][] = Array.from(
+  //   { length: totalQuestions },
+  //   () => [],
+  // );
+
+  const initialUserAnswers =
+    storedUserAnswersList.length === 0
+      ? Array.from({ length: totalQuestions }, () => [])
+      : (storedUserAnswersList as string[][]);
   const [userAnswersList, setUserAnswersList] = useState(initialUserAnswers); // stores the user's answers (for ea/ question)
+  const { solutionList, setSolutionList } = useQuizContext();
+
+  // const initialAnswerCorrectList =
+  //   storedAnswerCorrectList.length === 0
+  //     ? Array.from({ length: totalQuestions }, () =>
+  //         Array.from({ length: choices.length }, () => null),
+  //       )
+  //     : (storedAnswerCorrectList as (boolean | null)[][]);
+  // const [answerCorrectList, setAnswerCorrectList] = useState(
+  //   initialAnswerCorrectList,
+  // ); // an array of booleans arrays to store results for ea/ statement (for ea/ question)
 
   const [answerCorrectList, setAnswerCorrectList] = useState<
     Array<Array<boolean | null>>
@@ -52,6 +89,7 @@ export default function OneMatchQuiz({
   const [questionResultList, setQuestionResultList] = useState<boolean[]>(
     Array(totalQuestions).fill(false),
   );
+  const { preQuizAnswers, setPreQuizAnswers } = useQuizContext();
 
   const [showAnswerExplanation, setShowAnswerExplanation] = useState(false); // determines if explanations should be shown
   const [hasAnsweredList, setHasAnsweredList] = useState<boolean[]>(
@@ -201,6 +239,9 @@ export default function OneMatchQuiz({
       | React.MouseEvent<HTMLDivElement>,
     quizRowParent: HTMLElement,
   ) => {
+    if (quizComplete || hasAnsweredList[currentQuestion - 1]) {
+      return;
+    }
     console.log("handling a drop/tap");
 
     const rowIndexString = quizRowParent.getAttribute("row-index");
@@ -238,6 +279,9 @@ export default function OneMatchQuiz({
         },
       );
       setUserAnswersList(updatedUserAnswersList);
+      if (isPreQuiz && !quizComplete) {
+        setPreQuizAnswers(updatedUserAnswersList);
+      }
     }
   };
 
@@ -280,36 +324,47 @@ export default function OneMatchQuiz({
    * of the OM selection accordingly (to lock/unlock pointer events).
    */
   useEffect(() => {
-    const oneMatchQuizSelection = document.querySelector(
-      isPreQuiz ? "#prequiz-om" : "#postquiz-om",
-    );
+    const userAnswers =
+      storedUserAnswersList.length === 0
+        ? userAnswersList[currentQuestion - 1]
+        : (storedUserAnswersList as string[][])[currentQuestion - 1];
 
+    console.log("storedUserAnswersList (PARENT)", storedUserAnswersList);
     // const updatedUserAnswersList = [...userAnswersList];
-    const userAnswers = userAnswersList[currentQuestion - 1];
+    // const userAnswers = userAnswersList[currentQuestion - 1];
+
     if (!userAnswers.length) {
       // Initialize the array if it's not already initialized / if user hasn't touched answers
       const updatedUserAnswersList = [...userAnswersList];
       updatedUserAnswersList[currentQuestion - 1] = choices;
       console.log("updatedUserAnswersList", updatedUserAnswersList);
       setUserAnswersList(updatedUserAnswersList);
-    }
-
-    if (oneMatchQuizSelection) {
-      if (currentQuestion !== prevCurrentQuestion.current) {
-        const hasAnswered = hasAnsweredList[currentQuestion - 1];
-
-        if (hasAnswered && !isPreQuiz) {
-          oneMatchQuizSelection.classList.add("pointer-events-none");
-          setShowAnswerExplanation(true);
-        } else {
-          oneMatchQuizSelection.classList.remove("pointer-events-none");
-          setShowAnswerExplanation(false);
-        }
+      if (isPreQuiz && !quizComplete) {
+        setPreQuizAnswers(updatedUserAnswersList);
       }
-
-      prevCurrentQuestion.current = currentQuestion;
     }
-  }, [currentQuestion, isPreQuiz, hasAnsweredList]);
+
+    // Initialize the list of solutions
+    if (!solutionList) {
+      setSolutionList(
+        Array.from({ length: totalQuestions }, () => [] as string[]),
+      );
+    }
+
+    console.log("userAnswersList:", userAnswersList);
+
+    if (currentQuestion !== prevCurrentQuestion.current) {
+      const hasAnswered = hasAnsweredList[currentQuestion - 1];
+
+      if ((hasAnswered || quizComplete) && !isPreQuiz) {
+        setShowAnswerExplanation(true);
+      } else {
+        setShowAnswerExplanation(false);
+      }
+    }
+
+    prevCurrentQuestion.current = currentQuestion;
+  }, [currentQuestion, isPreQuiz]);
 
   /**
    * Handles the submission of an OM question (called when user clicks "Submit" button): Checks the
@@ -318,6 +373,14 @@ export default function OneMatchQuiz({
    */
   const handleSubmit = () => {
     const userAnswers = userAnswersList[currentQuestion - 1];
+
+    console.log("userAnswers (SUBMITTING)", userAnswers);
+
+    if (solutionList) {
+      const updatedSolutionList = [...solutionList]; // Create a copy of the array
+      updatedSolutionList[currentQuestion - 1] = correctAnswer;
+      setSolutionList(updatedSolutionList);
+    }
 
     // for each statement, check if the selected answer is correct
     const answerCorrect: boolean[] = userAnswers.map(
@@ -337,12 +400,12 @@ export default function OneMatchQuiz({
     updatedHasAnsweredList[currentQuestion - 1] = true; // set current question as answered
 
     // set class to lock the OM selection
-    const oneMatchQuizSelection = document.querySelector(
-      isPreQuiz ? "#prequiz-om" : "#postquiz-om",
-    );
-    if (oneMatchQuizSelection) {
-      oneMatchQuizSelection.classList.add("pointer-events-none");
-    }
+    // const oneMatchQuizSelection = document.querySelector(
+    //   isPreQuiz ? "#prequiz-om" : "#postquiz-om",
+    // );
+    // if (oneMatchQuizSelection) {
+    //   oneMatchQuizSelection.classList.add("pointer-events-none");
+    // }
 
     // give the user points or update their score here ?
 
@@ -355,38 +418,119 @@ export default function OneMatchQuiz({
   /** Handles the previous button of a OM question (called when user clicks "Previous" button). */
   const handlePrevious = () => {
     // call quiz's handle previous function to go back a question
-    onPrevious();
+    onPrevious(userAnswersList);
+    if (isPreQuiz && !quizComplete) {
+      setPreQuizAnswers(userAnswersList);
+    }
   };
 
   /** Handles the next button of an OM question (called when user clicks "Next" button). */
   const handleNext = () => {
     if (currentQuestion == totalQuestions) {
       // get results from prequiz?
-      const preQuizResults = [true, false, false];
+      // const preQuizResults = [true, false, false];
+      const preQuizResults = generateQuizResults(preQuizAnswers); // take preQuizAnswers and grade them -- call the grade function
+      console.log("preQuizResults:", preQuizResults);
       toQuizResultsScreen(preQuizResults, questionResultList);
     } else {
       // call quiz's handle next function to go forward a question
-      onNext();
+      onNext(userAnswersList);
+      if (isPreQuiz && !quizComplete) {
+        setPreQuizAnswers(userAnswersList);
+      }
     }
+
+    console.log("solutionList", solutionList);
   };
 
+  const generateQuizResults = (answersList: string[][]) => {
+    console.log("generating preQuiz results, answerList:", answersList);
+    if (answersList == null) {
+      return Array.from({ length: totalQuestions }, () => false);
+    }
+    const quizResults = answersList.map((userAnswers, index) => {
+      if (userAnswers == null || userAnswers.length === 0) {
+        console.log("null or empty:", userAnswers);
+        return false; // Handle the case where userAnswers is null or empty.
+      }
+      console.log("userAnswers:", userAnswers);
+      const questionResult = getQuestionResult(index, userAnswers);
+      console.log("questionResult:", questionResult);
+      return questionResult;
+    });
+
+    console.log("quizResults:", quizResults);
+
+    return quizResults;
+  };
+
+  /**
+   * Returns whether a particular match option was submitted under the correct statement.
+   *
+   * @param {number} index - The index of the statement we are checking.
+   * @param {string[]} userAnswers - The user's answers for the question.
+   */
+  const matchOptionCorrect = (
+    questionNumber: number,
+    index: number,
+    userAnswers: string[],
+  ) => {
+    // if (userAnswers[index] === correctAnswer[index]) {
+    if (userAnswers[index] === solutionList[questionNumber][index]) {
+      return true;
+    }
+    return false;
+  };
+
+  const getQuestionResult = (questionNumber: number, userAnswers: string[]) => {
+    const questionResult = userAnswers.every((_, index) => {
+      console.log("userAnswers[index]", userAnswers[index]);
+      console.log(
+        "userAnswers[index] === correctAnswer[index]",
+        userAnswers[index] === correctAnswer[index],
+      );
+
+      if (!matchOptionCorrect(questionNumber, index, userAnswers)) {
+        // console.log("userAnswers FALSE:", userAnswers);
+        return false; // Return false if any answer is incorrect.
+      }
+      // console.log("userAnswers TRUE:", userAnswers);
+      return true;
+    });
+    console.log("questionResult", questionResult);
+    return questionResult;
+  };
+
+  // const userAnswers = userAnswersList[currentQuestion - 1]; // user's answers for current question's (string array)
   const userAnswers = userAnswersList[currentQuestion - 1]; // user's answers for current question's (string array)
   const answerCorrect = answerCorrectList[currentQuestion - 1]; // for ea/ statement, if current question was answered correctly or not (bool array)
   const hasAnswered = hasAnsweredList[currentQuestion - 1]; // if current question has been submitted or not
+  const questionResult = questionResultList[currentQuestion - 1];
 
   // boolean values to determine which buttons to show, based on whether quiz is prequiz or not
   const showPreviousButton = currentQuestion > 1;
   const showNextButton =
+    (!isPreQuiz && quizComplete) ||
     (currentQuestion < totalQuestions && isPreQuiz) ||
     (currentQuestion <= totalQuestions && hasAnswered);
-  const showSubmitButton = !showAnswerExplanation && !isPreQuiz;
+  const showSubmitButton =
+    !showAnswerExplanation && !isPreQuiz && !quizComplete;
+    const showFeedback =
+    hasAnswered ||
+    (!isPreQuiz && quizComplete) ||
+    (isPreQuiz &&
+      preQuizAnswers &&
+      preQuizAnswers[currentQuestion - 1] &&
+      preQuizAnswers[currentQuestion - 1].length > 0 &&
+      quizComplete);  
   let shortenMatchLine = false;
 
   return (
     <div key={isPreQuiz ? "prequiz" : "postquiz"}>
       <div
-        className="one-match-selection mb-[20px] flex flex-col items-start"
-        id={isPreQuiz ? "prequiz-om" : "postquiz-om"}
+        className={`one-match-selection mb-[20px] flex flex-col items-start ${
+          hasAnswered || quizComplete ? "pointer-events-none" : ""
+        }`}
       >
         {matchStatements.map((statement, index) => {
           const answerText = choices[index];
@@ -427,12 +571,14 @@ export default function OneMatchQuiz({
                 className={`line z-10 h-[2px] ${widthClass} self-center transition duration-300 ease-in-out`}
                 style={{
                   backgroundColor: themeColor,
-                  ...(hasAnswered && !answerCorrect[index]
+                  ...(showFeedback &&
+                  !matchOptionCorrect(currentQuestion - 1, index, userAnswers)
                     ? {
                         backgroundColor: "#d06363",
                       }
                     : {}),
-                  ...(hasAnswered && answerCorrect[index]
+                  ...(showFeedback &&
+                  matchOptionCorrect(currentQuestion - 1, index, userAnswers)
                     ? {
                         backgroundColor: "#437e64",
                       }
@@ -445,7 +591,7 @@ export default function OneMatchQuiz({
                   className={`one-match-answer-choice-holder min-w-100 box-border flex h-full w-full cursor-move items-center break-words rounded-[4px] border border-black bg-white pr-3 text-center text-[18px] transition transition-all duration-300 ease-in-out 
                   ${
                     isTouchDevice &&
-                    !hasAnswered &&
+                    !showFeedback &&
                     userAnswers[index] ===
                       draggedElement?.querySelector<HTMLElement>(".match-text")
                         ?.lastChild?.textContent
@@ -453,13 +599,17 @@ export default function OneMatchQuiz({
                       : ""
                   }  
                   ${
-                    hasAnswered && !answerCorrect[index]
-                      ? "select-incorrect !bg-sciquelIncorrectBG"
+                    // hasAnswered && !answerCorrect[index]
+                    showFeedback &&
+                    !matchOptionCorrect(currentQuestion - 1, index, userAnswers)
+                      ? "select-incorrect !cursor-default !bg-sciquelIncorrectBG"
                       : ""
                   }  
                   ${
-                    hasAnswered && answerCorrect[index]
-                      ? "select-correct !bg-sciquelCorrectBG"
+                    // hasAnswered && answerCorrect[index]
+                    showFeedback &&
+                    matchOptionCorrect(currentQuestion - 1, index, userAnswers)
+                      ? "select-correct !cursor-default !bg-sciquelCorrectBG"
                       : ""
                   }`}
                   draggable="true"
@@ -475,7 +625,7 @@ export default function OneMatchQuiz({
                     className={`image-holder flex h-full w-[35%] max-w-[50px] items-center justify-center rounded-bl-[4px] rounded-tl-[4px] bg-[#e6e6fa] px-2 transition duration-300 ease-in-out                   
                     ${
                       isTouchDevice &&
-                      !hasAnswered &&
+                      !showFeedback &&
                       userAnswers[index] ===
                         draggedElement?.querySelector<HTMLElement>(
                           ".match-text",
@@ -484,17 +634,25 @@ export default function OneMatchQuiz({
                         : ""
                     }
                     ${
-                      hasAnswered && !answerCorrect[index]
+                      // hasAnswered && !answerCorrect[index]
+                      showFeedback &&
+                      !matchOptionCorrect(
+                        currentQuestion - 1,
+                        index,
+                        userAnswers,
+                      )
                         ? "select-incorrect !bg-[#E29899]"
                         : ""
                     }  
                   ${
-                    hasAnswered && answerCorrect[index]
+                    // hasAnswered && answerCorrect[index]
+                    showFeedback &&
+                    matchOptionCorrect(currentQuestion - 1, index, userAnswers)
                       ? "select-correct !bg-[#A0C99C]"
                       : ""
                   }`}
                   >
-                    {!hasAnswered && (
+                    {!showFeedback && (
                       <span className="hamburger-menu flex h-4 w-6 flex-col justify-between rounded-[4px] border-none">
                         <span className="hamburger-line h-0.5 w-full bg-black"></span>
                         <span className="hamburger-line h-0.5 w-full bg-black"></span>
@@ -502,8 +660,12 @@ export default function OneMatchQuiz({
                       </span>
                     )}
 
-                    {hasAnswered &&
-                      (answerCorrect[index] ? (
+                    {showFeedback &&
+                      (matchOptionCorrect(
+                        currentQuestion - 1,
+                        index,
+                        userAnswers,
+                      ) ? (
                         <Image
                           src={checkmark}
                           className="h-5 w-6 flex-grow-0"
@@ -530,43 +692,33 @@ export default function OneMatchQuiz({
         })}
       </div>
 
-      {showAnswerExplanation && answerCorrect && (
+      {((quizComplete && showFeedback) || showAnswerExplanation) && (
         <div className="answer-explanation-container-tf flex w-full flex-col">
           <ul className="explanation-list w-full list-none p-0">
-            {(answerCorrect as boolean[]).map(
-              (result: boolean, index: number) => (
-                <li
-                  className={
-                    result
-                      ? "answer-explanation-tf correct font-quicksand my-1 box-border w-full border-l-8 border-sciquelCorrectBG p-4 pl-8 text-[18px] font-medium leading-6  text-sciquelCorrectText"
-                      : "answer-explanation-tf incorrect font-quicksand my-1 box-border w-full border-l-8 border-sciquelIncorrectBG p-4 pl-8 text-[18px] font-medium leading-6 text-sciquelIncorrectText"
-                  }
-                  key={index}
-                >
-                  {result ? "Correct. " : "Incorrect. "}
-                  {answerExplanation[index]}
-                </li>
-              ),
-            )}
+            {matchStatements.map((_, index: number) => (
+              <li
+                className={
+                  matchOptionCorrect(currentQuestion - 1, index, userAnswers)
+                    ? "answer-explanation-tf correct font-quicksand my-1 box-border w-full border-l-8 border-sciquelCorrectBG p-4 pl-8 text-[18px] font-medium leading-6  text-sciquelCorrectText"
+                    : "answer-explanation-tf incorrect font-quicksand my-1 box-border w-full border-l-8 border-sciquelIncorrectBG p-4 pl-8 text-[18px] font-medium leading-6 text-sciquelIncorrectText"
+                }
+                key={index}
+              >
+                {matchOptionCorrect(currentQuestion - 1, index, userAnswers)
+                  ? "Correct. "
+                  : "Incorrect. "}
+                {answerExplanation[index]}
+              </li>
+            ))}
           </ul>
 
           <div
             className="user-quiz-statistics  ml-auto mt-4 w-full text-right text-[14px] leading-normal text-gray-600"
             style={{ marginLeft: "auto" }}
           >
-            {answerCorrect.every(
-              (correct: boolean | null) => correct === true,
-            ) && (
-              <>
-                You and 87.6% of SciQuel readers answered this question
-                correctly. Great job!
-              </>
-            )}
-            {!answerCorrect.every(
-              (correct: boolean | null) => correct === true,
-            ) && (
-              <>87.6% of SciQuel readers answered this question correctly.</>
-            )}
+            {getQuestionResult(currentQuestion - 1, userAnswers)
+              ? "You and 87.6% of SciQuel readers answered this question correctly. Great job!"
+              : "87.6% of SciQuel readers answered this question correctly."}
           </div>
         </div>
       )}

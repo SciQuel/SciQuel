@@ -10,8 +10,20 @@ interface Props {
   answerExplanation: string[]; // List containing the explanation(s) for the question.
   currentQuestion: number; // The question # the user is looking at.
   totalQuestions: number; // The total number of questions.
-  onPrevious: () => void; // The function called when using the previous button.
-  onNext: () => void; // The function called when using the next button.
+  onPrevious: (
+    userAnswersList:
+      | (string | null)[]
+      | (boolean | null)[][]
+      | string[][]
+      | string[][][],
+  ) => void; // The function called when using the previous button.
+  onNext: (
+    userAnswersList:
+      | (string | null)[]
+      | (boolean | null)[][]
+      | string[][]
+      | string[][][],
+  ) => void; // The function called when using the next button.
 }
 
 export default function TrueFalseQuiz({
@@ -25,7 +37,7 @@ export default function TrueFalseQuiz({
   onNext,
 }: Props) {
   /* component state variables */
-  const [selectedOptionsList, setSelectedOptionsList] = useState<
+  const [userAnswersList, setuserAnswersList] = useState<
     Array<Array<boolean | null>>
   >(Array.from({ length: totalQuestions }, () => [])); // an array of boolean arrays to store the user's selected T/F choices (for ea/ T/F statement, for ea/ question)
   const [answerCorrectList, setAnswerCorrectList] = useState<
@@ -39,25 +51,25 @@ export default function TrueFalseQuiz({
 
   /**
    * For updating the component when the user clicks the previous/next buttons: Initializes
-   * updatedSelectedOptionsList and updatedAnswerCorrectList if needed, and locks quiz pointer
+   * updateduserAnswersList and updatedAnswerCorrectList if needed, and locks quiz pointer
    * events if question was previously submitted
    */
   useEffect(() => {
     const trueFalseQuizSelection = document.querySelector(
       isPreQuiz ? "#prequiz-tf" : "#postquiz-tf",
     );
-    const selectedOptions = selectedOptionsList[currentQuestion - 1];
+    const userAnswers = userAnswersList[currentQuestion - 1];
     const answerCorrect = answerCorrectList[currentQuestion - 1];
 
-    if (!selectedOptions.length) {
+    if (!userAnswers.length) {
       // Initialize the array for the current question if it's not already initialized
-      const updatedSelectedOptionsList = [...selectedOptionsList];
-      updatedSelectedOptionsList[currentQuestion - 1] = Array.from(
+      const updateduserAnswersList = [...userAnswersList];
+      updateduserAnswersList[currentQuestion - 1] = Array.from(
         { length: choices.length },
         () => null,
       );
-      console.log("updatedSelectedOptionsList", updatedSelectedOptionsList);
-      setSelectedOptionsList(updatedSelectedOptionsList);
+      console.log("updateduserAnswersList", updateduserAnswersList);
+      setuserAnswersList(updateduserAnswersList);
     }
 
     if (!answerCorrect.length) {
@@ -89,7 +101,7 @@ export default function TrueFalseQuiz({
 
   /**
    * Handles the selection of an answer option (called when user clicks one of the boxes): Updates
-   * selectedOptionsList, the array containing the answers that the user has selected.
+   * userAnswersList, the array containing the answers that the user has selected.
    *
    * @param {string} optionIndex - The index of the T/F box selected by the user.
    * @param {boolean} trueFalseOption - The T/F box selected by the user (true or false).
@@ -98,10 +110,10 @@ export default function TrueFalseQuiz({
     optionIndex: number,
     trueFalseOption: boolean,
   ) => {
-    const updatedSelectedOptionsList = selectedOptionsList.map(
-      (selectedOptions, questionIndex) => {
+    const updateduserAnswersList = userAnswersList.map(
+      (userAnswers, questionIndex) => {
         if (questionIndex === currentQuestion - 1) {
-          return selectedOptions.map((option, index) => {
+          return userAnswers.map((option, index) => {
             // update T/F selection at optionIndex
             if (index === optionIndex) {
               if (option === trueFalseOption) {
@@ -113,11 +125,11 @@ export default function TrueFalseQuiz({
             return option; // leave the others as they were
           });
         }
-        return selectedOptions;
+        return userAnswers;
       },
     );
-    console.log("updatedSelectedOptionsList", updatedSelectedOptionsList);
-    setSelectedOptionsList(updatedSelectedOptionsList);
+    console.log("updateduserAnswersList", updateduserAnswersList);
+    setuserAnswersList(updateduserAnswersList);
   };
 
   /**
@@ -126,7 +138,7 @@ export default function TrueFalseQuiz({
    * an array, sets current question as answered/submitted, and sets showAnswerExplanation to true
    */
   const handleSubmit = () => {
-    const userAnswers = selectedOptionsList[currentQuestion - 1];
+    const userAnswers = userAnswersList[currentQuestion - 1];
 
     // make sure that user has answered each box, otherwise do nothing
     if (userAnswers.every((answer) => answer !== null)) {
@@ -160,16 +172,16 @@ export default function TrueFalseQuiz({
   /** Handles the previous button of a T/F question (called when user clicks "Previous" button). */
   const handlePrevious = () => {
     // call quiz's handle previous function to go back a question
-    onPrevious();
+    onPrevious(userAnswersList);
   };
 
   /** Handles the next button of a T/F question (called when user clicks "Next" button). */
   const handleNext = () => {
     // call quiz's handle previous function to go forward a question
-    onNext();
+    onNext(userAnswersList);
   };
 
-  const selectedOption = selectedOptionsList[currentQuestion - 1]; // current question's selected T/F options (bool array. null where not selected)
+  const selectedOption = userAnswersList[currentQuestion - 1]; // current question's selected T/F options (bool array. null where not selected)
   const answerCorrect = answerCorrectList[currentQuestion - 1]; // current question's results for ea/ statement (bool array. null if not submitted)
   const hasAnswered = hasAnsweredList[currentQuestion - 1]; // if current question has been submitted or not
 
@@ -271,8 +283,8 @@ export default function TrueFalseQuiz({
                   key={index}
                   className={
                     result
-                      ? "answer-explanation-tf correct font-quicksand my-1 box-border w-full border-l-8 border-sciquelCorrectBG p-4 pl-8 text-[18px] sm-qz:text-[16px] font-medium leading-6  text-sciquelCorrectText"
-                      : "answer-explanation-tf incorrect font-quicksand my-1 box-border w-full border-l-8 border-sciquelIncorrectBG p-4 pl-8 text-[18px] sm-qz:text-[16px] font-medium leading-6 text-sciquelIncorrectText"
+                      ? "answer-explanation-tf correct font-quicksand my-1 box-border w-full border-l-8 border-sciquelCorrectBG p-4 pl-8 text-[18px] font-medium leading-6 text-sciquelCorrectText  sm-qz:text-[16px]"
+                      : "answer-explanation-tf incorrect font-quicksand my-1 box-border w-full border-l-8 border-sciquelIncorrectBG p-4 pl-8 text-[18px] font-medium leading-6 text-sciquelIncorrectText sm-qz:text-[16px]"
                   }
                 >
                   {result ? "Correct. " : "Incorrect. "}

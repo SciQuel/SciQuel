@@ -1,5 +1,6 @@
 "use client";
 
+import { useQuizContext } from "@/components/Quiz/QuizContext";
 import {
   type MultipleMatchQuestion,
   type OneMatchQuestion,
@@ -28,10 +29,34 @@ export default function Quiz({
   quizQuestionType,
   questionList,
 }: Props) {
+  type UserAnswerType =
+    | (string | null)[]
+    | (boolean | null)[][]
+    | string[][]
+    | string[][][];
+
+  // type UserAnswerType = "";
+
+  const userAnswersInitialValue =
+    quizQuestionType === "Multiple Choice"
+      ? ([] as (string | null)[])
+      : quizQuestionType === "True/False"
+      ? ([] as (boolean | null)[][])
+      : quizQuestionType === "One Match"
+      ? ([] as string[][])
+      : quizQuestionType === "Multiple Match"
+      ? ([] as string[][][])
+      : ([] as (string | null)[]);
+
   const [currentQuestion, setCurrentQuestion] = useState<number>(1);
+  // const [userAnswers, setUserAnswers] = useState([]);
+  const [userAnswers, setUserAnswers] = useState(userAnswersInitialValue);
+  // const [quizComplete, setQuizComplete] = useState(false);
+  const { quizComplete, setQuizComplete } = useQuizContext();
   const [atQuizResults, setAtQuizResults] = useState(false);
   // const [preQuizResults, setPreQuizResults] = useState<boolean[]>();
   const [preQuizResults, setPreQuizResults] = useState<(boolean | null)[]>([]);
+  // const { preQuizAnswers, setPreQuizAnswers } = useQuizContext();
   // const [postQuizResults, setPostQuizResults] = useState<boolean[]>();
   const [postQuizResults, setPostQuizResults] = useState<(boolean | null)[]>(
     [],
@@ -80,13 +105,20 @@ export default function Quiz({
   };
 
   /** Updates the current question after the next button is pressed. */
-  const handleNext: () => void = () => {
+  const handleNext: (userAnswersList: UserAnswerType) => void = (
+    userAnswersList,
+  ) => {
     setCurrentQuestion((prevQuestion: number) => prevQuestion + 1);
+    setUserAnswers(userAnswersList);
+    // console.log("userAnswers (parent):", userAnswers);
   };
 
   /** Updates the current question after the previous button is pressed. */
-  const handlePrevious: () => void = () => {
+  const handlePrevious: (userAnswersList: UserAnswerType) => void = (
+    userAnswersList,
+  ) => {
     setCurrentQuestion((prevQuestion: number) => prevQuestion - 1);
+    setUserAnswers(userAnswersList);
   };
 
   const toQuizResultsScreen = (
@@ -96,11 +128,13 @@ export default function Quiz({
     if (!preQuizResults.length && !postQuizResults.length) {
       console.log("pre", preQuizQuestionResults);
       console.log("post", postQuizQuestionResults);
-      // preQuizResults = preQuizQuestionResults;
-      // postQuizResults = postQuizQuestionResults;
       setPreQuizResults(preQuizQuestionResults);
       setPostQuizResults(postQuizQuestionResults);
     }
+    // "submit" the prequiz?
+    // do here
+    setCurrentQuestion((prevQuestion: number) => prevQuestion + 1);
+    setQuizComplete(true);
     setAtQuizResults(true);
   };
 
@@ -193,7 +227,7 @@ export default function Quiz({
     return () => {
       window.removeEventListener("resize", handleResize);
     };
-  }, [isPreQuiz]);
+  }, [isPreQuiz, currentQuestion]);
 
   return (
     <div className="quiz-body mx-auto my-6 flex w-[720px] max-w-screen-lg flex-col rounded-sm border border-sciquelCardBorder bg-white md-qz:w-full">
@@ -235,7 +269,8 @@ export default function Quiz({
               >
                 {index + 1 <= currentQuestion && (
                   <div
-                    className="h-3.5 w-3.5 rounded-full"
+                    className="h-3.5 w-3.5 cursor-pointer rounded-full"
+                    onClick={() => jumpToQuestion(index + 1)}
                     style={{
                       backgroundColor: getThemeColor(false),
                     }}
@@ -375,9 +410,11 @@ export default function Quiz({
                       }
                       currentQuestion={currentQuestion}
                       totalQuestions={questionList.length}
+                      storedUserAnswersList={userAnswers}
                       onPrevious={handlePrevious}
                       onNext={handleNext}
                       toQuizResultsScreen={toQuizResultsScreen}
+                      quizComplete={quizComplete}
                     />
                   );
 
@@ -434,7 +471,7 @@ export default function Quiz({
                     }
                   `}
                   key={index}
-                  // onClick={() => jumpToQuestion(index + 1)}
+                  onClick={() => jumpToQuestion(index + 1)}
                 >
                   Q{index + 1}
                 </button>
