@@ -26,7 +26,7 @@ export default function StoryBlockquote({
           }
         });
       },
-      { threshold: 0.1 },
+      { threshold: 0.3 },
     );
 
     if (blockquoteRef.current && !isPrintMode) {

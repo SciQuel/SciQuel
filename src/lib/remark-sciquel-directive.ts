@@ -13,7 +13,12 @@ const isDirectiveNode = (node: Node): node is DirectiveNode => {
   );
 };
 
-const allowedDirectives = ["large-image", "caption-citation", "dropdown"];
+const allowedDirectives = [
+  "large-image",
+  "caption-citation",
+  "dropdown",
+  "gray-text",
+];
 
 const mapDirectiveNode: MapFunction = (node) => {
   if (!isDirectiveNode(node)) {

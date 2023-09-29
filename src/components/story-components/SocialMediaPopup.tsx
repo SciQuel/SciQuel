@@ -180,7 +180,7 @@ const SocialMediaPopup = forwardRef(
                 "after:w-full"
             //  after:duration-0
           } ${
-            justCopied ? "" : "opacity-0"
+            justCopied ? "" : "pointer-events-none opacity-0"
           }  fixed bottom-0 right-0 m-3 mb-44 rounded-md border-2 border-sciquelCardBorder bg-sciquelCardBg px-3 py-2 font-semibold text-zinc-400 transition-opacity after:absolute after:bottom-0 after:left-0 after:z-50 after:h-1 sm:mb-3`}
           // after:transition-[width] after:ease-linear
         >
