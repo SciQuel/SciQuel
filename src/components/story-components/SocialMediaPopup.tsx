@@ -9,6 +9,7 @@ import {
   useState,
   type ForwardedRef,
 } from "react";
+import ClipboardIcon from "../../../public/assets/images/clipboard.svg";
 import facebookIcon from "../../../public/assets/images/story-facebook.png";
 import instagramIcon from "../../../public/assets/images/story-ig.png";
 import shareIcon from "../../../public/assets/images/story-share.png";
@@ -154,14 +155,24 @@ const SocialMediaPopup = forwardRef(
                     : show
                     ? "pointer-events-auto p-4 pb-2 xl:pointer-events-none xl:w-0 xl:-translate-x-3 xl:p-0 xl:opacity-0"
                     : "w-0 -translate-x-3 p-0 opacity-0"
-                } m-0 mt-2 rounded-t border-x-2 border-t-2 border-sciquelCardBorder bg-sciquelCardBg transition-all lg:h-fit xl:mx-3 xl:mt-7 xl:rounded xl:border-2`}
+                } m-0 mt-2 flex flex-row  justify-center rounded-t border-x-2 border-t-2 border-sciquelCardBorder bg-sciquelCardBg transition-all lg:h-fit xl:mx-3 xl:mt-7 xl:rounded xl:border-2`}
               >
                 {/* floating input for copying link */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard.writeText(`sciquel.org${pathname}`);
+                    dispatchJustCopied({ type: "show" });
+                  }}
+                  className="me-3 flex  items-center justify-center"
+                >
+                  <ClipboardIcon className={"m-0 h-11 w-11 p-0"} />
+                </button>
                 <input
                   ref={inputRef}
                   readOnly
                   type="text"
-                  className="mt-3 w-full border p-1 xl:mt-0 xl:w-96"
+                  className="  w-full border p-1 xl:mt-0 xl:w-96"
                   value={`sciquel.org${pathname}`}
                   onClick={() => {
                     navigator.clipboard.writeText(`sciquel.org${pathname}`);
