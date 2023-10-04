@@ -41,17 +41,9 @@ function useQuiz(
   questionType: string,
   questions: Question[] | MultipleMatchQuestion[] | MultipleMatchQuestion[],
 ) {
-  // const [preQuizAnswers, setPreQuizAnswers] = useState();
   const quizObjective = objective;
   const quizQuestionType = questionType;
   const questionList = questions;
-
-  // Update the preQuiz answers
-  // const updatePreQuizAnswers = (preQuizAnswers) => {
-  //   setPreQuizAnswers(preQuizAnswers);
-  // };
-
-  // const preQuizComponent = <Quiz prequizAns={prequiz} setPrequizAns={setPrequiz} />
 
   const preQuizComponent = (
     <Quiz
@@ -60,8 +52,6 @@ function useQuiz(
       quizObjective={quizObjective}
       quizQuestionType={quizQuestionType}
       questionList={questionList}
-      // updatePreQuizAnswers={updatePreQuizAnswers}
-      // preQuizAnswers={null}
     />
   );
 
@@ -72,8 +62,6 @@ function useQuiz(
       quizObjective={quizObjective}
       quizQuestionType={quizQuestionType}
       questionList={questionList}
-      // updatePreQuizAnswers={null}
-      // preQuizAnswers={preQuizAnswers}
     />
   );
 
@@ -353,8 +341,8 @@ export default async function StoriesPage({ params }: Params) {
   const [preQuiz, postQuiz] = useQuiz(
     story,
     "How much do you know already know about microglia?",
-    "Multiple Choice",
-    questionList_MC1,
+    "True/False",
+    questionList_TF1,
   );
 
   return (

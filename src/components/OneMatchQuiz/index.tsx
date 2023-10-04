@@ -388,8 +388,6 @@ export default function OneMatchQuiz({
     );
     const questionResult = answerCorrect.every((isCorrect) => isCorrect);
 
-    console.log("answerCorrect", answerCorrect);
-
     const updatedAnswerCorrectList = [...answerCorrectList];
     updatedAnswerCorrectList[currentQuestion - 1] = answerCorrect; // save the results for the current question
 

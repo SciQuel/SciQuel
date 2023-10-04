@@ -1,3 +1,4 @@
+import { useQuizContext } from "@/components/Quiz/QuizContext";
 import QuizButtons from "@/components/QuizButtons";
 import React, { useEffect, useRef, useState } from "react";
 import checkmark from "../Quiz/checkmark.png";
@@ -10,6 +11,11 @@ interface Props {
   answerExplanation: string[]; // List containing the explanation(s) for the question.
   currentQuestion: number; // The question # the user is looking at.
   totalQuestions: number; // The total number of questions.
+  storedUserAnswersList:
+    | (string | null)[]
+    | (boolean | null)[][]
+    | string[][]
+    | string[][][];
   onPrevious: (
     userAnswersList:
       | (string | null)[]
@@ -24,6 +30,11 @@ interface Props {
       | string[][]
       | string[][][],
   ) => void; // The function called when using the next button.
+  toQuizResultsScreen: (
+    preQuizResults: boolean[],
+    postQuizResults: boolean[],
+  ) => void; // The function called when using the next button after the final question.
+  quizComplete: boolean;
 }
 
 export default function TrueFalseQuiz({
@@ -33,16 +44,50 @@ export default function TrueFalseQuiz({
   answerExplanation,
   currentQuestion,
   totalQuestions,
+  storedUserAnswersList,
   onPrevious,
   onNext,
+  toQuizResultsScreen,
+  quizComplete,
 }: Props) {
   /* component state variables */
-  const [userAnswersList, setuserAnswersList] = useState<
-    Array<Array<boolean | null>>
-  >(Array.from({ length: totalQuestions }, () => [])); // an array of boolean arrays to store the user's selected T/F choices (for ea/ T/F statement, for ea/ question)
+  const { preQuizAnswers, setPreQuizAnswers } = useQuizContext();
+  const { solutionList, setSolutionList } = useQuizContext();
+
+  // const initialUserAnswers =
+  //   storedUserAnswersList.length === 0
+  //     ? Array.from({ length: totalQuestions }, () => [])
+  //     : (storedUserAnswersList as string[][]);
+  // const [userAnswersList, setUserAnswersList] = useState(initialUserAnswers); // stores the user's answers (for ea/ question)
+
+  // const [userAnswersList, setUserAnswersList] = useState<(boolean | null)[][]>(
+  //   storedUserAnswersList.length === 0
+  //     ? Array.from({ length: totalQuestions }, () => [] as (boolean | null)[])
+  //     : (storedUserAnswersList as (boolean | null)[][]),
+  // ); // an array of boolean arrays to store the user's selected T/F choices (for ea/ T/F statement, for ea/ question)
+
+  const initialUserAnswers =
+    storedUserAnswersList.length === 0
+      ? Array.from({ length: totalQuestions }, () => [])
+      : (storedUserAnswersList as (boolean | null)[][]);
+  const [userAnswersList, setUserAnswersList] = useState(initialUserAnswers); // stores the user's answers (for ea/ question)
+
+  // const [userAnswersList, setUserAnswersList] = useState<
+  //   Array<Array<boolean | null>>
+  // >(Array.from({ length: totalQuestions }, () => [])); // an array of boolean arrays to store the user's selected T/F choices (for ea/ T/F statement, for ea/ question)
+
+  // const [userAnswersList, setUserAnswersList] = useState<(boolean | null)[][]>(
+  //   storedUserAnswersList.length === 0
+  //     ? Array(totalQuestions).fill(null)
+  //     : (storedUserAnswersList as (boolean | null)[][]),
+  // );
+
   const [answerCorrectList, setAnswerCorrectList] = useState<
     Array<Array<boolean | null>>
   >(Array.from({ length: totalQuestions }, () => [])); // an array of boolean arrays to store answer results (for ea/ T/F statement, for ea/ question)
+  const [questionResultList, setQuestionResultList] = useState<boolean[]>(
+    Array(totalQuestions).fill(false),
+  );
   const [showAnswerExplanation, setShowAnswerExplanation] = useState(false); // determines if explanations should be shown
   const [hasAnsweredList, setHasAnsweredList] = useState<boolean[]>(
     Array(totalQuestions).fill(false),
@@ -51,25 +96,39 @@ export default function TrueFalseQuiz({
 
   /**
    * For updating the component when the user clicks the previous/next buttons: Initializes
-   * updateduserAnswersList and updatedAnswerCorrectList if needed, and locks quiz pointer
-   * events if question was previously submitted
+   * updatedUserAnswersList and updatedAnswerCorrectList if needed, and locks quiz pointer events if
+   * question was previously submitted
    */
   useEffect(() => {
-    const trueFalseQuizSelection = document.querySelector(
-      isPreQuiz ? "#prequiz-tf" : "#postquiz-tf",
-    );
-    const userAnswers = userAnswersList[currentQuestion - 1];
+    // const userAnswers = userAnswersList[currentQuestion - 1];
+    const userAnswers =
+      storedUserAnswersList.length === 0
+        ? userAnswersList[currentQuestion - 1]
+        : (storedUserAnswersList as (boolean | null)[][])[currentQuestion - 1];
     const answerCorrect = answerCorrectList[currentQuestion - 1];
+
+    console.log("storedUserAnswersList", storedUserAnswersList);
+    console.log("solutionList", solutionList);
 
     if (!userAnswers.length) {
       // Initialize the array for the current question if it's not already initialized
-      const updateduserAnswersList = [...userAnswersList];
-      updateduserAnswersList[currentQuestion - 1] = Array.from(
+      const updatedUserAnswersList = [...userAnswersList];
+      updatedUserAnswersList[currentQuestion - 1] = Array.from(
         { length: choices.length },
         () => null,
       );
-      console.log("updateduserAnswersList", updateduserAnswersList);
-      setuserAnswersList(updateduserAnswersList);
+      console.log("updatedUserAnswersList", updatedUserAnswersList);
+      setUserAnswersList(updatedUserAnswersList);
+      if (isPreQuiz && !quizComplete) {
+        setPreQuizAnswers(updatedUserAnswersList);
+      }
+    }
+
+    // Initialize the list of solutions
+    if (!solutionList) {
+      setSolutionList(
+        Array.from({ length: totalQuestions }, () => [] as boolean[]),
+      );
     }
 
     if (!answerCorrect.length) {
@@ -83,21 +142,16 @@ export default function TrueFalseQuiz({
       setAnswerCorrectList(updatedAnswerCorrectList);
     }
 
-    // if the question was previously submitted, lock quiz pointer events
-    if (trueFalseQuizSelection) {
-      if (currentQuestion !== prevCurrentQuestion.current) {
-        const hasAnswered = hasAnsweredList[currentQuestion - 1];
-        if (hasAnswered && !isPreQuiz) {
-          trueFalseQuizSelection.classList.add("pointer-events-none");
-          setShowAnswerExplanation(true);
-        } else {
-          trueFalseQuizSelection.classList.remove("pointer-events-none");
-          setShowAnswerExplanation(false);
-        }
+    if (currentQuestion !== prevCurrentQuestion.current) {
+      const hasAnswered = hasAnsweredList[currentQuestion - 1];
+      if (hasAnswered && !isPreQuiz) {
+        setShowAnswerExplanation(true);
+      } else {
+        setShowAnswerExplanation(false);
       }
-      prevCurrentQuestion.current = currentQuestion;
     }
-  }, [currentQuestion, isPreQuiz, hasAnsweredList]);
+    prevCurrentQuestion.current = currentQuestion;
+  }, [currentQuestion, isPreQuiz]);
 
   /**
    * Handles the selection of an answer option (called when user clicks one of the boxes): Updates
@@ -110,7 +164,7 @@ export default function TrueFalseQuiz({
     optionIndex: number,
     trueFalseOption: boolean,
   ) => {
-    const updateduserAnswersList = userAnswersList.map(
+    const updatedUserAnswersList = userAnswersList.map(
       (userAnswers, questionIndex) => {
         if (questionIndex === currentQuestion - 1) {
           return userAnswers.map((option, index) => {
@@ -128,8 +182,12 @@ export default function TrueFalseQuiz({
         return userAnswers;
       },
     );
-    console.log("updateduserAnswersList", updateduserAnswersList);
-    setuserAnswersList(updateduserAnswersList);
+    console.log("updatedUserAnswersList", updatedUserAnswersList);
+    setUserAnswersList(updatedUserAnswersList);
+
+    if (isPreQuiz && !quizComplete) {
+      setPreQuizAnswers(updatedUserAnswersList);
+    }
   };
 
   /**
@@ -147,24 +205,29 @@ export default function TrueFalseQuiz({
         (userAnswer, index) => userAnswer === (correctAnswer[index] === "true"),
       );
 
+      if (solutionList) {
+        // const booleanCorrectAnswer: boolean[] = correctAnswer.map((value) => value === "true");
+        const updatedSolutionList = [...solutionList]; // Create a copy of the array
+        updatedSolutionList[currentQuestion - 1] = correctAnswer.map(
+          (value) => value === "true",
+        );
+        setSolutionList(updatedSolutionList);
+      }
+
+      const questionResult = answerCorrect.every((isCorrect) => isCorrect);
+
       const updatedAnswerCorrectList = [...answerCorrectList];
       updatedAnswerCorrectList[currentQuestion - 1] = answerCorrect; // save the results for the current question
+
+      const updatedQuestionResultList = [...questionResultList];
+      updatedQuestionResultList[currentQuestion - 1] = questionResult; // save the overall result for the current question
 
       const updatedHasAnsweredList = [...hasAnsweredList];
       updatedHasAnsweredList[currentQuestion - 1] = true; // set current question as answered
 
-      // set class to lock the TF selection
-      const trueFalseQuizSelection = document.querySelector(
-        isPreQuiz ? "#prequiz-tf" : "#postquiz-tf",
-      );
-      if (trueFalseQuizSelection) {
-        trueFalseQuizSelection.classList.add("pointer-events-none");
-      }
-
-      // give the user points or update their score here ?
-
       setAnswerCorrectList(updatedAnswerCorrectList);
       setShowAnswerExplanation(true);
+      setQuestionResultList(updatedQuestionResultList);
       setHasAnsweredList(updatedHasAnsweredList);
     }
   };
@@ -173,29 +236,119 @@ export default function TrueFalseQuiz({
   const handlePrevious = () => {
     // call quiz's handle previous function to go back a question
     onPrevious(userAnswersList);
+    if (isPreQuiz && !quizComplete) {
+      setPreQuizAnswers(userAnswersList);
+    }
   };
 
   /** Handles the next button of a T/F question (called when user clicks "Next" button). */
   const handleNext = () => {
-    // call quiz's handle previous function to go forward a question
-    onNext(userAnswersList);
+    if (currentQuestion == totalQuestions) {
+      // get results from prequiz?
+      // const preQuizResults = [true, false, false];
+      const preQuizResults = generateQuizResults(preQuizAnswers); // take preQuizAnswers and grade them -- call the grade function
+      console.log("preQuizResults:", preQuizResults);
+      toQuizResultsScreen(preQuizResults, questionResultList);
+    } else {
+      // call quiz's handle next function to go forward a question
+      onNext(userAnswersList);
+      if (isPreQuiz && !quizComplete) {
+        setPreQuizAnswers(userAnswersList);
+      }
+    }
   };
 
+  const generateQuizResults = (answersList: (boolean | null)[][]) => {
+    console.log("generating preQuiz results, answerList:", answersList);
+    if (answersList == null) {
+      return Array.from({ length: totalQuestions }, () => false);
+    }
+    const quizResults = answersList.map((userAnswers, index) => {
+      if (userAnswers == null || userAnswers.length === 0) {
+        console.log("null or empty:", userAnswers);
+        return false; // Handle the case where userAnswers is null or empty.
+      }
+      console.log("userAnswers:", userAnswers);
+      const questionResult = getQuestionResult(index, userAnswers as boolean[]);
+      console.log("questionResult:", questionResult);
+      return questionResult;
+    });
+
+    console.log("quizResults:", quizResults);
+
+    return quizResults;
+  };
+
+  /**
+   * Returns whether a particular match option was submitted under the correct statement.
+   *
+   * @param {number} index - The index of the statement we are checking.
+   * @param {(boolean | null)[]} userAnswers - The user's answers for the question.
+   */
+  const statementCorrect = (
+    questionNumber: number,
+    index: number,
+    userAnswers: (boolean | null)[],
+  ) => {
+    // if (userAnswers[index] === correctAnswer[index]) {
+    // userAnswer === (correctAnswer[index] === "true")
+    if (userAnswers[index] === solutionList[questionNumber][index]) {
+      return true;
+    }
+    return false;
+  };
+
+  const getQuestionResult = (
+    questionNumber: number,
+    userAnswers: (boolean | null)[],
+  ) => {
+    const questionResult = userAnswers.every((_, index) => {
+      console.log("userAnswers[index]", userAnswers[index]);
+      // console.log(
+      //   "userAnswers[index] === correctAnswer[index]",
+      //   userAnswers[index] === correctAnswer[index],
+      // );
+
+      if (!statementCorrect(questionNumber, index, userAnswers)) {
+        // console.log("userAnswers FALSE:", userAnswers);
+        return false; // Return false if any answer is incorrect.
+      }
+      // console.log("userAnswers TRUE:", userAnswers);
+      return true;
+    });
+    console.log("questionResult", questionResult);
+    return questionResult;
+  };
+
+  const userAnswers = userAnswersList[currentQuestion - 1]; // user's answers for current question's (string array)
   const selectedOption = userAnswersList[currentQuestion - 1]; // current question's selected T/F options (bool array. null where not selected)
   const answerCorrect = answerCorrectList[currentQuestion - 1]; // current question's results for ea/ statement (bool array. null if not submitted)
   const hasAnswered = hasAnsweredList[currentQuestion - 1]; // if current question has been submitted or not
+  const questionResult = questionResultList[currentQuestion - 1];
 
   // boolean values to determine which buttons to show, based on whether quiz is prequiz or not
   const showPreviousButton = currentQuestion > 1;
   const showNextButton =
+    (!isPreQuiz && quizComplete) ||
     (currentQuestion < totalQuestions && isPreQuiz) ||
-    (currentQuestion < totalQuestions && hasAnswered);
-  const showSubmitButton = !showAnswerExplanation && !isPreQuiz;
+    (currentQuestion <= totalQuestions && hasAnswered);
+  const showSubmitButton =
+    !showAnswerExplanation && !isPreQuiz && !quizComplete;
+  const showFeedback =
+    hasAnswered ||
+    (!isPreQuiz && quizComplete) ||
+    (isPreQuiz &&
+      preQuizAnswers &&
+      preQuizAnswers[currentQuestion - 1] &&
+      preQuizAnswers[currentQuestion - 1].length > 0 &&
+      quizComplete);
 
   return (
     <div key={isPreQuiz ? "prequiz" : "postquiz"}>
       <div
-        className="true-false-selection mb-3 flex flex-col items-start gap-3"
+        className={`true-false-selection mb-3 flex flex-col items-start gap-3 ${
+          hasAnswered || quizComplete ? "pointer-events-none" : ""
+        }`}
         id={isPreQuiz ? "prequiz-tf" : "postquiz-tf"}
       >
         <div className="true-false-letters mb-[-35px] mt-[-35px] flex h-[-100px] w-full flex-row items-center justify-center gap-6 md-qz:mt-0">
@@ -222,23 +375,29 @@ export default function TrueFalseQuiz({
               id={isPreQuiz ? "prequiz-box" : "postquiz-box"}
               className={`select-box-true flex aspect-[1/1] basis-[10%] cursor-pointer items-center justify-between rounded-md bg-gray-200 bg-[length:65%] bg-center bg-no-repeat transition duration-300 hover:bg-gray-300
               ${
-                hasAnswered && answerCorrect?.[index] && selectedOption[index]
+                // showFeedback && answerCorrect?.[index] && selectedOption[index]
+                showFeedback &&
+                statementCorrect(currentQuestion - 1, index, userAnswers) &&
+                userAnswers[index]
                   ? "select-correct-tf bg-sciquelCorrectBG"
                   : ""
               }
               ${
-                hasAnswered && !answerCorrect?.[index] && selectedOption[index]
+                showFeedback &&
+                userAnswers[index] !== null &&
+                !statementCorrect(currentQuestion - 1, index, userAnswers) &&
+                userAnswers[index]
                   ? "select-incorrect-tf bg-sciquelIncorrectBG"
                   : ""
               }`}
               style={{
-                backgroundImage: hasAnswered
-                  ? selectedOption[index]
-                    ? answerCorrect?.[index]
+                backgroundImage: showFeedback
+                  ? userAnswers[index]
+                    ? statementCorrect(currentQuestion - 1, index, userAnswers)
                       ? `url('${checkmark.src}')`
                       : `url('${x_mark.src}')`
                     : "none"
-                  : selectedOption[index]
+                  : userAnswers[index]
                   ? `url('${checkmark.src}')`
                   : "none",
               }}
@@ -248,23 +407,28 @@ export default function TrueFalseQuiz({
             <div
               id={isPreQuiz ? "prequiz-box" : "postquiz-box"}
               className={`select-box-false flex aspect-[1/1] basis-[10%] cursor-pointer items-center justify-between rounded-md bg-gray-200 bg-[length:65%] bg-center bg-no-repeat transition duration-300 hover:bg-gray-300 ${
-                hasAnswered && answerCorrect?.[index] && !selectedOption[index]
+                showFeedback &&
+                statementCorrect(currentQuestion - 1, index, userAnswers) &&
+                !userAnswers[index]
                   ? "select-correct-tf bg-sciquelCorrectBG"
                   : ""
               }
               ${
-                hasAnswered && !answerCorrect?.[index] && !selectedOption[index]
+                showFeedback &&
+                userAnswers[index] !== null &&
+                !statementCorrect(currentQuestion - 1, index, userAnswers) &&
+                !userAnswers[index]
                   ? "select-incorrect-tf bg-sciquelIncorrectBG"
                   : ""
               }`}
               style={{
-                backgroundImage: hasAnswered
-                  ? !selectedOption[index]
-                    ? answerCorrect?.[index]
+                backgroundImage: showFeedback
+                  ? !userAnswers[index] && userAnswers[index] !== null
+                    ? statementCorrect(currentQuestion - 1, index, userAnswers)
                       ? `url('${checkmark.src}')`
                       : `url('${x_mark.src}')`
                     : "none"
-                  : selectedOption[index] === false
+                  : userAnswers[index] === false
                   ? `url('${checkmark.src}')`
                   : "none",
               }}
@@ -274,43 +438,33 @@ export default function TrueFalseQuiz({
         ))}
       </div>
 
-      {showAnswerExplanation && answerCorrect && (
+      {((quizComplete && showFeedback) || showAnswerExplanation) && (
         <div className="answer-explanation-container-tf flex w-full flex-col">
           <ul className="explanation-list w-full list-none p-0">
-            {(answerCorrect as boolean[]).map(
-              (result: boolean, index: number) => (
-                <li
-                  key={index}
-                  className={
-                    result
-                      ? "answer-explanation-tf correct font-quicksand my-1 box-border w-full border-l-8 border-sciquelCorrectBG p-4 pl-8 text-[18px] font-medium leading-6 text-sciquelCorrectText  sm-qz:text-[16px]"
-                      : "answer-explanation-tf incorrect font-quicksand my-1 box-border w-full border-l-8 border-sciquelIncorrectBG p-4 pl-8 text-[18px] font-medium leading-6 text-sciquelIncorrectText sm-qz:text-[16px]"
-                  }
-                >
-                  {result ? "Correct. " : "Incorrect. "}
-                  {answerExplanation[index]}
-                </li>
-              ),
-            )}
+            {choices.map((_, index: number) => (
+              <li
+                key={index}
+                className={
+                  statementCorrect(currentQuestion - 1, index, userAnswers)
+                    ? "answer-explanation-tf correct font-quicksand my-1 box-border w-full border-l-8 border-sciquelCorrectBG p-4 pl-8 text-[18px] font-medium leading-6 text-sciquelCorrectText  sm-qz:text-[16px]"
+                    : "answer-explanation-tf incorrect font-quicksand my-1 box-border w-full border-l-8 border-sciquelIncorrectBG p-4 pl-8 text-[18px] font-medium leading-6 text-sciquelIncorrectText sm-qz:text-[16px]"
+                }
+              >
+                {statementCorrect(currentQuestion - 1, index, userAnswers)
+                  ? "Correct. "
+                  : "Incorrect. "}
+                {answerExplanation[index]}
+              </li>
+            ))}
           </ul>
 
           <div
             className="user-quiz-statistics  ml-auto mt-4 w-full text-right text-[14px] leading-normal text-gray-600"
             style={{ marginLeft: "auto" }}
           >
-            {answerCorrect.every(
-              (correct: boolean | null) => correct === true,
-            ) && (
-              <>
-                You and 87.6% of SciQuel readers answered this question
-                correctly. Great job!
-              </>
-            )}
-            {!answerCorrect.every(
-              (correct: boolean | null) => correct === true,
-            ) && (
-              <>87.6% of SciQuel readers answered this question correctly.</>
-            )}
+            {getQuestionResult(currentQuestion - 1, userAnswers)
+              ? "You and 87.6% of SciQuel readers answered this question correctly. Great job!"
+              : "87.6% of SciQuel readers answered this question correctly."}
           </div>
         </div>
       )}
