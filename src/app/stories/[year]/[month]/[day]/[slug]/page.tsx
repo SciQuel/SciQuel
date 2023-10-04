@@ -37,11 +37,13 @@ interface Params {
 // function useQuiz(id: string) {
 function useQuiz(
   story: GetStoryResult,
+  objective: string,
+  questionType: string,
   questions: Question[] | MultipleMatchQuestion[] | MultipleMatchQuestion[],
 ) {
   // const [preQuizAnswers, setPreQuizAnswers] = useState();
-  const quizObjective = "How much do you know already know about microglia?";
-  const quizQuestionType = "One Match";
+  const quizObjective = objective;
+  const quizQuestionType = questionType;
   const questionList = questions;
 
   // Update the preQuiz answers
@@ -348,7 +350,12 @@ export default async function StoriesPage({ params }: Params) {
     },
   ];
 
-  const [preQuiz, postQuiz] = useQuiz(story, questionList_OM2);
+  const [preQuiz, postQuiz] = useQuiz(
+    story,
+    "How much do you know already know about microglia?",
+    "Multiple Choice",
+    questionList_MC1,
+  );
 
   return (
     <div className="flex flex-col">

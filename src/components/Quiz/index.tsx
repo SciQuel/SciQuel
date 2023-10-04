@@ -329,8 +329,11 @@ export default function Quiz({
                       }
                       currentQuestion={currentQuestion}
                       totalQuestions={questionList.length}
+                      storedUserAnswersList={userAnswers}
                       onPrevious={handlePrevious}
                       onNext={handleNext}
+                      toQuizResultsScreen={toQuizResultsScreen}
+                      quizComplete={quizComplete}
                     />
                   );
 

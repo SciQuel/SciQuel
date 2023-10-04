@@ -8,12 +8,12 @@ import React, {
 } from "react";
 
 interface QuizContextType {
-  preQuizAnswers: any; // Adjust the type as needed
-  setPreQuizAnswers: React.Dispatch<React.SetStateAction<any>>; // Adjust the type as needed
-  solutionList: any; // Adjust the type as needed
-  setSolutionList: React.Dispatch<React.SetStateAction<any>>; // Adjust the type as needed
-  quizComplete: boolean; // Adjust the type as needed
-  setQuizComplete: React.Dispatch<React.SetStateAction<boolean>>; // Adjust the type as needed
+  preQuizAnswers: any;
+  setPreQuizAnswers: React.Dispatch<React.SetStateAction<any>>;
+  solutionList: any;
+  setSolutionList: React.Dispatch<React.SetStateAction<any>>;
+  quizComplete: boolean; 
+  setQuizComplete: React.Dispatch<React.SetStateAction<boolean>>; 
 }
 
 const QuizContext = createContext<QuizContextType | undefined>(undefined);
@@ -31,8 +31,8 @@ interface QuizProviderProps {
 }
 
 export function QuizProvider({ children }: QuizProviderProps) {
-  const [preQuizAnswers, setPreQuizAnswers] = useState<any>(null); // Adjust the type as needed
-  const [solutionList, setSolutionList] = useState<any>(null); // Adjust the type as needed
+  const [preQuizAnswers, setPreQuizAnswers] = useState<any>(null); 
+  const [solutionList, setSolutionList] = useState<any>(null);
   const [quizComplete, setQuizComplete] = useState(false);
 
   return (
