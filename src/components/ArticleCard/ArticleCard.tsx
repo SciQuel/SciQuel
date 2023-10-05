@@ -31,7 +31,7 @@ export default function ArticleCard({
     <Link href={href ?? "#"}>
       <div
         className={clsx(
-          `flex h-full cursor-pointer overflow-clip rounded-lg transition hover:scale-[1.02]`,
+          `flex h-full w-full max-w-xs cursor-pointer overflow-clip rounded-lg transition hover:scale-[1.02]`,
           {
             "border border-sciquelCardBorder bg-sciquelCardBg": !(
               mini && preferHorizontal
@@ -44,14 +44,14 @@ export default function ArticleCard({
       >
         <div
           className={clsx(
-            "flex flex-col gap-4 p-5",
+            "flex flex-col gap-4",
             mini
               ? preferHorizontal
-                ? ""
-                : "grow"
+                ? "py-2"
+                : "grow  p-3"
               : preferHorizontal
               ? "w-2/3"
-              : "grow",
+              : "grow  p-3",
           )}
         >
           {/* Article Card Header */}
