@@ -1,5 +1,8 @@
 import { type GetStoryResult } from "@/app/api/stories/[year]/[month]/[day]/[slug]/route";
 import { type GetStoriesResult } from "@/app/api/stories/route";
+import Dictionary from "@/components/story-components/Dictionary";
+import { DictionaryProvider } from "@/components/story-components/DictionaryContext";
+import DictionaryWord from "@/components/story-components/DictionaryWord";
 import { PrintModeProvider } from "@/components/story-components/PrintContext";
 import StoryCredits from "@/components/story-components/StoryCredits";
 import StoryFooter from "@/components/story-components/StoryFooter";
@@ -17,6 +20,30 @@ interface Params {
     slug: string;
   };
 }
+
+const testDictionary = {
+  camouflage: {
+    definition:
+      "concealment by some means that alters or obscures the appearance.",
+    pronunciation: "cam·ou·flage \n/ˈkaməˌflä(d)ZH/",
+    inContext: {},
+  },
+
+  enzymes: {
+    definition:
+      "An enzyme is a biological catalyst and is almost always a protein. It speeds up the rate of a specific chemical reaction in the cell.",
+    pronunciation: "en·zyme \n/ˈenˌzīm/",
+    inContext: {},
+  },
+
+  lipopolysaccharides: {
+    definition:
+      "Lipopolysaccharides (LPS) are important outer membrane components of gram-negative bacteria. They typically consist of a lipid domain (hydrophobic) attached to a core oligosaccharide and a distal polysaccharide.",
+    pronunciation:
+      "lip·o·pol·y·sac·cha·ride \n/ˌlipōˌpälēˈsakəˌrīd,ˌlīpōˌpälēˈsakəˌrīd/",
+    inContext: {},
+  },
+};
 
 export default async function StoriesPage({ params }: Params) {
   const whatsNewArticles = await getWhatsNewArticles();
@@ -39,28 +66,51 @@ export default async function StoriesPage({ params }: Params) {
 
   return (
     <PrintModeProvider>
-      <div className="flex flex-col">
-        <StoryCredits story={story} />
-        <div className="mx-2 mt-2 flex flex-col items-center gap-5 md:mx-auto">
-          {/* {testContent.file.result as ReactNode} */}
-          {file.result as ReactNode}
-          {testContent.file.result as ReactNode}
-          {testCode.file.result as ReactNode}
-          {testCode2.file.result as ReactNode}
-          {testDropdown.file.result as ReactNode}
+      <DictionaryProvider dictionary={testDictionary}>
+        <div className="flex flex-col">
+          <StoryCredits story={story} />
+
+          <div className="mx-2 mt-2 flex flex-col items-center gap-5 md:mx-auto">
+            {/* {testContent.file.result as ReactNode} */}
+            <Dictionary />
+
+            <p className="mx-0 w-full font-sourceSerif4 text-lg font-[370] leading-8 md:w-[720px]">
+              Admotum in <DictionaryWord word="lipopolysaccharides" /> querno
+              saxum genialis moriente tulit quoque quoque duxit de clarae regis,
+              quo memor <DictionaryWord word="enzymes" /> tangit mea, qui. Qua
+              semper nam retia favilla nomine dique, aris idque inter dantibus.
+              Cythereia ortae <DictionaryWord word="camouflage" /> procumbit
+              eodem, ut humumque noctisque proelia, sub nomen dixerat.
+            </p>
+            {file.result as ReactNode}
+            {testContent.file.result as ReactNode}
+            {testCode.file.result as ReactNode}
+            {testCode2.file.result as ReactNode}
+            {testDropdown.file.result as ReactNode}
+            <p className="mx-0 w-full font-sourceSerif4 text-lg font-[370] leading-8 md:w-[720px]">
+              Carinam pelagi se venit tantumne, neu fame res senilibus,
+              populisque. <DictionaryWord word="enzymes" /> Has capiti fatis.
+              Exemit puer sors esse, Pittheia nobis superfusis mihi Carpathius
+              quoque libera oris, nec. Quae retinere{" "}
+              <DictionaryWord word="lipopolysaccharides" /> ictus nam vultum
+              sanguine precibus Delphosque mucrone. Pectore in inquit Aeacide
+              illic sequar propositum ululasse cruentos aspergine aurea qui,
+              esse <DictionaryWord word="camouflage" />.
+            </p>
+          </div>
+          <p className="w-[calc( 100% - 1rem )] mx-2 my-5 border-t-2 border-[#616161]  text-sm text-[#616161] md:mx-auto md:w-[720px]">
+            Animation provided by Source name 1. Sources provided by Source name
+            2. We thank Funding 1 for their support, and Professor 2 for their
+            guidance. Ex. Cover Image: “Hawaiian Bobtail Squid” is licensed
+            under CC BY-NC 4.0.
+          </p>
+          <StoryFooter
+            storyContributions={story.storyContributions}
+            articles1={whatsNewArticles}
+            articles2={whatsNewArticles}
+          />
         </div>
-        <p className="w-[calc( 100% - 1rem )] mx-2 my-5 border-t-2 border-[#616161]  text-sm text-[#616161] md:mx-auto md:w-[720px]">
-          Animation provided by Source name 1. Sources provided by Source name
-          2. We thank Funding 1 for their support, and Professor 2 for their
-          guidance. Ex. Cover Image: “Hawaiian Bobtail Squid” is licensed under
-          CC BY-NC 4.0.
-        </p>
-        <StoryFooter
-          storyContributions={story.storyContributions}
-          articles1={whatsNewArticles}
-          articles2={whatsNewArticles}
-        />
-      </div>
+      </DictionaryProvider>
     </PrintModeProvider>
   );
 }
@@ -68,8 +118,8 @@ export default async function StoriesPage({ params }: Params) {
 async function retrieveUserInteractions(storyId: string) {
   const userSession = await getServerSession();
   if (userSession?.user.email) {
-    let bookmarked = false;
-    let brained = false;
+    const bookmarked = false;
+    const brained = false;
 
     const searchParams = new URLSearchParams({
       story_id: storyId,

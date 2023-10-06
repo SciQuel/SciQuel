@@ -13,7 +13,7 @@ export default function StoryBlockquote({
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          console.log(entry);
+          // console.log(entry);
           if (
             entry.isIntersecting &&
             blockquoteRef.current &&
