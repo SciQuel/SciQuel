@@ -9,14 +9,16 @@ import {
   type SetStateAction,
 } from "react";
 
-interface InContextObj {
+interface instancesObj {
   [sentence: string]: HTMLElement;
 }
 
 interface DictionaryDefinition {
   definition: string;
-  inContext: InContextObj;
+  instances: instancesObj;
+  inContext: string[];
   pronunciation: string;
+  bookmarked: boolean | undefined;
 }
 
 export interface SelectedDefinition extends DictionaryDefinition {

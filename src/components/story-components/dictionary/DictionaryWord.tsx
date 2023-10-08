@@ -125,12 +125,12 @@ export default function DictionaryWord({
 
       const text = getText(scrollRef.current);
 
-      if (text && !newDict[word].inContext[text]) {
+      if (text && !newDict[word].instances[text]) {
         if (scrollRef.current.parentElement) {
-          newDict[word].inContext[text] = scrollRef.current.parentElement;
+          newDict[word].instances[text] = scrollRef.current.parentElement;
           dictionary.setDictionary(newDict);
         }
-        newDict[word].inContext[text] = scrollRef.current;
+        newDict[word].instances[text] = scrollRef.current;
         dictionary.setDictionary(newDict);
       }
     }

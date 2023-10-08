@@ -26,14 +26,23 @@ const testDictionary = {
     definition:
       "concealment by some means that alters or obscures the appearance.",
     pronunciation: "cam·ou·flage \n/ˈkaməˌflä(d)ZH/",
-    inContext: {},
+    instances: {},
+    inContext: [
+      "This camouflage comes from a layer of densely packed, pigmented structures just below the skin’s surface.",
+      "All modern, adult birds molt at least once a year to replace old, damaged feathers, or to exchange their bright summer colors for drab winter camouflage.",
+    ],
+    bookmarked: undefined,
   },
 
   enzymes: {
     definition:
       "An enzyme is a biological catalyst and is almost always a protein. It speeds up the rate of a specific chemical reaction in the cell.",
     pronunciation: "en·zyme \n/ˈenˌzīm/",
-    inContext: {},
+    instances: {},
+    inContext: [
+      "A cell contains thousands of different types of enzyme molecules, each specific to a particular chemical reaction.",
+    ],
+    bookmarked: undefined,
   },
 
   lipopolysaccharides: {
@@ -41,7 +50,11 @@ const testDictionary = {
       "Lipopolysaccharides (LPS) are important outer membrane components of gram-negative bacteria. They typically consist of a lipid domain (hydrophobic) attached to a core oligosaccharide and a distal polysaccharide.",
     pronunciation:
       "lip·o·pol·y·sac·cha·ride \n/ˌlipōˌpälēˈsakəˌrīd,ˌlīpōˌpälēˈsakəˌrīd/",
-    inContext: {},
+    instances: {},
+    inContext: [
+      "The Gram-negative bacterial lipopolysaccharide (LPS) is a major component of the outer membrane that plays a key role in host–pathogen interactions with the innate immune system.",
+    ],
+    bookmarked: undefined,
   },
 };
 
