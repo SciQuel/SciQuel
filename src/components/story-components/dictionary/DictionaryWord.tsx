@@ -79,6 +79,16 @@ function parseNextNode(node: ChildNode, fullSentence: string) {
   }
 }
 
+function getText(node: ChildNode) {
+  if (node.parentNode && node.parentNode.textContent) {
+    return node.parentNode.textContent;
+  } else if (node.textContent) {
+    return node.textContent;
+  } else {
+    return;
+  }
+}
+
 export default function DictionaryWord({
   word,
   children,
@@ -95,26 +105,32 @@ export default function DictionaryWord({
 
       // build sentence?
 
-      let fullSentence = scrollRef.current.textContent
-        ? scrollRef.current.textContent
-        : "";
+      // let fullSentence = scrollRef.current.textContent
+      //   ? scrollRef.current.textContent
+      //   : "";
 
-      if (scrollRef.current.previousSibling) {
-        fullSentence = parsePreviousNode(
-          scrollRef.current.previousSibling,
-          fullSentence,
-        );
-      }
-      if (scrollRef.current.nextSibling) {
-        fullSentence = parseNextNode(
-          scrollRef.current.nextSibling,
-          fullSentence,
-        );
-      }
-      console.log("final full sentence is: ", fullSentence);
+      // if (scrollRef.current.previousSibling) {
+      //   fullSentence = parsePreviousNode(
+      //     scrollRef.current.previousSibling,
+      //     fullSentence,
+      //   );
+      // }
+      // if (scrollRef.current.nextSibling) {
+      //   fullSentence = parseNextNode(
+      //     scrollRef.current.nextSibling,
+      //     fullSentence,
+      //   );
+      // }
+      // console.log("final full sentence is: ", fullSentence);
 
-      if (!newDict[word].inContext[fullSentence]) {
-        newDict[word].inContext[fullSentence] = scrollRef;
+      const text = getText(scrollRef.current);
+
+      if (text && !newDict[word].inContext[text]) {
+        if (scrollRef.current.parentElement) {
+          newDict[word].inContext[text] = scrollRef.current.parentElement;
+          dictionary.setDictionary(newDict);
+        }
+        newDict[word].inContext[text] = scrollRef.current;
         dictionary.setDictionary(newDict);
       }
     }
@@ -130,6 +146,7 @@ export default function DictionaryWord({
             word: word,
           });
           dictionary.setOpen(true);
+          dictionary.setPreviousWords([]);
         }
       }}
       type="button"

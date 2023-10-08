@@ -10,7 +10,7 @@ import {
 } from "react";
 
 interface InContextObj {
-  [sentence: string]: RefObject<HTMLButtonElement>;
+  [sentence: string]: HTMLElement;
 }
 
 interface DictionaryDefinition {
@@ -32,6 +32,10 @@ interface DictionaryContextVal {
   setDictionary: Dispatch<SetStateAction<FullDictionary>>;
   word: SelectedDefinition | null;
   setWord: Dispatch<SetStateAction<SelectedDefinition | null>>;
+  previousWords: (SelectedDefinition | "fullDict")[];
+  setPreviousWords: Dispatch<
+    SetStateAction<(SelectedDefinition | "fullDict")[]>
+  >;
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
 }
@@ -55,6 +59,10 @@ export function DictionaryProvider({
 
   const [isOpen, setIsOpen] = useState(false);
 
+  const [historyList, setHistoryList] = useState<
+    (SelectedDefinition | "fullDict")[]
+  >([]);
+
   return (
     <DictionaryContext.Provider
       value={{
@@ -62,6 +70,8 @@ export function DictionaryProvider({
         setDictionary: setFullDict,
         word: dictionarySelect,
         setWord: setDictionarySelect,
+        previousWords: historyList,
+        setPreviousWords: setHistoryList,
         open: isOpen,
         setOpen: setIsOpen,
       }}
