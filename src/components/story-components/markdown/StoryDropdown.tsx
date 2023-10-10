@@ -14,7 +14,7 @@ export default function StoryDropdown({
     return <></>;
   }
   return (
-    <div className="mx-0 w-full md:w-[720px]">
+    <div className="mx-0 w-full px-1 md:w-[720px]">
       <div
         onClick={() => {
           setOpen(!open);
@@ -22,9 +22,13 @@ export default function StoryDropdown({
         aria-expanded={open || isPrintMode}
         className={`${
           isPrintMode ? "border-gray-900" : "cursor-pointer"
-        } -ml-1 flex max-w-fit flex-row items-center rounded`}
+        } ml-[-0.33rem] flex max-w-fit flex-row items-center rounded`}
       >
-        <span className={`${isPrintMode ? "" : "text-sciquelTeal"} pr-2`}>
+        <span
+          className={`${isPrintMode ? "" : "text-sciquelTeal"} ${
+            open || isPrintMode ? "pr-[0.65rem]" : "pr-3"
+          } relative -left-[0.1rem]`}
+        >
           {open || isPrintMode ? "⮟" : "⮞"}
         </span>{" "}
         {childArray[0]}
@@ -32,10 +36,10 @@ export default function StoryDropdown({
 
       <div
         className={`${
-          open || isPrintMode ? "max-h border-s-4 p-2" : "max-h-0"
+          open || isPrintMode ? "max-h border-s-4 p-2 pl-[1.1rem]" : "max-h-0"
         } ${
           isPrintMode ? "border-gray-900" : "border-sciquelTeal"
-        } mt-3 overflow-hidden `}
+        } ml-[-0.1rem] mt-3 overflow-hidden`}
       >
         {Children.map(childArray, (child, index) => {
           if (index > 0) {
