@@ -1,6 +1,7 @@
 "use client";
 
 import { useContext, useEffect, useRef, type PropsWithChildren } from "react";
+import { DictionaryContext } from "../dictionary/DictionaryContext";
 import { PrintContext } from "../PrintContext";
 
 export default function StoryBlockquote({
@@ -8,12 +9,11 @@ export default function StoryBlockquote({
 }: PropsWithChildren<unknown>) {
   const isPrintMode = useContext(PrintContext);
   const blockquoteRef = useRef<HTMLQuoteElement>(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
+  const dictionaryInfo = useContext(DictionaryContext);
+  const observer = useRef(
+    new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          // console.log(entry);
           if (
             entry.isIntersecting &&
             blockquoteRef.current &&
@@ -27,14 +27,27 @@ export default function StoryBlockquote({
         });
       },
       { threshold: 0.3 },
-    );
-
-    if (blockquoteRef.current && !isPrintMode) {
-      observer.observe(blockquoteRef.current);
+    ),
+  );
+  useEffect(() => {
+    if (dictionaryInfo?.open) {
+      observer.current.disconnect();
+    } else if (blockquoteRef.current) {
+      observer.current.observe(blockquoteRef.current);
     }
 
     return () => {
-      observer.disconnect();
+      observer.current.disconnect();
+    };
+  }, [dictionaryInfo?.open]);
+
+  useEffect(() => {
+    if (blockquoteRef.current && !isPrintMode) {
+      observer.current.observe(blockquoteRef.current);
+    }
+
+    return () => {
+      observer.current.disconnect();
     };
   }, [isPrintMode]);
 

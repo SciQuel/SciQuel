@@ -2,15 +2,20 @@
 
 import {
   createContext,
+  useEffect,
   useState,
   type Dispatch,
   type PropsWithChildren,
-  type RefObject,
   type SetStateAction,
 } from "react";
 
 interface instancesObj {
   [sentence: string]: HTMLElement;
+}
+
+interface SelectedInstance {
+  index: number;
+  instance: HTMLElement;
 }
 
 interface DictionaryDefinition {
@@ -38,6 +43,8 @@ interface DictionaryContextVal {
   setPreviousWords: Dispatch<
     SetStateAction<(SelectedDefinition | "fullDict")[]>
   >;
+  selectedInstance: SelectedInstance | null;
+  setSelectedInstance: Dispatch<SetStateAction<SelectedInstance | null>>;
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
 }
@@ -65,6 +72,19 @@ export function DictionaryProvider({
     (SelectedDefinition | "fullDict")[]
   >([]);
 
+  const [highlightedInstance, setHighlightedInstance] =
+    useState<SelectedInstance | null>(null);
+
+  useEffect(() => {
+    if (!isOpen) {
+      setHighlightedInstance(null);
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    setHighlightedInstance(null);
+  }, [dictionarySelect]);
+
   return (
     <DictionaryContext.Provider
       value={{
@@ -74,6 +94,8 @@ export function DictionaryProvider({
         setWord: setDictionarySelect,
         previousWords: historyList,
         setPreviousWords: setHistoryList,
+        selectedInstance: highlightedInstance,
+        setSelectedInstance: setHighlightedInstance,
         open: isOpen,
         setOpen: setIsOpen,
       }}

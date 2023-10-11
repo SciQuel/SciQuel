@@ -98,7 +98,10 @@ export default function Header() {
     };
   }, [handleNavigation]);
   return (
-    <div className="sticky top-0 z-20 flex flex-col bg-sciquelTeal text-white">
+    <div
+      id="outer-header"
+      className="sticky top-0 z-20 flex flex-col bg-sciquelTeal text-white"
+    >
       <div className="absolute top-0 flex w-full justify-center px-10 py-4 text-xl font-thin leading-[2rem]">
         <Image src={logo} className="h-[2rem] w-auto" alt="SciQuel" />
         <p>SCIQUEL</p>
