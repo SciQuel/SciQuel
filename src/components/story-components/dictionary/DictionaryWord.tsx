@@ -98,10 +98,10 @@ export default function DictionaryWord({
   const scrollRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    console.log("inside word: ", word);
+    // console.log("inside word: ", word);
     if (dictionary && scrollRef.current) {
       const newDict = Object.assign({}, dictionary.dictionary);
-      console.log(scrollRef.current);
+      // console.log(scrollRef.current);
 
       // build sentence?
 
@@ -150,7 +150,7 @@ export default function DictionaryWord({
         }
       }}
       type="button"
-      className="fw-bold m-0 rounded-lg border-2 border-sciquelTeal px-2 text-sciquelTeal"
+      className="fw-bold m-0 rounded-lg border-2 border-sciquelTeal bg-white px-2 text-sciquelTeal"
     >
       {children ? children : word}
     </button>
