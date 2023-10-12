@@ -10,10 +10,34 @@ export default function FromThisSeries() {
         <h2 className="text-xl font-bold">Exploring Ecology</h2>
       </div>
       <div className="my-4 flex flex-row justify-between  lg:px-5">
-        <button className="text-xl">Previous Article</button>
+        <button className="text-xl">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="currentColor"
+            className="inline-block h-5 w-5 align-middle"
+            viewBox="0 0 16 16"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"
+            />
+          </svg>
+          Previous Article
+        </button>
         <button className="invisible text-xl md:visible">
           Next article
-          <i className="fa fa-bolt"></i>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="currentColor"
+            width="10px"
+            className="inline-block h-5 w-5"
+            viewBox="0 0 16 16"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"
+            />
+          </svg>
         </button>
       </div>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:gap-10 lg:px-5 ">

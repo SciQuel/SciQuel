@@ -50,7 +50,7 @@ export default function ArticleCard({
                 ? "py-2"
                 : "grow  p-3"
               : preferHorizontal
-              ? "w-2/3"
+              ? "w-2/3 p-3"
               : "grow  p-3",
           )}
         >
