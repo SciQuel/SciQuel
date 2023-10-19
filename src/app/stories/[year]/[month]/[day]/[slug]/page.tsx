@@ -341,8 +341,8 @@ export default async function StoriesPage({ params }: Params) {
   const [preQuiz, postQuiz] = useQuiz(
     story,
     "How much do you know already know about microglia?",
-    "True/False",
-    questionList_TF1,
+    "Multiple Choice",
+    questionList_MC1,
   );
 
   return (

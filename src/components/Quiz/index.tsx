@@ -11,6 +11,7 @@ import React, { useEffect, useState } from "react";
 import MultipleChoiceQuiz from "../MulitpleChoiceQuiz";
 import MultipleMatchQuiz from "../MultipleMatchQuiz";
 import OneMatchQuiz from "../OneMatchQuiz";
+import QuizResults from "../Quiz/QuizResults";
 import QuizResultsChart from "../Quiz/QuizResultsChart";
 import TrueFalseQuiz from "../TrueFalseQuiz";
 
@@ -131,8 +132,6 @@ export default function Quiz({
       setPreQuizResults(preQuizQuestionResults);
       setPostQuizResults(postQuizQuestionResults);
     }
-    // "submit" the prequiz?
-    // do here
     setCurrentQuestion((prevQuestion: number) => prevQuestion + 1);
     setQuizComplete(true);
     setAtQuizResults(true);
@@ -389,8 +388,11 @@ export default function Quiz({
                       }
                       currentQuestion={currentQuestion}
                       totalQuestions={questionList.length}
+                      storedUserAnswersList={userAnswers}
                       onPrevious={handlePrevious}
                       onNext={handleNext}
+                      toQuizResultsScreen={toQuizResultsScreen}
+                      quizComplete={quizComplete}
                     />
                   );
 
@@ -430,67 +432,75 @@ export default function Quiz({
             })()}
           </div>
         ) : (
-          <div className="quiz-results-container flex h-full w-full flex-col items-center gap-12 px-11 py-3 md-qz:self-center">
-            <div className="quiz-results-graphs flex h-full w-full flex-row items-center justify-center gap-6">
-              {/* <figure id="prequiz-results"></figure> */}
-              <QuizResultsChart
-                isPreQuiz={true}
-                quizResults={preQuizResults}
-                themeColor={getThemeColor(false)}
-              />
+          <QuizResults
+            // isPreQuiz={isPreQuiz}
+            preQuizResults={preQuizResults}
+            postQuizResults={postQuizResults}
+            themeColor={getThemeColor(false)}
+            jumpToQuestion={jumpToQuestion}
+          />
 
-              {/* <div
-                id="results-key"
-                className=" flex h-full w-full flex-col content-start gap-1"
-              >
-                <div className="flex flex-row items-center gap-1 text-left">
-                  <div className="h-[20px] w-[20px] bg-sciquelCorrectBG"></div>
-                  Correct
-                </div>
-                <div className="flex flex-row items-center gap-1 text-left">
-                  <div className="h-[20px] w-[20px] bg-sciquelIncorrectBG"></div>
-                  Incorrect
-                </div>
-                <div className="flex flex-row items-center gap-1 text-left">
-                  <div className="h-[20px] w-[20px] bg-gray-200"></div>
-                  Unanswered
-                </div>
-              </div> */}
+          // <div className="quiz-results-container flex h-full w-full flex-col items-center gap-12 px-11 py-3 md-qz:self-center">
+          //   <div className="quiz-results-graphs flex h-full w-full flex-row items-center justify-center gap-6">
+          //     {/* <figure id="prequiz-results"></figure> */}
+          //     <QuizResultsChart
+          //       isPreQuiz={true}
+          //       quizResults={preQuizResults}
+          //       themeColor={getThemeColor(false)}
+          //     />
 
-              {/* <figure id="postquiz-results"></figure> */}
-              <QuizResultsChart
-                isPreQuiz={false}
-                quizResults={postQuizResults}
-                themeColor={getThemeColor(false)}
-              />
-            </div>
+          //     {/* <div
+          //       id="results-key"
+          //       className=" flex h-full w-full flex-col content-start gap-1"
+          //     >
+          //       <div className="flex flex-row items-center gap-1 text-left">
+          //         <div className="h-[20px] w-[20px] bg-sciquelCorrectBG"></div>
+          //         Correct
+          //       </div>
+          //       <div className="flex flex-row items-center gap-1 text-left">
+          //         <div className="h-[20px] w-[20px] bg-sciquelIncorrectBG"></div>
+          //         Incorrect
+          //       </div>
+          //       <div className="flex flex-row items-center gap-1 text-left">
+          //         <div className="h-[20px] w-[20px] bg-gray-200"></div>
+          //         Unanswered
+          //       </div>
+          //     </div> */}
 
-            <div className="quiz-question-buttons flex h-full w-full flex-row items-center justify-start gap-5">
-              {postQuizResults?.map((result: boolean | null, index: number) => (
-                <button
-                  // className="text-center "
-                  className={`flex h-[72px] w-[72px] items-center justify-center rounded-sm border border-black bg-white text-center text-[22px] font-semibold transition duration-300 hover:bg-gray-100
-                    ${
-                      result
-                        ? " text-sciquelCorrectText"
-                        : " text-sciquelIncorrectText"
-                    }
-                  `}
-                  key={index}
-                  onClick={() => jumpToQuestion(index + 1)}
-                >
-                  Q{index + 1}
-                </button>
-              ))}
-            </div>
+          //     {/* <figure id="postquiz-results"></figure> */}
+          //     <QuizResultsChart
+          //       isPreQuiz={false}
+          //       quizResults={postQuizResults}
+          //       themeColor={getThemeColor(false)}
+          //     />
+          //   </div>
 
-            {/* {preQuizResults?.map((result: boolean | null, index: number) => (
-              <div key={index}>
-                Pre: {result?.toString()}; Post:{" "}
-                {postQuizResults?.[index]?.toString()}
-              </div>
-            ))} */}
-          </div>
+          //   <div className="quiz-question-buttons flex h-full w-full flex-row items-center justify-start gap-5">
+          //     {postQuizResults?.map((result: boolean | null, index: number) => (
+          //       <button
+          //         // className="text-center "
+          //         className={`flex h-[72px] w-[72px] items-center justify-center rounded-sm border border-black bg-white text-center text-[22px] font-semibold transition duration-300 hover:bg-gray-100
+          //           ${
+          //             result
+          //               ? " text-sciquelCorrectText"
+          //               : " text-sciquelIncorrectText"
+          //           }
+          //         `}
+          //         key={index}
+          //         onClick={() => jumpToQuestion(index + 1)}
+          //       >
+          //         Q{index + 1}
+          //       </button>
+          //     ))}
+          //   </div>
+
+          //   {/* {preQuizResults?.map((result: boolean | null, index: number) => (
+          //     <div key={index}>
+          //       Pre: {result?.toString()}; Post:{" "}
+          //       {postQuizResults?.[index]?.toString()}
+          //     </div>
+          //   ))} */}
+          // </div>
         )}
       </div>
     </div>
