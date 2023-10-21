@@ -37,8 +37,8 @@ export default function DictionarySentence({ children }: PropsWithChildren) {
     <span
       ref={sentenceRef}
       className={`${
-        highlight ? "rounded bg-sciquelGreen p-1 text-xl" : ""
-      } transition-all duration-500`}
+        highlight ? "rounded bg-sciquelGreen  " : ""
+      } relative transition-all duration-500`}
     >
       {children}
     </span>

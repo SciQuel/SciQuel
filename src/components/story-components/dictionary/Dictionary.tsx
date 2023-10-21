@@ -11,7 +11,7 @@ import {
 import audioIcon from "../../../../public/assets/images/audio.png";
 import ArrowIcon from "../../../../public/assets/images/backArrow.svg";
 import DictionaryIcon from "../../../../public/assets/images/book.svg";
-import BookmarkIcon from "../../../../public/assets/images/bookmark.svg";
+import BookmarkIcon from "../../../../public/assets/images/bookmark-final.svg";
 import closeButton from "../../../../public/assets/images/close.png";
 import TriangleIcon from "../../../../public/assets/images/triangle.svg";
 import {
@@ -121,13 +121,18 @@ export default function Dictionary() {
         });
         scrollToInstance(instanceList[0]);
       } else if (typeof fullDictionary.selectedInstance?.index == "number") {
-        console.log("here");
         const oldIndex = fullDictionary.selectedInstance.index;
         let newIndex;
-        if (direction == "prev" && oldIndex > 0) {
-          newIndex = oldIndex - 1;
-        } else if (direction == "next" && oldIndex < instanceList.length - 1) {
-          newIndex = oldIndex + 1;
+        if (direction == "prev") {
+          if (oldIndex > 0) {
+            newIndex = oldIndex - 1;
+          } else {
+            newIndex = instanceList.length - 1;
+          }
+        } else if (direction == "next") {
+          //  && oldIndex < instanceList.length - 1
+          newIndex = (oldIndex + 1) % instanceList.length;
+          // newIndex = oldIndex + 1;
         } else {
           newIndex = oldIndex;
         }
@@ -156,10 +161,10 @@ export default function Dictionary() {
             style={{
               paddingTop: `${top + 30}px`,
             }}
-            className={`w-100 flex items-center justify-between px-4 pb-3`}
+            className={`w-100 flex items-start justify-between px-4 pb-3`}
           >
             {/* header */}
-            <div className="flex flex-row items-center">
+            <div className="flex flex-row items-start">
               {fullDictionary.previousWords &&
               fullDictionary.previousWords.length > 0 ? (
                 <button
@@ -244,6 +249,7 @@ export default function Dictionary() {
             </div>
 
             <button
+              className={`p-1.5`}
               type="button"
               onClick={() => {
                 fullDictionary.setOpen(false);
@@ -261,7 +267,8 @@ export default function Dictionary() {
           <div className="flex-1 overflow-y-scroll">
             {fullDictionary.word?.word ? (
               <div className="px-4 py-2 font-sourceSerif4">
-                <div className="mb-3 border-b-2 border-sciquelTeal pb-3">
+                <div className="mb-3">
+                  {/*  border-b-2 border-sciquelTeal pb-3 */}
                   <p className="text-sciquelCitation ">
                     Term{" "}
                     <button
@@ -276,9 +283,10 @@ export default function Dictionary() {
                       />
                     </button>
                   </p>
-                  <p className="relative flex w-fit items-start pb-2 pt-3 text-start text-lg">
+                  <p className="relative flex w-fit items-start pb-2 pt-3 text-start font-semibold">
                     {fullDictionary.word.word}
                   </p>
+                  <div className="my-3 w-2/5 border-b-2 border-sciquelTeal" />
 
                   {/* <p className="whitespace-pre-line pb-4 text-center">
                     {fullDictionary.word.pronunciation}
@@ -321,14 +329,14 @@ export default function Dictionary() {
                 {fullDictionary.word.inContext.map((item, index) => (
                   <div className="my-2 flex flex-row" key={`${item}-${index}`}>
                     <p className="my-0 flex-1">{item}</p>
-                    <button type="button" className="w-fit px-2">
+                    {/* <button type="button" className="w-fit px-2">
                       <Image
                         width={15}
                         height={15}
                         src={audioIcon}
                         alt="listen to sentence"
                       />
-                    </button>
+                    </button> */}
                   </div>
                 ))}
                 <div className="my-3 w-1/4 border-b-2 border-sciquelTeal" />
@@ -341,7 +349,7 @@ export default function Dictionary() {
                       toInstance("prev");
                     }}
                   >
-                    <TriangleIcon className="h-full w-full" />
+                    <TriangleIcon className="h-full w-full rotate-90" />
                     <span className="sr-only">
                       Scroll to previous instance of word
                     </span>
@@ -353,7 +361,7 @@ export default function Dictionary() {
                       toInstance("next");
                     }}
                   >
-                    <TriangleIcon className="h-full w-full -scale-x-100" />
+                    <TriangleIcon className="h-full w-full -rotate-90" />
                     <span className="sr-only">
                       Scroll to next instance of word
                     </span>
@@ -366,7 +374,13 @@ export default function Dictionary() {
                       className="my-2 text-start"
                       key={item}
                       onClick={() => {
-                        scrollToInstance(item);
+                        if (fullDictionary.word?.instances[item]) {
+                          fullDictionary.setSelectedInstance({
+                            index: index,
+                            instance: fullDictionary.word.instances[item],
+                          });
+                          scrollToInstance(item);
+                        }
                       }}
                     >
                       {item}
