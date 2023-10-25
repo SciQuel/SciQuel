@@ -72,7 +72,7 @@ export default function ArticleCard({
           ) : null}
           {/* Article Content */}
           <div className="flex grow flex-col">
-            <div className="grow">
+            <div>
               <h1
                 className={clsx(
                   "line-clamp-2 font-alegreyaSansSC font-medium",
