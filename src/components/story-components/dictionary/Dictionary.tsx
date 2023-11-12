@@ -14,10 +14,7 @@ import DictionaryIcon from "../../../../public/assets/images/book.svg";
 import BookmarkIcon from "../../../../public/assets/images/bookmark-final.svg";
 import closeButton from "../../../../public/assets/images/close.png";
 import TriangleIcon from "../../../../public/assets/images/triangle.svg";
-import {
-  DictionaryContext,
-  type SelectedDefinition,
-} from "./DictionaryContext";
+import { deepCloneDict, DictionaryContext } from "./DictionaryContext";
 
 async function getBookmark(word: string) {
   //temp
@@ -27,10 +24,22 @@ async function getBookmark(word: string) {
 export default function Dictionary() {
   const fullDictionary = useContext(DictionaryContext);
   const sidebarRef = useRef<HTMLDivElement>(null);
+  const bookmarkRef = useRef<HTMLButtonElement>(null);
+  const exitRef = useRef<HTMLButtonElement>(null);
   const [bookmark, setBookmark] = useState<boolean | undefined>(false);
   const keepOpen = useRef(10);
 
   const [top, setTop] = useState(16);
+
+  useEffect(() => {
+    if (fullDictionary?.open == true) {
+      if (bookmarkRef.current) {
+        bookmarkRef.current.focus();
+      } else if (exitRef.current) {
+        exitRef.current.focus();
+      }
+    }
+  }, [fullDictionary?.open]);
 
   useEffect(() => {
     if (fullDictionary?.word) {
@@ -41,28 +50,35 @@ export default function Dictionary() {
   }, [fullDictionary?.word]);
 
   useEffect(() => {
-    if (fullDictionary?.dictionary) {
-      // check if bookmarks need to be grabbed?
-      let copyDict = Object.assign({}, fullDictionary.dictionary);
-      const words = Object.keys(copyDict);
-
-      words.forEach((word, index) => {
-        if (copyDict[word].bookmarked === undefined) {
-          (async () => {
-            copyDict[word].bookmarked = await getBookmark(word);
-            if (index == words.length - 1) {
-              //we got all the words fixed?
-              console.log("bookmarked? : ", copyDict);
-              fullDictionary.setDictionary(copyDict);
-            }
-          })();
-        }
-      });
-    }
-
+    console.log(sidebarRef.current);
     if (sidebarRef.current) {
       document.addEventListener("mousedown", handleClick);
       document.addEventListener("scroll", handleScroll);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClick);
+      document.removeEventListener("scroll", handleScroll);
+    };
+  }, [sidebarRef.current]);
+
+  useEffect(() => {
+    if (fullDictionary?.dictionary) {
+      // check if bookmarks need to be grabbed?
+      let copyDict = deepCloneDict(fullDictionary.dictionary.dict);
+
+      copyDict.forEach((entry, index) => {
+        if (entry.bookmarked === undefined) {
+          (async () => {
+            entry.bookmarked = await getBookmark(entry.word);
+          })();
+        }
+      });
+
+      fullDictionary.setDictionary({
+        dict: copyDict,
+        lastClickedRef: fullDictionary.dictionary.lastClickedRef,
+      });
     }
 
     const header = document.getElementById("outer-header");
@@ -78,8 +94,6 @@ export default function Dictionary() {
     }
 
     return () => {
-      document.removeEventListener("mousedown", handleClick);
-      document.removeEventListener("scroll", handleScroll);
       headerObserver.disconnect();
     };
   }, []);
@@ -91,7 +105,6 @@ export default function Dictionary() {
   }
 
   function handleScroll(e: Event) {
-    console.log("keep open is: ", keepOpen.current);
     if (keepOpen.current > 15) {
       fullDictionary?.setOpen(false);
     } else {
@@ -99,9 +112,9 @@ export default function Dictionary() {
     }
   }
 
-  function scrollToInstance(instance: string) {
+  function scrollToInstance(index: number) {
     keepOpen.current = 0;
-    fullDictionary?.word?.instances[instance]?.scrollIntoView({
+    fullDictionary?.word?.instances[index]?.elementRef.scrollIntoView({
       behavior: "instant",
       block: "center",
     });
@@ -110,190 +123,176 @@ export default function Dictionary() {
   function toInstance(direction: "prev" | "next") {
     console.log("scroll to ", direction, " instance");
     console.log("current index is: ", fullDictionary?.selectedInstance?.index);
-    if (fullDictionary?.word) {
-      const instanceList = Object.keys(fullDictionary.word.instances);
 
-      if (!fullDictionary.selectedInstance && instanceList) {
-        // not in list yet, so start list?
+    if (fullDictionary?.word) {
+      if (!fullDictionary.selectedInstance) {
         fullDictionary.setSelectedInstance({
           index: 0,
-          instance: fullDictionary.word.instances[instanceList[0]],
+          instance: fullDictionary.word.instances[0].elementRef,
         });
-        scrollToInstance(instanceList[0]);
-      } else if (typeof fullDictionary.selectedInstance?.index == "number") {
+        scrollToInstance(0);
+      } else {
         const oldIndex = fullDictionary.selectedInstance.index;
         let newIndex;
         if (direction == "prev") {
           if (oldIndex > 0) {
             newIndex = oldIndex - 1;
           } else {
-            newIndex = instanceList.length - 1;
+            newIndex = fullDictionary.word.instances.length - 1;
           }
         } else if (direction == "next") {
-          //  && oldIndex < instanceList.length - 1
-          newIndex = (oldIndex + 1) % instanceList.length;
-          // newIndex = oldIndex + 1;
+          newIndex = (oldIndex + 1) % fullDictionary.word.instances.length;
         } else {
           newIndex = oldIndex;
         }
         console.log("setting instance index to: ", newIndex);
         fullDictionary.setSelectedInstance({
           index: newIndex,
-          instance: fullDictionary.word.instances[instanceList[newIndex]],
+          instance: fullDictionary.word.instances[newIndex].elementRef,
         });
-        scrollToInstance(instanceList[newIndex]);
+        scrollToInstance(newIndex);
       }
     }
   }
 
   if (fullDictionary) {
     return (
-      <>
+      <div
+        tabIndex={1}
+        ref={sidebarRef}
+        className={`${
+          fullDictionary.open ? " flex " : " hidden "
+        } fixed inset-y-0 right-0 z-10 h-screen w-screen flex-col justify-between self-end bg-sciquelCardBg md:w-96`}
+      >
+        {/* outer dictionary */}
         <div
-          tabIndex={1}
-          ref={sidebarRef}
-          className={`${
-            fullDictionary.open ? " flex " : " hidden "
-          } fixed inset-y-0 right-0 z-10 h-screen w-screen flex-col justify-between self-end border-sciquelTeal bg-sciquelCardBg md:w-96`}
+          style={{
+            paddingTop: `${top + 30}px`,
+          }}
+          className={`w-100 flex items-start justify-between px-4 pb-3`}
         >
-          {/* outer dictionary */}
-          <div
-            style={{
-              paddingTop: `${top + 30}px`,
-            }}
-            className={`w-100 flex items-start justify-between px-4 pb-3`}
-          >
-            {/* header */}
-            <div className="flex flex-row items-start">
-              {fullDictionary.previousWords &&
-              fullDictionary.previousWords.length > 0 ? (
-                <button
-                  type="button"
-                  className="h-8 w-9 overflow-hidden"
-                  onClick={() => {
-                    let history = fullDictionary.previousWords
-                      ? [...fullDictionary.previousWords]
-                      : [];
-                    if (history.length > 0) {
-                      if (history[history.length - 1] == "fullDict") {
-                        history.pop();
-                        fullDictionary.setPreviousWords(history);
-                        fullDictionary.setWord(null);
-                      } else {
-                        const next = history.pop();
-                        if (typeof next == "object") {
-                          fullDictionary.setWord(next);
-                        } else {
-                          fullDictionary.setWord(null);
-                        }
+          {/* header */}
 
-                        fullDictionary.setPreviousWords(history);
-                      }
+          <div className="flex flex-row">
+            {fullDictionary.previousWords &&
+            fullDictionary.previousWords.length > 0 ? (
+              <button
+                type="button"
+                className="h-8 w-9 overflow-hidden"
+                onClick={() => {
+                  let history = fullDictionary.previousWords
+                    ? [...fullDictionary.previousWords]
+                    : [];
+                  if (history.length > 0) {
+                    if (history[history.length - 1] == "fullDict") {
+                      history.pop();
+                      fullDictionary.setPreviousWords(history);
+                      fullDictionary.setWord(null);
                     } else {
+                      const next = history.pop();
+                      if (typeof next == "object") {
+                        fullDictionary.setWord(next);
+                      } else {
+                        fullDictionary.setWord(null);
+                      }
+
                       fullDictionary.setPreviousWords(history);
                     }
-                  }}
-                >
-                  <ArrowIcon className="h-full w-full object-fill" />{" "}
-                  <span className="sr-only">Go Back</span>
-                </button>
-              ) : (
-                <></>
-              )}
+                  } else {
+                    fullDictionary.setPreviousWords(history);
+                  }
+                }}
+              >
+                <ArrowIcon className="h-full w-full object-fill" />{" "}
+                <span className="sr-only">Go Back</span>
+              </button>
+            ) : (
+              <></>
+            )}
 
-              {fullDictionary.word ? (
-                bookmark ? (
-                  <button
-                    onClick={async () => {
-                      console.log("removing bookmark");
-                      let copyDict = Object.assign(
-                        {},
-                        fullDictionary.dictionary,
-                      );
-                      if (fullDictionary.word?.word) {
-                        copyDict[fullDictionary.word.word].bookmarked = false;
-                        fullDictionary.setDictionary(copyDict);
-                        setBookmark(false);
-                      }
-                    }}
-                    type="button"
-                    className="mx-8 -mt-16 h-36 w-16"
-                  >
-                    <BookmarkIcon className="h-full w-full first:fill-sciquelTeal" />
-                    <span className="sr-only">Remove bookmark</span>
-                  </button>
-                ) : (
-                  <button
-                    onClick={async () => {
-                      console.log("adding bookmark");
-                      let copyDict = Object.assign(
-                        {},
-                        fullDictionary.dictionary,
-                      );
-                      if (fullDictionary.word?.word) {
-                        copyDict[fullDictionary.word.word].bookmarked = true;
-                        fullDictionary.setDictionary(copyDict);
-                        setBookmark(true);
-                      }
-                    }}
-                    type="button"
-                    className="mx-8 -mt-16 h-36 w-16"
-                  >
-                    <BookmarkIcon className="h-full w-full first:fill-transparent" />
-                    <span className="sr-only">Bookmark this word</span>
-                  </button>
-                )
-              ) : (
-                <></>
-              )}
-            </div>
+            {fullDictionary.word ? (
+              <button
+                ref={bookmarkRef}
+                onClick={async () => {
+                  let copyDict = deepCloneDict(fullDictionary.dictionary.dict);
+                  if (fullDictionary.word?.id) {
+                    if (bookmark) {
+                      copyDict.forEach((entry) => {
+                        if (entry.id == fullDictionary.word?.id) {
+                          entry.bookmarked = false;
+                        }
+                      });
 
-            <button
-              className={`p-1.5`}
-              type="button"
-              onClick={() => {
-                fullDictionary.setOpen(false);
-              }}
-            >
-              <Image
-                className="opacity-75 hover:opacity-100"
-                alt="close dictionary"
-                src={closeButton}
-                width={20}
-                height={20}
-              />
-            </button>
+                      fullDictionary.setDictionary({
+                        dict: copyDict,
+                        lastClickedRef:
+                          fullDictionary.dictionary.lastClickedRef,
+                      });
+                      setBookmark(false);
+                    } else {
+                      copyDict.forEach((entry) => {
+                        if (entry.id == fullDictionary.word?.id) {
+                          entry.bookmarked = true;
+                        }
+                      });
+                      fullDictionary.setDictionary({
+                        dict: copyDict,
+                        lastClickedRef:
+                          fullDictionary.dictionary.lastClickedRef,
+                      });
+                      setBookmark(true);
+                    }
+                  }
+                }}
+                type="button"
+                className="-mt-16 me-auto ms-8 h-36 w-16"
+              >
+                <BookmarkIcon
+                  className={`h-full w-full ${
+                    bookmark
+                      ? "first:fill-sciquelTeal"
+                      : "first:fill-sciquelCardBg"
+                  }`}
+                />
+                <span className="sr-only">
+                  {bookmark
+                    ? "remove bookmark from this definition"
+                    : "bookmark this definition"}
+                </span>
+              </button>
+            ) : (
+              <></>
+            )}
           </div>
-          <div className="flex-1 overflow-y-scroll">
-            {fullDictionary.word?.word ? (
-              <div className="px-4 py-2 font-sourceSerif4">
-                <div className="mb-3">
-                  {/*  border-b-2 border-sciquelTeal pb-3 */}
-                  <p className="text-sciquelCitation ">
-                    Term{" "}
-                    <button
-                      type="button"
-                      className="relative left-2 top-0.5 opacity-50"
-                    >
-                      <Image
-                        width={15}
-                        height={15}
-                        src={audioIcon}
-                        alt="listen to definition"
-                      />
-                    </button>
-                  </p>
-                  <p className="relative flex w-fit items-start pb-2 pt-3 text-start font-semibold">
-                    {fullDictionary.word.word}
-                  </p>
-                  <div className="my-3 w-2/5 border-b-2 border-sciquelTeal" />
 
-                  {/* <p className="whitespace-pre-line pb-4 text-center">
-                    {fullDictionary.word.pronunciation}
-                  </p> */}
-                </div>
-                <p className="mt-2 text-sciquelCitation">
-                  Definition
+          <button
+            ref={exitRef}
+            className={`p-1.5`}
+            type="button"
+            onClick={() => {
+              fullDictionary.setOpen(false);
+              if (fullDictionary.dictionary.lastClickedRef) {
+                fullDictionary.dictionary.lastClickedRef.focus();
+                fullDictionary.dictionary.lastClickedRef = null;
+              }
+            }}
+          >
+            <Image
+              className="opacity-75 hover:opacity-100"
+              alt="close dictionary"
+              src={closeButton}
+              width={20}
+              height={20}
+            />
+          </button>
+        </div>
+        <div className="flex-1 overflow-y-scroll">
+          {fullDictionary.word?.word ? (
+            <div className="px-4 py-2 font-sourceSerif4">
+              <div className="mb-3">
+                {/*  border-b-2 border-sciquelTeal pb-3 */}
+                <p className="text-sciquelCitation ">
+                  Term{" "}
                   <button
                     type="button"
                     className="relative left-2 top-0.5 opacity-50"
@@ -306,30 +305,49 @@ export default function Dictionary() {
                     />
                   </button>
                 </p>
-
-                <p>{fullDictionary.word.definition}</p>
-
-                <div className="my-3 w-1/4 border-b-2 border-sciquelTeal" />
-
-                <p className="mt-2 text-sciquelCitation">
-                  In Context{" "}
-                  <button
-                    type="button"
-                    className="relative left-2 top-0.5 opacity-50"
-                  >
-                    <Image
-                      width={15}
-                      height={15}
-                      src={audioIcon}
-                      alt="listen to definition"
-                    />
-                  </button>
+                <p className="relative flex w-fit items-start pb-2 pt-3 text-start font-semibold">
+                  {fullDictionary.word.word}
                 </p>
+                <div className="my-3 w-2/5 border-b-2 border-sciquelTeal" />
+              </div>
+              <p className="mt-2 text-sciquelCitation">
+                Definition
+                <button
+                  type="button"
+                  className="relative left-2 top-0.5 opacity-50"
+                >
+                  <Image
+                    width={15}
+                    height={15}
+                    src={audioIcon}
+                    alt="listen to definition"
+                  />
+                </button>
+              </p>
 
-                {fullDictionary.word.inContext.map((item, index) => (
-                  <div className="my-2 flex flex-row" key={`${item}-${index}`}>
-                    <p className="my-0 flex-1">{item}</p>
-                    {/* <button type="button" className="w-fit px-2">
+              <p>{fullDictionary.word.definition}</p>
+
+              <div className="my-3 w-1/4 border-b-2 border-sciquelTeal" />
+
+              <p className="mt-2 text-sciquelCitation">
+                In Context{" "}
+                <button
+                  type="button"
+                  className="relative left-2 top-0.5 opacity-50"
+                >
+                  <Image
+                    width={15}
+                    height={15}
+                    src={audioIcon}
+                    alt="listen to definition"
+                  />
+                </button>
+              </p>
+
+              {fullDictionary.word.inContext.map((item, index) => (
+                <div className="my-2 flex flex-row" key={`${item}-${index}`}>
+                  <p className="my-0 flex-1">{item}</p>
+                  {/* <button type="button" className="w-fit px-2">
                       <Image
                         width={15}
                         height={15}
@@ -337,139 +355,115 @@ export default function Dictionary() {
                         alt="listen to sentence"
                       />
                     </button> */}
-                  </div>
-                ))}
-                <div className="my-3 w-1/4 border-b-2 border-sciquelTeal" />
-                <p className="text-sciquelCitation">
-                  Instances
-                  <button
-                    type="button"
-                    className="  ms-1 h-6 w-8 overflow-hidden p-0 align-middle"
-                    onClick={() => {
-                      toInstance("prev");
-                    }}
-                  >
-                    <TriangleIcon className="h-full w-full rotate-90" />
-                    <span className="sr-only">
-                      Scroll to previous instance of word
-                    </span>
-                  </button>
-                  <button
-                    type="button"
-                    className="  ms-1 h-6 w-8 overflow-hidden p-0 align-middle"
-                    onClick={() => {
-                      toInstance("next");
-                    }}
-                  >
-                    <TriangleIcon className="h-full w-full -rotate-90" />
-                    <span className="sr-only">
-                      Scroll to next instance of word
-                    </span>
-                  </button>
-                </p>
-                {Object.keys(fullDictionary.word.instances).map(
-                  (item, index) => (
-                    <button
-                      type="button"
-                      className="my-2 text-start"
-                      key={item}
-                      onClick={() => {
-                        if (fullDictionary.word?.instances[item]) {
-                          fullDictionary.setSelectedInstance({
-                            index: index,
-                            instance: fullDictionary.word.instances[item],
-                          });
-                          scrollToInstance(item);
-                        }
-                      }}
-                    >
-                      {item}
-                    </button>
-                  ),
-                )}
-
-                <div className="mx-auto my-2 w-1/5 border-b-2 border-sciquelTeal" />
+                </div>
+              ))}
+              <div className="my-3 w-1/4 border-b-2 border-sciquelTeal" />
+              <p className="text-sciquelCitation">
+                Instances
                 <button
                   type="button"
+                  className="  ms-1 h-6 w-8 overflow-hidden p-0 align-middle"
                   onClick={() => {
-                    if (fullDictionary.word) {
+                    toInstance("prev");
+                  }}
+                >
+                  <TriangleIcon className="h-full w-full rotate-90" />
+                  <span className="sr-only">
+                    Scroll to previous instance of word
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  className="  ms-1 h-6 w-8 overflow-hidden p-0 align-middle"
+                  onClick={() => {
+                    toInstance("next");
+                  }}
+                >
+                  <TriangleIcon className="h-full w-full -rotate-90" />
+                  <span className="sr-only">
+                    Scroll to next instance of word
+                  </span>
+                </button>
+              </p>
+              {fullDictionary.word.instances.map((item, index) => (
+                <button
+                  type="button"
+                  className="my-2 text-start"
+                  key={`${item.sentence}-${index}`}
+                  onClick={() => {
+                    if (fullDictionary.word?.instances) {
+                      fullDictionary.setSelectedInstance({
+                        index: index,
+                        instance:
+                          fullDictionary.word.instances[index].elementRef,
+                      });
+                      scrollToInstance(index);
+                    }
+                  }}
+                >
+                  {item.sentence}
+                </button>
+              ))}
+
+              <div className="mx-auto my-2 w-1/5 border-b-2 border-sciquelTeal" />
+              <button
+                type="button"
+                onClick={() => {
+                  if (fullDictionary.word) {
+                    if (fullDictionary.previousWords) {
+                      fullDictionary.setPreviousWords([
+                        ...fullDictionary.previousWords,
+                        fullDictionary.word,
+                      ]);
+                    } else {
+                      fullDictionary.setPreviousWords([fullDictionary.word]);
+                    }
+                  }
+
+                  fullDictionary?.setWord(null);
+                }}
+                className="flex w-full items-center justify-center text-center font-sourceSerif4 text-sciquelCitation"
+              >
+                See more definitions {">"}
+              </button>
+            </div>
+          ) : (
+            fullDictionary.dictionary.dict.map((item, index) => {
+              return (
+                <div
+                  className="px-4 py-2 font-sourceSerif4"
+                  key={`${item.id}-${index}`}
+                >
+                  <p className="text-sciquelCitation">Term</p>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      fullDictionary?.setWord(item);
+
                       if (fullDictionary.previousWords) {
                         fullDictionary.setPreviousWords([
                           ...fullDictionary.previousWords,
-                          fullDictionary.word,
+                          "fullDict",
                         ]);
                       } else {
-                        fullDictionary.setPreviousWords([fullDictionary.word]);
+                        fullDictionary.setPreviousWords(["fullDict"]);
                       }
-                    }
-
-                    fullDictionary?.setWord(null);
-                  }}
-                  className="flex w-full items-center justify-center text-center font-sourceSerif4 text-sciquelCitation"
-                >
-                  See more definitions {">"}
-                </button>
-              </div>
-            ) : (
-              Object.keys(fullDictionary.dictionary).map((item, index) => {
-                return (
-                  <div
-                    className="px-4 py-2 font-sourceSerif4"
-                    key={`${item}-${index}`}
+                    }}
                   >
-                    <p className="text-sciquelCitation">Term</p>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const copyWord = Object.assign(
-                          {},
-                          fullDictionary.dictionary[item],
-                        ) as SelectedDefinition;
-                        copyWord.word = item;
+                    {item.word}
+                  </button>
 
-                        fullDictionary?.setWord(copyWord);
-
-                        if (fullDictionary.previousWords) {
-                          fullDictionary.setPreviousWords([
-                            ...fullDictionary.previousWords,
-                            "fullDict",
-                          ]);
-                        } else {
-                          fullDictionary.setPreviousWords(["fullDict"]);
-                        }
-                      }}
-                    >
-                      {item}
-                    </button>
-
-                    <div className="mb-2 mt-1 w-2/5 border-b-2 border-sciquelTeal" />
-                    <p className="text-sciquelCitation">Definition</p>
-                    <p className="border-b-2 border-sciquelTeal py-2">
-                      {fullDictionary.dictionary[item].definition}
-                    </p>
-                  </div>
-                );
-              })
-            )}
-          </div>
+                  <div className="mb-2 mt-1 w-2/5 border-b-2 border-sciquelTeal" />
+                  <p className="text-sciquelCitation">Definition</p>
+                  <p className="border-b-2 border-sciquelTeal py-2">
+                    {item.definition}
+                  </p>
+                </div>
+              );
+            })
+          )}
         </div>
-        <button
-          type="button"
-          tabIndex={0}
-          onClick={() => {
-            fullDictionary.setOpen(true);
-            fullDictionary.setWord(null);
-            fullDictionary.setPreviousWords([]);
-          }}
-          className="fixed bottom-0 right-0 mx-10 my-8 flex h-fit w-fit flex-row items-center rounded-full border-4 border-sciquelTeal bg-sciquelCardBg px-5 py-2"
-        >
-          {/* "open dictionary" floater */}
-          <span className="font- alegreyaSansSC text-xl font-bold text-sciquelTeal">
-            Dictionary
-          </span>{" "}
-          <DictionaryIcon className="ms-2 h-8 w-8" />
-        </button>
-      </>
+      </div>
     );
   }
 

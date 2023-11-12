@@ -9,8 +9,9 @@ import {
   type SetStateAction,
 } from "react";
 
-interface instancesObj {
-  [sentence: string]: HTMLElement;
+export interface Instances {
+  sentence: string;
+  elementRef: HTMLElement;
 }
 
 interface SelectedInstance {
@@ -18,30 +19,30 @@ interface SelectedInstance {
   instance: HTMLElement;
 }
 
-interface DictionaryDefinition {
+export interface DictionaryDefinition {
+  id: string;
+  word: string;
   definition: string;
-  instances: instancesObj;
   inContext: string[];
-  pronunciation: string;
+  altSpellings: string[];
+
+  instances: Instances[];
   bookmarked: boolean | undefined;
 }
 
-export interface SelectedDefinition extends DictionaryDefinition {
-  word: string;
-}
-
 interface FullDictionary {
-  [word: string]: DictionaryDefinition;
+  dict: DictionaryDefinition[];
+  lastClickedRef: HTMLElement | null;
 }
 
 interface DictionaryContextVal {
   dictionary: FullDictionary;
   setDictionary: Dispatch<SetStateAction<FullDictionary>>;
-  word: SelectedDefinition | null;
-  setWord: Dispatch<SetStateAction<SelectedDefinition | null>>;
-  previousWords: (SelectedDefinition | "fullDict")[];
+  word: DictionaryDefinition | null;
+  setWord: Dispatch<SetStateAction<DictionaryDefinition | null>>;
+  previousWords: (DictionaryDefinition | "fullDict")[];
   setPreviousWords: Dispatch<
-    SetStateAction<(SelectedDefinition | "fullDict")[]>
+    SetStateAction<(DictionaryDefinition | "fullDict")[]>
   >;
   selectedInstance: SelectedInstance | null;
   setSelectedInstance: Dispatch<SetStateAction<SelectedInstance | null>>;
@@ -54,7 +55,7 @@ export const DictionaryContext = createContext<DictionaryContextVal | null>(
 );
 
 interface Props {
-  dictionary: FullDictionary;
+  dictionary: DictionaryDefinition[];
 }
 
 export function DictionaryProvider({
@@ -62,14 +63,17 @@ export function DictionaryProvider({
   dictionary,
 }: PropsWithChildren<Props>) {
   const [dictionarySelect, setDictionarySelect] =
-    useState<SelectedDefinition | null>(null);
+    useState<DictionaryDefinition | null>(null);
 
-  const [fullDict, setFullDict] = useState(dictionary);
+  const [fullDict, setFullDict] = useState<FullDictionary>({
+    dict: dictionary,
+    lastClickedRef: null,
+  });
 
   const [isOpen, setIsOpen] = useState(false);
 
   const [historyList, setHistoryList] = useState<
-    (SelectedDefinition | "fullDict")[]
+    (DictionaryDefinition | "fullDict")[]
   >([]);
 
   const [highlightedInstance, setHighlightedInstance] =
@@ -103,4 +107,36 @@ export function DictionaryProvider({
       {children}
     </DictionaryContext.Provider>
   );
+}
+
+function cloneInstances(instances: Instances[]) {
+  let newInstanceList: Instances[] = [];
+
+  instances.forEach((item) => {
+    newInstanceList.push({
+      sentence: item.sentence,
+      elementRef: item.elementRef,
+    });
+  });
+
+  return newInstanceList;
+}
+
+export function deepCloneDict(dict: DictionaryDefinition[]) {
+  let newDict: DictionaryDefinition[] = [];
+
+  dict.forEach((item) => {
+    newDict.push({
+      id: item.id,
+      word: item.word,
+      definition: item.definition,
+      inContext: [...item.inContext],
+      altSpellings: [...item.altSpellings],
+
+      instances: cloneInstances(item.instances),
+      bookmarked: item.bookmarked,
+    });
+  });
+
+  return newDict;
 }
