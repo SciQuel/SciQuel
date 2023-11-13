@@ -82,7 +82,7 @@ const SocialMediaPopup = forwardRef(
             >
               {/* button + side-popout container */}
               <div
-                className={`pointer-events-auto relative m-0 flex flex-row border-x-2 border-sciquelCardBorder bg-sciquelCardBg pb-4 sm:rounded-b sm:border-b-2 sm:pb-2 md:px-1 lg:h-fit xl:top-2 xl:w-fit  xl:flex-col xl:rounded xl:border-t-2 xl:px-2 xl:py-4`}
+                className={`pointer-events-auto relative m-0 flex flex-row border-x-2 border-sciquelCardBorder bg-sciquelCardBg pb-4 sm:rounded-b sm:border-b-2 sm:pb-2 md:px-1 lg:h-fit xl:top-2 xl:w-fit  xl:flex-col xl:rounded xl:border-2 xl:px-2 xl:py-4`}
               >
                 {/*  before:pointer-events-none */}
                 {/* buttons container */}
@@ -90,6 +90,7 @@ const SocialMediaPopup = forwardRef(
                   type="button"
                   aria-haspopup={true}
                   aria-expanded={showFull}
+                  tabIndex={show ? 0 : -1}
                   onClick={() => {
                     if (showFull) {
                       setShowFull(false);
@@ -106,13 +107,14 @@ const SocialMediaPopup = forwardRef(
                 >
                   <Image
                     src={shareIcon}
-                    alt="share to a link to this story"
+                    alt="share a link to this story"
                     width={45}
                     height={45}
                   />
                 </button>
                 <a
                   className={` h-fit w-fit rounded-full p-3`}
+                  tabIndex={show ? 0 : -1}
                   target="_blank"
                   href={`https://www.facebook.com/sharer/sharer.php?u=sciquel.org${pathname}`}
                 >
@@ -124,6 +126,7 @@ const SocialMediaPopup = forwardRef(
                   />
                 </a>
                 <a
+                  tabIndex={show ? 0 : -1}
                   href={`mailto:?subject=Check Out This Article&body=sciquel.org${pathname}`}
                   className={` h-fit w-fit rounded-full p-3 transition ease-linear`}
                   target="_blank"
@@ -136,6 +139,7 @@ const SocialMediaPopup = forwardRef(
                   />
                 </a>
                 <a
+                  tabIndex={show ? 0 : -1}
                   href={`https://www.linkedin.com/sharing/share-offsite/?url=sciquel.org${pathname}`}
                   className={` h-fit w-fit rounded-full p-3 transition ease-linear`}
                   target="_blank"
@@ -160,6 +164,7 @@ const SocialMediaPopup = forwardRef(
                 {/* floating input for copying link */}
                 <button
                   type="button"
+                  tabIndex={showFull ? 0 : -1}
                   onClick={() => {
                     navigator.clipboard.writeText(`sciquel.org${pathname}`);
                     dispatchJustCopied({ type: "show" });
@@ -167,8 +172,10 @@ const SocialMediaPopup = forwardRef(
                   className="me-3 flex  items-center justify-center"
                 >
                   <ClipboardIcon className={"m-0 h-11 w-11 p-0"} />
+                  <span className="sr-only">copy story URL to clipboard</span>
                 </button>
                 <input
+                  tabIndex={showFull ? 0 : -1}
                   ref={inputRef}
                   readOnly
                   type="text"

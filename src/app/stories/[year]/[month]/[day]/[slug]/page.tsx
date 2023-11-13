@@ -24,40 +24,88 @@ interface Params {
 
 const testDictionary = {
   camouflage: {
+    id: "123abc",
     definition:
       "concealment by some means that alters or obscures the appearance.",
     pronunciation: "cam·ou·flage \n/ˈkaməˌflä(d)ZH/",
-    instances: {},
+    instances: [],
     inContext: [
       "This camouflage comes from a layer of densely packed, pigmented structures just below the skin’s surface.",
       "All modern, adult birds molt at least once a year to replace old, damaged feathers, or to exchange their bright summer colors for drab winter camouflage.",
     ],
     bookmarked: undefined,
+    altSpellings: [],
   },
 
-  enzymes: {
+  enzyme: {
+    id: "345abc",
     definition:
       "An enzyme is a biological catalyst and is almost always a protein. It speeds up the rate of a specific chemical reaction in the cell.",
     pronunciation: "en·zyme \n/ˈenˌzīm/",
-    instances: {},
+    instances: [],
     inContext: [
       "A cell contains thousands of different types of enzyme molecules, each specific to a particular chemical reaction.",
     ],
     bookmarked: undefined,
+    altSpellings: [],
   },
 
-  lipopolysaccharides: {
+  lipopolysaccharide: {
+    id: "678abc",
     definition:
-      "Lipopolysaccharides (LPS) are important outer membrane components of gram-negative bacteria. They typically consist of a lipid domain (hydrophobic) attached to a core oligosaccharide and a distal polysaccharide.",
+      "lipopolysaccharides (LPS) are important outer membrane components of gram-negative bacteria. They typically consist of a lipid domain (hydrophobic) attached to a core oligosaccharide and a distal polysaccharide.",
     pronunciation:
       "lip·o·pol·y·sac·cha·ride \n/ˌlipōˌpälēˈsakəˌrīd,ˌlīpōˌpälēˈsakəˌrīd/",
-    instances: {},
+    instances: [],
     inContext: [
       "The Gram-negative bacterial lipopolysaccharide (LPS) is a major component of the outer membrane that plays a key role in host–pathogen interactions with the innate immune system.",
     ],
     bookmarked: undefined,
+    altSpellings: ["LPS"],
   },
 };
+
+const testDictList = [
+  {
+    id: "123abc",
+    word: "camouflage",
+    definition:
+      "concealment by some means that alters or obscures the appearance.",
+    instances: [],
+    inContext: [
+      "This camouflage comes from a layer of densely packed, pigmented structures just below the skin’s surface.",
+      "All modern, adult birds molt at least once a year to replace old, damaged feathers, or to exchange their bright summer colors for drab winter camouflage.",
+    ],
+    bookmarked: undefined,
+    altSpellings: [],
+  },
+  {
+    id: "345abc",
+    word: "enzyme",
+    definition:
+      "An enzyme is a biological catalyst and is almost always a protein. It speeds up the rate of a specific chemical reaction in the cell.",
+    instances: [],
+    inContext: [
+      "A cell contains thousands of different types of enzyme molecules, each specific to a particular chemical reaction.",
+    ],
+    bookmarked: undefined,
+    altSpellings: [],
+  },
+  {
+    id: "678abc",
+    word: "lipopolysaccharide",
+    definition:
+      "lipopolysaccharides (LPS) are important outer membrane components of gram-negative bacteria. They typically consist of a lipid domain (hydrophobic) attached to a core oligosaccharide and a distal polysaccharide.",
+    pronunciation:
+      "lip·o·pol·y·sac·cha·ride \n/ˌlipōˌpälēˈsakəˌrīd,ˌlīpōˌpälēˈsakəˌrīd/",
+    instances: [],
+    inContext: [
+      "The Gram-negative bacterial lipopolysaccharide (LPS) is a major component of the outer membrane that plays a key role in host–pathogen interactions with the innate immune system.",
+    ],
+    bookmarked: undefined,
+    altSpellings: ["LPS"],
+  },
+];
 
 export default async function StoriesPage({ params }: Params) {
   const whatsNewArticles = await getWhatsNewArticles();
@@ -80,7 +128,7 @@ export default async function StoriesPage({ params }: Params) {
 
   return (
     <PrintModeProvider>
-      <DictionaryProvider dictionary={testDictionary}>
+      <DictionaryProvider dictionary={testDictList}>
         <div className="flex w-screen flex-col overflow-x-hidden">
           <StoryCredits story={story} />
 
@@ -91,9 +139,9 @@ export default async function StoriesPage({ params }: Params) {
             <p className="mx-0 w-full font-sourceSerif4 text-lg font-[370] leading-8 md:w-[720px]">
               <DictionarySentence>
                 {" "}
-                Admotum in <DictionaryWord word="lipopolysaccharides" /> querno
+                Admotum in <DictionaryWord word="lipopolysaccharide" /> querno
                 saxum genialis moriente tulit quoque quoque duxit de clarae
-                regis, quo memor <DictionaryWord word="enzymes" /> tangit mea,
+                regis, quo memor <DictionaryWord word="enzyme" /> tangit mea,
                 qui.
               </DictionarySentence>{" "}
               Qua semper nam retia favilla nomine dique, aris idque inter
@@ -127,7 +175,7 @@ export default async function StoriesPage({ params }: Params) {
             <p className="mx-0 w-full font-sourceSerif4 text-lg font-[370] leading-8 md:w-[720px]">
               <DictionarySentence>
                 A fundamental task of proteins is to act as{" "}
-                <DictionaryWord word="enzymes" />
+                <DictionaryWord word="enzyme">enzymes</DictionaryWord>
                 —catalysts that increase the rate of virtually all the chemical
                 reactions within cells.
               </DictionarySentence>{" "}
@@ -141,7 +189,7 @@ export default async function StoriesPage({ params }: Params) {
               <DictionarySentence>
                 One of the most studied bacterial surface molecules is the
                 glycolipid known as{" "}
-                <DictionaryWord word="lipopolysaccharides">
+                <DictionaryWord word="lipopolysaccharide">
                   lipopolysaccharide
                 </DictionaryWord>{" "}
                 (LPS), which is produced by most Gram-negative bacteria.
@@ -158,10 +206,8 @@ export default async function StoriesPage({ params }: Params) {
             {testDropdown.file.result as ReactNode}
             <p className="mx-0 w-full font-sourceSerif4 text-lg font-[370] leading-8 md:w-[720px]">
               <DictionarySentence>
-                <DictionaryWord word="lipopolysaccharides">
-                  Lipopolysaccharide
-                </DictionaryWord>{" "}
-                performs several functions in Gram-negative bacteria.
+                lipopolysaccharide performs several functions in Gram-negative
+                bacteria.
               </DictionarySentence>{" "}
               The most fundamental function of LPS is to serve as a major
               structural component of the OM. Perhaps not surprisingly, LPS is
@@ -176,8 +222,8 @@ export default async function StoriesPage({ params }: Params) {
             </p>
             <p className="mx-0 w-full font-sourceSerif4 text-lg font-[370] leading-8 md:w-[720px]">
               <DictionarySentence>
-                Like all other catalysts, <DictionaryWord word="enzymes" /> are
-                characterized by two fundamental properties.
+                Like all other catalysts, enzymes are characterized by two
+                fundamental properties.
               </DictionarySentence>{" "}
               First, they increase the rate of chemical reactions without
               themselves being consumed or permanently altered by the reaction.
@@ -187,9 +233,9 @@ export default async function StoriesPage({ params }: Params) {
             <p className="mx-0 w-full font-sourceSerif4 text-lg font-[370] leading-8 md:w-[720px]">
               <DictionarySentence>
                 However, in spite of its long history and widespread occurrence,
-                research on natural <DictionaryWord word="camouflage" /> has not
-                progressed as rapidly as many other areas of adaptive
-                coloration, especially in the last 60–70 years.
+                research on natural camouflage has not progressed as rapidly as
+                many other areas of adaptive coloration, especially in the last
+                60–70 years.
               </DictionarySentence>{" "}
               There are several reasons for this, including that human
               perceptions have often been used to subjectively assess a range of
@@ -197,30 +243,25 @@ export default async function StoriesPage({ params }: Params) {
               the correct receiver.
               <DictionarySentence>
                 {" "}
-                In general, the mechanisms of
-                <DictionaryWord word="camouflage" /> have often been erroneously
-                regarded as intuitively obvious.
+                In general, the mechanisms of camouflage have often been
+                erroneously regarded as intuitively obvious.
               </DictionarySentence>
             </p>
             <p className="mx-0 w-full font-sourceSerif4 text-lg font-[370] leading-8 md:w-[720px]">
               Carinam pelagi se venit tantumne, neu fame res senilibus,
               populisque.
-              <DictionarySentence>
-                {" "}
-                <DictionaryWord word="enzymes" /> Has capiti fatis.
-              </DictionarySentence>
+              <DictionarySentence> enzyme Has capiti fatis.</DictionarySentence>
               Exemit puer sors esse, Pittheia nobis superfusis mihi Carpathius
               quoque libera oris, nec.
               <DictionarySentence>
                 {" "}
-                Quae retinere <DictionaryWord word="lipopolysaccharides" />{" "}
-                ictus nam vultum sanguine precibus Delphosque mucrone.
+                Quae retinere lipopolysaccharide ictus nam vultum sanguine
+                precibus Delphosque mucrone.
               </DictionarySentence>{" "}
               <DictionarySentence>
                 {" "}
                 Pectore in inquit Aeacide illic sequar propositum ululasse
-                cruentos aspergine aurea qui, esse{" "}
-                <DictionaryWord word="camouflage" />.
+                cruentos aspergine aurea qui, esse camouflage.
               </DictionarySentence>
             </p>
           </div>

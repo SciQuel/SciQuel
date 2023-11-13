@@ -4,7 +4,9 @@ import axios from "axios";
 import { signIn, useSession } from "next-auth/react";
 import Image from "next/image";
 import { useContext, useEffect, useRef, useState } from "react";
+import DictionaryIcon from "../../../public/assets/images/book.svg";
 import shareIcon from "../../../public/assets/images/story-share.png";
+import { DictionaryContext } from "./dictionary/DictionaryContext";
 import { PrintContext, PrintToggleContext } from "./PrintContext";
 import SocialMediaPopup from "./SocialMediaPopup";
 
@@ -24,10 +26,12 @@ export default function ShareLinks({ storyId }: Props) {
 
   const popupRef = useRef<HTMLDivElement>(null);
   const popupRef2 = useRef<HTMLDivElement>(null);
+  const dictButtonRef = useRef<HTMLButtonElement>(null);
 
   const isPrintMode = useContext(PrintContext);
   const toggleFunction = useContext(PrintToggleContext);
   const { data: session, status } = useSession();
+  const Dictionary = useContext(DictionaryContext);
 
   useEffect(() => {
     document.addEventListener("mousedown", handleClick);
@@ -232,7 +236,9 @@ export default function ShareLinks({ storyId }: Props) {
       >
         <Image
           src={shareIcon}
-          alt="brain this article"
+          alt={
+            isBrained ? "remove brain from this article" : "brain this article"
+          }
           width={45}
           height={45}
         />
@@ -245,12 +251,32 @@ export default function ShareLinks({ storyId }: Props) {
       >
         <Image
           src={shareIcon}
-          alt="bookmark this article"
+          alt={
+            isBookmarked
+              ? "remove bookmark from this article"
+              : "bookmark this article"
+          }
           width={45}
           height={45}
         />
         <p>{isBookmarked ? "un-book" : "book"}</p>
       </button>
+      <button
+        type="button"
+        ref={dictButtonRef}
+        onClick={() => {
+          if (Dictionary) {
+            Dictionary.setOpen(true);
+            Dictionary.setWord(null);
+            Dictionary.dictionary.lastClickedRef = dictButtonRef.current;
+            Dictionary.setPreviousWords([]);
+          }
+        }}
+        className="pointer-events-auto h-fit w-fit rounded-full p-3"
+      >
+        <Image src={shareIcon} alt={"open dictionary"} width={45} height={45} />
+      </button>
+
       <div
         onMouseLeave={() => {
           setShowOptions("none");
@@ -266,7 +292,11 @@ export default function ShareLinks({ storyId }: Props) {
           aria-expanded={showOptions == "share"}
           className="pointer-events-auto h-fit w-fit rounded-full p-3"
           onClick={() => {
-            setShowOptions("share");
+            if (showOptions == "share") {
+              setShowOptions("none");
+            } else {
+              setShowOptions("share");
+            }
           }}
         >
           <Image
