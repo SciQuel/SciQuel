@@ -42,26 +42,50 @@ export default function FromThisSeries() {
       </div>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:gap-10 lg:px-5 ">
         <Link className="rounded-lg bg-[#d9d9d9]/[0.3] " href="/">
-          <div className="flex flex-row gap-5 p-2">
-            <Image className="w-1/2 max-w-xs " alt="squid" src={testImg} />
-            <div className="flex flex-col">
-              <h3 className="text-2xl font-bold">Title name</h3>
-              <p className="text-sm">
-                How the Hawaiian bobtail squid brings a creative vision to its
-                maritime world of small big screens
-              </p>
+          <div className="flex h-[168px] flex-row gap-5 p-2">
+            <div className="relative bg-red-500 pr-[41%]">
+              <Image
+                className="absolute top-0 h-full w-full object-cover"
+                alt="squid"
+                src={testImg}
+              />
+            </div>
+            <div className="flex flex-col justify-between">
+              <div className="flex flex-col overflow-hidden text-ellipsis">
+                <h3 className="text-xl font-bold">Title name</h3>
+                <p className=" text-sm">
+                  How the Hawaiian bobtail squid brings a creative vision to its
+                  maritime world of small big screens.
+                </p>
+              </div>
+              <div className="flex flex-row justify-between font-sourceSerif4 text-xs font-[350]">
+                <p>By Edward Chen</p>
+                <p>June 13, 2023</p>
+              </div>
             </div>
           </div>
         </Link>
         <Link className="rounded-lg bg-[#d9d9d9]/[0.3] " href="/">
-          <div className="flex flex-row gap-5 p-2">
-            <Image className="w-1/2 max-w-xs " alt="squid" src={testImg} />
-            <div className="flex flex-col">
-              <h3 className="text-2xl font-bold">Title name</h3>
-              <p className="text-sm">
-                How the Hawaiian bobtail squid brings a creative vision to its
-                maritime world of small big screens
-              </p>
+          <div className="flex h-[168px] flex-row gap-5 p-2">
+            <div className="relative bg-red-500 pr-[41%]">
+              <Image
+                className="absolute top-0 h-full w-full object-cover"
+                alt="squid"
+                src={testImg}
+              />
+            </div>
+            <div className="flex flex-col justify-between gap-1">
+              <div className="flex flex-col overflow-hidden text-ellipsis">
+                <h3 className="text-xl font-bold">Title name</h3>
+                <p className="  text-sm">
+                  How the Hawaiian bobtail squid brings a creative vision to its
+                  maritime world of small big screens.
+                </p>
+              </div>
+              <div className="flex flex-row justify-between font-sourceSerif4 text-xs font-[350]">
+                <p>By Edward Chen</p>
+                <p>June 13, 2023</p>
+              </div>
             </div>
           </div>
         </Link>
