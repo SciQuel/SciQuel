@@ -31,10 +31,13 @@ export default function AuthorCredits({ storyContributions }: Props) {
             :
           </p>
           <p className="w-[calc( 100% - 1rem )] mx-2 mb-2 p-0 font-sourceSerif4 text-lg md:mx-auto md:w-[720px]">
-            <span className="font-semibold">
+            <a
+              className="font-semibold"
+              href={`/contributors/${element.user.firstName.toLowerCase()}-${element.user.lastName.toLowerCase()}`}
+            >
               {" "}
               {element.user.firstName} {element.user.lastName}{" "}
-            </span>
+            </a>
             {element.user.bio}
           </p>
         </div>
@@ -56,9 +59,13 @@ export default function AuthorCredits({ storyContributions }: Props) {
           />
           <div className="m-5 flex flex-[2.3] flex-col">
             <p className="flex-1 font-sourceSerif4 text-xl">
-              <span className="font-alegreyaSansSC text-2xl font-medium text-sciquelTeal">
+              <a
+                className="font-alegreyaSansSC text-2xl font-medium text-sciquelTeal"
+                href={`/contributors/${element.user.firstName.toLowerCase()}-${element.user.lastName.toLowerCase()}`}
+              >
                 {element.user.firstName} {element.user.lastName}{" "}
-              </span>
+              </a>
+
               {element.user.bio}
             </p>
           </div>

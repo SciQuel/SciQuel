@@ -26,6 +26,7 @@ export default function ShareLinks({ storyId }: Props) {
 
   const popupRef = useRef<HTMLDivElement>(null);
   const popupRef2 = useRef<HTMLDivElement>(null);
+  const popupRef3 = useRef<HTMLDivElement>(null);
   const dictButtonRef = useRef<HTMLButtonElement>(null);
 
   const isPrintMode = useContext(PrintContext);
@@ -212,71 +213,6 @@ export default function ShareLinks({ storyId }: Props) {
 
   return (
     <>
-      <button
-        type="button"
-        className="pointer-events-auto h-fit w-fit rounded-full p-3"
-        onClick={() => {
-          if (toggleFunction) {
-            window.scrollTo(0, 0);
-            toggleFunction(!isPrintMode);
-          }
-        }}
-      >
-        <Image
-          src={shareIcon}
-          alt="switch to print-mode"
-          width={45}
-          height={45}
-        />
-      </button>
-      <button
-        type="button"
-        onClick={handleBrain}
-        className="pointer-events-auto h-fit w-fit rounded-full p-3 "
-      >
-        <Image
-          src={shareIcon}
-          alt={
-            isBrained ? "remove brain from this article" : "brain this article"
-          }
-          width={45}
-          height={45}
-        />
-        <p>{isBrained ? "un-brain" : "Brain"}</p>
-      </button>
-      <button
-        type="button"
-        onClick={handleBookmark}
-        className="pointer-events-auto h-fit w-fit rounded-full p-3"
-      >
-        <Image
-          src={shareIcon}
-          alt={
-            isBookmarked
-              ? "remove bookmark from this article"
-              : "bookmark this article"
-          }
-          width={45}
-          height={45}
-        />
-        <p>{isBookmarked ? "un-book" : "book"}</p>
-      </button>
-      <button
-        type="button"
-        ref={dictButtonRef}
-        onClick={() => {
-          if (Dictionary) {
-            Dictionary.setOpen(true);
-            Dictionary.setWord(null);
-            Dictionary.dictionary.lastClickedRef = dictButtonRef.current;
-            Dictionary.setPreviousWords([]);
-          }
-        }}
-        className="pointer-events-auto h-fit w-fit rounded-full p-3"
-      >
-        <Image src={shareIcon} alt={"open dictionary"} width={45} height={45} />
-      </button>
-
       <div
         onMouseLeave={() => {
           setShowOptions("none");
@@ -284,7 +220,7 @@ export default function ShareLinks({ storyId }: Props) {
         onMouseEnter={() => {
           setShowOptions("share");
         }}
-        className=" pointer-events-auto -ml-5 -mt-5 h-fit w-fit p-5"
+        className={`pointer-events-auto absolute h-fit w-fit`}
       >
         <button
           type="button"
@@ -306,43 +242,142 @@ export default function ShareLinks({ storyId }: Props) {
             height={45}
           />
         </button>
-
-        <SocialMediaPopup show={showOptions == "share"} ref={popupRef} />
+        <SocialMediaPopup show={showOptions == "share"} ref={popupRef} />{" "}
       </div>
 
-      <div
-        className={`${
-          showOptions == "brain-login" || showOptions == "bookmark-login"
-            ? "opacity-1 pointer-events-auto"
-            : "opacity-0 sm:-translate-y-2"
-        }  fixed bottom-0 left-0 h-screen w-screen items-end overflow-hidden bg-neutral-800/75 transition-all sm:absolute sm:top-16 sm:mt-3 sm:h-auto sm:min-h-fit sm:overflow-visible sm:bg-transparent`}
+      <button
+        type="button"
+        onClick={handleBrain}
+        className="pointer-events-auto ml-[4.5rem] h-fit w-fit rounded-full p-3 xl:ml-0  xl:mt-[4.5rem]"
       >
-        {/* brain / bookmark login modal */}
+        <Image
+          src={shareIcon}
+          alt={
+            isBrained ? "remove brain from this article" : "brain this article"
+          }
+          width={45}
+          height={45}
+        />
+        <p>{isBrained ? "un-brain" : "Brain"}</p>
+      </button>
+      <div
+        className={
+          `${
+            showOptions == "brain-login"
+              ? "opacity-1 pointer-events-auto"
+              : "opacity-0 sm:-translate-y-2"
+          }  fixed bottom-0 left-0 z-10 h-screen w-screen items-end overflow-hidden bg-neutral-800/75 transition-all sm:absolute sm:top-16 sm:mt-3 sm:h-auto sm:min-h-fit sm:overflow-visible sm:bg-transparent` +
+          ` xl:left-[100%] xl:top-[calc(100vh_+_0.5rem)] xl:mt-0 xl:h-fit xl:w-fit`
+        }
+      >
+        {/* brain  login modal */}
         <div
           ref={popupRef2}
           className={
-            (showOptions == "brain-login"
-              ? " sm:before:left-16 xl:-top-1 "
-              : "") +
-            (showOptions == "bookmark-login"
-              ? " sm:before:right-28 xl:top-20 xl:mt-[1.1rem] "
-              : "") +
-            `absolute bottom-0 h-fit w-screen rounded-t border-x-2 border-t-2 border-sciquelCardBorder bg-sciquelCardBg px-5 py-5 sm:relative sm:ml-2 sm:mt-3 sm:w-fit sm:rounded sm:border-2 sm:before:absolute sm:before:-top-4 sm:before:z-[2] sm:before:ml-4 sm:before:h-7 sm:before:w-7 sm:before:rotate-45 sm:before:border-l-2 sm:before:border-t-2 sm:before:border-sciquelCardBorder sm:before:bg-sciquelCardBg xl:left-24 xl:before:-left-7 xl:before:top-1/2 xl:before:ml-[0.9rem]  xl:before:h-6 xl:before:w-6 xl:before:-translate-y-1/2 xl:before:-rotate-45`
+            (showOptions == "brain-login" ? " sm:before:left-16 " : "") +
+            `absolute bottom-0 h-fit w-screen rounded-t border-x-2 border-t-2 border-sciquelCardBorder bg-sciquelCardBg px-5 py-5 ` +
+            `sm:relative sm:ml-3 sm:mt-3 sm:w-fit sm:rounded sm:border-2` +
+            ` sm:before:absolute sm:before:-top-4 sm:before:left-[4.75rem] sm:before:z-[2] sm:before:ml-0 sm:before:h-7 sm:before:w-7 sm:before:rotate-45 sm:before:border-l-2 sm:before:border-t-2 sm:before:border-sciquelCardBorder sm:before:bg-sciquelCardBg` +
+            ` xl:-bottom-5 xl:left-2 xl:before:-left-7 xl:before:top-1/2  xl:before:ml-[0.9rem] xl:before:h-6 xl:before:w-6 xl:before:-translate-y-1/2 xl:before:-rotate-45 `
           }
         >
           {/**/}
-          <p className="text-center text-lg">
+          <p className="w-full text-center text-lg sm:w-max">
             <a
               href="#"
               onClick={() => signIn()}
               className=" text-xl font-bold underline"
+              tabIndex={showOptions == "brain-login" ? 0 : -1}
             >
               login
             </a>{" "}
-            to {optionText} this article
+            to brain this article
           </p>
         </div>
       </div>
+      <button
+        type="button"
+        onClick={handleBookmark}
+        className="pointer-events-auto h-fit w-fit rounded-full p-3"
+      >
+        <Image
+          src={shareIcon}
+          alt={
+            isBookmarked
+              ? "remove bookmark from this article"
+              : "bookmark this article"
+          }
+          width={45}
+          height={45}
+        />
+        <p>{isBookmarked ? "un-book" : "book"}</p>
+      </button>
+      <div
+        className={
+          `${
+            showOptions == "bookmark-login"
+              ? "opacity-1 pointer-events-auto"
+              : "opacity-0 sm:-translate-y-2"
+          }  fixed bottom-0 left-0 z-10 h-screen w-screen items-end overflow-hidden bg-neutral-800/75 transition-all sm:absolute sm:top-16 sm:mt-3 sm:h-auto sm:min-h-fit sm:overflow-visible sm:bg-transparent` +
+          ` xl:left-[100%] xl:top-[calc(100vh_+_6.25rem)] xl:mt-0 xl:h-fit xl:w-fit`
+        }
+      >
+        {/*  bookmark login modal */}
+        <div
+          ref={popupRef3}
+          className={
+            (showOptions == "bookmark-login" ? " sm:before:left-16 " : "") +
+            `absolute bottom-0 h-fit w-screen rounded-t border-x-2 border-t-2 border-sciquelCardBorder bg-sciquelCardBg px-5 py-5 ` +
+            `sm:relative sm:ml-3 sm:mt-3 sm:w-fit sm:rounded sm:border-2` +
+            ` sm:before:absolute sm:before:-top-4 sm:before:left-36 sm:before:z-[2] sm:before:h-7 sm:before:w-7 sm:before:rotate-45 sm:before:border-l-2 sm:before:border-t-2 sm:before:border-sciquelCardBorder sm:before:bg-sciquelCardBg` +
+            ` xl:-bottom-5 xl:left-2 xl:before:-left-7 xl:before:top-1/2  xl:before:ml-[0.9rem] xl:before:h-6 xl:before:w-6 xl:before:-translate-y-1/2 xl:before:-rotate-45 `
+          }
+        >
+          <p className="w-full text-center text-lg sm:w-max">
+            <a
+              href="#"
+              onClick={() => signIn()}
+              className=" text-xl font-bold underline"
+              tabIndex={showOptions == "bookmark-login" ? 0 : -1}
+            >
+              login
+            </a>{" "}
+            to bookmark this article
+          </p>
+        </div>
+      </div>
+      <button
+        type="button"
+        className="pointer-events-auto h-fit w-fit rounded-full p-3"
+        onClick={() => {
+          if (toggleFunction) {
+            window.scrollTo(0, 0);
+            toggleFunction(!isPrintMode);
+          }
+        }}
+      >
+        <Image
+          src={shareIcon}
+          alt="switch to print-mode"
+          width={45}
+          height={45}
+        />
+      </button>
+      <button
+        type="button"
+        ref={dictButtonRef}
+        onClick={() => {
+          if (Dictionary) {
+            Dictionary.setOpen(true);
+            Dictionary.setWord(null);
+            Dictionary.dictionary.lastClickedRef = dictButtonRef.current;
+            Dictionary.setPreviousWords([]);
+          }
+        }}
+        className="pointer-events-auto relative block h-[4.5rem] w-[4.25rem] rounded-full p-3 xl:sticky xl:top-28"
+      >
+        <Image src={shareIcon} alt={"open dictionary"} width={45} height={45} />
+      </button>
     </>
   );
 }

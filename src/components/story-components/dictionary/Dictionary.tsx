@@ -114,10 +114,19 @@ export default function Dictionary() {
 
   function scrollToInstance(index: number) {
     keepOpen.current = 0;
-    fullDictionary?.word?.instances[index]?.elementRef.scrollIntoView({
-      behavior: "instant",
-      block: "center",
-    });
+    if (fullDictionary?.word?.instances[index]?.elementRef) {
+      let elementRef = fullDictionary.word.instances[index].elementRef;
+
+      elementRef.scrollIntoView({
+        behavior: "instant",
+        block: "center",
+      });
+
+      fullDictionary.setDictionary((state) => ({
+        dict: state.dict,
+        lastClickedRef: elementRef,
+      }));
+    }
   }
 
   function toInstance(direction: "prev" | "next") {

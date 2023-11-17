@@ -65,24 +65,32 @@ const SocialMediaPopup = forwardRef(
     return (
       <>
         <div
-          className={`
+          className={
+            `
     ${show ? "opacity-1" : "max-h-0 max-w-0 opacity-0 sm:-translate-y-2"}  
-    fixed bottom-0  left-0 h-screen w-screen items-end overflow-hidden bg-neutral-800/75 transition-all sm:absolute   sm:top-0 sm:-ml-2 sm:mt-20 sm:h-fit sm:w-fit sm:items-start sm:justify-center sm:bg-transparent xl:relative xl:mt-3`}
+    fixed bottom-0 left-0 z-10 h-screen w-screen items-end overflow-hidden bg-neutral-800/75 transition-all` +
+            ` sm:absolute sm:top-0 sm:-ml-2 sm:mt-16 sm:h-fit sm:w-fit sm:items-start sm:justify-center sm:bg-transparent` +
+            ` xl:absolute xl:top-14 xl:mt-3 xl:w-fit`
+          }
         >
           <div
             ref={ref}
-            className={`${
-              show
-                ? "translate-y-0"
-                : "max-h-0 translate-y-full opacity-0 sm:-translate-y-0"
-            }  absolute bottom-0 flex w-screen flex-col pt-0 transition-transform duration-500 sm:relative sm:pl-5 sm:pr-1 sm:before:absolute sm:before:left-52 sm:before:top-2 sm:before:z-[2] sm:before:ml-6 sm:before:h-8 sm:before:w-8 sm:before:rotate-45 sm:before:border-l-2 sm:before:border-t-2 sm:before:border-sciquelCardBorder sm:before:bg-sciquelCardBg  md:w-[720px] md:pl-0 md:pr-0 xl:relative xl:w-fit xl:before:left-0 xl:before:ml-7`}
+            className={
+              `${
+                show
+                  ? "translate-y-0"
+                  : "max-h-0 translate-y-full opacity-0 sm:-translate-y-0"
+              }  absolute bottom-0 z-10 flex w-screen flex-col pt-0 transition-transform duration-500` +
+              ` sm:relative sm:px-0 md:w-[720px] md:pl-0 md:pr-0 xl:relative xl:w-fit xl:before:left-0 xl:before:ml-7 ` +
+              ` sm:before:absolute sm:before:left-2 sm:before:top-3 sm:before:z-[2] sm:before:ml-5 sm:before:h-7 sm:before:w-7 sm:before:rotate-45 sm:before:border-l-2 sm:before:border-t-2 sm:before:border-sciquelCardBorder sm:before:bg-sciquelCardBg  `
+            }
           >
             <div
               className={`relative flex w-full flex-col-reverse sm:p-4 xl:-left-4 xl:flex-row`}
             >
               {/* button + side-popout container */}
               <div
-                className={`pointer-events-auto relative m-0 flex flex-row border-x-2 border-sciquelCardBorder bg-sciquelCardBg pb-4 sm:rounded-b sm:border-b-2 sm:pb-2 md:px-1 lg:h-fit xl:top-2 xl:w-fit  xl:flex-col xl:rounded xl:border-2 xl:px-2 xl:py-4`}
+                className={`pointer-events-auto relative m-0 flex flex-row border-x-2 border-sciquelCardBorder bg-sciquelCardBg pb-4 sm:rounded-b sm:border-b-2 sm:pb-2 md:px-1 lg:h-fit xl:top-2 xl:w-[5.5rem] xl:flex-col xl:rounded xl:border-2 xl:px-2 xl:py-4`}
               >
                 {/*  before:pointer-events-none */}
                 {/* buttons container */}
@@ -151,6 +159,19 @@ const SocialMediaPopup = forwardRef(
                     height={45}
                   />
                 </a>
+                <a
+                  tabIndex={show ? 0 : -1}
+                  href={`https://twitter.com/intent/tweet?text=sciquel.org${pathname}`}
+                  className={` h-fit w-fit rounded-full p-3 transition ease-linear`}
+                  target="_blank"
+                >
+                  <Image
+                    src={instagramIcon}
+                    alt="share to x"
+                    width={45}
+                    height={45}
+                  />
+                </a>
               </div>
               <div
                 className={`${
@@ -164,22 +185,26 @@ const SocialMediaPopup = forwardRef(
                 {/* floating input for copying link */}
                 <button
                   type="button"
-                  tabIndex={showFull ? 0 : -1}
+                  tabIndex={show ? 0 : -1}
                   onClick={() => {
                     navigator.clipboard.writeText(`sciquel.org${pathname}`);
                     dispatchJustCopied({ type: "show" });
                   }}
-                  className="me-3 flex  items-center justify-center"
+                  className={`${
+                    !showFull ? "xl:hidden" : ""
+                  } me-3 flex  items-center justify-center`}
                 >
                   <ClipboardIcon className={"m-0 h-11 w-11 p-0"} />
                   <span className="sr-only">copy story URL to clipboard</span>
                 </button>
                 <input
-                  tabIndex={showFull ? 0 : -1}
+                  tabIndex={show ? 0 : -1}
                   ref={inputRef}
                   readOnly
                   type="text"
-                  className="  w-full border p-1 xl:mt-0 xl:w-96"
+                  className={`${
+                    !showFull ? "xl:hidden " : ""
+                  } w-full border p-1 xl:mt-0 xl:w-96`}
                   value={`sciquel.org${pathname}`}
                   onClick={() => {
                     navigator.clipboard.writeText(`sciquel.org${pathname}`);

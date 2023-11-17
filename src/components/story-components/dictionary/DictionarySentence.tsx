@@ -94,6 +94,7 @@ export default function DictionarySentence({ children }: PropsWithChildren) {
   return (
     <span
       ref={sentenceRef}
+      tabIndex={-1}
       className={`${
         highlight ? "rounded bg-sciquelGreen  " : ""
       } relative transition-all duration-500`}

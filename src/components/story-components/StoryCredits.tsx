@@ -96,6 +96,8 @@ export default function StoryCredits({ story }: Props) {
     let animators: string[] = [];
     let animatorIcons: (string | null)[] = [];
 
+    let largestList = 0;
+
     story.storyContributions.forEach((contributor, index) => {
       switch (contributor.contributionType) {
         case "AUTHOR":
@@ -103,6 +105,7 @@ export default function StoryCredits({ story }: Props) {
             `${contributor.user.firstName} ${contributor.user.lastName}`,
           );
           authorIcons.push(contributor.user.avatarUrl);
+
           break;
         case "ILLUSTRATOR":
           illustrators.push(
@@ -125,104 +128,185 @@ export default function StoryCredits({ story }: Props) {
       }
     });
 
+    //for testing remove later
+    illustrators = authors.slice(0, 1);
+    illustratorIcons = authorIcons.slice(0, 1);
+
     return (
-      <div>
-        {authors.length > 0 ? (
-          <div className="flex flex-row items-center">
-            {authorIcons.map((icon, index) => (
-              <div
-                className={
-                  index < authorIcons.length - 1 ? "max-w-[1.5rem]" : ""
-                }
-                key={`author-icons-${icon}-${index}`}
-              >
-                <Avatar
-                  imageUrl={icon ? icon : undefined}
-                  label={authors[index].slice(0, 1)}
-                  className="mr-2"
-                  size="md"
-                />
-              </div>
-            ))}
-            <p>
-              by{" "}
-              {authors.slice(0, -1).map((author, index) => {
-                if (authors.length > 2) {
-                  return `${author}, `;
-                } else {
-                  return `${author} `;
-                }
-              })}{" "}
-              {authors.length > 1 ? "and " : ""} {authors.slice(-1)}
-            </p>
-          </div>
-        ) : (
-          ""
-        )}
+      <div className="ml-0 grid auto-rows-auto grid-cols-[auto_1fr] justify-items-start gap-0.5">
+        <div className="flex flex-row justify-self-start">
+          {/* author icons */}
+          {authorIcons.map((icon, index) => (
+            <Avatar
+              key={`author-icons-${icon}-${index}`}
+              imageUrl={icon ? icon : undefined}
+              label={authors[index].slice(0, 1)}
+              className="m-0.5"
+              size="md"
+            />
+          ))}
+        </div>
+        <p className="self-center justify-self-stretch">
+          {/* authors */}
+          by{" "}
+          {authors.slice(0, -1).map((author, index) => {
+            if (authors.length > 2) {
+              return (
+                <>
+                  {" "}
+                  <a
+                    href={`/contributors/${author
+                      .replaceAll(" ", "-")
+                      .toLowerCase()}`}
+                  >
+                    {author}
+                  </a>
+                  ,{" "}
+                </>
+              );
+            } else {
+              return (
+                <>
+                  <a
+                    href={`/contributors/${author
+                      .replaceAll(" ", "-")
+                      .toLowerCase()}`}
+                  >
+                    {" "}
+                    {author}{" "}
+                  </a>
+                </>
+              );
+            }
+          })}{" "}
+          {authors.length > 1 ? " and " : ""}{" "}
+          <a
+            href={`/contributors/${authors
+              .slice(-1)[0]
+              .replaceAll(" ", "-")
+              .toLowerCase()}`}
+          >
+            {authors.slice(-1)[0]}
+          </a>
+        </p>
         {illustrators.length > 0 ? (
-          <div className="flex flex-row items-center">
-            {illustratorIcons.map((icon, index) => (
-              <div
-                className={
-                  index < illustratorIcons.length - 1 ? "max-w-[1.5rem]" : ""
-                }
-                key={`illust-icons-${icon}-${index}`}
-              >
+          <>
+            <div className="flex flex-row justify-self-start">
+              {/* illust icons */}
+              {illustratorIcons.map((icon, index) => (
                 <Avatar
+                  key={`illustrator-icons-${icon}-${index}`}
                   imageUrl={icon ? icon : undefined}
                   label={illustrators[index].slice(0, 1)}
-                  className="mr-2"
+                  className="m-0.5"
                   size="md"
                 />
-              </div>
-            ))}
-            <p className={`ml-[${illustrators.length}rem]`}>
+              ))}
+            </div>
+            <p className="self-center justify-self-stretch">
+              {/* illustrators */}
               Illustrations by{" "}
               {illustrators.slice(0, -1).map((illustrator, index) => {
                 if (illustrators.length > 2) {
-                  return `${illustrator}, `;
+                  return (
+                    <>
+                      <a
+                        href={`/contributors/${illustrator
+                          .replaceAll(" ", "-")
+                          .toLowerCase()}`}
+                      >
+                        {illustrator}
+                      </a>
+                      ,{" "}
+                    </>
+                  );
                 } else {
-                  return `${illustrator} `;
+                  return (
+                    <>
+                      <a
+                        href={`/contributors/${illustrator
+                          .replaceAll(" ", "-")
+                          .toLowerCase()}`}
+                      >
+                        {illustrator}
+                      </a>{" "}
+                    </>
+                  );
                 }
               })}{" "}
-              {illustrators.length > 1 ? "and " : ""} {illustrators.slice(-1)}
+              {illustrators.length > 1 ? "and " : ""}{" "}
+              <a
+                href={`/contributors/${illustrators
+                  .slice(-1)[0]
+                  .replaceAll(" ", "-")
+                  .toLowerCase()}`}
+              >
+                {illustrators.slice(-1)[0]}
+              </a>
             </p>
-          </div>
+          </>
         ) : (
-          ""
+          <></>
         )}
 
         {animators.length > 0 ? (
-          <div className="flex flex-row items-center">
-            {animatorIcons.map((icon, index) => (
-              <div
-                className={
-                  index < animatorIcons.length - 1 ? "max-w-[1.5rem]" : ""
-                }
-                key={`anim-icons-${icon}-${index}`}
-              >
+          <>
+            <div className="flex flex-row justify-self-start">
+              {/* animator icons */}
+              {animatorIcons.map((icon, index) => (
                 <Avatar
+                  key={`animator-icons-${icon}-${index}`}
                   imageUrl={icon ? icon : undefined}
                   label={animators[index].slice(0, 1)}
-                  className="mr-2"
+                  className="m-0.5"
                   size="md"
                 />
-              </div>
-            ))}
-            <p className={`ml-[${animators.length}rem]`}>
+              ))}
+            </div>
+            <p className="self-center justify-self-stretch">
+              {/* animators */}
               Animations by{" "}
               {animators.slice(0, -1).map((animator, index) => {
                 if (animators.length > 2) {
-                  return `${animator}, `;
+                  return (
+                    <>
+                      <a
+                        href={`/contributors/${animator
+                          .replaceAll(" ", "-")
+                          .toLowerCase()}`}
+                      >
+                        {animator}
+                      </a>
+                      ,{" "}
+                    </>
+                  );
                 } else {
-                  return `${animator} `;
+                  return (
+                    <>
+                      <a
+                        href={`/contributors/${animator
+                          .replaceAll(" ", "-")
+                          .toLowerCase()}`}
+                      >
+                        {animator}
+                      </a>{" "}
+                    </>
+                  );
                 }
               })}{" "}
-              {animators.length > 1 ? "and " : ""} {animators.slice(-1)}
+              {animators.length > 1 ? "and " : ""}{" "}
+              <a
+                href={`/contributors/${animators
+                  .slice(-1)[0]
+                  .replaceAll(" ", "-")
+                  .toLowerCase()}`}
+              >
+                {animators.slice(-1)[0]}
+              </a>
             </p>
-          </div>
+          </>
         ) : (
-          ""
+          <></>
         )}
       </div>
     );
@@ -268,12 +352,41 @@ export default function StoryCredits({ story }: Props) {
             by{" "}
             {authors.slice(0, -1).map((author, index) => {
               if (authors.length > 2) {
-                return `${author}, `;
+                return (
+                  <>
+                    <a
+                      href={`/contributors/${author
+                        .replaceAll(" ", "-")
+                        .toLowerCase()}`}
+                    >
+                      {author}
+                    </a>
+                    ,{" "}
+                  </>
+                );
               } else {
-                return `${author} `;
+                return (
+                  <>
+                    <a
+                      href={`/contributors/${author
+                        .replaceAll(" ", "-")
+                        .toLowerCase()}`}
+                    >
+                      {author}
+                    </a>{" "}
+                  </>
+                );
               }
             })}{" "}
-            {authors.length > 1 ? "and " : ""} {authors.slice(-1)}
+            {authors.length > 1 ? "and " : ""}{" "}
+            <a
+              href={`/contributors/${authors
+                .slice(-1)[0]
+                .replaceAll(" ", "-")
+                .toLowerCase()}`}
+            >
+              {authors.slice(-1)[0]}
+            </a>
           </p>
         ) : (
           ""
@@ -283,12 +396,41 @@ export default function StoryCredits({ story }: Props) {
             Illustrations by{" "}
             {illustrators.slice(0, -1).map((illustrator, index) => {
               if (illustrators.length > 2) {
-                return `${illustrator}, `;
+                return (
+                  <>
+                    <a
+                      href={`/contributors/${illustrator
+                        .replaceAll(" ", "-")
+                        .toLowerCase()}`}
+                    >
+                      {illustrator}
+                    </a>
+                    ,{" "}
+                  </>
+                );
               } else {
-                return `${illustrator} `;
+                return (
+                  <>
+                    <a
+                      href={`/contributors/${illustrator
+                        .replaceAll(" ", "-")
+                        .toLowerCase()}`}
+                    >
+                      {illustrator}
+                    </a>{" "}
+                  </>
+                );
               }
             })}{" "}
-            {illustrators.length > 1 ? "and " : ""} {illustrators.slice(-1)}
+            {illustrators.length > 1 ? "and " : ""}{" "}
+            <a
+              href={`/contributors/${illustrators
+                .slice(-1)[0]
+                .replaceAll(" ", "-")
+                .toLowerCase()}`}
+            >
+              {illustrators.slice(-1)[0]}
+            </a>
           </p>
         ) : (
           ""
@@ -298,12 +440,41 @@ export default function StoryCredits({ story }: Props) {
             Animations by{" "}
             {animators.slice(0, -1).map((animator, index) => {
               if (animators.length > 2) {
-                return `${animator}, `;
+                return (
+                  <>
+                    <a
+                      href={`/contributors/${animator
+                        .replaceAll(" ", "-")
+                        .toLowerCase()}`}
+                    >
+                      {animator}
+                    </a>
+                    ,{" "}
+                  </>
+                );
               } else {
-                return `${animator} `;
+                return (
+                  <>
+                    <a
+                      href={`/contributors/${animator
+                        .replaceAll(" ", "-")
+                        .toLowerCase()}`}
+                    >
+                      {animator}
+                    </a>{" "}
+                  </>
+                );
               }
             })}{" "}
-            {animators.length > 1 ? "and " : ""} {animators.slice(-1)}
+            {animators.length > 1 ? "and " : ""}{" "}
+            <a
+              href={`/contributors/${animators
+                .slice(-1)[0]
+                .replaceAll(" ", "-")
+                .toLowerCase()}`}
+            >
+              {animators.slice(-1)[0]}
+            </a>
           </p>
         ) : (
           ""
@@ -314,7 +485,7 @@ export default function StoryCredits({ story }: Props) {
 
   return isPrintMode ? (
     <>
-      <div className="relative mx-auto w-screen max-w-[720px] pt-10">
+      <div className="relative mx-0 w-screen max-w-[720px] px-2 pt-10 md:mx-auto md:px-0">
         <Image
           src={story.thumbnailUrl}
           className="w-full min-w-0 object-cover"
@@ -329,8 +500,8 @@ export default function StoryCredits({ story }: Props) {
         <h2 className="font-sourceSerif4 text-2xl">{story.summary}</h2>
       </div>
 
-      <div className="relative mx-2 mt-5 flex w-screen flex-col sm:mx-auto md:w-[720px]">
-        <div className="pointer-events-none top-0 flex flex-1 flex-row justify-start xl:absolute xl:-left-24 xl:flex-col xl:pt-3">
+      <div className="relative mx-2 mt-5 flex w-screen flex-col px-2 sm:mx-auto md:w-[720px] md:px-0">
+        <div className="pointer-events-none top-0 flex flex-1 flex-row justify-start xl:hidden">
           <ShareLinks storyId={story.id} />
         </div>
 
@@ -356,26 +527,15 @@ export default function StoryCredits({ story }: Props) {
           })}
         </div>
         {buildPrintAuthors()}
-        {/* <div>
-          {story.storyContributions.map((element, index) => {
-            return (
-              <p key={`contributor-header-${index}`}>
-                {element.contributionType == "AUTHOR"
-                  ? `by ${element.user.firstName} ${element.user.lastName}`
-                  : `${element.contributionType} by ${element.user.firstName} ${element.user.lastName}`}
-              </p>
-            );
-          })}
-        </div> */}
 
         <p>
           {DateTime.fromJSDate(story.publishedAt).toFormat(
-            "LLLL d',' y t ZZZZ",
+            "LLLL d',' y',' t ZZZZ",
           )}
           {story.updatedAt.toString() != story.publishedAt.toString()
             ? " | " +
               DateTime.fromJSDate(story.updatedAt).toFormat(
-                "LLLL d',' y t ZZZZ",
+                "LLLL d',' y',' t ZZZZ",
               )
             : ""}
         </p>
@@ -383,7 +543,7 @@ export default function StoryCredits({ story }: Props) {
     </>
   ) : (
     <>
-      <div className="absolute top-0 flex h-screen w-full items-end">
+      <div className="absolute left-0 top-0 m-0 flex h-screen w-screen items-end">
         <Image
           src={story.thumbnailUrl}
           className="h-full object-cover"
@@ -418,13 +578,13 @@ export default function StoryCredits({ story }: Props) {
           </h2>
         </div>
       </div>
-      <div className="w-100 h-[calc(100vh_-_4rem)]" />
+      <div className="w-100 h-[calc(100vh_-_6rem)]" />
       <div className="h-fit w-screen">
         <p className="fs-2 mx-2 my-0 p-0 font-sourceSerif4">
           Title Image provided by Source name
         </p>
-        <div className="relative mx-2 mt-0 flex w-screen flex-col sm:mx-auto md:w-[720px]">
-          <div className="pointer-events-none top-0 flex flex-1 flex-row justify-start xl:absolute xl:-left-24 xl:flex-col xl:pt-3">
+        <div className="relative mx-0 mt-0 flex w-screen flex-col px-2 md:mx-auto md:w-[720px]">
+          <div className="pointer-events-none top-0 flex flex-1 flex-row flex-wrap justify-start xl:hidden">
             <ShareLinks storyId={story.id} />
           </div>
 
@@ -470,12 +630,12 @@ export default function StoryCredits({ story }: Props) {
           {buildAuthors()}
           <p>
             {DateTime.fromJSDate(story.publishedAt).toFormat(
-              "LLLL d',' y t ZZZZ",
+              "LLLL d',' y',' t ZZZZ",
             )}
             {story.updatedAt.toString() != story.publishedAt.toString()
               ? " | " +
                 DateTime.fromJSDate(story.updatedAt).toFormat(
-                  "LLLL d',' y t ZZZZ",
+                  "LLLL d',' y',' t ZZZZ",
                 )
               : ""}
           </p>
