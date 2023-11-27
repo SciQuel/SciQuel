@@ -17,8 +17,8 @@ import {
 } from "@/lib/Question";
 import { type StoryTopic } from "@prisma/client";
 import { DateTime } from "luxon";
-import dynamic from "next/dynamic"; // Import dynamic from next/dynamic
 import Image from "next/image";
+
 import React, { useState, type ReactNode } from "react";
 
 interface Params {
@@ -30,10 +30,6 @@ interface Params {
   };
 }
 
-// const QuizComponent = dynamic(() => import("@/components/Quiz"), {
-//   ssr: false, // This ensures that the Quiz component is not server-rendered
-// });
-
 // function useQuiz(id: string) {
 function useQuiz(
   story: GetStoryResult,
@@ -44,10 +40,14 @@ function useQuiz(
   const quizObjective = objective;
   const quizQuestionType = questionType;
   const questionList = questions;
+  // const router = useRouter();
+  // const { query } = router;
+  
 
   const preQuizComponent = (
     <Quiz
       isPreQuiz={true}
+      shareLinkIdentifier={"query.uid"}
       topic={story.tags[0]}
       quizObjective={quizObjective}
       quizQuestionType={quizQuestionType}
@@ -58,6 +58,7 @@ function useQuiz(
   const postQuizComponent = (
     <Quiz
       isPreQuiz={false}
+      shareLinkIdentifier={"query.uid"}
       topic={story.tags[0]}
       quizObjective={quizObjective}
       quizQuestionType={quizQuestionType}
@@ -412,74 +413,8 @@ export default async function StoriesPage({ params }: Params) {
       <div className="mx-2 mt-2 flex flex-col items-center gap-5 md:mx-auto">
         <QuizProvider>
           {preQuiz}
-
-          {/* <Quiz
-          isPreQuiz={true}
-          topic={story.tags[0]}
-          quizObjective={"How much do you know already know about microglia?"}
-          quizQuestionType={"Multiple Match"}
-          questionList={questionList_MM1}
-        /> */}
-
-          {/* <Quiz
-          isPreQuiz={true}
-          topic={story.tags[0]}
-          quizObjective={"How much do you know already know about microglia?"}
-          quizQuestionType={"One Match"}
-          questionList={questionList_OM2}
-        /> */}
-
-          {/* <Quiz
-          isPreQuiz={true}
-          topic={story.tags[0]}
-          quizObjective={"How much do you know already know about microglia?"}
-          quizQuestionType={"True/False"}
-          questionList={questionList_TF1}
-        /> */}
-
-          {/* <Quiz
-          isPreQuiz={true}
-          topic={story.tags[0]}
-          quizObjective={"How much do you know already know about microglia?"}
-          quizQuestionType={"Multiple Choice"}
-          questionList={questionList_MC1}
-        /> */}
-
           {file.result as ReactNode}
-
           {postQuiz}
-
-          {/* <Quiz
-          isPreQuiz={false}
-          topic={story.tags[0]}
-          quizObjective={"How much do you know already know about microglia?"}
-          quizQuestionType={"Multiple Match"}
-          questionList={questionList_MM1}
-        /> */}
-
-          {/* <Quiz
-          isPreQuiz={false}
-          topic={story.tags[0]}
-          quizObjective={"How much do you know already know about microglia?"}
-          quizQuestionType={"One Match"}
-          questionList={questionList_OM2}
-        /> */}
-
-          {/* <Quiz
-          isPreQuiz={false}
-          topic={story.tags[0]}
-          quizObjective={"How much do you know already know about microglia?"}
-          quizQuestionType={"True/False"}
-          questionList={questionList_TF1}
-        /> */}
-
-          {/* <Quiz
-          isPreQuiz={false}
-          topic={story.tags[0]}
-          quizObjective={"How much do you know already know about microglia?"}
-          quizQuestionType={"Multiple Choice"}
-          questionList={questionList_MC1}
-        /> */}
         </QuizProvider>
       </div>
       <p className="w-[calc( 100% - 1rem )] mx-2 my-5 border-t-2 border-[#616161]  text-sm text-[#616161] md:mx-auto md:w-[720px]">

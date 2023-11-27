@@ -32,6 +32,11 @@ interface Props {
       | string[][][],
   ) => void; // The function called when using the next button.
   toQuizResultsScreen: (
+    userAnswersList:
+      | (string | null)[]
+      | (boolean | null)[][]
+      | string[][]
+      | string[][][],
     preQuizResults: boolean[],
     postQuizResults: boolean[],
   ) => void; // The function called when using the next button after the final question.
@@ -54,6 +59,10 @@ export default function MultipleChoiceQuiz({
   /* component state variables */
   const { preQuizAnswers, setPreQuizAnswers } = useQuizContext();
   const { solutionList, setSolutionList } = useQuizContext();
+
+  // const [preQuizResults, setPreQuizResults] = useState<boolean[]>(
+  //   Array(totalQuestions).fill(false),
+  //); // an array of booleans to store pre-quiz answer results (for each question)
 
   // const initialUserAnswers =
   //   storedUserAnswersList.length === 0
@@ -177,19 +186,30 @@ export default function MultipleChoiceQuiz({
     // call quiz's handle previous function to go forward a question
     // onNext(userAnswersList);
 
-    if (currentQuestion == totalQuestions) {
-      // get results from prequiz?
-      // const preQuizResults = [true, false, false];
-      const preQuizResults = generateQuizResults(preQuizAnswers); // take preQuizAnswers and grade them -- call the grade function
-      console.log("preQuizResults:", preQuizResults);
-      toQuizResultsScreen(preQuizResults, questionResultList);
-    } else {
-      // call quiz's handle next function to go forward a question
-      onNext(userAnswersList);
-      if (isPreQuiz && !quizComplete) {
-        setPreQuizAnswers(userAnswersList);
-      }
+    // if (currentQuestion == totalQuestions) {
+    //   // get results from prequiz?
+    //   // const preQuizResults = [true, false, false];
+    //   const updatedPreQuizResults = generateQuizResults(preQuizAnswers); // take preQuizAnswers and grade them -- call the grade function
+    //   // setPreQuizResults(updatedPreQuizResults);
+    //   // console.log("preQuizResults:", preQuizResults);
+    //   toQuizResultsScreen(preQuizResults, questionResultList);
+    // } else {
+    //   // call quiz's handle next function to go forward a question
+    //   onNext(userAnswersList);
+    //   if (isPreQuiz && !quizComplete) {
+    //     setPreQuizAnswers(userAnswersList);
+    //   }
+    // }
+
+    onNext(userAnswersList);
+    if (isPreQuiz && !quizComplete) {
+      setPreQuizAnswers(userAnswersList);
     }
+  };
+
+  const handleResultsSummary = () => {
+    const preQuizResults = generateQuizResults(preQuizAnswers); // take preQuizAnswers and grade them -- call the grade function
+    toQuizResultsScreen(userAnswersList, preQuizResults, questionResultList);
   };
 
   const choiceCorrect = (questionNumber: number, userAnswer: string) => {
@@ -221,29 +241,40 @@ export default function MultipleChoiceQuiz({
   const selectedOption = userAnswersList[currentQuestion - 1]; // current question's selected MC option (a string)
   const answerCorrect = answerCorrectList[currentQuestion - 1]; // current question's result (boolean. null if not submitted)
   const hasAnswered = hasAnsweredList[currentQuestion - 1]; // if current question has been submitted or not
-
+  let postQuizQuestionAnswered = false;
+  if (solutionList && solutionList[currentQuestion - 1]) {
+    postQuizQuestionAnswered = solutionList[currentQuestion - 1].length === 1;
+  }
   // boolean values to determine which buttons to show, based on whether quiz is prequiz or not
   const showPreviousButton = currentQuestion > 1;
   const showNextButton =
-    (!isPreQuiz && quizComplete) ||
-    (currentQuestion < totalQuestions && isPreQuiz) ||
-    (currentQuestion <= totalQuestions && hasAnswered);
+    ((!isPreQuiz && quizComplete) ||
+      (currentQuestion < totalQuestions && isPreQuiz) ||
+      (currentQuestion <= totalQuestions && hasAnswered)) &&
+    currentQuestion !== totalQuestions;
   const showSubmitButton =
     !showAnswerExplanation && !isPreQuiz && !quizComplete;
-  const showFeedback =
-    hasAnswered ||
-    (!isPreQuiz && quizComplete) ||
-    (isPreQuiz &&
-      preQuizAnswers &&
-      preQuizAnswers[currentQuestion - 1] &&
-      preQuizAnswers[currentQuestion - 1].length > 0 &&
-      quizComplete);
+  const showResultsSummaryButton =
+    !isPreQuiz &&
+    (quizComplete || (currentQuestion === totalQuestions && hasAnswered));
+  // const showFeedback =
+  //   hasAnswered ||
+  //   (!isPreQuiz && quizComplete) ||
+  //   (isPreQuiz &&
+  //     preQuizAnswers &&
+  //     preQuizAnswers[currentQuestion - 1] &&
+  //     preQuizAnswers[currentQuestion - 1].length > 0 &&
+  //     quizComplete);
+
+  const showFeedback = hasAnswered || (!isPreQuiz && quizComplete);
 
   return (
     <div key={isPreQuiz ? "prequiz" : "postquiz"}>
       <div
         className={`multiple-choice-selection flex flex-col items-start ${
-          hasAnswered || quizComplete ? "pointer-events-none" : ""
+          (isPreQuiz && postQuizQuestionAnswered) || hasAnswered || quizComplete
+            ? "pointer-events-none"
+            : ""
         }`}
         id={isPreQuiz ? "prequiz-mc" : "postquiz-mc"}
       >
@@ -319,9 +350,11 @@ export default function MultipleChoiceQuiz({
         showPreviousButton={showPreviousButton}
         showSubmitButton={showSubmitButton}
         showNextButton={showNextButton}
+        showResultsSummaryButton={showResultsSummaryButton}
         handlePrevious={handlePrevious}
         handleNext={handleNext}
         handleSubmit={handleSubmit}
+        handleResultsSummary={handleResultsSummary}
       />
     </div>
   );
