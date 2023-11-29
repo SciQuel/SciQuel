@@ -173,9 +173,17 @@ export default function Quiz({
     setAtQuizResults(false);
   };
 
-  /**
-   * Updates the progress bar width.
-   */
+  const redoQuiz: () => void = () => {
+    // set new post quiz results
+    setPostQuizResults([]);
+    setPreQuizResults([]);
+    setCurrentQuestion(1);
+    setUserAnswers(userAnswersInitialValue);
+    setQuizComplete(false);
+    setAtQuizResults(false);
+  };
+
+  /** Updates the progress bar width. */
   useEffect(() => {
     const progressContainerId = isPreQuiz
       ? "#prequiz-progress"
@@ -271,34 +279,34 @@ export default function Quiz({
       )} */}
 
       <div className="quiz-body mx-auto my-6 flex w-[720px] max-w-screen-lg flex-col rounded-sm border border-sciquelCardBorder bg-white md-qz:w-full">
-      {isPreQuiz && shareLinkUser && shareLinkUser.length > 0 && (
-        <div className="mx-auto mt-6 flex w-full max-w-screen-lg items-center justify-center bg-sciquelTeal p-4 md-qz:w-full">
-          <div className="ml-1 mr-8">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              className="h-8 w-8 text-white"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M12 9v2m0 4h0"
-              />
-              <circle
-                cx="12"
-                cy="12"
-                r="10"
+        {isPreQuiz && shareLinkUser && shareLinkUser.length > 0 && (
+          <div className="mx-auto mt-6 flex w-full max-w-screen-lg items-center justify-center bg-sciquelTeal p-4 md-qz:w-full">
+            <div className="ml-1 mr-8">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
                 stroke="currentColor"
-                strokeWidth="4"
-              />
-            </svg>
+                className="h-8 w-8 text-white"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M12 9v2m0 4h0"
+                />
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                />
+              </svg>
+            </div>
+            <p className="text-base text-white">{`${shareLinkUser} answered some trivia questions at the end of this article and wanted to share it with you.`}</p>
           </div>
-          <p className="text-base text-white">{`${shareLinkUser} answered some trivia questions at the end of this article and wanted to share it with you.`}</p>
-        </div>
-      )}
+        )}
         <div className="quiz-subheader ml-5 mt-6 md-qz:mx-3">
           <h3 className="w-full font-sourceSerif4 text-base font-normal text-black md-qz:text-center">
             {quizObjective}
@@ -524,6 +532,7 @@ export default function Quiz({
               postQuizResults={postQuizResults}
               themeColor={getThemeColor(false)}
               jumpToQuestion={jumpToQuestion}
+              redoQuiz={redoQuiz}
               prevQuestion={currentQuestion}
             />
 

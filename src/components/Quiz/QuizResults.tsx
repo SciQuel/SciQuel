@@ -9,6 +9,7 @@ interface Props {
   postQuizResults: (boolean | null)[];
   themeColor: string; // Theme color of the quiz (hex), matching with story topic tag color
   jumpToQuestion: (questionNumber: number) => void;
+  redoQuiz: () => void;
   prevQuestion: number;
 }
 
@@ -25,11 +26,19 @@ export default function QuizResults({
   postQuizResults,
   themeColor,
   jumpToQuestion,
+  redoQuiz,
   prevQuestion,
 }: Props) {
   /* component state variables */
+  const [numberCorrect, setNumberCorrect] = useState<number>(0);
 
-  let numberCorrect = 0;
+  const [knewList, setKnewList] = useState<number[]>([]);
+  const [gainedUnderstandingList, setGainedUnderstandingList] = useState<
+    number[]
+  >([]);
+  const [revisitList, setRevisitList] = useState<number[]>([]);
+
+  // data that we get from the quiz, hardcoded values for now
   const resultComparisonCategories: string[] = [
     "Areas you gained understanding in",
     "Areas the story may be worth revisiting",
@@ -54,38 +63,40 @@ export default function QuizResults({
     },
   ];
 
-  const knewList: number[] = [];
-  const gainedUnderstandingList: number[] = [];
-  const revisitList: number[] = [];
-
   console.log("preQuizResults", preQuizResults);
   console.log("postQuizResults", postQuizResults);
 
-  // Iterate through the postQuizResults
-  postQuizResults.forEach((postResult, index) => {
-    // Check if the user got the question right or wrong
-    if (postResult === true) {
-      numberCorrect++;
+  useEffect(() => {
+    // Iterate through the postQuizResults
+    let updatedNumberCorrect = 0;
+    const updatedKnewList: number[] = [];
+    const updatedGainedUnderstandingList: number[] = [];
+    const updatedRevisitList: number[] = [];
+    postQuizResults.forEach((postResult, index) => {
+      // Check if the user got the question right or wrong
+      if (postResult === true) {
+        updatedNumberCorrect++;
 
-      // Check if the user got that question right or wrong during the PRE quiz
-      const preResult = preQuizResults[index];
+        // Check if the user got that question right or wrong during the PRE quiz
+        const preResult = preQuizResults[index];
 
-      if (preResult === true) {
-        // If they got it right during both pre and post quizzes
-        knewList.push(index);
-      } else if (preResult === false) {
-        // If they got it wrong during the pre quiz but right during the post quiz
-        gainedUnderstandingList.push(index);
+        if (preResult === true) {
+          // If they got it right during both pre and post quizzes
+          updatedKnewList.push(index);
+        } else if (preResult === false) {
+          // If they got it wrong during the pre quiz but right during the post quiz
+          updatedGainedUnderstandingList.push(index);
+        }
+      } else {
+        // If user got question wrong
+        updatedRevisitList.push(index);
       }
-    } else {
-      // If user got question wrong
-      revisitList.push(index);
-    }
-  });
-
-  // console.log("knewList", knewList);
-  // console.log("gainedUnderstandingList", gainedUnderstandingList);
-  // console.log("revisitList", revisitList);
+    });
+    setNumberCorrect(updatedNumberCorrect);
+    setKnewList(updatedKnewList);
+    setGainedUnderstandingList(updatedGainedUnderstandingList);
+    setRevisitList(updatedRevisitList);
+  }, [postQuizResults]);
 
   const handleRevisit = (prevQuestion: number) => {
     jumpToQuestion(prevQuestion - 1);
@@ -268,14 +279,33 @@ export default function QuizResults({
           )}
         </details>
 
-        {/* button to go back  */}
-        <button
-          onClick={() => handleRevisit(prevQuestion)}
-          className="font-quicksand border-radius-4 ml-auto flex h-10
+        {/* button to go back and button for redo */}
+        <div className="quiz-btn-container flex flex-col gap-2">
+          <button
+            onClick={() => handleRevisit(prevQuestion)}
+            className="font-quicksand border-radius-4 ml-auto flex h-10
              cursor-pointer flex-row items-center justify-center gap-4 rounded-sm border border-black bg-white px-4 py-1 text-lg font-medium text-black transition duration-300 hover:bg-gray-200 md-qz:text-base"
-        >
-          Revisit Question
-        </button>
+          >
+            Revisit Question
+          </button>
+
+          <button
+            onClick={() => redoQuiz()}
+            className="font-quicksand border-radius-4 ml-auto flex h-10
+             cursor-pointer flex-row items-center justify-center gap-2 rounded-sm border border-black bg-white px-4 py-1 text-lg font-medium text-black transition duration-300 hover:bg-gray-200 md-qz:text-base"
+          >
+            Redo Quiz
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              height="16"
+              width="16"
+              viewBox="0 0 512 512"
+            >
+              {/* The content of your SVG path */}
+              <path d="M500.3 0h-47.4a12 12 0 0 0 -12 12.6l4 82.8A247.4 247.4 0 0 0 256 8C119.3 8 7.9 119.5 8 256.2 8.1 393.1 119.1 504 256 504a247.1 247.1 0 0 0 166.2-63.9 12 12 0 0 0 .5-17.4l-34-34a12 12 0 0 0 -16.4-.6A176 176 0 1 1 402.1 157.8l-101.5-4.9a12 12 0 0 0 -12.6 12v47.4a12 12 0 0 0 12 12h200.3a12 12 0 0 0 12-12V12a12 12 0 0 0 -12-12z" />
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
   );
