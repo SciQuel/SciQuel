@@ -21,7 +21,7 @@ export default function StoryLargeImage({
         <img
           src={src}
           className={`${
-            isPrintMode ? "md:max-w-[720px]" : "lg:max-w-[1000px]"
+            isPrintMode ? "md:max-w-[768px]" : "lg:max-w-[1000px]"
           } max-w-screen max-h-[900px] w-auto`}
           alt={alt}
         />

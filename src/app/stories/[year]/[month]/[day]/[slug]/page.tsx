@@ -136,24 +136,16 @@ export default async function StoriesPage({ params }: Params) {
               <div className="w-100 h-[calc(100vh_-_2rem)]" />
               <div className="rlative flex h-full w-full flex-1 flex-col items-end overflow-visible">
                 <ShareLinks storyId={story.id} />
-                {/* <div className="flex h-32 w-full flex-col overflow-y-scroll bg-blue-500">
-                  <p className="h-32 p-12">test test</p>
-                  <p>test test</p>
-                  <p>test test</p>
-                  <p>test test</p>
-                  <p className="sticky bottom-0 self-start">sticky</p>
-                  <p className="h-52">test</p>
-                </div> */}
 
                 <div className="flex-1 self-stretch" />
               </div>
             </div>
             <div className="w-screen xl:w-full">
-              <div className="mx-0 mt-2 flex w-screen flex-col items-center gap-5 px-2 sm:mx-auto md:w-[720px]">
+              <div className="mx-0 mt-2 flex w-screen flex-col items-center gap-5 px-2 sm:mx-auto md:w-[768px]">
                 <StoryCredits story={story} />
                 <Dictionary />
 
-                <p className="mx-0 w-full font-sourceSerif4 text-lg font-[370] leading-8 md:w-[720px]">
+                <p className="mx-0 w-full font-sourceSerif4 text-lg font-[370] leading-8 md:w-[768px]">
                   <DictionarySentence>
                     {" "}
                     Admotum in <DictionaryWord word="lipopolysaccharide" />{" "}
@@ -169,7 +161,7 @@ export default async function StoriesPage({ params }: Params) {
                     dixerat.
                   </DictionarySentence>
                 </p>
-                <p className="mx-0 w-full font-sourceSerif4 text-lg font-[370] leading-8 md:w-[720px]">
+                <p className="mx-0 w-full font-sourceSerif4 text-lg font-[370] leading-8 md:w-[768px]">
                   <DictionarySentence>
                     <DictionaryWord word="camouflage">
                       Camouflage
@@ -192,7 +184,7 @@ export default async function StoriesPage({ params }: Params) {
                   the body with items from the general environment, such as do
                   some crabs (Hultgren & Stachowicz 2008).
                 </p>
-                <p className="mx-0 w-full font-sourceSerif4 text-lg font-[370] leading-8 md:w-[720px]">
+                <p className="mx-0 w-full font-sourceSerif4 text-lg font-[370] leading-8 md:w-[768px]">
                   <DictionarySentence>
                     A fundamental task of proteins is to act as{" "}
                     <DictionaryWord word="enzyme">enzymes</DictionaryWord>
@@ -205,7 +197,7 @@ export default async function StoriesPage({ params }: Params) {
                   that they would not occur under the mild conditions of
                   temperature and pressure that are compatible with life.
                 </p>
-                <p className="mx-0 w-full font-sourceSerif4 text-lg font-[370] leading-8 md:w-[720px]">
+                <p className="mx-0 w-full font-sourceSerif4 text-lg font-[370] leading-8 md:w-[768px]">
                   <DictionarySentence>
                     One of the most studied bacterial surface molecules is the
                     glycolipid known as{" "}
@@ -224,7 +216,7 @@ export default async function StoriesPage({ params }: Params) {
                 {testCode.file.result as ReactNode}
                 {testCode2.file.result as ReactNode}
                 {testDropdown.file.result as ReactNode}
-                <p className="mx-0 w-full font-sourceSerif4 text-lg font-[370] leading-8 md:w-[720px]">
+                <p className="mx-0 w-full font-sourceSerif4 text-lg font-[370] leading-8 md:w-[768px]">
                   <DictionarySentence>
                     lipopolysaccharide performs several functions in
                     Gram-negative bacteria.
@@ -241,7 +233,7 @@ export default async function StoriesPage({ params }: Params) {
                   role in bacteria-host interactions by modulating responses by
                   the host immune system.
                 </p>
-                <p className="mx-0 w-full font-sourceSerif4 text-lg font-[370] leading-8 md:w-[720px]">
+                <p className="mx-0 w-full font-sourceSerif4 text-lg font-[370] leading-8 md:w-[768px]">
                   <DictionarySentence>
                     Like all other catalysts, enzymes are characterized by two
                     fundamental properties.
@@ -252,7 +244,7 @@ export default async function StoriesPage({ params }: Params) {
                   altering the chemical equilibrium between reactants and
                   products.
                 </p>
-                <p className="mx-0 w-full font-sourceSerif4 text-lg font-[370] leading-8 md:w-[720px]">
+                <p className="mx-0 w-full font-sourceSerif4 text-lg font-[370] leading-8 md:w-[768px]">
                   <DictionarySentence>
                     However, in spite of its long history and widespread
                     occurrence, research on natural camouflage has not
@@ -269,7 +261,7 @@ export default async function StoriesPage({ params }: Params) {
                     erroneously regarded as intuitively obvious.
                   </DictionarySentence>
                 </p>
-                <p className="mx-0 w-full font-sourceSerif4 text-lg font-[370] leading-8 md:w-[720px]">
+                <p className="mx-0 w-full font-sourceSerif4 text-lg font-[370] leading-8 md:w-[768px]">
                   Carinam pelagi se venit tantumne, neu fame res senilibus,
                   populisque.
                   <DictionarySentence>
@@ -290,15 +282,15 @@ export default async function StoriesPage({ params }: Params) {
                   </DictionarySentence>
                 </p>
               </div>
-              <div className="w-[calc( 100% - 1rem )] mx-2 my-5 border-t-2 border-[#616161] pt-1  md:mx-auto md:w-[720px] ">
-                <p className="text-sm text-[#616161]">
+              <div className="w-[calc( 100% - 1rem )] mx-2 my-5 border-t-2 border-[#616161] pt-1  md:mx-auto md:w-[768px] ">
+                <p className="mt-1 text-sm text-[#616161]">
                   <span className="font-semibold">Acknowledgements:</span>{" "}
                   Animation provided by Source name 1. Sources provided by
                   Source name 2. We thank Funding 1 for their support, and
                   Professor 2 for their guidance. Ex. Cover Image: “Hawaiian
                   Bobtail Squid” is licensed under CC BY-NC 4.0.
                 </p>
-                <p className="text-sm text-[#616161]">
+                <p className="mt-1 text-sm text-[#616161]">
                   <span className="font-semibold">Notes:</span> All crosses were
                   performed at 26ºC on standard molasses fly food. Males were
                   used for all experiments. Flies were transferred to fresh food
@@ -307,20 +299,20 @@ export default async function StoriesPage({ params }: Params) {
                   EtOH or by adding 50 μl of 100% EtOH. DaGS{`>`}Lst8 flies were
                   put on either +RU486 or +Vehicle food after eclosion.
                 </p>
-                <p className="text-sm font-semibold text-[#616161]">
+                <p className="mt-1 text-sm font-semibold text-[#616161]">
                   References:
                 </p>
-                <p className="pb-1 text-sm text-[#616161]">
+                <p className="mt-1 text-sm text-[#616161]">
                   Agarwal, V. (2018). Predicting microRNA targeting efficacy in
                   Drosophila. Genome Biology, 19, 152. 10.1186/s13059-018-1504-3{" "}
                 </p>
-                <p className="pb-1 text-sm text-[#616161]">
+                <p className="mt-1 text-sm text-[#616161]">
                   Bilen, J. , Liu, N. , Burnett, B. G. , Pittman, R. N. , &
                   Bonini, N. M. (2006). MicroRNA pathways modulate
                   polyglutamine‐induced neurodegeneration. Molecular Cell,
                   24(1), 157–163. 10.1016/j.molcel.2006.07.030
                 </p>
-                <p className="pb-1 text-sm text-[#616161]">
+                <p className="mt-1 text-sm text-[#616161]">
                   Liu, N. , Landreh, M. , Cao, K. , Abe, M. , Hendriks, G.‐J. ,
                   Kennerdell, J. R. , Zhu, Y. , Wang, L.‐S. , & Bonini, N. M.
                   (2012). The microRNA miR‐34 modulates ageing and

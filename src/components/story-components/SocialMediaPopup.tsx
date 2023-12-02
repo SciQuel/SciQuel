@@ -81,7 +81,7 @@ const SocialMediaPopup = forwardRef(
                   ? "translate-y-0"
                   : "max-h-0 translate-y-full opacity-0 sm:-translate-y-0"
               }  absolute bottom-0 z-10 flex w-screen flex-col pt-0 transition-transform duration-500` +
-              ` sm:relative sm:px-0 md:w-[720px] md:pl-0 md:pr-0 xl:relative xl:w-fit xl:before:left-0 xl:before:ml-7 ` +
+              ` sm:relative sm:px-0 md:w-[768px] md:pl-0 md:pr-0 xl:relative xl:w-fit xl:before:left-0 xl:before:ml-7 ` +
               ` sm:before:absolute sm:before:left-2 sm:before:top-3 sm:before:z-[2] sm:before:ml-5 sm:before:h-7 sm:before:w-7 sm:before:rotate-45 sm:before:border-l-2 sm:before:border-t-2 sm:before:border-sciquelCardBorder sm:before:bg-sciquelCardBg  `
             }
           >

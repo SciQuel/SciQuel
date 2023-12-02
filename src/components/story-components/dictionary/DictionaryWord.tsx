@@ -118,7 +118,7 @@ export default function DictionaryWord({
         }
       }}
       type="button"
-      className="fw-bold m-0 rounded-lg border-2 border-sciquelTeal bg-white px-3 py-1 text-sciquelTeal"
+      className="fw-bold m-0 mx-1 rounded-lg border-2 border-sciquelTeal bg-white px-2 py-1 text-sciquelTeal"
     >
       {children ? children : word}
     </button>

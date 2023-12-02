@@ -485,7 +485,7 @@ export default function StoryCredits({ story }: Props) {
 
   return isPrintMode ? (
     <>
-      <div className="relative mx-0 w-screen max-w-[720px] px-2 pt-10 md:mx-auto md:px-0">
+      <div className="relative mx-0 w-screen max-w-[768px] px-2 pt-10 md:mx-auto md:px-0">
         <Image
           src={story.thumbnailUrl}
           className="w-full min-w-0 object-cover"
@@ -500,7 +500,7 @@ export default function StoryCredits({ story }: Props) {
         <h2 className="font-sourceSerif4 text-2xl">{story.summary}</h2>
       </div>
 
-      <div className="relative mx-2 mt-5 flex w-screen flex-col px-2 sm:mx-auto md:w-[720px] md:px-0">
+      <div className="relative mx-2 mt-5 flex w-screen flex-col px-2 sm:mx-auto md:w-[768px] md:px-0">
         <div className="pointer-events-none top-0 flex flex-1 flex-row justify-start xl:hidden">
           <ShareLinks storyId={story.id} />
         </div>
@@ -543,7 +543,7 @@ export default function StoryCredits({ story }: Props) {
     </>
   ) : (
     <>
-      <div className="absolute left-0 top-0 m-0 flex h-screen w-screen items-end">
+      <div className="absolute left-0 top-0 m-0 flex min-h-screen w-screen items-end">
         <Image
           src={story.thumbnailUrl}
           className="h-full object-cover"
@@ -583,7 +583,7 @@ export default function StoryCredits({ story }: Props) {
         <p className="fs-2 mx-2 my-0 p-0 font-sourceSerif4">
           Title Image provided by Source name
         </p>
-        <div className="relative mx-0 mt-0 flex w-screen flex-col px-2 md:mx-auto md:w-[720px]">
+        <div className="relative mx-0 mt-0 flex w-screen flex-col px-2 md:mx-auto md:w-[768px]">
           <div className="pointer-events-none top-0 flex flex-1 flex-row flex-wrap justify-start xl:hidden">
             <ShareLinks storyId={story.id} />
           </div>

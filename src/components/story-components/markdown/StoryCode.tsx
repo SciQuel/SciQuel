@@ -11,7 +11,7 @@ export default function StoryCode({ children }: PropsWithChildren<unknown>) {
       className={`${
         isPrintMode ? "text-slate-800" : "bg-cyan-700 text-zinc-100"
         // -slate-500
-      } mx-auto w-full rounded  px-2 py-1 font-mono  font-medium md:w-[720px]`}
+      } mx-auto w-full rounded  px-2 py-1 font-mono  font-medium md:w-[768px]`}
     >
       {children}
     </code>

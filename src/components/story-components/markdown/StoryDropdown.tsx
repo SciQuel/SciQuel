@@ -14,8 +14,16 @@ export default function StoryDropdown({
     return <></>;
   }
   return (
-    <div className="mx-0 w-full px-1 md:w-[720px]">
+    <div className="mx-0 w-full px-1 md:w-[768px]">
       <div
+        onKeyDown={(e) => {
+          console.log(e);
+          if (e.key == "Enter" || e.key == " ") {
+            e.preventDefault();
+            setOpen(!open);
+          }
+        }}
+        tabIndex={0}
         onClick={() => {
           setOpen(!open);
         }}

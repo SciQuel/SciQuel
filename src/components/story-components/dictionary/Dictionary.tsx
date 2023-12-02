@@ -295,7 +295,7 @@ export default function Dictionary() {
             />
           </button>
         </div>
-        <div className="flex-1 overflow-y-scroll">
+        <div className="flex-1 overflow-y-scroll overscroll-contain">
           {fullDictionary.word?.word ? (
             <div className="px-4 py-2 font-sourceSerif4">
               <div className="mb-3">
