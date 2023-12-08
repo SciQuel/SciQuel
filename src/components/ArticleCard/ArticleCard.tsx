@@ -39,7 +39,9 @@ export default function ArticleCard({
               ),
               "ml-auto w-[175px]": mini && preferHorizontal,
             },
-            mini && !preferHorizontal ? "min-w-[275px]" : "min-w-[300px]",
+            mini && !preferHorizontal
+              ? "min-h-[105%] min-w-[265px] max-w-xs"
+              : "min-w-[300px]",
             preferHorizontal ? "flex-row" : "flex-col",
           )}
         >
@@ -48,7 +50,7 @@ export default function ArticleCard({
               "flex flex-col gap-4",
               mini
                 ? preferHorizontal
-                  ? "py-2"
+                  ? "w-full py-2"
                   : "grow  p-3"
                 : preferHorizontal
                 ? "w-2/3 p-3"
