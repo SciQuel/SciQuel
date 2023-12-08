@@ -6,6 +6,7 @@ import {
   useState,
   type Dispatch,
   type PropsWithChildren,
+  type RefObject,
   type SetStateAction,
 } from "react";
 
@@ -30,14 +31,11 @@ export interface DictionaryDefinition {
   bookmarked: boolean | undefined;
 }
 
-interface FullDictionary {
-  dict: DictionaryDefinition[];
-  lastClickedRef: HTMLElement | null;
-}
-
 interface DictionaryContextVal {
-  dictionary: FullDictionary;
-  setDictionary: Dispatch<SetStateAction<FullDictionary>>;
+  dictionary: DictionaryDefinition[];
+  setDictionary: Dispatch<SetStateAction<DictionaryDefinition[]>>;
+  open: boolean;
+  setOpen: Dispatch<SetStateAction<boolean>>;
   word: DictionaryDefinition | null;
   setWord: Dispatch<SetStateAction<DictionaryDefinition | null>>;
   previousWords: (DictionaryDefinition | "fullDict")[];
@@ -46,8 +44,8 @@ interface DictionaryContextVal {
   >;
   selectedInstance: SelectedInstance | null;
   setSelectedInstance: Dispatch<SetStateAction<SelectedInstance | null>>;
-  open: boolean;
-  setOpen: Dispatch<SetStateAction<boolean>>;
+  closeFocusElement: HTMLElement | null;
+  setCloseFocus: Dispatch<SetStateAction<HTMLElement | null>>;
 }
 
 export const DictionaryContext = createContext<DictionaryContextVal | null>(
@@ -65,12 +63,9 @@ export function DictionaryProvider({
   const [dictionarySelect, setDictionarySelect] =
     useState<DictionaryDefinition | null>(null);
 
-  const [fullDict, setFullDict] = useState<FullDictionary>({
-    dict: dictionary,
-    lastClickedRef: null,
-  });
+  const [open, setOpen] = useState<boolean>(false);
 
-  const [isOpen, setIsOpen] = useState(false);
+  const [fullDict, setFullDict] = useState<DictionaryDefinition[]>(dictionary);
 
   const [historyList, setHistoryList] = useState<
     (DictionaryDefinition | "fullDict")[]
@@ -79,11 +74,7 @@ export function DictionaryProvider({
   const [highlightedInstance, setHighlightedInstance] =
     useState<SelectedInstance | null>(null);
 
-  useEffect(() => {
-    if (!isOpen) {
-      setHighlightedInstance(null);
-    }
-  }, [isOpen]);
+  const [focusElement, setFocusElement] = useState<HTMLElement | null>(null);
 
   useEffect(() => {
     setHighlightedInstance(null);
@@ -94,14 +85,16 @@ export function DictionaryProvider({
       value={{
         dictionary: fullDict,
         setDictionary: setFullDict,
+        open: open,
+        setOpen: setOpen,
         word: dictionarySelect,
         setWord: setDictionarySelect,
         previousWords: historyList,
         setPreviousWords: setHistoryList,
         selectedInstance: highlightedInstance,
         setSelectedInstance: setHighlightedInstance,
-        open: isOpen,
-        setOpen: setIsOpen,
+        closeFocusElement: focusElement,
+        setCloseFocus: setFocusElement,
       }}
     >
       {children}

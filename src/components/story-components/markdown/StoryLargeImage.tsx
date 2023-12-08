@@ -25,7 +25,7 @@ export default function StoryLargeImage({
           } max-w-screen max-h-[900px] w-auto`}
           alt={alt}
         />
-        <figcaption className="table-caption w-full caption-bottom px-8 lg:px-0">
+        <figcaption className="table-caption w-full caption-bottom px-8 font-sourceSerif4 lg:px-0">
           {children}
         </figcaption>
       </figure>

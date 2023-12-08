@@ -37,18 +37,14 @@ export default function DictionarySentence({ children }: PropsWithChildren) {
     // see about adding sentence to instances?
     let indexList: number[] = [];
     console.log(sentenceRef.current?.textContent);
-    if (
-      sentenceRef.current &&
-      sentenceRef.current.textContent &&
-      fullDictionary?.dictionary.dict
-    ) {
+    if (sentenceRef.current?.textContent && fullDictionary?.dictionary) {
       // see what vocab word(s) we match in our sentence?
 
       let testSentence = sentenceRef.current.textContent;
 
       let wordAdded = false;
 
-      fullDictionary.dictionary.dict.forEach((item, index) => {
+      fullDictionary.dictionary.forEach((item, index) => {
         wordAdded = false;
         let testWord = new RegExp(item.word, "i");
         if (testWord.test(testSentence)) {
@@ -78,7 +74,7 @@ export default function DictionarySentence({ children }: PropsWithChildren) {
       let spanRef = sentenceRef.current;
       // should have all our instances added to our copyDict?
       fullDictionary.setDictionary((state) => {
-        let copyState = deepCloneDict(state.dict);
+        let copyState = deepCloneDict(state);
         indexList.forEach((item) => {
           copyState[item].instances.push({
             sentence: testSentence,
@@ -86,7 +82,7 @@ export default function DictionarySentence({ children }: PropsWithChildren) {
           });
         });
 
-        return { dict: copyState, lastClickedRef: state.lastClickedRef };
+        return copyState;
       });
     }
   }, []);

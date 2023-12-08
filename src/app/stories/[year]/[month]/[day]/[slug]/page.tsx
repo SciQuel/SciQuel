@@ -131,16 +131,16 @@ export default async function StoriesPage({ params }: Params) {
     <PrintModeProvider>
       <DictionaryProvider dictionary={testDictList}>
         <div className="flex h-fit w-screen flex-col overflow-visible">
-          <div className="mt-0 grid grid-cols-[1fr_0px] pt-0 lg:grid-cols-[1fr_720px_1fr]">
-            <div className="pointer-events-none relative z-10 hidden flex-col items-end px-2 xl:flex">
+          <div className="mx-0 mt-0 grid grid-cols-[1fr_0px] gap-0 px-0 pt-0 lg:grid-cols-[1fr_768px_1fr]">
+            <div className="pointer-events-none relative hidden flex-col items-end px-0 xl:flex">
               <div className="w-100 h-[calc(100vh_-_2rem)]" />
-              <div className="rlative flex h-full w-full flex-1 flex-col items-end overflow-visible">
+              <div className="rlative z-[15] flex h-full w-full flex-1 flex-col items-end overflow-visible">
                 <ShareLinks storyId={story.id} />
 
                 <div className="flex-1 self-stretch" />
               </div>
             </div>
-            <div className="w-screen xl:w-full">
+            <div className="z-[15] w-screen xl:w-full">
               <div className="mx-0 mt-2 flex w-screen flex-col items-center gap-5 px-2 sm:mx-auto md:w-[768px]">
                 <StoryCredits story={story} />
                 <Dictionary />

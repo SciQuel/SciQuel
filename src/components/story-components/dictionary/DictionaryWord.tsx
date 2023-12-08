@@ -8,7 +8,6 @@ import {
   type PropsWithChildren,
 } from "react";
 import {
-  deepCloneDict,
   DictionaryContext,
   type DictionaryDefinition,
   type Instances,
@@ -38,6 +37,7 @@ export default function DictionaryWord({
   children,
 }: PropsWithChildren<Props>) {
   const dictionary = useContext(DictionaryContext);
+
   const [dictEntry, setDictEntry] = useState<null | EntryReference>(null);
   const scrollRef = useRef<HTMLButtonElement>(null);
 
@@ -47,7 +47,7 @@ export default function DictionaryWord({
       entry: null,
     };
 
-    dictionary?.dictionary.dict.forEach((item, index) => {
+    dictionary?.dictionary.forEach((item, index) => {
       if (item.word == word) {
         dictRef = {
           index: index,
@@ -112,13 +112,15 @@ export default function DictionaryWord({
           dictionary.setWord({
             ...dictEntry.entry,
           });
-          dictionary.dictionary.lastClickedRef = scrollRef.current;
-          dictionary.setOpen(true);
+          dictionary.setCloseFocus(scrollRef.current);
+
+          dictionary?.setOpen(true);
+
           dictionary.setPreviousWords([]);
         }
       }}
       type="button"
-      className="fw-bold m-0 mx-1 rounded-lg border-2 border-sciquelTeal bg-white px-2 py-1 text-sciquelTeal"
+      className="fw-bold mx-1 my-[0.075rem] rounded-lg border-2 border-sciquelTeal bg-white px-2 py-0 text-sciquelTeal"
     >
       {children ? children : word}
     </button>

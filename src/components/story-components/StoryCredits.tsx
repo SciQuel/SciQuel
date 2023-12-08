@@ -133,64 +133,66 @@ export default function StoryCredits({ story }: Props) {
     illustratorIcons = authorIcons.slice(0, 1);
 
     return (
-      <div className="ml-0 grid auto-rows-auto grid-cols-[auto_1fr] justify-items-start gap-0.5">
-        <div className="flex flex-row justify-self-start">
-          {/* author icons */}
-          {authorIcons.map((icon, index) => (
-            <Avatar
-              key={`author-icons-${icon}-${index}`}
-              imageUrl={icon ? icon : undefined}
-              label={authors[index].slice(0, 1)}
-              className="m-0.5"
-              size="md"
-            />
-          ))}
-        </div>
-        <p className="self-center justify-self-stretch">
-          {/* authors */}
-          by{" "}
-          {authors.slice(0, -1).map((author, index) => {
-            if (authors.length > 2) {
-              return (
-                <>
-                  {" "}
-                  <a
-                    href={`/contributors/${author
-                      .replaceAll(" ", "-")
-                      .toLowerCase()}`}
-                  >
-                    {author}
-                  </a>
-                  ,{" "}
-                </>
-              );
-            } else {
-              return (
-                <>
-                  <a
-                    href={`/contributors/${author
-                      .replaceAll(" ", "-")
-                      .toLowerCase()}`}
-                  >
+      <div className="ml-0 flex flex-col">
+        <div className="flex flex-row">
+          <div className="flex flex-row justify-self-start">
+            {/* author icons */}
+            {authorIcons.map((icon, index) => (
+              <Avatar
+                key={`author-icons-${icon}-${index}`}
+                imageUrl={icon ? icon : undefined}
+                label={authors[index].slice(0, 1)}
+                className="m-0.5"
+                size="md"
+              />
+            ))}
+          </div>
+          <p className="mx-1 self-center justify-self-stretch">
+            {/* authors */}
+            by{" "}
+            {authors.slice(0, -1).map((author, index) => {
+              if (authors.length > 2) {
+                return (
+                  <>
                     {" "}
-                    {author}{" "}
-                  </a>
-                </>
-              );
-            }
-          })}{" "}
-          {authors.length > 1 ? " and " : ""}{" "}
-          <a
-            href={`/contributors/${authors
-              .slice(-1)[0]
-              .replaceAll(" ", "-")
-              .toLowerCase()}`}
-          >
-            {authors.slice(-1)[0]}
-          </a>
-        </p>
+                    <a
+                      href={`/contributors/${author
+                        .replaceAll(" ", "-")
+                        .toLowerCase()}`}
+                    >
+                      {author}
+                    </a>
+                    ,{" "}
+                  </>
+                );
+              } else {
+                return (
+                  <>
+                    <a
+                      href={`/contributors/${author
+                        .replaceAll(" ", "-")
+                        .toLowerCase()}`}
+                    >
+                      {" "}
+                      {author}{" "}
+                    </a>
+                  </>
+                );
+              }
+            })}{" "}
+            {authors.length > 1 ? " and " : ""}{" "}
+            <a
+              href={`/contributors/${authors
+                .slice(-1)[0]
+                .replaceAll(" ", "-")
+                .toLowerCase()}`}
+            >
+              {authors.slice(-1)[0]}
+            </a>
+          </p>
+        </div>
         {illustrators.length > 0 ? (
-          <>
+          <div className="flex flex-row">
             <div className="flex flex-row justify-self-start">
               {/* illust icons */}
               {illustratorIcons.map((icon, index) => (
@@ -203,9 +205,9 @@ export default function StoryCredits({ story }: Props) {
                 />
               ))}
             </div>
-            <p className="self-center justify-self-stretch">
+            <p className="mx-1 self-center  justify-self-stretch">
               {/* illustrators */}
-              Illustrations by{" "}
+              illustrations by{" "}
               {illustrators.slice(0, -1).map((illustrator, index) => {
                 if (illustrators.length > 2) {
                   return (
@@ -244,13 +246,13 @@ export default function StoryCredits({ story }: Props) {
                 {illustrators.slice(-1)[0]}
               </a>
             </p>
-          </>
+          </div>
         ) : (
           <></>
         )}
 
         {animators.length > 0 ? (
-          <>
+          <div className="flex flex-row">
             <div className="flex flex-row justify-self-start">
               {/* animator icons */}
               {animatorIcons.map((icon, index) => (
@@ -263,7 +265,7 @@ export default function StoryCredits({ story }: Props) {
                 />
               ))}
             </div>
-            <p className="self-center justify-self-stretch">
+            <p className="mx-1 self-center  justify-self-stretch">
               {/* animators */}
               Animations by{" "}
               {animators.slice(0, -1).map((animator, index) => {
@@ -304,7 +306,7 @@ export default function StoryCredits({ story }: Props) {
                 {animators.slice(-1)[0]}
               </a>
             </p>
-          </>
+          </div>
         ) : (
           <></>
         )}
@@ -578,11 +580,11 @@ export default function StoryCredits({ story }: Props) {
           </h2>
         </div>
       </div>
-      <div className="w-100 h-[calc(100vh_-_6rem)]" />
-      <div className="h-fit w-screen">
-        <p className="fs-2 mx-2 my-0 p-0 font-sourceSerif4">
-          Title Image provided by Source name
-        </p>
+      <div className="h-[calc(100vh_-_6rem)] w-full" />{" "}
+      <p className="my-0 w-screen px-2 py-0 font-sourceSerif4">
+        Title Image provided by Source name
+      </p>
+      <div className="mt-0 justify-self-start pt-0">
         <div className="relative mx-0 mt-0 flex w-screen flex-col px-2 md:mx-auto md:w-[768px]">
           <div className="pointer-events-none top-0 flex flex-1 flex-row flex-wrap justify-start xl:hidden">
             <ShareLinks storyId={story.id} />
@@ -605,28 +607,7 @@ export default function StoryCredits({ story }: Props) {
               return <TopicTag name={item} key={`${item}-${index}`} />;
             })}
           </div>
-          {/* <div>
-            {story.storyContributions.map((element, index) => {
-              return (
-                <div
-                  className="my-1 flex flex-row items-center"
-                  key={`${element.contributionType}-${element.user.id}`}
-                >
-                  <Avatar
-                    imageUrl={element.user.avatarUrl ?? undefined}
-                    label={element.user.firstName[0]}
-                    className="mr-2"
-                    size="md"
-                  />
-                  <p key={`contributor-header-${index}`}>
-                    {element.contributionType == "AUTHOR"
-                      ? `by ${element.user.firstName} ${element.user.lastName}`
-                      : `${element.contributionType} by ${element.user.firstName} ${element.user.lastName}`}
-                  </p>
-                </div>
-              );
-            })}
-          </div> */}
+
           {buildAuthors()}
           <p>
             {DateTime.fromJSDate(story.publishedAt).toFormat(

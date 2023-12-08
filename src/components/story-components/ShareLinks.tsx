@@ -368,13 +368,13 @@ export default function ShareLinks({ storyId }: Props) {
         ref={dictButtonRef}
         onClick={() => {
           if (Dictionary) {
-            Dictionary.setOpen(true);
+            Dictionary?.setOpen(true);
             Dictionary.setWord(null);
-            Dictionary.dictionary.lastClickedRef = dictButtonRef.current;
+            Dictionary.setCloseFocus(dictButtonRef.current);
             Dictionary.setPreviousWords([]);
           }
         }}
-        className="pointer-events-auto relative block h-[4.5rem] w-[4.25rem] rounded-full p-3 xl:sticky xl:top-28"
+        className="pointer-events-auto relative z-10 block h-[4.5rem] w-[4.25rem] rounded-full p-3 xl:sticky xl:top-28"
       >
         <Image src={shareIcon} alt={"open dictionary"} width={45} height={45} />
       </button>

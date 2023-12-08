@@ -23,6 +23,7 @@ async function getBookmark(word: string) {
 
 export default function Dictionary() {
   const fullDictionary = useContext(DictionaryContext);
+
   const sidebarRef = useRef<HTMLDivElement>(null);
   const bookmarkRef = useRef<HTMLButtonElement>(null);
   const exitRef = useRef<HTMLButtonElement>(null);
@@ -32,12 +33,14 @@ export default function Dictionary() {
   const [top, setTop] = useState(16);
 
   useEffect(() => {
-    if (fullDictionary?.open == true) {
+    if (fullDictionary?.open) {
       if (bookmarkRef.current) {
         bookmarkRef.current.focus();
       } else if (exitRef.current) {
         exitRef.current.focus();
       }
+    } else {
+      fullDictionary?.setSelectedInstance(null);
     }
   }, [fullDictionary?.open]);
 
@@ -65,7 +68,7 @@ export default function Dictionary() {
   useEffect(() => {
     if (fullDictionary?.dictionary) {
       // check if bookmarks need to be grabbed?
-      let copyDict = deepCloneDict(fullDictionary.dictionary.dict);
+      let copyDict = deepCloneDict(fullDictionary.dictionary);
 
       copyDict.forEach((entry, index) => {
         if (entry.bookmarked === undefined) {
@@ -75,10 +78,7 @@ export default function Dictionary() {
         }
       });
 
-      fullDictionary.setDictionary({
-        dict: copyDict,
-        lastClickedRef: fullDictionary.dictionary.lastClickedRef,
-      });
+      fullDictionary.setDictionary(copyDict);
     }
 
     const header = document.getElementById("outer-header");
@@ -109,6 +109,7 @@ export default function Dictionary() {
       fullDictionary?.setOpen(false);
     } else {
       keepOpen.current++;
+      e.stopPropagation();
     }
   }
 
@@ -122,10 +123,7 @@ export default function Dictionary() {
         block: "center",
       });
 
-      fullDictionary.setDictionary((state) => ({
-        dict: state.dict,
-        lastClickedRef: elementRef,
-      }));
+      fullDictionary.setCloseFocus(elementRef);
     }
   }
 
@@ -170,13 +168,13 @@ export default function Dictionary() {
         tabIndex={1}
         ref={sidebarRef}
         className={`${
-          fullDictionary.open ? " flex " : " hidden "
+          fullDictionary?.open ? " flex " : " hidden "
         } fixed inset-y-0 right-0 z-10 h-screen w-screen flex-col justify-between self-end bg-sciquelCardBg md:w-96`}
       >
         {/* outer dictionary */}
         <div
           style={{
-            paddingTop: `${top + 30}px`,
+            paddingTop: `${top + 15}px`,
           }}
           className={`w-100 flex items-start justify-between px-4 pb-3`}
         >
@@ -223,7 +221,7 @@ export default function Dictionary() {
               <button
                 ref={bookmarkRef}
                 onClick={async () => {
-                  let copyDict = deepCloneDict(fullDictionary.dictionary.dict);
+                  let copyDict = deepCloneDict(fullDictionary.dictionary);
                   if (fullDictionary.word?.id) {
                     if (bookmark) {
                       copyDict.forEach((entry) => {
@@ -232,11 +230,7 @@ export default function Dictionary() {
                         }
                       });
 
-                      fullDictionary.setDictionary({
-                        dict: copyDict,
-                        lastClickedRef:
-                          fullDictionary.dictionary.lastClickedRef,
-                      });
+                      fullDictionary.setDictionary(copyDict);
                       setBookmark(false);
                     } else {
                       copyDict.forEach((entry) => {
@@ -244,17 +238,13 @@ export default function Dictionary() {
                           entry.bookmarked = true;
                         }
                       });
-                      fullDictionary.setDictionary({
-                        dict: copyDict,
-                        lastClickedRef:
-                          fullDictionary.dictionary.lastClickedRef,
-                      });
+                      fullDictionary.setDictionary(copyDict);
                       setBookmark(true);
                     }
                   }
                 }}
                 type="button"
-                className="-mt-16 me-auto ms-8 h-36 w-16"
+                className="-mt-4 me-auto ms-8 h-14 w-14"
               >
                 <BookmarkIcon
                   className={`h-full w-full ${
@@ -279,11 +269,12 @@ export default function Dictionary() {
             className={`p-1.5`}
             type="button"
             onClick={() => {
-              fullDictionary.setOpen(false);
-              if (fullDictionary.dictionary.lastClickedRef) {
-                fullDictionary.dictionary.lastClickedRef.focus();
-                fullDictionary.dictionary.lastClickedRef = null;
+              if (fullDictionary.closeFocusElement) {
+                fullDictionary.closeFocusElement.focus();
+                fullDictionary.setCloseFocus(null);
               }
+              console.log(fullDictionary.closeFocusElement);
+              fullDictionary?.setOpen(false);
             }}
           >
             <Image
@@ -437,7 +428,7 @@ export default function Dictionary() {
               </button>
             </div>
           ) : (
-            fullDictionary.dictionary.dict.map((item, index) => {
+            fullDictionary.dictionary.map((item, index) => {
               return (
                 <div
                   className="px-4 py-2 font-sourceSerif4"
