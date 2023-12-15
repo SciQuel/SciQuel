@@ -4,7 +4,9 @@ import Dictionary from "@/components/story-components/dictionary/Dictionary";
 import { DictionaryProvider } from "@/components/story-components/dictionary/DictionaryContext";
 import DictionarySentence from "@/components/story-components/dictionary/DictionarySentence";
 import DictionaryWord from "@/components/story-components/dictionary/DictionaryWord";
+import TestImages from "@/components/story-components/imgTests";
 import { PrintModeProvider } from "@/components/story-components/PrintContext";
+import { StoryScrollProvider } from "@/components/story-components/scroll/ScrollProvider";
 import ShareLinks from "@/components/story-components/ShareLinks";
 import StoryCredits from "@/components/story-components/StoryCredits";
 import StoryFooter from "@/components/story-components/StoryFooter";
@@ -129,208 +131,216 @@ export default async function StoriesPage({ params }: Params) {
 
   return (
     <PrintModeProvider>
-      <DictionaryProvider dictionary={testDictList}>
-        <div className="flex h-fit w-screen flex-col overflow-visible">
-          <div className="mx-0 mt-0 grid grid-cols-[1fr_0px] gap-0 px-0 pt-0 lg:grid-cols-[1fr_768px_1fr]">
-            <div className="pointer-events-none relative hidden flex-col items-end px-0 xl:flex">
-              <div className="w-100 h-[calc(100vh_-_2rem)]" />
-              <div className="rlative z-[15] flex h-full w-full flex-1 flex-col items-end overflow-visible">
-                <ShareLinks storyId={story.id} />
+      <StoryScrollProvider>
+        <DictionaryProvider dictionary={testDictList}>
+          <div className="flex h-fit w-screen flex-col overflow-visible">
+            <div className="mx-0 mt-0 grid grid-cols-[1fr_0px] gap-0 px-0 pt-0 lg:grid-cols-[1fr_768px_1fr]">
+              <div className="pointer-events-none relative hidden flex-col items-end px-0 xl:flex">
+                <div className="w-100 h-[calc(100vh_-_2rem)]" />
+                <div className="rlative   flex h-full w-full flex-1 flex-col items-end overflow-visible">
+                  <ShareLinks storyId={story.id} observe={true} />
 
-                <div className="flex-1 self-stretch" />
+                  <div className="flex-1 self-stretch" />
+                </div>
               </div>
+              <div className="  w-screen xl:w-full">
+                <div className="mx-0 mt-2 flex w-screen flex-col items-center gap-5 px-2 sm:mx-auto md:w-[768px]">
+                  <StoryCredits story={story} />
+                  <Dictionary />
+
+                  <p className="mx-0 w-full font-sourceSerif4 text-lg font-[370] leading-8 md:w-[768px]">
+                    <DictionarySentence>
+                      {" "}
+                      Admotum in <DictionaryWord word="lipopolysaccharide" />{" "}
+                      querno saxum genialis moriente tulit quoque quoque duxit
+                      de clarae regis, quo memor{" "}
+                      <DictionaryWord word="enzyme" /> tangit mea, qui.
+                    </DictionarySentence>{" "}
+                    Qua semper nam retia favilla nomine dique, aris idque inter
+                    dantibus.
+                    <DictionarySentence>
+                      Cythereia ortae <DictionaryWord word="camouflage" />{" "}
+                      procumbit eodem, ut humumque noctisque proelia, sub nomen
+                      dixerat.
+                    </DictionarySentence>
+                  </p>
+                  <p className="mx-0 w-full font-sourceSerif4 text-lg font-[370] leading-8 md:w-[768px]">
+                    <DictionarySentence>
+                      <DictionaryWord word="camouflage">
+                        Camouflage
+                      </DictionaryWord>{" "}
+                      is a technique especially useful if the animal can change
+                      colour to match the background on which it is found, such
+                      as can some cephalopods (Hanlon & Messenger 1988) and
+                      chameleons (Stuart-Fox et al. 2008).
+                    </DictionarySentence>{" "}
+                    Further remarkable examples include insects bearing an
+                    uncanny resemblance to bird droppings (Hebert 1974) or fish
+                    resembling fallen leaves on a stream bed (Sazima et al.
+                    2006), to even making the body effectively transparent, as
+                    occurs in a range of, in particular, aquatic species
+                    (Johnsen 2001; Carvalho et al. 2006). Examples such as leaf
+                    mimicry in butterflies helped convince Wallace (1889), for
+                    example, of the power of natural selection. Other strategies
+                    may even stretch to the use of bioluminescence to hide
+                    shadows generated in aquatic environments (Johnsen et al.
+                    2004), and include ‘decorating’ the body with items from the
+                    general environment, such as do some crabs (Hultgren &
+                    Stachowicz 2008).
+                  </p>
+                  <p className="mx-0 w-full font-sourceSerif4 text-lg font-[370] leading-8 md:w-[768px]">
+                    <DictionarySentence>
+                      A fundamental task of proteins is to act as{" "}
+                      <DictionaryWord word="enzyme">enzymes</DictionaryWord>
+                      —catalysts that increase the rate of virtually all the
+                      chemical reactions within cells.
+                    </DictionarySentence>{" "}
+                    Although RNAs are capable of catalyzing some reactions, most
+                    biological reactions are catalyzed by proteins. In the
+                    absence of enzymatic catalysis, most biochemical reactions
+                    are so slow that they would not occur under the mild
+                    conditions of temperature and pressure that are compatible
+                    with life.
+                  </p>
+                  <p className="mx-0 w-full font-sourceSerif4 text-lg font-[370] leading-8 md:w-[768px]">
+                    <DictionarySentence>
+                      One of the most studied bacterial surface molecules is the
+                      glycolipid known as{" "}
+                      <DictionaryWord word="lipopolysaccharide">
+                        lipopolysaccharide
+                      </DictionaryWord>{" "}
+                      (LPS), which is produced by most Gram-negative bacteria.
+                    </DictionarySentence>{" "}
+                    Much of the initial attention LPS received in the early
+                    1900s was owed to its ability to stimulate the immune
+                    system, for which the glycolipid was commonly known as
+                    endotoxin.
+                  </p>
+
+                  {file.result as ReactNode}
+                  {testContent.file.result as ReactNode}
+                  {testCode.file.result as ReactNode}
+                  {testCode2.file.result as ReactNode}
+                  {testDropdown.file.result as ReactNode}
+                  <TestImages />
+                  <p className="mx-0 w-full font-sourceSerif4 text-lg font-[370] leading-8 md:w-[768px]">
+                    <DictionarySentence>
+                      lipopolysaccharide performs several functions in
+                      Gram-negative bacteria.
+                    </DictionarySentence>{" "}
+                    The most fundamental function of LPS is to serve as a major
+                    structural component of the OM. Perhaps not surprisingly,
+                    LPS is an essential component of the cell envelope in most,
+                    though interestingly not all, Gram-negative bacteria (4). In
+                    addition, LPS molecules transform the OM into an effective
+                    permeability barrier against small, hydrophobic molecules
+                    that can otherwise cross phospholipid bilayers, making
+                    Gram-negative bacteria innately resistant to many
+                    antimicrobial compounds (5, 6). LPS can also play a crucial
+                    role in bacteria-host interactions by modulating responses
+                    by the host immune system.
+                  </p>
+                  <p className="mx-0 w-full font-sourceSerif4 text-lg font-[370] leading-8 md:w-[768px]">
+                    <DictionarySentence>
+                      Like all other catalysts, enzymes are characterized by two
+                      fundamental properties.
+                    </DictionarySentence>{" "}
+                    First, they increase the rate of chemical reactions without
+                    themselves being consumed or permanently altered by the
+                    reaction. Second, they increase reaction rates without
+                    altering the chemical equilibrium between reactants and
+                    products.
+                  </p>
+                  <p className="mx-0 w-full font-sourceSerif4 text-lg font-[370] leading-8 md:w-[768px]">
+                    <DictionarySentence>
+                      However, in spite of its long history and widespread
+                      occurrence, research on natural camouflage has not
+                      progressed as rapidly as many other areas of adaptive
+                      coloration, especially in the last 60–70 years.
+                    </DictionarySentence>{" "}
+                    There are several reasons for this, including that human
+                    perceptions have often been used to subjectively assess a
+                    range of protective markings, rather than working from the
+                    perspective of the correct receiver.
+                    <DictionarySentence>
+                      {" "}
+                      In general, the mechanisms of camouflage have often been
+                      erroneously regarded as intuitively obvious.
+                    </DictionarySentence>
+                  </p>
+                  <p className="mx-0 w-full font-sourceSerif4 text-lg font-[370] leading-8 md:w-[768px]">
+                    Carinam pelagi se venit tantumne, neu fame res senilibus,
+                    populisque.
+                    <DictionarySentence>
+                      {" "}
+                      enzyme Has capiti fatis.
+                    </DictionarySentence>
+                    Exemit puer sors esse, Pittheia nobis superfusis mihi
+                    Carpathius quoque libera oris, nec.
+                    <DictionarySentence>
+                      {" "}
+                      Quae retinere lipopolysaccharide ictus nam vultum sanguine
+                      precibus Delphosque mucrone.
+                    </DictionarySentence>{" "}
+                    <DictionarySentence>
+                      {" "}
+                      Pectore in inquit Aeacide illic sequar propositum ululasse
+                      cruentos aspergine aurea qui, esse camouflage.
+                    </DictionarySentence>
+                  </p>
+                </div>
+                <div className="w-[calc( 100% - 1rem )] mx-2 my-5 border-t-2 border-[#616161] pt-1  md:mx-auto md:w-[768px] ">
+                  <p className="mt-1 text-sm text-[#616161]">
+                    <span className="font-semibold">Acknowledgements:</span>{" "}
+                    Animation provided by Source name 1. Sources provided by
+                    Source name 2. We thank Funding 1 for their support, and
+                    Professor 2 for their guidance. Ex. Cover Image: “Hawaiian
+                    Bobtail Squid” is licensed under CC BY-NC 4.0.
+                  </p>
+                  <p className="mt-1 text-sm text-[#616161]">
+                    <span className="font-semibold">Notes:</span> All crosses
+                    were performed at 26ºC on standard molasses fly food. Males
+                    were used for all experiments. Flies were transferred to
+                    fresh food every 1‐2d. For Lst8 upregulation experiments,
+                    food was prepared by adding 50 μl of 4mg/ml of RU468
+                    dissolved in 100% EtOH or by adding 50 μl of 100% EtOH. DaGS
+                    {`>`}Lst8 flies were put on either +RU486 or +Vehicle food
+                    after eclosion.
+                  </p>
+                  <p className="mt-1 text-sm font-semibold text-[#616161]">
+                    References:
+                  </p>
+                  <p className="mt-1 text-sm text-[#616161]">
+                    Agarwal, V. (2018). Predicting microRNA targeting efficacy
+                    in Drosophila. Genome Biology, 19, 152.
+                    10.1186/s13059-018-1504-3{" "}
+                  </p>
+                  <p className="mt-1 text-sm text-[#616161]">
+                    Bilen, J. , Liu, N. , Burnett, B. G. , Pittman, R. N. , &
+                    Bonini, N. M. (2006). MicroRNA pathways modulate
+                    polyglutamine‐induced neurodegeneration. Molecular Cell,
+                    24(1), 157–163. 10.1016/j.molcel.2006.07.030
+                  </p>
+                  <p className="mt-1 text-sm text-[#616161]">
+                    Liu, N. , Landreh, M. , Cao, K. , Abe, M. , Hendriks, G.‐J.
+                    , Kennerdell, J. R. , Zhu, Y. , Wang, L.‐S. , & Bonini, N.
+                    M. (2012). The microRNA miR‐34 modulates ageing and
+                    neurodegeneration in Drosophila. Nature, 482(7386), 519–523.
+                    10.1038/nature10810
+                  </p>
+                </div>
+              </div>
+              {/* <div>right col</div> */}
             </div>
-            <div className="z-[15] w-screen xl:w-full">
-              <div className="mx-0 mt-2 flex w-screen flex-col items-center gap-5 px-2 sm:mx-auto md:w-[768px]">
-                <StoryCredits story={story} />
-                <Dictionary />
 
-                <p className="mx-0 w-full font-sourceSerif4 text-lg font-[370] leading-8 md:w-[768px]">
-                  <DictionarySentence>
-                    {" "}
-                    Admotum in <DictionaryWord word="lipopolysaccharide" />{" "}
-                    querno saxum genialis moriente tulit quoque quoque duxit de
-                    clarae regis, quo memor <DictionaryWord word="enzyme" />{" "}
-                    tangit mea, qui.
-                  </DictionarySentence>{" "}
-                  Qua semper nam retia favilla nomine dique, aris idque inter
-                  dantibus.
-                  <DictionarySentence>
-                    Cythereia ortae <DictionaryWord word="camouflage" />{" "}
-                    procumbit eodem, ut humumque noctisque proelia, sub nomen
-                    dixerat.
-                  </DictionarySentence>
-                </p>
-                <p className="mx-0 w-full font-sourceSerif4 text-lg font-[370] leading-8 md:w-[768px]">
-                  <DictionarySentence>
-                    <DictionaryWord word="camouflage">
-                      Camouflage
-                    </DictionaryWord>{" "}
-                    is a technique especially useful if the animal can change
-                    colour to match the background on which it is found, such as
-                    can some cephalopods (Hanlon & Messenger 1988) and
-                    chameleons (Stuart-Fox et al. 2008).
-                  </DictionarySentence>{" "}
-                  Further remarkable examples include insects bearing an uncanny
-                  resemblance to bird droppings (Hebert 1974) or fish resembling
-                  fallen leaves on a stream bed (Sazima et al. 2006), to even
-                  making the body effectively transparent, as occurs in a range
-                  of, in particular, aquatic species (Johnsen 2001; Carvalho et
-                  al. 2006). Examples such as leaf mimicry in butterflies helped
-                  convince Wallace (1889), for example, of the power of natural
-                  selection. Other strategies may even stretch to the use of
-                  bioluminescence to hide shadows generated in aquatic
-                  environments (Johnsen et al. 2004), and include ‘decorating’
-                  the body with items from the general environment, such as do
-                  some crabs (Hultgren & Stachowicz 2008).
-                </p>
-                <p className="mx-0 w-full font-sourceSerif4 text-lg font-[370] leading-8 md:w-[768px]">
-                  <DictionarySentence>
-                    A fundamental task of proteins is to act as{" "}
-                    <DictionaryWord word="enzyme">enzymes</DictionaryWord>
-                    —catalysts that increase the rate of virtually all the
-                    chemical reactions within cells.
-                  </DictionarySentence>{" "}
-                  Although RNAs are capable of catalyzing some reactions, most
-                  biological reactions are catalyzed by proteins. In the absence
-                  of enzymatic catalysis, most biochemical reactions are so slow
-                  that they would not occur under the mild conditions of
-                  temperature and pressure that are compatible with life.
-                </p>
-                <p className="mx-0 w-full font-sourceSerif4 text-lg font-[370] leading-8 md:w-[768px]">
-                  <DictionarySentence>
-                    One of the most studied bacterial surface molecules is the
-                    glycolipid known as{" "}
-                    <DictionaryWord word="lipopolysaccharide">
-                      lipopolysaccharide
-                    </DictionaryWord>{" "}
-                    (LPS), which is produced by most Gram-negative bacteria.
-                  </DictionarySentence>{" "}
-                  Much of the initial attention LPS received in the early 1900s
-                  was owed to its ability to stimulate the immune system, for
-                  which the glycolipid was commonly known as endotoxin.
-                </p>
-
-                {file.result as ReactNode}
-                {testContent.file.result as ReactNode}
-                {testCode.file.result as ReactNode}
-                {testCode2.file.result as ReactNode}
-                {testDropdown.file.result as ReactNode}
-                <p className="mx-0 w-full font-sourceSerif4 text-lg font-[370] leading-8 md:w-[768px]">
-                  <DictionarySentence>
-                    lipopolysaccharide performs several functions in
-                    Gram-negative bacteria.
-                  </DictionarySentence>{" "}
-                  The most fundamental function of LPS is to serve as a major
-                  structural component of the OM. Perhaps not surprisingly, LPS
-                  is an essential component of the cell envelope in most, though
-                  interestingly not all, Gram-negative bacteria (4). In
-                  addition, LPS molecules transform the OM into an effective
-                  permeability barrier against small, hydrophobic molecules that
-                  can otherwise cross phospholipid bilayers, making
-                  Gram-negative bacteria innately resistant to many
-                  antimicrobial compounds (5, 6). LPS can also play a crucial
-                  role in bacteria-host interactions by modulating responses by
-                  the host immune system.
-                </p>
-                <p className="mx-0 w-full font-sourceSerif4 text-lg font-[370] leading-8 md:w-[768px]">
-                  <DictionarySentence>
-                    Like all other catalysts, enzymes are characterized by two
-                    fundamental properties.
-                  </DictionarySentence>{" "}
-                  First, they increase the rate of chemical reactions without
-                  themselves being consumed or permanently altered by the
-                  reaction. Second, they increase reaction rates without
-                  altering the chemical equilibrium between reactants and
-                  products.
-                </p>
-                <p className="mx-0 w-full font-sourceSerif4 text-lg font-[370] leading-8 md:w-[768px]">
-                  <DictionarySentence>
-                    However, in spite of its long history and widespread
-                    occurrence, research on natural camouflage has not
-                    progressed as rapidly as many other areas of adaptive
-                    coloration, especially in the last 60–70 years.
-                  </DictionarySentence>{" "}
-                  There are several reasons for this, including that human
-                  perceptions have often been used to subjectively assess a
-                  range of protective markings, rather than working from the
-                  perspective of the correct receiver.
-                  <DictionarySentence>
-                    {" "}
-                    In general, the mechanisms of camouflage have often been
-                    erroneously regarded as intuitively obvious.
-                  </DictionarySentence>
-                </p>
-                <p className="mx-0 w-full font-sourceSerif4 text-lg font-[370] leading-8 md:w-[768px]">
-                  Carinam pelagi se venit tantumne, neu fame res senilibus,
-                  populisque.
-                  <DictionarySentence>
-                    {" "}
-                    enzyme Has capiti fatis.
-                  </DictionarySentence>
-                  Exemit puer sors esse, Pittheia nobis superfusis mihi
-                  Carpathius quoque libera oris, nec.
-                  <DictionarySentence>
-                    {" "}
-                    Quae retinere lipopolysaccharide ictus nam vultum sanguine
-                    precibus Delphosque mucrone.
-                  </DictionarySentence>{" "}
-                  <DictionarySentence>
-                    {" "}
-                    Pectore in inquit Aeacide illic sequar propositum ululasse
-                    cruentos aspergine aurea qui, esse camouflage.
-                  </DictionarySentence>
-                </p>
-              </div>
-              <div className="w-[calc( 100% - 1rem )] mx-2 my-5 border-t-2 border-[#616161] pt-1  md:mx-auto md:w-[768px] ">
-                <p className="mt-1 text-sm text-[#616161]">
-                  <span className="font-semibold">Acknowledgements:</span>{" "}
-                  Animation provided by Source name 1. Sources provided by
-                  Source name 2. We thank Funding 1 for their support, and
-                  Professor 2 for their guidance. Ex. Cover Image: “Hawaiian
-                  Bobtail Squid” is licensed under CC BY-NC 4.0.
-                </p>
-                <p className="mt-1 text-sm text-[#616161]">
-                  <span className="font-semibold">Notes:</span> All crosses were
-                  performed at 26ºC on standard molasses fly food. Males were
-                  used for all experiments. Flies were transferred to fresh food
-                  every 1‐2d. For Lst8 upregulation experiments, food was
-                  prepared by adding 50 μl of 4mg/ml of RU468 dissolved in 100%
-                  EtOH or by adding 50 μl of 100% EtOH. DaGS{`>`}Lst8 flies were
-                  put on either +RU486 or +Vehicle food after eclosion.
-                </p>
-                <p className="mt-1 text-sm font-semibold text-[#616161]">
-                  References:
-                </p>
-                <p className="mt-1 text-sm text-[#616161]">
-                  Agarwal, V. (2018). Predicting microRNA targeting efficacy in
-                  Drosophila. Genome Biology, 19, 152. 10.1186/s13059-018-1504-3{" "}
-                </p>
-                <p className="mt-1 text-sm text-[#616161]">
-                  Bilen, J. , Liu, N. , Burnett, B. G. , Pittman, R. N. , &
-                  Bonini, N. M. (2006). MicroRNA pathways modulate
-                  polyglutamine‐induced neurodegeneration. Molecular Cell,
-                  24(1), 157–163. 10.1016/j.molcel.2006.07.030
-                </p>
-                <p className="mt-1 text-sm text-[#616161]">
-                  Liu, N. , Landreh, M. , Cao, K. , Abe, M. , Hendriks, G.‐J. ,
-                  Kennerdell, J. R. , Zhu, Y. , Wang, L.‐S. , & Bonini, N. M.
-                  (2012). The microRNA miR‐34 modulates ageing and
-                  neurodegeneration in Drosophila. Nature, 482(7386), 519–523.
-                  10.1038/nature10810
-                </p>
-              </div>
-            </div>
-            {/* <div>right col</div> */}
+            <StoryFooter
+              storyContributions={story.storyContributions}
+              articles1={whatsNewArticles}
+              articles2={whatsNewArticles}
+            />
           </div>
-
-          <StoryFooter
-            storyContributions={story.storyContributions}
-            articles1={whatsNewArticles}
-            articles2={whatsNewArticles}
-          />
-        </div>
-      </DictionaryProvider>
+        </DictionaryProvider>
+      </StoryScrollProvider>
     </PrintModeProvider>
   );
 }

@@ -504,7 +504,7 @@ export default function StoryCredits({ story }: Props) {
 
       <div className="relative mx-2 mt-5 flex w-screen flex-col px-2 sm:mx-auto md:w-[768px] md:px-0">
         <div className="pointer-events-none top-0 flex flex-1 flex-row justify-start xl:hidden">
-          <ShareLinks storyId={story.id} />
+          <ShareLinks storyId={story.id} observe={false} />
         </div>
 
         <div className="flex flex-row">
@@ -587,7 +587,7 @@ export default function StoryCredits({ story }: Props) {
       <div className="mt-0 justify-self-start pt-0">
         <div className="relative mx-0 mt-0 flex w-screen flex-col px-2 md:mx-auto md:w-[768px]">
           <div className="pointer-events-none top-0 flex flex-1 flex-row flex-wrap justify-start xl:hidden">
-            <ShareLinks storyId={story.id} />
+            <ShareLinks storyId={story.id} observe={false} />
           </div>
 
           <div className="flex flex-row">

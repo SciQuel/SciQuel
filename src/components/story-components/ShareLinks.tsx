@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useContext, useEffect, useRef, useState } from "react";
 import DictionaryIcon from "../../../public/assets/images/book.svg";
 import shareIcon from "../../../public/assets/images/story-share.png";
+import DictionaryButton from "./dictionary/DictionaryButton";
 import { DictionaryContext } from "./dictionary/DictionaryContext";
 import { PrintContext, PrintToggleContext } from "./PrintContext";
 import SocialMediaPopup from "./SocialMediaPopup";
@@ -14,25 +15,22 @@ type modalOptions = "none" | "brain-login" | "bookmark-login" | "share";
 
 interface Props {
   storyId: string;
+  observe: boolean;
 }
 
-export default function ShareLinks({ storyId }: Props) {
+export default function ShareLinks({ storyId, observe }: Props) {
   const [showOptions, setShowOptions] = useState<modalOptions>("none");
-  const [optionText, setOptionText] = useState<" bookmark " | " brain ">(
-    " bookmark ",
-  );
+
   const [isBrained, setIsBrained] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
 
   const popupRef = useRef<HTMLDivElement>(null);
   const popupRef2 = useRef<HTMLDivElement>(null);
   const popupRef3 = useRef<HTMLDivElement>(null);
-  const dictButtonRef = useRef<HTMLButtonElement>(null);
 
   const isPrintMode = useContext(PrintContext);
   const toggleFunction = useContext(PrintToggleContext);
   const { data: session, status } = useSession();
-  const Dictionary = useContext(DictionaryContext);
 
   useEffect(() => {
     document.addEventListener("mousedown", handleClick);
@@ -116,7 +114,6 @@ export default function ShareLinks({ storyId }: Props) {
   async function handleBrain() {
     if (status != "authenticated") {
       setShowOptions("brain-login");
-      setOptionText(" brain ");
     } else if (session.user.email) {
       if (isBrained == false) {
         try {
@@ -164,7 +161,6 @@ export default function ShareLinks({ storyId }: Props) {
   async function handleBookmark() {
     if (status != "authenticated") {
       setShowOptions("bookmark-login");
-      setOptionText(" bookmark ");
     } else if (session.user.email) {
       console.log(session.user.email);
 
@@ -363,21 +359,8 @@ export default function ShareLinks({ storyId }: Props) {
           height={45}
         />
       </button>
-      <button
-        type="button"
-        ref={dictButtonRef}
-        onClick={() => {
-          if (Dictionary) {
-            Dictionary?.setOpen(true);
-            Dictionary.setWord(null);
-            Dictionary.setCloseFocus(dictButtonRef.current);
-            Dictionary.setPreviousWords([]);
-          }
-        }}
-        className="pointer-events-auto relative z-10 block h-[4.5rem] w-[4.25rem] rounded-full p-3 xl:sticky xl:top-28"
-      >
-        <Image src={shareIcon} alt={"open dictionary"} width={45} height={45} />
-      </button>
+
+      <DictionaryButton observe={observe} />
     </>
   );
 }

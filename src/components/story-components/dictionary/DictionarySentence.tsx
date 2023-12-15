@@ -36,7 +36,7 @@ export default function DictionarySentence({ children }: PropsWithChildren) {
   useEffect(() => {
     // see about adding sentence to instances?
     let indexList: number[] = [];
-    console.log(sentenceRef.current?.textContent);
+    // console.log(sentenceRef.current?.textContent);
     if (sentenceRef.current?.textContent && fullDictionary?.dictionary) {
       // see what vocab word(s) we match in our sentence?
 
@@ -67,7 +67,7 @@ export default function DictionarySentence({ children }: PropsWithChildren) {
         }
         // final check if we add the word?
         if (wordAdded) {
-          console.warn(item.word, " is in test sentence");
+          // console.warn(item.word, " is in test sentence");
         }
       });
 

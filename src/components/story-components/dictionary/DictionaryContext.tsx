@@ -6,7 +6,6 @@ import {
   useState,
   type Dispatch,
   type PropsWithChildren,
-  type RefObject,
   type SetStateAction,
 } from "react";
 

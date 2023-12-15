@@ -16,6 +16,7 @@ export default function StoryDropdown({
   return (
     <div className="mx-0 w-full px-1 md:w-[768px]">
       <div
+        role="button"
         onKeyDown={(e) => {
           console.log(e);
           if (e.key == "Enter" || e.key == " ") {
