@@ -32,7 +32,7 @@ export default function ArticleCard({
       <Link className="align-middle" href={href ?? "#"}>
         <div
           className={clsx(
-            `flex h-full w-full max-w-md cursor-pointer overflow-clip rounded-lg transition hover:scale-[1.02]`,
+            `flex h-full w-full cursor-pointer overflow-clip rounded-lg transition hover:scale-[1.02]`,
             {
               "border border-sciquelCardBorder bg-sciquelCardBg": !(
                 mini && preferHorizontal
