@@ -280,7 +280,7 @@ export default function Quiz({
 
       <div className="quiz-body mx-auto my-6 flex w-[720px] max-w-screen-lg flex-col rounded-sm border border-sciquelCardBorder bg-white md-qz:w-full">
         {isPreQuiz && shareLinkUser && shareLinkUser.length > 0 && (
-          <div className="mx-auto mt-6 flex w-full max-w-screen-lg items-center justify-center bg-sciquelTeal p-4 md-qz:w-full">
+          <div className="mx-auto flex w-full max-w-screen-lg items-center justify-center bg-sciquelTeal p-4 md-qz:w-full z-10">
             <div className="ml-1 mr-8">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
