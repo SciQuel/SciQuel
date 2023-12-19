@@ -9,7 +9,12 @@ import {
 } from "react";
 import { DictionaryContext } from "../dictionary/DictionaryContext";
 import { PrintContext } from "../PrintContext";
-import { getOffset, scale, StoryScrollContext } from "../scroll/ScrollProvider";
+import {
+  DispatchAction,
+  getOffset,
+  scale,
+  StoryScrollContext,
+} from "../scroll/ScrollProvider";
 
 interface ReducerArgs {
   type: "reset" | "update" | "set";
@@ -24,61 +29,13 @@ export default function StoryBlockquote({
   const dictionaryInfo = useContext(DictionaryContext);
   const ScrollContext = useContext(StoryScrollContext);
 
-  const [width, widthDispatch] = useReducer(
-    (state: number, action: ReducerArgs) => {
-      if (ScrollContext && blockquoteRef.current) {
-        switch (action.type) {
-          case "reset":
-            ScrollContext.resetOverlap(blockquoteRef);
-            return 0;
+  const overlapFunction = ScrollContext
+    ? ScrollContext.overlapReducer
+    : (state: number, action: DispatchAction) => {
+        return state;
+      };
 
-          case "set":
-            ScrollContext.updateOverlap(
-              getOffset(action.figureVal),
-              blockquoteRef,
-            );
-
-            return action.figureVal;
-
-          case "update":
-            const dictTop = ScrollContext.dictButtonTop;
-            const dictBottom =
-              ScrollContext.dictButtonTop + ScrollContext.dictButtonHeight;
-            const dictHeight = ScrollContext.dictButtonHeight;
-
-            const rect = blockquoteRef.current.getBoundingClientRect();
-            const blockTop = rect.top;
-            const blockBottom = rect.bottom;
-
-            const totalOffset = state;
-
-            if (blockTop > dictBottom || blockBottom < dictTop) {
-              // block is not touching dictionary button
-              ScrollContext.resetOverlap(blockquoteRef);
-            } else if (blockTop > dictTop) {
-              // top is overlapping
-              let overlapPercent = (blockTop - dictTop) / dictHeight;
-              let newOverlap = scale(1 - overlapPercent, 0, 1, 0, totalOffset);
-              ScrollContext.updateOverlap(newOverlap, blockquoteRef);
-              return state;
-            } else if (blockBottom < dictBottom) {
-              // bottom is overlapping
-
-              let overlapPercent = (dictBottom - blockBottom) / dictHeight;
-              let newOverlap = scale(1 - overlapPercent, 0, 1, 0, totalOffset);
-              ScrollContext.updateOverlap(newOverlap, blockquoteRef);
-              return state;
-            } else {
-              // full overlap
-              ScrollContext.updateOverlap(totalOffset, blockquoteRef);
-              return state;
-            }
-        }
-      }
-      return state;
-    },
-    0,
-  );
+  const [width, widthDispatch] = useReducer(overlapFunction, 0);
 
   const resizeObserver = useRef(
     new ResizeObserver((entries) => {
@@ -90,10 +47,11 @@ export default function StoryBlockquote({
           widthDispatch({
             type: "set",
             figureVal: getOffset(entry.contentRect.width),
+            elementRef: blockquoteRef,
           });
         } else {
           scrollObserver.current.disconnect();
-          widthDispatch({ type: "reset", figureVal: 0 });
+          widthDispatch({ type: "reset", elementRef: blockquoteRef });
         }
       });
     }),
@@ -169,7 +127,11 @@ export default function StoryBlockquote({
     console.log(ScrollContext?.dictButtonTop);
     console.log(blockquoteRef.current?.getBoundingClientRect());
     if (ScrollContext && blockquoteRef.current) {
-      widthDispatch({ type: "update", figureVal: 0 });
+      widthDispatch({
+        type: "update",
+        figureVal: 0,
+        elementRef: blockquoteRef,
+      });
     }
   }
 

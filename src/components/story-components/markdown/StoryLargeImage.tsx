@@ -12,6 +12,7 @@ import {
   getOffset,
   scale,
   StoryScrollContext,
+  type DispatchAction,
   type OnScreenElements,
 } from "../scroll/ScrollProvider";
 
@@ -38,75 +39,12 @@ export default function StoryLargeImage({
   const intersectionRef = useRef<IntersectionObserver | null>(null);
   const scrollObserveRef = useRef(false);
 
-  function overlapReducer(state: number, action: ReducerArgs): number {
-    console.log("in overlap reducer");
-    if (storyScrollInfo && figureRef.current) {
-      let newState = state > 0 ? state : figureRef.current.clientWidth;
+  const overlapReducer = storyScrollInfo
+    ? storyScrollInfo.overlapReducer
+    : (state: number, action: DispatchAction) => {
+        return state;
+      };
 
-      switch (action.type) {
-        case "set":
-          storyScrollInfo.updateOverlap(getOffset(action.figureVal), figureRef);
-          return action.figureVal;
-        case "reset":
-          // if (storyScrollInfo.inViewElements.length == 0) {
-          //   return 0;
-          // }
-
-          storyScrollInfo.resetOverlap(figureRef);
-
-          return 0;
-
-        case "update screen":
-          const figureRect = figureRef.current.getBoundingClientRect();
-
-          const figureBottom = figureRect.top + figureRect.height;
-          const dictButtonBottom =
-            storyScrollInfo.dictButtonHeight + storyScrollInfo.dictButtonTop;
-
-          const totalOffset = state;
-
-          if (
-            figureBottom < storyScrollInfo.dictButtonTop ||
-            figureRect.top > dictButtonBottom
-          ) {
-            // there is no overlap
-
-            storyScrollInfo.resetOverlap(figureRef);
-
-            return state;
-          } else {
-            // we have some mid value
-
-            if (figureRect.top > storyScrollInfo.dictButtonTop) {
-              // the top of image intersects still
-
-              let overlapPercent =
-                (figureRect.top - storyScrollInfo.dictButtonTop) /
-                storyScrollInfo.dictButtonHeight;
-
-              let newOverlap = scale(1 - overlapPercent, 0, 1, 0, totalOffset);
-              storyScrollInfo.updateOverlap(newOverlap, figureRef);
-              return state;
-            } else if (figureBottom < dictButtonBottom) {
-              // the bottom of the image intersects still
-
-              let overlapPercent =
-                (dictButtonBottom - figureBottom) /
-                storyScrollInfo.dictButtonHeight;
-
-              let newOverlap = scale(1 - overlapPercent, 0, 1, 0, totalOffset);
-
-              storyScrollInfo.updateOverlap(newOverlap, figureRef);
-              return state;
-            } else {
-              storyScrollInfo.updateOverlap(totalOffset, figureRef);
-              return state;
-            }
-          }
-      }
-    }
-    return state;
-  }
   const [overflow, overlapDispatch] = useReducer(overlapReducer, 0);
 
   useEffect(() => {
@@ -152,6 +90,7 @@ export default function StoryLargeImage({
         overlapDispatch({
           type: "set",
           figureVal: getOffset(entry.contentRect.width),
+          elementRef: figureRef,
         });
       } else {
         // entry is too small?
@@ -159,7 +98,7 @@ export default function StoryLargeImage({
         if (intersectionRef.current) {
           intersectionRef.current.disconnect();
         }
-        overlapDispatch({ type: "reset", figureVal: 0 });
+        overlapDispatch({ type: "reset", elementRef: figureRef });
       }
     });
   }
@@ -188,7 +127,7 @@ export default function StoryLargeImage({
 
   function onscreenScroll(e: Event) {
     if (figureRef.current) {
-      overlapDispatch({ type: "update screen", figureVal: 0 });
+      overlapDispatch({ type: "update", elementRef: figureRef });
     }
   }
 
@@ -205,7 +144,7 @@ export default function StoryLargeImage({
           } max-w-screen max-h-[900px] w-auto`}
           alt={alt}
         />
-        <figcaption className="table-caption w-full caption-bottom px-8 font-sourceSerif4 lg:px-0">
+        <figcaption className="table-caption w-full caption-bottom px-8 font-sourceSerif4 text-base lg:px-0">
           {children}
         </figcaption>
       </figure>

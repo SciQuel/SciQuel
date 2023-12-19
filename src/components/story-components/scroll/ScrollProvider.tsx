@@ -30,6 +30,14 @@ export interface OnScreenElements {
   maxOffset: number;
 }
 
+export interface DispatchAction {
+  type: "reset" | "update" | "set";
+
+  figureVal?: number;
+
+  elementRef: RefObject<HTMLElement>;
+}
+
 interface ScrollProviderVals {
   inViewElements: OnScreenElements[];
   setInViewElements: Dispatch<SetStateAction<OnScreenElements[]>>;
@@ -43,6 +51,8 @@ interface ScrollProviderVals {
   resetOverlap: (element: RefObject<HTMLElement>) => void;
 
   updateOverlap: (offset: number, elementRef: RefObject<HTMLElement>) => void;
+
+  overlapReducer: (state: number, action: DispatchAction) => number;
 }
 
 export const StoryScrollContext = createContext<ScrollProviderVals | null>(
@@ -119,6 +129,75 @@ export function StoryScrollProvider({ children }: PropsWithChildren) {
     }
   }
 
+  function checkOverlap(elementRef: RefObject<HTMLElement>): boolean {
+    const elementRect = elementRef.current?.getBoundingClientRect();
+    const dictBottom = dictHeight + dictTop;
+    if (!elementRect || elementRect.width < 768) {
+      return false;
+    } else if (elementRect.top < dictBottom && elementRect.bottom > dictTop) {
+      return true;
+    }
+
+    return false;
+  }
+
+  function updateReducer(state: number, action: DispatchAction): number {
+    switch (action.type) {
+      case "reset":
+        resetOverlap(action.elementRef);
+        return 0;
+
+      case "set":
+        if (action.figureVal) {
+          let isOverlapping = checkOverlap(action.elementRef);
+
+          if (isOverlapping || action.figureVal == 0) {
+            updateOverlap(getOffset(action.figureVal), action.elementRef);
+          }
+
+          return action.figureVal;
+        } else {
+          return state;
+        }
+
+      case "update":
+        const dictBottom = dictTop + dictHeight;
+
+        const figureRect = action.elementRef.current?.getBoundingClientRect();
+        if (!figureRect) {
+          return state;
+        }
+
+        const figureTop = figureRect.top - dictHeight;
+        const figureBottom = figureRect.bottom + dictHeight;
+
+        const totalOffset = state;
+
+        if (figureTop > dictBottom || figureBottom < dictTop) {
+          // block is not touching dictionary button
+          resetOverlap(action.elementRef);
+          return state;
+        } else if (figureTop > dictTop) {
+          // top is overlapping
+          let overlapPercent = (figureTop - dictTop) / dictHeight;
+          let newOverlap = scale(1 - overlapPercent, 0, 1, 0, totalOffset);
+          updateOverlap(newOverlap, action.elementRef);
+          return state;
+        } else if (figureBottom < dictBottom) {
+          // bottom is overlapping
+
+          let overlapPercent = (dictBottom - figureBottom) / dictHeight;
+          let newOverlap = scale(1 - overlapPercent, 0, 1, 0, totalOffset);
+          updateOverlap(newOverlap, action.elementRef);
+          return state;
+        } else {
+          // full overlap
+          updateOverlap(totalOffset, action.elementRef);
+          return state;
+        }
+    }
+  }
+
   return (
     <StoryScrollContext.Provider
       value={{
@@ -134,6 +213,8 @@ export function StoryScrollProvider({ children }: PropsWithChildren) {
         resetOverlap: resetOverlap,
 
         updateOverlap: updateOverlap,
+
+        overlapReducer: updateReducer,
       }}
     >
       {children}
