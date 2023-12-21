@@ -7,12 +7,16 @@ import ProfileButton from "@/components/ProfileButtons";
 import Pagination from "@/components/StoriesList/Pagination";
 import TopicTag from "@/components/TopicTag";
 import env from "@/lib/env";
+import prisma from "@/lib/prisma";
 
 interface Params {
   searchParams: { [key: string]: string };
   page_number: string;
 }
-
+/* Test: 
+    ID with author role:  64ff8fa50d2710ca31d09555
+    ID with out author role: 64cc4fefe601ab59588a9e0f
+*/
 export default async function ProfilePage({
   searchParams,
   page_number,
@@ -23,8 +27,18 @@ export default async function ProfilePage({
     ...(category ? { category } : {}),
     page: page_number || "1",
   };
-
-  const { stories, total_pages } = await getStories(params);
+  if (id == null) {
+    throw new Error("This person is not an author");
+  }
+  const authorsPromise = retrieveAuthors(id);
+  const [authors, { stories, total_pages }] = await Promise.all([
+    authorsPromise,
+    getStories(params),
+  ]);
+  console.log(authors);
+  if (!authors?.roles.includes("AUTHOR")) {
+    throw new Error("This person is not an author");
+  }
 
   return (
     <>
@@ -41,7 +55,9 @@ export default async function ProfilePage({
                     className="h-60 w-auto"
                   />
                 </div>
-                <div className="my-2 text-2xl">Edward Chen</div>
+                <div className="my-2 text-2xl">
+                  {authors?.firstName} {authors?.lastName}
+                </div>
                 <div className="my-1.5 flex gap-2">
                   <TopicTag name="BIOLOGY"></TopicTag>
                   <TopicTag name="CHEMISTRY"></TopicTag>
@@ -104,4 +120,19 @@ async function getStories(params: Record<string, string>) {
   }));
 
   return data;
+}
+
+async function retrieveAuthors(id: string) {
+  const authors = await prisma.user.findUnique({
+    where: { id: id },
+    select: {
+      firstName: true,
+      lastName: true,
+      email: true,
+      bio: true,
+      roles: true,
+    },
+  });
+
+  return authors;
 }
