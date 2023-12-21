@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+import ArticleSeries from "../ArticleSeries";
 import logo from "./logo.png";
 import ProfileButton from "./ProfileButton";
 import Search from "./search.svg";
@@ -65,7 +66,7 @@ export default function Header() {
           } else if (
             window.scrollY - y > 50 ||
             window.scrollY - y < -50 ||
-            window.scrollY === 0
+            window.scrollY == 0
           ) {
             // console.log("scrolling up");
             setScroll(false);
@@ -88,7 +89,7 @@ export default function Header() {
   );
   const onProfile = (e: React.FormEvent) => {
     e.preventDefault();
-    router.push(`/profile`);
+    router.push(`/profile?id=64ff8fa50d2710ca31d09555`);
   };
   const onSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -166,9 +167,11 @@ export default function Header() {
           style={{ display: scroll ? "none" : "block" }}
         >
           {/* <Link href="/">ABOUT</Link> */}
-          <p onClick={onProfile}>ABOUT</p>
+          <button onClick={onProfile}>ABOUT</button>
         </div>
       </div>
+      {/*Articles  */}
+      {/* <ArticleSeries></ArticleSeries> */}
     </div>
   );
 }

@@ -106,7 +106,9 @@ export default function Topic() {
 
   return (
     <div>
-      <div onClick={() => setShowTopic((showTopic) => !showTopic)}>TOPIC</div>
+      <button onClick={() => setShowTopic((showTopic) => !showTopic)}>
+        TOPIC
+      </button>
       <div
         className="fixed left-0 right-0 z-50 mt-2 h-full cursor-default overflow-y-auto 
       overflow-x-hidden bg-black bg-opacity-40  "
