@@ -3,6 +3,14 @@ import { type GetStoriesResult } from "@/app/api/stories/route";
 import Avatar from "@/components/Avatar";
 import MoreCard from "@/components/MoreCard";
 import Quiz from "@/components/Quiz";
+import PostQuiz from "@/components/quiz-components/PostQuiz";
+import PreQuiz from "@/components/quiz-components/PreQuiz";
+import QuizContainer from "@/components/quiz-components/QuizContainer";
+import {
+  QuizProvider as TestProvider,
+  type AllQuestions,
+  type MultipleChoiceQuestion,
+} from "@/components/quiz-components/QuizContext";
 import { QuizProvider } from "@/components/Quiz/QuizContext";
 import FromThisSeries from "@/components/story-components/FromThisSeries";
 import ShareLinks from "@/components/story-components/ShareLinks";
@@ -18,8 +26,7 @@ import {
 import { type StoryTopic } from "@prisma/client";
 import { DateTime } from "luxon";
 import Image from "next/image";
-
-import React, { useState, type ReactNode } from "react";
+import React, { type ReactNode } from "react";
 
 interface Params {
   params: {
@@ -42,7 +49,6 @@ function useQuiz(
   const questionList = questions;
   // const router = useRouter();
   // const { query } = router;
-  
 
   const preQuizComponent = (
     <Quiz
@@ -68,6 +74,70 @@ function useQuiz(
 
   return [preQuizComponent, postQuizComponent];
 }
+
+const fakeQuestionList = [
+  {
+    questionType: "multiple choice",
+    questionText:
+      "Noggin binds with high affinity to which BMP? (https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8965007/)",
+    questionOptions: ["BMP6", "BMP2", "BMP10"],
+    explanation:
+      "Noggin binds with high affinity to BMPs such as BMP2, BMP4, BMP5, and BMP7; but cannot inhibit BMP6, BMP9, BMP10, and BMP11. Cerebrus also binds BMP2, BMP4, and BMP7 (Bond et al., 2012; Eixarch et al., 2018; Figure 1).",
+
+    correctAnswersRatio: 0.56,
+
+    categories: ["BMP Signalling"],
+
+    answerIndex: 1,
+  },
+
+  {
+    questionType: "multiple choice",
+    questionText: "which of these statements about enhancers is INCORRECT",
+    questionOptions: [
+      "Enhancer sequences can be located upstream or downstream from an associated gene",
+      "Enhancer sequences act upon genes on the same DNA molecule",
+      "Enhancers are always located directly next to the gene they affect",
+    ],
+    explanation:
+      "Enhancer sequences can be located thousands of base pairs away from the transcription start site of the gene being regulated. Because DNA is folded and coiled in the nucleus, the enhancer may actually be located near the transcription start site in the folded state. ",
+
+    correctAnswersRatio: 0.235,
+
+    categories: ["cis-regulatory elements"],
+
+    answerIndex: 2,
+  },
+
+  {
+    questionType: "true/false",
+    questionText:
+      "which of these statements about cis-regulator elements are true?",
+    questionOptions: [
+      "Enhancer  sequences can be located upstream or downstream from an associated gene",
+      "Cis-regulatory elements can be promoters, enhancers, or silencers",
+      "Cis-regulatory elements are elements are genes or proteins that can regulate the expression of one or more target genes located on different DNA molecules",
+    ],
+    explanation:
+      "Enhancers, promoters, and silencers are types of cis-regulatory elements, which reside on the same ",
+
+    correctAnswersRatio: 0.33,
+
+    categories: ["cis-regulatory elements"],
+
+    answers: [true, true, false],
+  },
+] as AllQuestions;
+
+const fakeQuizData = {
+  questions: fakeQuestionList,
+
+  objective: "test objective description",
+
+  topic: "GEOLOGY" as StoryTopic,
+
+  shareLinkId: "1234abc",
+};
 
 export default async function StoriesPage({ params }: Params) {
   const whatsNewArticles = await getWhatsNewArticles();
@@ -342,8 +412,8 @@ export default async function StoriesPage({ params }: Params) {
   const [preQuiz, postQuiz] = useQuiz(
     story,
     "How much do you know already know about microglia?",
-    "Multiple Choice",
-    questionList_MC1,
+    "True/False",
+    questionList_TF1,
   );
 
   return (
@@ -412,9 +482,13 @@ export default async function StoriesPage({ params }: Params) {
       </div>
       <div className="mx-2 mt-2 flex flex-col items-center gap-5 md:mx-auto">
         <QuizProvider>
-          {preQuiz}
-          {file.result as ReactNode}
-          {postQuiz}
+          <TestProvider quizInfo={fakeQuizData}>
+            <PreQuiz />
+            <PostQuiz />
+            {preQuiz}
+            {file.result as ReactNode}
+            {postQuiz}{" "}
+          </TestProvider>
         </QuizProvider>
       </div>
       <p className="w-[calc( 100% - 1rem )] mx-2 my-5 border-t-2 border-[#616161]  text-sm text-[#616161] md:mx-auto md:w-[720px]">
