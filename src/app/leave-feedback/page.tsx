@@ -16,7 +16,7 @@ export default function feedbackPage() {
         </p>
       </div>
 
-      <ContactForm endpoint="" />
+      <ContactForm endpoint="/api/contact/feedback" />
     </div>
   );
 }

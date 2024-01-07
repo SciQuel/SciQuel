@@ -197,3 +197,29 @@ model Bookmark {
 
   @@unique([userId, storyId])
 }
+
+// feedback schema
+
+enum FeedbackType {
+  FEEDBACK
+  GET_INVOLVED
+}
+
+enum FeedbackStatus {
+  UNOPENED
+  NEEDS_RESPONSE
+  CLOSED
+  ARCHIVED
+}
+
+model Feedback {
+  id           String       @id @default(auto()) @map("_id") @db.ObjectId
+  feedbackType FeedbackType
+  name         String
+  email        String
+  message      String
+
+  status      FeedbackStatus
+  createdAt   DateTime
+  lastUpdated DateTime
+}

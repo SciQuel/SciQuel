@@ -1,10 +1,48 @@
+"use client";
+
+import axios from "axios";
+import { useState, type FormEvent } from "react";
+
 interface Props {
   endpoint: string;
 }
 
 export function ContactForm({ endpoint }: Props) {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+
+  async function submitForm(e: FormEvent) {
+    e.preventDefault();
+
+    try {
+      const response = await axios.post(endpoint, {
+        message: message,
+        contact_name: name,
+        reply_email: email,
+      });
+    } catch (err) {
+      console.error(err);
+    }
+    return;
+  }
+
   return (
-    <form className="flex w-full flex-col" method="post" action={endpoint}>
+    <form
+      className="flex w-full flex-col"
+      onError={(err) => {
+        console.warn(err);
+      }}
+      onSubmit={(e) => {
+        submitForm(e)
+          .then(() => {
+            console.log("success");
+          })
+          .catch((err) => {
+            console.error(err);
+          });
+      }}
+    >
       <label htmlFor="contact-name-input" className="text-xl font-semibold">
         Name{" "}
         <span className=" text-base font-normal text-sciquelCaption">
@@ -15,8 +53,11 @@ export function ContactForm({ endpoint }: Props) {
         id="contact-name-input"
         className="mb-2 rounded-md border-2  border-sciquelTeal p-1 text-xl"
         type="text"
-        name="name"
+        name="contact_name"
         required={true}
+        onChange={(e) => {
+          setName(e.target.value);
+        }}
       ></input>
 
       <label htmlFor="contact-email-input" className=" text-xl font-semibold">
@@ -28,8 +69,11 @@ export function ContactForm({ endpoint }: Props) {
       <input
         required={true}
         type="email"
-        name="email"
+        name="reply_email"
         id="contact-email-input"
+        onChange={(e) => {
+          setEmail(e.target.value);
+        }}
         className="mb-2 rounded-md border-2 border-sciquelTeal p-1 text-xl"
       ></input>
 
@@ -39,8 +83,11 @@ export function ContactForm({ endpoint }: Props) {
       <textarea
         className="rounded-md border-2 border-sciquelTeal  p-1 text-xl"
         id="contact-comment-input"
-        name="comment"
+        name="message"
         rows={8}
+        onChange={(e) => {
+          setMessage(e.target.value);
+        }}
       ></textarea>
 
       <button
