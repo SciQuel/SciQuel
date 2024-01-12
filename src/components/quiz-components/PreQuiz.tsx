@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import MultipleChoiceQuestion from "./questions/MultipleChoiceQuestion";
+import TrueFalseQuestion from "./questions/TrueFalseQuestion";
 import QuizContainer from "./QuizContainer";
 import { useQuizContext } from "./QuizContext";
 import QuizProgressBar from "./QuizProgressBar";
@@ -39,7 +40,35 @@ export default function PreQuiz() {
         );
 
       case "true/false":
-        return;
+        return (
+          <TrueFalseQuestion
+            question={question}
+            key={`postQuiz-tf-${index}`}
+            index={index}
+            answers={preQuizAnswers[index] as boolean[] | undefined}
+            setAnswers={(Aindex: number, answer: boolean) => {
+              if (preQuizAnswers[index] === undefined) {
+                setPreQuizAnswers((state) => {
+                  let newState = [...state];
+                  let newList = [];
+                  newList[Aindex] = answer;
+
+                  newState[index] = newList;
+                  return newState;
+                });
+              } else {
+                setPreQuizAnswers((state) => {
+                  let newState = [...state];
+                  let newList = [...(state[index] as boolean[])] as boolean[];
+                  newList[Aindex] = answer;
+                  newState[index] = newList;
+                  return newState;
+                });
+              }
+            }}
+            showFeedback={false}
+          />
+        );
 
       default:
         return;

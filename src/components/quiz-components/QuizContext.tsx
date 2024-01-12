@@ -55,8 +55,10 @@ interface QuizData {
 }
 
 interface QuizContextVals {
-  preQuizAnswers: (number | boolean | undefined)[];
-  setPreQuizAnswers: Dispatch<SetStateAction<(number | boolean | undefined)[]>>;
+  preQuizAnswers: (number | boolean[] | undefined)[];
+  setPreQuizAnswers: Dispatch<
+    SetStateAction<(number | boolean[] | undefined)[]>
+  >;
 
   quizComplete: boolean;
   setQuizComplete: Dispatch<SetStateAction<boolean>>;
@@ -83,7 +85,7 @@ export function QuizProvider({
   quizInfo,
 }: PropsWithChildren<QuizProviderProps>) {
   const [preQuizAnswers, setPreQuizAnswers] = useState<
-    (number | boolean | undefined)[]
+    (number | boolean[] | undefined)[]
   >([]);
 
   const [quizComplete, setQuizComplete] = useState(false);

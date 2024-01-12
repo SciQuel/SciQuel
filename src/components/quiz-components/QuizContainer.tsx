@@ -18,11 +18,15 @@ interface Props {
 
   progressBar: ReactNode;
 
-  userAnswerList: (number | boolean | undefined)[];
-  setUserAnswerList: Dispatch<SetStateAction<(number | boolean | undefined)[]>>;
+  userAnswerList: (number | boolean[] | undefined)[];
+  setUserAnswerList: Dispatch<
+    SetStateAction<(number | boolean[] | undefined)[]>
+  >;
 
-  finalAnswers?: (number | boolean | undefined)[];
-  setFinalAnswers?: Dispatch<SetStateAction<(number | boolean | undefined)[]>>;
+  finalAnswers?: (number | boolean[] | undefined)[];
+  setFinalAnswers?: Dispatch<
+    SetStateAction<(number | boolean[] | undefined)[]>
+  >;
 }
 
 export default function QuizContainer({

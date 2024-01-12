@@ -6,7 +6,7 @@ import next_arrow from "../Quiz/next_arrow.png";
 import prev_arrow from "../Quiz/prev_arrow.png";
 
 interface Props {
-  userAnswers: (number | boolean | undefined)[];
+  userAnswers: (number | boolean[] | undefined)[];
 
   questionIndex: number;
 
@@ -16,10 +16,10 @@ interface Props {
 
   isPreQuiz: boolean;
 
-  finalPostAnswers?: (number | boolean | undefined)[];
+  finalPostAnswers?: (number | boolean[] | undefined)[];
 
   setFinalPostAnswers?: Dispatch<
-    SetStateAction<(number | boolean | undefined)[]>
+    SetStateAction<(number | boolean[] | undefined)[]>
   >;
 
   reset?: () => void;

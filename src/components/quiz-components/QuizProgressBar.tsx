@@ -27,7 +27,7 @@ interface Props {
   currentQuestionIndex: number;
   setCurrentQuestionIndex: Dispatch<SetStateAction<number>>;
 
-  userAnswerList: (number | boolean | undefined)[];
+  userAnswerList: (number | boolean[] | undefined)[];
 }
 
 export default function QuizProgressBar({

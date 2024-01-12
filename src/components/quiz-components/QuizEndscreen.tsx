@@ -1,10 +1,14 @@
 "use client";
 
 import { Dispatch, SetStateAction } from "react";
-import { MultipleChoiceQuestion, useQuizContext } from "./QuizContext";
+import {
+  MultipleChoiceQuestion,
+  TrueFalseQuestion,
+  useQuizContext,
+} from "./QuizContext";
 
 interface Props {
-  postQuizAnswers: (number | boolean | undefined)[];
+  postQuizAnswers: (number | boolean[] | undefined)[];
   setCurrentQuestionIndex: Dispatch<SetStateAction<number>>;
   resetQuiz: () => void;
 }
@@ -57,8 +61,36 @@ export default function QuizEndscreen({
               categoryMap[category].numCorrect += 1;
             }
           });
+          return;
+
+        case "true/false":
+          const currentTF = question as TrueFalseQuestion;
+          const userAnswersList = finalAnswers[index] as boolean[] | undefined;
+          console.warn("final tf answers are: ", userAnswersList);
+          console.log("index is: ", index);
+
+          currentTF.categories.forEach((category, cIndex) => {
+            if (!categoryMap[category]) {
+              categoryMap[category] = {
+                numTotal: currentTF.answers.length,
+                numCorrect: 0,
+                qList: [index],
+              };
+            } else {
+              categoryMap[category].numTotal += currentTF.answers.length;
+              categoryMap[category].qList.push(index);
+            }
+            userAnswersList?.forEach((userAnswer, uIndex) => {
+              const correctAnswer = currentTF.answers[uIndex];
+              if (userAnswer === correctAnswer) {
+                categoryMap[category].numCorrect += 1;
+              }
+            });
+          });
+          return;
 
         default:
+          return;
       }
     });
     console.log("final category map is: ", categoryMap);
@@ -67,6 +99,16 @@ export default function QuizEndscreen({
 
   const categoryBreakdown = () => {
     return Object.keys(categoryMap).map((key, index) => {
+      const buttons = categoryMap[key].qList.map((question, qIndex) => (
+        <li
+          key={`${categoryMap[key]}-question-${question}-${qIndex}`}
+          className="flex h-[52px] w-[52px] cursor-pointer items-center justify-center rounded-sm border border-black bg-white text-center text-[18px] transition duration-300 hover:bg-gray-100"
+          onClick={() => setCurrentQuestionIndex(question)}
+        >
+          Q{question + 1}
+        </li>
+      ));
+
       return (
         <details key={index} className="py-2">
           <summary className="cursor-pointer text-sm">
@@ -78,15 +120,7 @@ export default function QuizEndscreen({
 
           {/* List all the questions per category */}
           <ul className="my-4 ml-6 flex h-full w-full flex-row flex-wrap items-center justify-start gap-3 text-[20px]">
-            {categoryMap[key].qList.map((question, qIndex) => (
-              <li
-                key={`${categoryMap[key]}-question-${question}-${qIndex}`}
-                className="flex h-[52px] w-[52px] cursor-pointer items-center justify-center rounded-sm border border-black bg-white text-center text-[18px] transition duration-300 hover:bg-gray-100"
-                onClick={() => setCurrentQuestionIndex(question)}
-              >
-                Q{question + 1}
-              </li>
-            ))}
+            {buttons}
           </ul>
         </details>
       );

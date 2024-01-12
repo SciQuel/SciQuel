@@ -14,7 +14,7 @@ interface Props {
   question: MultipleChoiceQuestion;
   index: number;
 
-  selectedAnswer: number | boolean | undefined;
+  selectedAnswer: number | boolean[] | undefined;
 
   setAnswer: (answerIndex: number) => void;
 

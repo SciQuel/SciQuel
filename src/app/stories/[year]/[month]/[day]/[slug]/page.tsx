@@ -112,7 +112,7 @@ const fakeQuestionList = [
   {
     questionType: "true/false",
     questionText:
-      "which of these statements about cis-regulator elements are true?",
+      "which of these statements about cis-regulatory elements are true?",
     questionOptions: [
       "Enhancer  sequences can be located upstream or downstream from an associated gene",
       "Cis-regulatory elements can be promoters, enhancers, or silencers",

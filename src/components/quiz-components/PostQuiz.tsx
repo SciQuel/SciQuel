@@ -20,11 +20,11 @@ export default function PostQuiz() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 
   const [postAnswers, setPostAnswers] = useState<
-    (number | boolean | undefined)[]
+    (number | boolean[] | undefined)[]
   >([]);
 
   const [finalAnswers, setFinalAnswers] = useState<
-    (number | boolean | undefined)[]
+    (number | boolean[] | undefined)[]
   >([]);
 
   const questionList = quizInfo.questions.map((question, index) => {
@@ -49,20 +49,32 @@ export default function PostQuiz() {
         );
 
       case "true/false":
+        console.log(postAnswers);
         return (
           <TrueFalseQuestion
             question={question}
             key={`postQuiz-tf-${index}`}
             index={index}
-            answers={postAnswers[index] as unknown as boolean[]}
+            answers={postAnswers[index] as boolean[] | undefined}
             setAnswers={(Aindex: number, answer: boolean) => {
-              setPostAnswers((state) => {
-                let newState = [...state];
+              if (postAnswers[index] === undefined) {
+                setPostAnswers((state) => {
+                  let newState = [...state];
+                  let newList = [];
+                  newList[Aindex] = answer;
 
-                newState[Aindex] = answer;
-
-                return newState as (number | boolean | undefined)[];
-              });
+                  newState[index] = newList;
+                  return newState;
+                });
+              } else {
+                setPostAnswers((state) => {
+                  let newState = [...state];
+                  let newList = [...(state[index] as boolean[])] as boolean[];
+                  newList[Aindex] = answer;
+                  newState[index] = newList;
+                  return newState;
+                });
+              }
             }}
             showFeedback={finalAnswers[index] !== undefined}
           />
