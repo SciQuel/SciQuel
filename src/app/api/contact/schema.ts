@@ -16,3 +16,21 @@ export const contactSchema = z.object({
     invalid_type_error: "reply_email must be a string",
   }),
 });
+
+export const contactGetSchema = z.object({
+  include_feedback: z.string(),
+  include_get_involved: z.string(),
+
+  include_unopened: z.string(),
+  include_needs_response: z.string(),
+  include_closed: z.string(),
+
+  start_index: z.string(),
+  end_index: z.string(),
+});
+
+export const contactPatchSchema = z.object({
+  new_status: z
+    .string()
+    .regex(/^UNOPENED$|^NEEDS_RESPONSE$|^CLOSED$|^ARCHIVED$/),
+});

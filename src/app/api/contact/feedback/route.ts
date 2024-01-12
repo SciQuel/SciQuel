@@ -1,8 +1,9 @@
 import mailer from "@/lib/mailer";
 import prisma from "@/lib/prisma";
-import { type Prisma } from "@prisma/client";
+import { Feedback, type FeedbackStatus, type Prisma } from "@prisma/client";
+import { getServerSession } from "next-auth";
 import { NextResponse, type NextRequest } from "next/server";
-import { contactSchema } from "../schema";
+import { contactPatchSchema, contactSchema } from "../schema";
 
 export async function POST(req: NextRequest) {
   const parsedRequest = contactSchema.safeParse(await req.json());
@@ -21,7 +22,6 @@ export async function POST(req: NextRequest) {
   try {
     const timestamp = new Date();
     const data: Prisma.FeedbackCreateInput = {
-      feedbackType: "FEEDBACK",
       name: parsedRequest.data.contact_name,
       email: parsedRequest.data.reply_email,
       message: parsedRequest.data.message,
@@ -59,6 +59,4 @@ export async function POST(req: NextRequest) {
       { status: 500 },
     );
   }
-
-  return NextResponse.json({ test: "test" }, { status: 200 });
 }

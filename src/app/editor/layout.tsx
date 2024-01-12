@@ -13,7 +13,8 @@ export default async function Layout({ children }: { children: ReactNode }) {
     where: { email: session.user.email },
   });
 
-  if (!user || !user.roles.includes("EDITOR")) {
+  if (!user) {
+    // || !user.roles.includes("EDITOR")
     return redirect("/");
   }
 
