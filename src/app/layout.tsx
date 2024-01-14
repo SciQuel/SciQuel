@@ -49,8 +49,15 @@ export default async function RootLayout({
         )}
       >
         <AuthProvider session={session}>
-          <Header />
-          {children}
+          <a
+            href="#main"
+            className="skip center absolute overflow-hidden outline focus:static "
+          >
+            Skip to main content
+          </a>
+          <Header></Header>
+
+          <main id="main">{children}</main>
           <Footer />
         </AuthProvider>
       </body>
