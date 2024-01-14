@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-import ArticleSeries from "../ArticleSeries";
 import logo from "./logo.png";
 import ProfileButton from "./ProfileButton";
 import Search from "./search.svg";
@@ -17,6 +16,7 @@ export default function Header() {
   const [y, setY] = useState(0);
   const [counter, setCounter] = useState(0);
   const router = useRouter();
+  const pathname = window.location.pathname;
   const handleNavigation = useCallback(
     (e: Event) => {
       const window = e.currentTarget as Window;
@@ -137,41 +137,44 @@ export default function Header() {
           <ProfileButton />
         </div>
       </div>
-      <div
-        className=" duration-350 z-10 flex flex-row px-40 text-center transition-all"
-        style={{ height: scroll ? "0" : "40px" }}
-      >
-        <div
-          className=" grow cursor-pointer py-2 transition-colors hover:bg-sciquelHover"
-          style={{ display: scroll ? "none" : "block" }}
-        >
-          <Link href="/">LATEST</Link>
-        </div>
 
+      {pathname.split("/")[1] === "stories" ? (
+        <div />
+      ) : (
         <div
-          className="grow cursor-pointer py-2 transition-colors hover:bg-sciquelHover"
-          style={{ display: scroll ? "none" : "block" }}
+          className=" duration-350 z-10 flex flex-row px-40 text-center transition-all"
+          style={{ height: scroll ? "0" : "40px" }}
         >
-          <Link href="/">READ</Link>
-        </div>
+          <div
+            className=" grow cursor-pointer py-2 transition-colors hover:bg-sciquelHover"
+            style={{ display: scroll ? "none" : "block" }}
+          >
+            <Link href="/">LATEST</Link>
+          </div>
 
-        <div
-          className="grow cursor-pointer py-2 transition-colors hover:bg-sciquelHover"
-          style={{ display: scroll ? "none" : "block" }}
-        >
-          <Topic></Topic>
-        </div>
+          <div
+            className="grow cursor-pointer py-2 transition-colors hover:bg-sciquelHover"
+            style={{ display: scroll ? "none" : "block" }}
+          >
+            <Link href="/">READ</Link>
+          </div>
 
-        <div
-          className="grow cursor-pointer py-2 transition-colors hover:bg-sciquelHover"
-          style={{ display: scroll ? "none" : "block" }}
-        >
-          {/* <Link href="/">ABOUT</Link> */}
-          <button onClick={onProfile}>ABOUT</button>
+          <div
+            className="grow cursor-pointer py-2 transition-colors hover:bg-sciquelHover"
+            style={{ display: scroll ? "none" : "block" }}
+          >
+            <Topic></Topic>
+          </div>
+
+          <div
+            className="grow cursor-pointer py-2 transition-colors hover:bg-sciquelHover"
+            style={{ display: scroll ? "none" : "block" }}
+          >
+            {/* <Link href="/">ABOUT</Link> */}
+            <button onClick={onProfile}>ABOUT</button>
+          </div>
         </div>
-      </div>
-      {/*Articles  */}
-      {/* <ArticleSeries></ArticleSeries> */}
+      )}
     </div>
   );
 }
