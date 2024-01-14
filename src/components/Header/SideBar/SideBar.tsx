@@ -31,7 +31,7 @@ export default function SideBar() {
 
       <div
         className="fixed top-0 z-40 h-screen w-56  
-        -translate-x-full  transform  bg-sciquelTeal transition-all duration-500 "
+        -translate-x-full  transform  bg-sciquelTeal transition-all duration-100 "
         style={{ left: showSideBar ? "14rem" : "0" }}
         ref={menuRef}
       >
@@ -71,7 +71,10 @@ export default function SideBar() {
             </Link>
           </li>
 
-          <hr className="mx-3 my-2" />
+          <hr
+            className="mx-3 my-2"
+            style={{ display: showSideBar ? "block" : "none" }}
+          />
 
           <li
             className="text-white-400 my-1.5 flex transform cursor-pointer items-center  hover:bg-sciquelHover"
@@ -196,7 +199,10 @@ export default function SideBar() {
             </Link>
           </li>
 
-          <hr className="mx-3 my-2" />
+          <hr
+            className="mx-3 my-2"
+            style={{ display: showSideBar ? "block" : "none" }}
+          />
 
           <li
             className="text-white-400 my-1.5 flex transform cursor-pointer items-center   hover:bg-sciquelHover"
@@ -223,7 +229,10 @@ export default function SideBar() {
             </Link>
           </li>
 
-          <hr className="mx-3 my-2" />
+          <hr
+            className="mx-3 my-2"
+            style={{ display: showSideBar ? "block" : "none" }}
+          />
 
           <li
             className=" text-white-400 group relative my-1.5 flex transform items-center   hover:bg-sciquelHover"
