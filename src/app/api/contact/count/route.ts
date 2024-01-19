@@ -1,18 +1,10 @@
 import prisma from "@/lib/prisma";
-import { getServerSession } from "next-auth";
 import { NextResponse, type NextRequest } from "next/server";
+import { isEditor } from "../tools";
 
-async function isEditor() {
-  const session = await getServerSession();
-  const user = await prisma.user.findUnique({
-    where: { email: session?.user.email ?? "noemail" },
-  });
-
-  if (!user || !user.roles.includes("EDITOR")) {
-    return false;
-  }
-  return true;
-}
+export type GetContactCountResult = {
+  new_messages: number;
+};
 
 export async function GET(req: NextRequest) {
   const editorStatus = await isEditor();
@@ -21,7 +13,13 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  const newMessageCount = await prisma.feedback.count();
+  const newMessageCount = await prisma.contactMessage.count({
+    where: {
+      status: {
+        equals: "UNOPENED",
+      },
+    },
+  });
 
   return NextResponse.json({ new_messages: newMessageCount });
 }

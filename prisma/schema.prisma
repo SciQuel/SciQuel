@@ -125,6 +125,8 @@ model User {
 
   roles   UserRole[] @default([])
   quizzes Quiz[]
+
+  contactUpdates ContactMessage[]
 }
 
 model AuthVerification {
@@ -200,23 +202,41 @@ model Bookmark {
 
 // feedback schema
 
-enum FeedbackStatus {
+enum ContactStatus {
   UNOPENED
   NEEDS_RESPONSE
   CLOSED
   ARCHIVED
 }
 
-model Feedback {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
+enum ContactType {
+  FEEDBACK
+  GET_INVOLVED
+}
 
-  name    String
-  email   String
-  message String
+model ContactMessage {
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  contactType ContactType
 
-  status      FeedbackStatus
+  name     String
+  email    String
+  message  String
+  senderIp String
+
+  status      ContactStatus
   createdAt   DateTime
   lastUpdated DateTime
 
+  lastUpdatedUser   User?   @relation(fields: [lastUpdatedUserId], references: [id])
   lastUpdatedUserId String? @db.ObjectId
+}
+
+model BlockedUser {
+  id    String  @id @default(auto()) @map("_id") @db.ObjectId
+  email String?
+  ip    String?
+
+  reason String
+
+  lastUpdated DateTime
 }

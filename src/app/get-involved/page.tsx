@@ -14,7 +14,7 @@ export default function ContactUsPage() {
       <p className="mb-4 w-full text-xl  ">
         If so, contact us at sciquel.team@gmail.com or fill out the form below.
       </p>
-      <ContactForm endpoint="" />
+      <ContactForm endpoint="/api/contact/get_involved" />
     </div>
   );
 }

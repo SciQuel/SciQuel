@@ -1,23 +1,18 @@
 import prisma from "@/lib/prisma";
-import {
-  type ContactMessage,
-  type ContactStatus,
-  type Prisma,
-} from "@prisma/client";
-import { getServerSession } from "next-auth";
+import { type BlockedUser } from "@prisma/client";
 import { NextResponse, type NextRequest } from "next/server";
-import { contactGetSchema } from "./schema";
-import { isEditor } from "./tools";
+import { RecentBanGetSchema } from "../../schema";
+import { isEditor } from "../../tools";
 
-export type GetContactResult = {
-  messages: ContactMessage[];
+export type GetRecentBanResult = {
+  bans: BlockedUser[];
+  count: number;
 };
 
 export async function GET(req: NextRequest) {
   const params = Object.fromEntries(req.nextUrl.searchParams);
 
-  const parsedRequest = contactGetSchema.safeParse(params);
-
+  const parsedRequest = RecentBanGetSchema.safeParse(params);
   if (!parsedRequest.success) {
     return NextResponse.json(
       {
@@ -27,16 +22,11 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  const { start_index, end_index, status } = parsedRequest.data;
-
+  const { start_index } = parsedRequest.data;
   const startInt = parseInt(start_index);
-  const endInt = parseInt(end_index);
 
-  if (isNaN(startInt) || isNaN(endInt) || endInt < startInt) {
-    return NextResponse.json(
-      { error: "start or end index invalid" },
-      { status: 400 },
-    );
+  if (isNaN(startInt)) {
+    return NextResponse.json({ error: "Invalid Start Index" }, { status: 400 });
   }
 
   const editorStatus = await isEditor();
@@ -46,18 +36,21 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const messageList = await prisma.contactMessage.findMany({
+    const banList = await prisma.blockedUser.findMany({
       skip: startInt,
-      take: endInt - startInt + 1,
-      where: {
-        status: {
-          equals: status as ContactStatus,
-        },
+      take: 10,
+      orderBy: {
+        lastUpdated: "desc",
       },
     });
 
-    if (messageList) {
-      return NextResponse.json({ messages: messageList });
+    const count = await prisma.blockedUser.count();
+
+    if (banList && typeof count == "number") {
+      return NextResponse.json({
+        bans: banList,
+        count: count,
+      });
     } else {
       return NextResponse.json(
         { error: "Internal Server Error" },

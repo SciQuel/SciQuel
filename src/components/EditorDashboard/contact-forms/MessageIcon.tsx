@@ -1,15 +1,33 @@
+"use client";
+
+import { type GetContactCountResult } from "@/app/api/contact/count/route";
 import env from "@/lib/env";
+import { useEffect, useState } from "react";
 
-export default async function MessageIcon() {
-  const count = await fetch(`${env.NEXT_PUBLIC_SITE_URL}/api/contact/count`);
-  const json = await count.json();
+export default function MessageIcon() {
+  const [newMessageCount, setNewMessageCount] = useState<undefined | number>(
+    undefined,
+  );
 
-  console.log(json);
+  useEffect(() => {
+    (async () => {
+      const count = await fetch(
+        `${env.NEXT_PUBLIC_SITE_URL}/api/contact/count`,
+      );
+      const { new_messages } = (await count.json()) as GetContactCountResult;
+      setNewMessageCount(new_messages);
+    })()
+      .then(() => {})
+      .catch((err) => {
+        console.error(err);
+        setNewMessageCount(undefined);
+      });
+  }, []);
 
-  if (json.new_messages) {
+  if (newMessageCount) {
     return (
       <span className="rounded-full bg-sciquelTeal px-2 text-white">
-        {json.new_messages} new
+        {newMessageCount} new
       </span>
     );
   } else {

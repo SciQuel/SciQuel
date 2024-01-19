@@ -1,8 +1,8 @@
 import prisma from "@/lib/prisma";
-import { Feedback, type FeedbackStatus, type Prisma } from "@prisma/client";
+import { type ContactStatus } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { NextResponse, type NextRequest } from "next/server";
-import { contactPatchSchema, contactSchema } from "../../schema";
+import { contactPatchSchema } from "../../schema";
 
 interface Params {
   id: unknown;
@@ -26,7 +26,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Params }) {
     return NextResponse.json({ error: "Bad Request" }, { status: 400 });
   }
 
-  const foundFeedback = await prisma.feedback.findUnique({
+  const foundFeedback = await prisma.contactMessage.findUnique({
     where: {
       id: id,
     },
@@ -39,10 +39,10 @@ export async function PATCH(req: NextRequest, { params }: { params: Params }) {
     );
   }
 
-  const status = parsedRequest.data.new_status as FeedbackStatus;
+  const status = parsedRequest.data.new_status as ContactStatus;
   const currentTime = new Date();
 
-  const updatedFeedback = await prisma.feedback.update({
+  const updatedFeedback = await prisma.contactMessage.update({
     where: {
       id: id,
     },
