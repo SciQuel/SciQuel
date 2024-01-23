@@ -1,6 +1,7 @@
 import mailer from "@/lib/mailer";
 import prisma from "@/lib/prisma";
 import { type ContactStatus, type Prisma } from "@prisma/client";
+import { DateTime } from "luxon";
 import { NextResponse, type NextRequest } from "next/server";
 import { contactGetSchema, contactSchema } from "../schema";
 import { checkBans, checkSpam, isEditor } from "../tools";
@@ -105,6 +106,28 @@ export async function POST(req: NextRequest) {
       subject: "Sciquel: One(1) New Feedback Form Submitted",
       text: bodyText,
       html: bodyHTML,
+    });
+
+    const userBodyText = `Thanks for contacting us at SciQuel! \n We're really thankful you took the time to share your thoughts with us, and will review your message soon. If needed, we'll reach out. Have a great day! \n Your message: \n ${
+      data.message
+    } \n received ${DateTime.fromJSDate(timestamp).toLocaleString(
+      DateTime.DATETIME_FULL,
+    )}`;
+    const userBodyHtml = `<h1 style="color:rgb(2,71,64);">Thanks for contacting us at SciQuel!</h1>
+    <p>We're really thankful you took the time to share your thoughts with us, and will review your message soon. If needed, we'll reach out. Have a great day!</p>
+    <h2>Your Message:</h2>
+    <p>${data.message}</p>
+    <p>received ${DateTime.fromJSDate(timestamp).toLocaleString(
+      DateTime.DATETIME_FULL,
+    )}</p>`;
+
+    await mailer.sendMail({
+      from: '"SciQuel" <no-reply@sciquel.org>',
+      replyTo: '"SciQuel Team" <team@sciquel.org>',
+      to: data.email,
+      subject: "Your SciQuel feedback form submission",
+      text: userBodyText,
+      html: userBodyHtml,
     });
 
     return NextResponse.json({ id: feedbackDocument.id });

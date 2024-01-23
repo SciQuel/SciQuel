@@ -23,6 +23,8 @@ export default function ContactBox({
   const [updateTo, setUpdateTo] = useState("");
   const [banFormUser, setBanFormUser] = useState<null | ContactMessage>(null);
 
+  const [reply, setReply] = useState("");
+  const [shouldReply, setShouldReply] = useState(false);
   const messageStatus = message.status.toLowerCase().replace("_", " ");
 
   async function archive() {
@@ -32,6 +34,8 @@ export default function ContactBox({
         `${env.NEXT_PUBLIC_SITE_URL}/api/contact/feedback/${message.id}`,
         {
           new_status: newStatus,
+          send_reply: shouldReply,
+          reply_text: reply,
         },
       );
 
@@ -64,6 +68,8 @@ export default function ContactBox({
           `${env.NEXT_PUBLIC_SITE_URL}/api/contact/feedback/${message.id}`,
           {
             new_status: newStatus,
+            send_reply: shouldReply,
+            reply_text: reply,
           },
         );
 
@@ -127,6 +133,23 @@ export default function ContactBox({
         }}
         className="mt-2 flex flex-col border-t-2 border-sciquelTeal pt-2"
       >
+        <p>Reply:</p>
+        <textarea
+          value={reply}
+          onChange={(e) => {
+            setReply(e.target.value);
+          }}
+        />
+        <label>
+          <input
+            type="checkbox"
+            checked={shouldReply}
+            onChange={() => {
+              setShouldReply((state) => !state);
+            }}
+          />
+          Send reply email
+        </label>
         {message.status != "UNOPENED" ? (
           <div className="flex flex-row">
             <input

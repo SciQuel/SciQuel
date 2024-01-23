@@ -42,6 +42,16 @@ export const contactPatchSchema = z.object({
     invalid_type_error:
       "Invalid new_status.  Valid statuses: UNOPENED | NEEDS_RESPONSE | CLOSED | ARCHIVED",
   }),
+
+  send_reply: z.boolean({
+    invalid_type_error: "send_reply must be a boolean.",
+    required_error: "send_reply is required",
+  }),
+
+  reply_text: z.string({
+    invalid_type_error: "reply_text must be a string.",
+    required_error: "reply_text is required.",
+  }),
 });
 
 export const BanPostSchema = z.object({

@@ -146,8 +146,7 @@ export default function ContactDashboard() {
               </h2>
               {total > 0 ? (
                 <p className="bg-[#d5e0df] p-2 font-semibold">
-                  Showing Messages 1 through{" "}
-                  {Math.min(start + countPerGet, total)} out of {total}{" "}
+                  Showing Messages 1 through {list.length} out of {total}{" "}
                   {list.length < total ? (
                     <button
                       type="button"
@@ -194,15 +193,18 @@ export default function ContactDashboard() {
                             switch (newMessageState) {
                               case "UNOPENED":
                                 setUnopened((state) => [...state, newMessage]);
+                                setUnopenedTotal((state) => state + 1);
                                 break;
                               case "NEEDS_RESPONSE":
                                 setInProgress((state) => [
                                   ...state,
                                   newMessage,
                                 ]);
+                                setInProgressTotal((state) => state + 1);
                                 break;
                               case "CLOSED":
                                 setClosed((state) => [...state, newMessage]);
+                                setClosedTotal((state) => state + 1);
                                 break;
                               default:
                                 break;
@@ -212,14 +214,17 @@ export default function ContactDashboard() {
                                 setUnopened((state) =>
                                   state.toSpliced(index, 1),
                                 );
+                                setUnopenedTotal((state) => state - 1);
                                 break;
                               case "In-Progress":
                                 setInProgress((state) =>
                                   state.toSpliced(index, 1),
                                 );
+                                setInProgressTotal((state) => state - 1);
                                 break;
                               case "Closed":
                                 setClosed((state) => state.toSpliced(index, 1));
+                                setClosedTotal((state) => state - 1);
                                 break;
                               default:
                                 // ???

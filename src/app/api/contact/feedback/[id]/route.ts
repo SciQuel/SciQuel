@@ -1,3 +1,4 @@
+import mailer from "@/lib/mailer";
 import prisma from "@/lib/prisma";
 import { type ContactStatus } from "@prisma/client";
 import { getServerSession } from "next-auth";
@@ -52,6 +53,16 @@ export async function PATCH(req: NextRequest, { params }: { params: Params }) {
       lastUpdatedUserId: user.id,
     },
   });
+
+  if (parsedRequest.data.send_reply) {
+    await mailer.sendMail({
+      from: '"SciQuel Team" <team@sciquel.org>',
+      replyTo: '"SciQuel Team" <team@sciquel.org>',
+      to: foundFeedback.email,
+      subject: "Re: Your Sciquel Feedback Submission",
+      text: parsedRequest.data.reply_text,
+    });
+  }
 
   if (updatedFeedback) {
     return NextResponse.json({ updatedFeedback }, { status: 200 });
