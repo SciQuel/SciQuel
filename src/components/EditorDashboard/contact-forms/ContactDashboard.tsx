@@ -4,7 +4,8 @@ import { type GetContactResult } from "@/app/api/contact/route";
 import env from "@/lib/env";
 import { type ContactMessage } from "@prisma/client";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import Link from "next/link";
+import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 import ContactBox from "./ContactBox";
 
 export default function ContactDashboard() {
@@ -12,55 +13,97 @@ export default function ContactDashboard() {
   const [inProgress, setInProgress] = useState<ContactMessage[]>([]);
   const [closed, setClosed] = useState<ContactMessage[]>([]);
 
+  const [unopenedStart, setUnopenedStart] = useState(0);
+  const [unopenedTotal, setUnopenedTotal] = useState(0);
+
+  const [inProgressStart, setInProgressStart] = useState(0);
+  const [inProgressTotal, setInProgressTotal] = useState(0);
+
+  const [closedStart, setClosedStart] = useState(0);
+  const [closedTotal, setClosedTotal] = useState(0);
+
+  const countPerGet = 4;
+
   useEffect(() => {
-    getContactMessage()
-      .then(() => {})
+    updateUnopened(unopenedStart)
+      .then((result) => {
+        console.log("updated unopened list");
+      })
       .catch((err) => {
         console.error(err);
       });
-  }, []);
+  }, [unopenedStart]);
 
-  async function getContactMessage() {
-    let queryParams = "?";
-    const currentStart = 0;
-    const currentEnd = 10;
+  useEffect(() => {
+    updateInProgress(inProgressStart)
+      .then(() => {
+        console.log("updated in progress list");
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  }, [inProgressStart]);
 
-    queryParams =
-      `?start_index=${currentStart}` +
-      `&end_index=${currentEnd}` +
-      "&include_unopened=true" +
-      "&include_needs_response=true&include_closed=true";
+  useEffect(() => {
+    updateClosed(closedStart)
+      .then(() => {
+        console.log("updated closed");
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  }, [closedStart]);
 
+  // useEffect(() => {
+  //   getContactMessage()
+  //     .then(() => {})
+  //     .catch((err) => {
+  //       console.error(err);
+  //     });
+  // }, []);
+
+  async function updateUnopened(newStart: number) {
     try {
-      const messageList: ContactMessage[] = [];
-      const unopenedList: ContactMessage[] = [];
-      const inProgressList: ContactMessage[] = [];
-      const closedList: ContactMessage[] = [];
       const unopenedRes = await axios.get(
-        `${env.NEXT_PUBLIC_SITE_URL}/api/contact/?status=UNOPENED&start_index=0&end_index=5`,
+        `${
+          env.NEXT_PUBLIC_SITE_URL
+        }/api/contact/?status=UNOPENED&start_index=${newStart}&end_index=${
+          newStart + countPerGet - 1
+        }`,
       );
       if (unopenedRes.status == 200) {
         const unopenedData = unopenedRes.data as GetContactResult;
 
-        setUnopened(unopenedData.messages);
+        setUnopened((state) => state.concat(unopenedData.messages));
+        setUnopenedTotal(unopenedData.total_count);
       }
+    } catch (err) {
+      console.error(err);
+    }
+  }
 
+  async function updateInProgress(newStart: number) {
+    const inProgressRes = await axios.get(
+      `${env.NEXT_PUBLIC_SITE_URL}/api/contact/?status=NEEDS_RESPONSE&start_index=0&end_index=5`,
+    );
+    if (inProgressRes.status == 200) {
+      const inProgressData = inProgressRes.data as GetContactResult;
+
+      setInProgress((state) => state.concat(inProgressData.messages));
+      setInProgressTotal(inProgressData.total_count);
+    }
+  }
+
+  async function updateClosed(newStart: number) {
+    try {
       const closedRes = await axios.get(
         `${env.NEXT_PUBLIC_SITE_URL}/api/contact/?status=CLOSED&start_index=0&end_index=5`,
       );
       if (closedRes.status == 200) {
         const closedData = closedRes.data as GetContactResult;
 
-        setClosed(closedData.messages);
-      }
-
-      const inProgressRes = await axios.get(
-        `${env.NEXT_PUBLIC_SITE_URL}/api/contact/?status=NEEDS_RESPONSE&start_index=0&end_index=5`,
-      );
-      if (inProgressRes.status == 200) {
-        const inProgressData = inProgressRes.data as GetContactResult;
-
-        setInProgress(inProgressData.messages);
+        setClosed((state) => state.concat(closedData.messages));
+        setClosedTotal(closedData.total_count);
       }
     } catch (err) {
       console.error(err);
@@ -74,12 +117,24 @@ export default function ContactDashboard() {
       <>
         {widgetList.map((item, index) => {
           let list;
+          let total;
+          let start;
+          let setStart: Dispatch<SetStateAction<number>>;
           if (item == "Unopened") {
             list = unopened;
+            total = unopenedTotal;
+            start = unopenedStart;
+            setStart = setUnopenedStart;
           } else if (item == "In-Progress") {
             list = inProgress;
+            total = inProgressTotal;
+            start = inProgressStart;
+            setStart = setInProgressStart;
           } else {
             list = closed;
+            total = closedTotal;
+            start = closedStart;
+            setStart = setClosedStart;
           }
           return (
             <div
@@ -89,12 +144,40 @@ export default function ContactDashboard() {
               <h2 className="w-full border-b-4 border-sciquelTeal bg-sciquelTeal p-4 text-xl font-bold text-white">
                 {item}
               </h2>
-              <div className="flex flex-row flex-wrap bg-[#d5e0df]">
+              {total > 0 ? (
+                <p className="bg-[#d5e0df] p-2 font-semibold">
+                  Showing Messages 1 through{" "}
+                  {Math.min(start + countPerGet, total)} out of {total}{" "}
+                  {list.length < total ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setStart((state) => state + countPerGet);
+                      }}
+                    >
+                      Load More
+                    </button>
+                  ) : (
+                    <></>
+                  )}
+                </p>
+              ) : (
+                <></>
+              )}
+
+              <div className="grid h-96 overflow-y-scroll bg-[#d5e0df] md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {list.length > 0 ? (
                   list.map((message, index) => {
                     return (
                       <ContactBox
-                        updateScreenFunction={getContactMessage}
+                        updateScreenFunction={() => {
+                          setClosed([]);
+                          setInProgress([]);
+                          setUnopened([]);
+                          setClosedStart(0);
+                          setInProgressStart(0);
+                          setUnopenedStart(0);
+                        }}
                         type={
                           message.contactType == "FEEDBACK"
                             ? "feedback"
@@ -164,5 +247,15 @@ export default function ContactDashboard() {
     );
   }
 
-  return <div>{buildWidgets()}</div>;
+  return (
+    <div>
+      {buildWidgets()}{" "}
+      <Link
+        className="m-2 text-lg font-bold text-sciquelTeal"
+        href="/editor/dashboard/contact/archive"
+      >
+        View Archive
+      </Link>
+    </div>
+  );
 }

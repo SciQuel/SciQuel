@@ -66,6 +66,8 @@ export default function UserBanForm({
 
       if (shouldArchive) {
         updateScreenFunction();
+      } else {
+        closeFunction();
       }
     } catch (err) {
       console.error(err);

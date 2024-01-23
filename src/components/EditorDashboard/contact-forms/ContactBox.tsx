@@ -79,20 +79,20 @@ export default function ContactBox({
   }
   return (
     <div
-      className={`m-3 h-fit border-4  border-sciquelTeal bg-sciquelCardBg p-2 md:max-w-sm lg:w-1/3 lg:max-w-md `}
+      className={`m-3 h-fit border-4  border-sciquelTeal bg-sciquelCardBg p-2 `}
     >
-      <h1 className=" border-b-2 border-sciquelTeal pb-2 text-lg font-bold text-sciquelTeal">
+      <h1 className="flex justify-between border-b-2 border-sciquelTeal pb-2 text-lg font-bold text-sciquelTeal">
         Message ({messageStatus}) :
         <span
-          className={`float-right rounded-full px-2 ${
+          className={`h-fit rounded-full px-2 ${
             type == "feedback" ? " bg-blue-100" : " bg-teal-200"
           }`}
         >
           {type}
         </span>
       </h1>
-      <div className="mb-2 flex flex-row flex-wrap border-b-2 border-sciquelTeal ">
-        <div className="w-2/3">
+      <div className="mb-2 flex w-full flex-row flex-wrap border-b-2 border-sciquelTeal ">
+        <div className=" ">
           <h2>
             From {message.name} at{" "}
             <a href={`mailto:${message.email}`}>{message.email}</a>

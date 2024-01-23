@@ -33,7 +33,7 @@ export default function BannedUserBox({ record, getRecents }: Props) {
   }
 
   return (
-    <div className="w-1/4 rounded border-2 border-sciquelTeal p-2">
+    <div className="  rounded border-2 border-sciquelTeal p-2 ">
       <h2>Recent Ban</h2>
       <h3>Email: {record.email ? record.email : "unknown"}</h3>
       <h3>IP: {record.ip ? record.ip : "unknown"}</h3>

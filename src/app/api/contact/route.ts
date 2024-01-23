@@ -11,6 +11,7 @@ import { isEditor } from "./tools";
 
 export type GetContactResult = {
   messages: ContactMessage[];
+  total_count: number;
 };
 
 export async function GET(req: NextRequest) {
@@ -56,8 +57,19 @@ export async function GET(req: NextRequest) {
       },
     });
 
+    const messageCount = await prisma.contactMessage.count({
+      where: {
+        status: {
+          equals: status as ContactStatus,
+        },
+      },
+    });
+
     if (messageList) {
-      return NextResponse.json({ messages: messageList });
+      return NextResponse.json({
+        messages: messageList,
+        total_count: messageCount,
+      });
     } else {
       return NextResponse.json(
         { error: "Internal Server Error" },

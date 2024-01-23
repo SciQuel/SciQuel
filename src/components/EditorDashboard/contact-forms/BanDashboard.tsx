@@ -76,7 +76,7 @@ export default function BannedUserDashboard() {
               {Math.min(startIndex + 6, totalBans ? totalBans : 0)} of{" "}
               {totalBans}
             </h2>
-            <div>
+            <div className="grid gap-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {recentBans ? (
                 recentBans?.map((ban, index) => (
                   <BannedUserBox
