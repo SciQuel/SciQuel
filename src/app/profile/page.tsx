@@ -37,6 +37,7 @@ export default async function ProfilePage({
   ]);
   console.log(authors);
   if (!authors?.roles.includes("AUTHOR")) {
+    console.log("Author: ", id);
     throw new Error("This person is not an author");
   }
 

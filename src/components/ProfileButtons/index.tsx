@@ -10,12 +10,15 @@ interface Props {
 export default function Search({ searchParams }: Props) {
   const { id, category } = searchParams;
   const router = useRouter();
+  const [cates, setCates] = useState(category ? category : "Recent");
+
   console.log("category ", category);
-  const [cates, setCates] = useState(category);
+
   function switchCat(current: string) {
-    setCates(current);
-    const category = cates;
+    const category = current;
+    setCates(category);
     const update = {
+      ...(id ? { id } : {}),
       ...(category ? { category } : {}),
     };
     const searchParams = new URLSearchParams(update);
