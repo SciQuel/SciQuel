@@ -31,7 +31,9 @@ export default function ContactBox({
     const newStatus = "ARCHIVED";
     try {
       const status = await axios.patch(
-        `${env.NEXT_PUBLIC_SITE_URL}/api/contact/feedback/${message.id}`,
+        `${env.NEXT_PUBLIC_SITE_URL}/api/contact/${
+          type == "feedback" ? "feedback" : "get_involved"
+        }/${message.id}`,
         {
           new_status: newStatus,
           send_reply: shouldReply,
@@ -65,7 +67,9 @@ export default function ContactBox({
     if (newStatus) {
       try {
         const status = await axios.patch(
-          `${env.NEXT_PUBLIC_SITE_URL}/api/contact/feedback/${message.id}`,
+          `${env.NEXT_PUBLIC_SITE_URL}/api/contact/${
+            type == "feedback" ? "feedback" : "get_involved"
+          }/${message.id}`,
           {
             new_status: newStatus,
             send_reply: shouldReply,
@@ -90,7 +94,7 @@ export default function ContactBox({
       <h1 className="flex justify-between border-b-2 border-sciquelTeal pb-2 text-lg font-bold text-sciquelTeal">
         Message ({messageStatus}) :
         <span
-          className={`h-fit rounded-full px-2 ${
+          className={`h-fit rounded-full px-4 text-center text-base ${
             type == "feedback" ? " bg-blue-100" : " bg-teal-200"
           }`}
         >

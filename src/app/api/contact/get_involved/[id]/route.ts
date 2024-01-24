@@ -59,7 +59,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Params }) {
       from: '"SciQuel Team" <editors@sciquel.org>',
       replyTo: '"SciQuel Team" <editors@sciquel.org>',
       to: foundFeedback.email,
-      subject: "Re: Your Sciquel Feedback Submission",
+      subject: "Re: Your Sciquel Get Involved Submission",
       text: parsedRequest.data.reply_text,
     });
   }

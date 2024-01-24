@@ -139,7 +139,7 @@ export default function ContactDashboard() {
           return (
             <div
               key={item}
-              className="m-1 rounded-lg border-4 border-sciquelTeal p-0"
+              className="m-1 w-full rounded-lg border-4 border-sciquelTeal p-0 sm:w-auto"
             >
               <h2 className="w-full border-b-4 border-sciquelTeal bg-sciquelTeal p-4 text-xl font-bold text-white">
                 {item}
@@ -164,7 +164,7 @@ export default function ContactDashboard() {
                 <></>
               )}
 
-              <div className="grid h-96 overflow-y-scroll bg-[#d5e0df] md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              <div className="h-screen overflow-y-scroll bg-[#d5e0df] ">
                 {list.length > 0 ? (
                   list.map((message, index) => {
                     return (
@@ -254,7 +254,7 @@ export default function ContactDashboard() {
 
   return (
     <div>
-      {buildWidgets()}{" "}
+      <div className="grid md:grid-cols-2 lg:grid-cols-3">{buildWidgets()}</div>
       <Link
         className="m-2 text-lg font-bold text-sciquelTeal"
         href="/editor/dashboard/contact/archive"

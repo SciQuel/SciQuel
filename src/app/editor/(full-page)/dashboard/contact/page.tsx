@@ -6,12 +6,9 @@ import Link from "next/link";
 export default async function ContactDashboardPage() {
   return (
     <div className="p-3">
-      <h1 className="text-3xl font-semibold text-sciquelTeal">
+      <h1 className="flex h-fit justify-between text-3xl font-semibold text-sciquelTeal">
         Contact Dashboard{" "}
-        <Link
-          href="/editor/dashboard/contact/bans"
-          className="float-right text-xl"
-        >
+        <Link href="/editor/dashboard/contact/bans" className="text-xl">
           Manage Banned Accounts
         </Link>
       </h1>
