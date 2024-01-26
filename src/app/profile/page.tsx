@@ -80,7 +80,11 @@ export default async function ProfilePage({
                   <ProfileButton searchParams={searchParams} />
                   <div>
                     <div className="my-3 text-left">
-                      <HomepageSection heading="Recent Articles" />
+                      <HomepageSection
+                        heading={
+                          category ? category + " Stories" : "Recent Stories"
+                        }
+                      />
                     </div>
                     <div className="my-3 text-left">
                       <ArticleList articles={stories} />
