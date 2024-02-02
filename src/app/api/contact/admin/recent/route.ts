@@ -23,11 +23,6 @@ export async function GET(req: NextRequest) {
   }
 
   const { start_index } = parsedRequest.data;
-  const startInt = parseInt(start_index);
-
-  if (isNaN(startInt)) {
-    return NextResponse.json({ error: "Invalid Start Index" }, { status: 400 });
-  }
 
   const editorStatus = await isEditor();
 
@@ -37,7 +32,7 @@ export async function GET(req: NextRequest) {
 
   try {
     const banList = await prisma.blockedUser.findMany({
-      skip: startInt,
+      skip: start_index,
       take: 10,
       orderBy: {
         lastUpdated: "desc",

@@ -23,7 +23,7 @@ export async function checkSpam(useEmail: boolean, data: string) {
   // data should be the email or ip address
 
   const time = new Date();
-  const maxEmails = 25;
+  const maxEmails = 35;
   // 1000ms/s * 60 s/min * 60 min/hour * 24 hr/day * 2 days
   const past = 1000 * 60 * 60 * 24 * 2;
   time.setTime(time.getTime() - past);
@@ -45,6 +45,19 @@ export async function checkSpam(useEmail: boolean, data: string) {
       });
 
       if (emailCount >= maxEmails) {
+        const newBanDate = new Date();
+        const cooldown = 1000 * 60 * 60 * 24 * 7;
+        newBanDate.setTime(newBanDate.getTime() + cooldown);
+        // 1000 ms/s * 60 s/min * 60 min/hour * 24 hours/day * 7 days
+
+        const newTempBan = await prisma.blockedUser.create({
+          data: {
+            email: data,
+            reason: "automated ban from contact box spam",
+            banEndTime: newBanDate,
+            lastUpdated: new Date(),
+          },
+        });
         return true;
       } else {
         return false;
@@ -66,6 +79,19 @@ export async function checkSpam(useEmail: boolean, data: string) {
       });
 
       if (ipCount >= maxEmails) {
+        const newBanDate = new Date();
+        const cooldown = 1000 * 60 * 60 * 24 * 7;
+        newBanDate.setTime(newBanDate.getTime() + cooldown);
+        // 1000 ms/s * 60 s/min * 60 min/hour * 24 hours/day * 7 days
+
+        const newTempBan = await prisma.blockedUser.create({
+          data: {
+            ip: data,
+            reason: "automated ban from contact box spam",
+            banEndTime: newBanDate,
+            lastUpdated: new Date(),
+          },
+        });
         return true;
       } else {
         return false;

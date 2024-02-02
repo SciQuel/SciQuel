@@ -23,18 +23,14 @@ export const contactGetSchema = z.object({
       "Invalid status.  Valid statuses: UNOPENED | NEEDS_RESPONSE | CLOSED | ARCHIVED",
   }),
 
-  start_index: z
-    .string({
-      required_error: "start_index is required",
-      invalid_type_error: "start_index must be a number",
-    })
-    .regex(/^[\d]+$/),
-  end_index: z
-    .string({
-      required_error: "end_index is required",
-      invalid_type_error: "end_index must be a number",
-    })
-    .regex(/^[\d]+$/),
+  start_index: z.preprocess(
+    (value) => parseInt(z.string().parse(value)),
+    z.number().nonnegative().int(),
+  ),
+  end_index: z.preprocess(
+    (value) => parseInt(z.string().parse(value)),
+    z.number().nonnegative().int(),
+  ),
 });
 
 export const contactPatchSchema = z.object({
@@ -71,6 +67,12 @@ export const BanPostSchema = z.object({
     invalid_type_error: "should_archive must be a boolean",
     required_error: "should_archive is required.",
   }),
+  end_time: z
+    .preprocess(
+      (value) => new Date(z.string().datetime({ offset: true }).parse(value)),
+      z.date(),
+    )
+    .optional(),
 });
 
 export const BanGetSchema = z.object({
@@ -85,7 +87,10 @@ export const BanGetSchema = z.object({
 });
 
 export const RecentBanGetSchema = z.object({
-  start_index: z.string().regex(/^[\d]+$/),
+  start_index: z.preprocess(
+    (value) => parseInt(z.string().parse(value)),
+    z.number().nonnegative().int(),
+  ),
 });
 
 export const BanDeleteSchema = z.object({

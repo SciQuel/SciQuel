@@ -30,16 +30,6 @@ export async function GET(req: NextRequest) {
 
   const { start_index, end_index, status } = parsedRequest.data;
 
-  const startInt = parseInt(start_index);
-  const endInt = parseInt(end_index);
-
-  if (isNaN(startInt) || isNaN(endInt) || endInt < startInt) {
-    return NextResponse.json(
-      { error: "start or end index invalid" },
-      { status: 400 },
-    );
-  }
-
   const editorStatus = await isEditor();
 
   if (!editorStatus) {
@@ -48,8 +38,8 @@ export async function GET(req: NextRequest) {
 
   try {
     const messageList = await prisma.contactMessage.findMany({
-      skip: startInt,
-      take: endInt - startInt + 1,
+      skip: start_index,
+      take: end_index - start_index + 1,
       where: {
         status: {
           equals: status as ContactStatus,

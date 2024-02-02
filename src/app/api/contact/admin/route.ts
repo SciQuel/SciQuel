@@ -76,12 +76,14 @@ export async function POST(req: NextRequest) {
 
   try {
     const now = new Date();
-    const { method, value, reason, should_archive } = parsedRequest.data;
+    const { method, value, reason, should_archive, end_time } =
+      parsedRequest.data;
     if (method == "EMAIL") {
       const data: Prisma.BlockedUserCreateInput = {
         email: value,
         reason: reason,
         lastUpdated: now,
+        banEndTime: end_time,
       };
       const newDoc = await prisma.blockedUser.create({
         data: data,
@@ -109,6 +111,7 @@ export async function POST(req: NextRequest) {
         ip: value,
         reason: reason,
         lastUpdated: now,
+        banEndTime: end_time,
       };
 
       const newDoc = await prisma.blockedUser.create({

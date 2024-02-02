@@ -21,6 +21,7 @@ export default function UserBanForm({
   const [reason, setReason] = useState("");
   const [shouldArchive, setShouldArchive] = useState(false);
   const [error, setError] = useState("");
+  const [banEndTime, setBanEndTime] = useState<number>(0);
 
   async function submitForm(e: FormEvent) {
     e.preventDefault();
@@ -40,28 +41,67 @@ export default function UserBanForm({
     }
     console.log("no errors");
 
+    let endTime: null | Date = null;
+
+    if (banEndTime > 0) {
+      const totalMSUntilEnd = 1000 * 60 * 60 * 24 * banEndTime;
+      // 1000 milliseconds/second * 60 seconds/minute
+      // * 60 minutes / hour * 24 hours/day
+      // * banEndTime days
+
+      const newEndTime = new Date();
+      newEndTime.setTime(newEndTime.getTime() + totalMSUntilEnd);
+      endTime = newEndTime;
+    }
+
     try {
       if (useIp) {
-        const ipResponse = await axios.post(
-          `${env.NEXT_PUBLIC_SITE_URL}/api/contact/admin`,
-          {
-            method: "IP",
-            value: message.senderIp,
-            reason: reason,
-            should_archive: shouldArchive,
-          },
-        );
+        if (endTime) {
+          const ipResponse = await axios.post(
+            `${env.NEXT_PUBLIC_SITE_URL}/api/contact/admin`,
+            {
+              method: "IP",
+              value: message.senderIp,
+              reason: reason,
+              should_archive: shouldArchive,
+              end_time: endTime,
+            },
+          );
+        } else {
+          const ipResponse = await axios.post(
+            `${env.NEXT_PUBLIC_SITE_URL}/api/contact/admin`,
+            {
+              method: "IP",
+              value: message.senderIp,
+              reason: reason,
+              should_archive: shouldArchive,
+            },
+          );
+        }
       }
       if (useEmail) {
-        const emailResponse = await axios.post(
-          `${env.NEXT_PUBLIC_SITE_URL}/api/contact/admin`,
-          {
-            method: "EMAIL",
-            value: message.email,
-            reason: reason,
-            should_archive: shouldArchive,
-          },
-        );
+        if (endTime) {
+          const emailResponse = await axios.post(
+            `${env.NEXT_PUBLIC_SITE_URL}/api/contact/admin`,
+            {
+              method: "EMAIL",
+              value: message.email,
+              reason: reason,
+              should_archive: shouldArchive,
+              end_time: endTime,
+            },
+          );
+        } else {
+          const emailResponse = await axios.post(
+            `${env.NEXT_PUBLIC_SITE_URL}/api/contact/admin`,
+            {
+              method: "EMAIL",
+              value: message.email,
+              reason: reason,
+              should_archive: shouldArchive,
+            },
+          );
+        }
       }
 
       if (shouldArchive) {
@@ -127,6 +167,22 @@ export default function UserBanForm({
               setReason(e.currentTarget.value);
             }}
           ></textarea>
+        </label>
+
+        <label>
+          Ban Length: <br />
+          <select
+            className="my-2 border border-black bg-white p-2"
+            value={banEndTime}
+            onChange={(e) => {
+              setBanEndTime(Number(e.target.value));
+            }}
+          >
+            <option value={1}>1 day</option>
+            <option value={7}>1 week</option>
+            <option value={14}>2 weeks</option>
+            <option value={0}>Permanent</option>
+          </select>
         </label>
         <br />
         <label>

@@ -23,34 +23,6 @@ export async function POST(req: NextRequest) {
     const timestamp = new Date();
     const ip = req.headers.get("x-forwarded-for");
 
-    if (ip !== null) {
-      const isSpam = await checkSpam(false, ip);
-      if (isSpam) {
-        return NextResponse.json(
-          { error: "too many messages from this ip address" },
-          { status: 400 },
-        );
-      } else if (isSpam === undefined) {
-        return NextResponse.json(
-          { error: "Internal Server Error" },
-          { status: 500 },
-        );
-      }
-    } else {
-      const isSpam = await checkSpam(true, parsedRequest.data.reply_email);
-      if (isSpam) {
-        return NextResponse.json(
-          { error: "too many messages from this ip address" },
-          { status: 400 },
-        );
-      } else if (isSpam === undefined) {
-        return NextResponse.json(
-          { error: "Internal Server Error" },
-          { status: 500 },
-        );
-      }
-    }
-
     const isBanned = await checkBans(
       parsedRequest.data.reply_email,
       ip ? ip : undefined,
@@ -64,6 +36,24 @@ export async function POST(req: NextRequest) {
       );
     }
     if (isBanned === undefined) {
+      return NextResponse.json(
+        { error: "Internal Server Error" },
+        { status: 500 },
+      );
+    }
+
+    let isSpam;
+    if (ip !== null) {
+      isSpam = await checkSpam(false, ip);
+    } else {
+      isSpam = await checkSpam(true, parsedRequest.data.reply_email);
+    }
+    if (isSpam === true) {
+      return NextResponse.json(
+        { error: "too many messages from this ip address" },
+        { status: 400 },
+      );
+    } else if (isSpam === undefined) {
       return NextResponse.json(
         { error: "Internal Server Error" },
         { status: 500 },
@@ -95,7 +85,7 @@ export async function POST(req: NextRequest) {
 
     await mailer.sendMail({
       from: '"SciQuel" <no-reply@sciquel.org>',
-      replyTo: '"SciQuel Team" <team@sciquel.org>',
+      replyTo: process.env.SCIQUEL_TEAM_EMAIL,
       to: process.env.SCIQUEL_TEAM_EMAIL,
       subject: "Sciquel: One(1) New Get Involved Form Submitted",
       text: bodyText,

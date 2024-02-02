@@ -237,7 +237,7 @@ export default function ContactDashboard() {
                           }
                         }}
                         message={message}
-                        key={`${item}-message-${index}`}
+                        key={`${item}-message-${message.id}`}
                       />
                     );
                   })

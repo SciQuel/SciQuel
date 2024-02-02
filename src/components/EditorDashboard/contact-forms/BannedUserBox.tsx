@@ -3,6 +3,7 @@
 import env from "@/lib/env";
 import { type BlockedUser } from "@prisma/client";
 import axios from "axios";
+import { DateTime } from "luxon";
 import { useState } from "react";
 
 interface Props {
@@ -39,6 +40,14 @@ export default function BannedUserBox({ record, getRecents }: Props) {
       <h3>IP: {record.ip ? record.ip : "unknown"}</h3>
       <h3>Reason:</h3>
       <p>{record.reason}</p>
+      <h3>Ban End Date:</h3>
+      <p>
+        {record.banEndTime
+          ? DateTime.fromJSDate(new Date(record.banEndTime)).toLocaleString(
+              DateTime.DATETIME_FULL,
+            )
+          : "None (Permanent Ban)"}
+      </p>
       <div className="flex flex-col">
         <button
           onClick={() => {
