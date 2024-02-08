@@ -85,7 +85,11 @@ export default function ContactDashboard() {
 
   async function updateInProgress(newStart: number) {
     const inProgressRes = await axios.get(
-      `${env.NEXT_PUBLIC_SITE_URL}/api/contact/?status=NEEDS_RESPONSE&start_index=0&end_index=5`,
+      `${
+        env.NEXT_PUBLIC_SITE_URL
+      }/api/contact/?status=NEEDS_RESPONSE&start_index=${newStart}&end_index=${
+        newStart + countPerGet - 1
+      }`,
     );
     if (inProgressRes.status == 200) {
       const inProgressData = inProgressRes.data as GetContactResult;
@@ -98,7 +102,11 @@ export default function ContactDashboard() {
   async function updateClosed(newStart: number) {
     try {
       const closedRes = await axios.get(
-        `${env.NEXT_PUBLIC_SITE_URL}/api/contact/?status=CLOSED&start_index=0&end_index=5`,
+        `${
+          env.NEXT_PUBLIC_SITE_URL
+        }/api/contact/?status=CLOSED&start_index=${newStart}&end_index=${
+          newStart + countPerGet - 1
+        }`,
       );
       if (closedRes.status == 200) {
         const closedData = closedRes.data as GetContactResult;

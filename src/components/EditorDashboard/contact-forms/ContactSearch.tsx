@@ -50,7 +50,9 @@ export default function ContactSearch() {
         onSubmit={(e) => {
           e.preventDefault();
           search()
-            .then((result) => {})
+            .then((result) => {
+              setError("");
+            })
             .catch((err) => {
               console.error(err);
               setError("Something went wrong. Please try again later.");
@@ -95,7 +97,13 @@ export default function ContactSearch() {
             Search
           </button>
         </div>
-        {error ? <p>{error}</p> : <></>}
+        {error ? (
+          <p className="m-2 rounded border-2 border-red-800 bg-red-100 p-1 text-lg font-semibold text-red-900">
+            {error}
+          </p>
+        ) : (
+          <></>
+        )}
       </form>
       {searchResults !== null ? (
         <div>

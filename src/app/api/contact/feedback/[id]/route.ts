@@ -58,7 +58,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Params }) {
     await mailer.sendMail({
       from: process.env.SCIQUEL_TEAM_EMAIL,
       replyTo: process.env.SCIQUEL_TEAM_EMAIL,
-      cc: process.env.SCIQUEL_TEAM_EMAIL,
+      cc: ["edward@sciquel.org", process.env.SCIQUEL_TEAM_EMAIL],
       to: foundFeedback.email,
       subject: "Re: Your Sciquel Feedback Submission",
       text: parsedRequest.data.reply_text,

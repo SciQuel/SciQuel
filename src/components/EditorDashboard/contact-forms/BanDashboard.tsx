@@ -79,7 +79,9 @@ export default function BannedUserDashboard() {
         onSubmit={(e) => {
           e.preventDefault();
           getSearchResults()
-            .then()
+            .then(() => {
+              setSearchError("");
+            })
             .catch((err) => {
               setSearchError("Something went wrong.  Please try again later");
             });
@@ -116,24 +118,20 @@ export default function BannedUserDashboard() {
         >
           Search
         </button>
-        {searchError ? <p>{searchError}</p> : <></>}
+        {searchError ? (
+          <p className="m-2 rounded border-2 border-red-800 bg-red-100 p-1 text-lg font-semibold text-red-900">
+            {searchError}
+          </p>
+        ) : (
+          <></>
+        )}
       </form>
       {searchResults ? (
         searchResults.length > 0 ? (
-          <div className="my-2   rounded border-4 border-sciquelTeal p-1">
-            <h1 className="m-1 text-xl font-semibold text-sciquelDarkText">
-              Search Results:
-            </h1>
-            <div className=" grid gap-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {searchResults.map((bannedUser, index) => (
-                <BannedUserBox
-                  key={`banned-user-search-${bannedUser.id}`}
-                  record={bannedUser}
-                  updateRecentsOnChange={false}
-                  getRecents={() => {}}
-                />
-              ))}
-            </div>
+          <div>
+            {searchResults.map((bannedUser, index) => (
+              <div></div>
+            ))}
           </div>
         ) : (
           <p>No matching results found</p>
@@ -142,9 +140,7 @@ export default function BannedUserDashboard() {
         <></>
       )}
       <div>
-        <h1 className="text-xl font-semibold text-sciquelDarkText">
-          Recent Activity
-        </h1>
+        <h1>Recent Activity</h1>
         {recentBans && recentBans.length > 0 ? (
           <>
             {" "}

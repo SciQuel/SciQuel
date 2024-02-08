@@ -114,6 +114,10 @@ export function ContactForm({ endpoint }: Props) {
           {showError ? (
             <div className="my-2 w-full rounded border-2 border-red-500 bg-red-200 p-2">
               <p>Something went wrong. Please try again later.</p>
+              <p>
+                If the problem persists, please reach out to us at{" "}
+                <a href="mailto:team@sciquel.org">team@sciquel.org</a>
+              </p>
             </div>
           ) : (
             <></>
