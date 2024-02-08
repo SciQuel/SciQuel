@@ -101,8 +101,8 @@ export async function POST(req: NextRequest) {
 
     await mailer.sendMail({
       from: '"SciQuel" <no-reply@sciquel.org>',
-      replyTo: process.env.SCIQUEL_TEAM_EMAIL,
-      to: process.env.SCIQUEL_TEAM_EMAIL,
+      replyTo: process.env.SCIQUEL_EDITORS_EMAIL,
+      to: process.env.SCIQUEL_EDITORS_EMAIL,
       subject: "Sciquel: One(1) New Feedback Form Submitted",
       text: bodyText,
       html: bodyHTML,

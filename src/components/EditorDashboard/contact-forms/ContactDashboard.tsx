@@ -7,6 +7,7 @@ import axios from "axios";
 import Link from "next/link";
 import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 import ContactBox from "./ContactBox";
+import ContactSearch from "./ContactSearch";
 
 export default function ContactDashboard() {
   const [unopened, setUnopened] = useState<ContactMessage[]>([]);

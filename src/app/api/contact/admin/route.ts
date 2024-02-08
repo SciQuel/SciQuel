@@ -1,9 +1,13 @@
 import { parse } from "path";
 import prisma from "@/lib/prisma";
-import { type Prisma } from "@prisma/client";
+import { type BlockedUser, type Prisma } from "@prisma/client";
 import { NextResponse, type NextRequest } from "next/server";
-import { BanDeleteSchema, BanGetSchema, BanPostSchema } from "../schema";
 import { isEditor } from "../tools";
+import { BanDeleteSchema, BanGetSchema, BanPostSchema } from "./schema";
+
+export type GetBanResult = {
+  bans: BlockedUser[];
+};
 
 export async function DELETE(req: NextRequest) {
   const parsedRequest = BanDeleteSchema.safeParse(await req.json());
@@ -159,7 +163,7 @@ export async function GET(req: NextRequest) {
   if (!parsedRequest.success) {
     return NextResponse.json(
       {
-        error: parsedRequest.error ? parsedRequest.error : "Bad Request",
+        error: parsedRequest.error,
       },
       { status: 400 },
     );
@@ -171,27 +175,51 @@ export async function GET(req: NextRequest) {
   }
   const { category, search_string } = parsedRequest.data;
 
+  let searchArgs: Prisma.BlockedUserFindManyArgs;
   switch (category) {
-    case "IP":
-      const ipSearchData: Prisma.BlockedUserFindManyArgs = {
+    case "EMAIL":
+      searchArgs = {
         where: {
-          ip: {
-            equals: search_string,
+          email: {
+            contains: search_string,
           },
         },
       };
+      break;
 
-      const foundUsers = await prisma.blockedUser.findMany(ipSearchData);
+    case "IP":
+      searchArgs = {
+        where: {
+          ip: {
+            contains: search_string,
+          },
+        },
+      };
+      break;
 
-      if (foundUsers) {
-        return NextResponse.json({
-          userList: foundUsers,
-        });
-      } else {
-        return NextResponse.json(
-          { error: "Internal Server Error" },
-          { status: 500 },
-        );
-      }
+    case "REASON":
+      searchArgs = {
+        where: {
+          reason: {
+            contains: search_string,
+          },
+        },
+      };
+      break;
+    default:
+      return NextResponse.json(
+        { error: "Invalid search category" },
+        { status: 400 },
+      );
+  }
+
+  try {
+    const foundBans = await prisma.blockedUser.findMany(searchArgs);
+    return NextResponse.json({ bans: foundBans });
+  } catch (err) {
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 },
+    );
   }
 }

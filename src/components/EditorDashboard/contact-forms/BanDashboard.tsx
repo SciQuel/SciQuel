@@ -1,6 +1,7 @@
 "use client";
 
 import { type GetRecentBanResult } from "@/app/api/contact/admin/recent/route";
+import { type GetBanResult } from "@/app/api/contact/admin/route";
 import env from "@/lib/env";
 import { type BlockedUser } from "@prisma/client";
 import axios from "axios";
@@ -8,7 +9,13 @@ import { useEffect, useState } from "react";
 import BannedUserBox from "./BannedUserBox";
 
 export default function BannedUserDashboard() {
-  const [searchType, setSearchType] = useState("ip");
+  const [searchType, setSearchType] = useState("IP");
+  const [searchString, setSearchString] = useState("");
+  const [searchResults, setSearchResults] = useState<null | BlockedUser[]>(
+    null,
+  );
+  const [searchError, setSearchError] = useState("");
+
   const [recentBans, setRecentBans] = useState<undefined | BlockedUser[]>(
     undefined,
   );
@@ -39,11 +46,55 @@ export default function BannedUserDashboard() {
     }
   }
 
+  async function getSearchResults() {
+    if (!searchString) {
+      setSearchError("Search text is empty. Please fill out the input box.");
+    } else {
+      try {
+        const response = await axios.get(
+          `${env.NEXT_PUBLIC_SITE_URL}/api/contact/admin`,
+          {
+            params: {
+              category: searchType,
+              search_string: searchString,
+            },
+          },
+        );
+        if (response.status == 200) {
+          const data = response.data as GetBanResult;
+          setSearchResults(data.bans);
+        } else {
+          setSearchError(`Something went wrong. code: ${response.status}`);
+        }
+      } catch (err) {
+        console.error(err);
+        setSearchError("Something went wrong.  Please try again later");
+      }
+    }
+  }
+
   return (
     <div>
-      <form>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          getSearchResults()
+            .then()
+            .catch((err) => {
+              setSearchError("Something went wrong.  Please try again later");
+            });
+        }}
+      >
         <label>
-          Search Bans: <input type="search"></input>
+          Search Bans:{" "}
+          <input
+            value={searchString}
+            onChange={(e) => {
+              setSearchString(e.target.value);
+            }}
+            required
+            type="search"
+          ></input>
         </label>
         <label>
           Value:
@@ -54,9 +105,9 @@ export default function BannedUserDashboard() {
               setSearchType(e.target.value);
             }}
           >
-            <option value="ip">User IP</option>
-            <option value="email">User Email</option>
-            <option value="reason">Ban Reason</option>
+            <option value="IP">User IP</option>
+            <option value="EMAIL">User Email</option>
+            <option value="REASON">Ban Reason</option>
           </select>
         </label>
         <button
@@ -65,9 +116,35 @@ export default function BannedUserDashboard() {
         >
           Search
         </button>
+        {searchError ? <p>{searchError}</p> : <></>}
       </form>
+      {searchResults ? (
+        searchResults.length > 0 ? (
+          <div className="my-2   rounded border-4 border-sciquelTeal p-1">
+            <h1 className="m-1 text-xl font-semibold text-sciquelDarkText">
+              Search Results:
+            </h1>
+            <div className=" grid gap-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {searchResults.map((bannedUser, index) => (
+                <BannedUserBox
+                  key={`banned-user-search-${bannedUser.id}`}
+                  record={bannedUser}
+                  updateRecentsOnChange={false}
+                  getRecents={() => {}}
+                />
+              ))}
+            </div>
+          </div>
+        ) : (
+          <p>No matching results found</p>
+        )
+      ) : (
+        <></>
+      )}
       <div>
-        <h1>Recent Activity</h1>
+        <h1 className="text-xl font-semibold text-sciquelDarkText">
+          Recent Activity
+        </h1>
         {recentBans && recentBans.length > 0 ? (
           <>
             {" "}
@@ -80,6 +157,7 @@ export default function BannedUserDashboard() {
               {recentBans ? (
                 recentBans?.map((ban, index) => (
                   <BannedUserBox
+                    updateRecentsOnChange={true}
                     getRecents={() => {
                       getRecents(startIndex);
                     }}

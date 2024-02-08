@@ -1,8 +1,8 @@
 import prisma from "@/lib/prisma";
 import { type BlockedUser } from "@prisma/client";
 import { NextResponse, type NextRequest } from "next/server";
-import { RecentBanGetSchema } from "../../schema";
 import { isEditor } from "../../tools";
+import { RecentBanGetSchema } from "../schema";
 
 export type GetRecentBanResult = {
   bans: BlockedUser[];

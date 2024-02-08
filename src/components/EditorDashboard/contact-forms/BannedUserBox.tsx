@@ -8,10 +8,15 @@ import { useState } from "react";
 
 interface Props {
   record: BlockedUser;
+  updateRecentsOnChange: boolean;
   getRecents: () => void;
 }
 
-export default function BannedUserBox({ record, getRecents }: Props) {
+export default function BannedUserBox({
+  record,
+  getRecents,
+  updateRecentsOnChange,
+}: Props) {
   const [showConfirm, setShowConfirm] = useState(false);
 
   async function reverseBan() {
@@ -26,7 +31,9 @@ export default function BannedUserBox({ record, getRecents }: Props) {
       );
 
       if (res.status == 200) {
-        getRecents();
+        if (updateRecentsOnChange) {
+          getRecents();
+        }
       }
     } catch (err) {
       console.error(err);
