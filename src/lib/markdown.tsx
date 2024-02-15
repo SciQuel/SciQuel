@@ -2,6 +2,7 @@ import StoryBlockquote from "@/components/story-components/markdown/StoryBlockqu
 import StoryCaptionCitation from "@/components/story-components/markdown/StoryCaptionCitation";
 import StoryCode from "@/components/story-components/markdown/StoryCode";
 import StoryDropdown from "@/components/story-components/markdown/StoryDropdown";
+import StoryEndIcon from "@/components/story-components/markdown/StoryEndIcon";
 import StoryGrayText from "@/components/story-components/markdown/StoryGrayText";
 import StoryH1 from "@/components/story-components/markdown/StoryH1";
 import StoryH2 from "@/components/story-components/markdown/StoryH2";
@@ -47,6 +48,7 @@ export async function generateMarkdown(content: string) {
         "caption-citation",
         "dropdown",
         "gray-text",
+        "end-icon",
       ],
     })
     .use(rehypeReact, {
@@ -104,6 +106,7 @@ export async function generateMarkdown(content: string) {
             return <></>;
           }
         },
+
         "caption-citation": (props: HTMLProps<HTMLElement>) => {
           if (props.children) {
             let children = props.children as [];
@@ -114,6 +117,7 @@ export async function generateMarkdown(content: string) {
             return <></>;
           }
         },
+        "end-icon": (props: HTMLProps<HTMLElement>) => <StoryEndIcon />,
       },
     })
     .process(content);

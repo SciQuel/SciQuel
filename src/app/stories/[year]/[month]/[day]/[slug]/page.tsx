@@ -14,7 +14,9 @@ import { tagUser } from "@/lib/cache";
 import env from "@/lib/env";
 import { generateMarkdown } from "@/lib/markdown";
 import { getServerSession } from "next-auth";
+import Image from "next/image";
 import { type ReactNode } from "react";
+import SciquelIcon from "../../../../../../../public/assets/images/logo.png";
 
 interface Params {
   params: {
@@ -114,7 +116,9 @@ export default async function StoriesPage({ params }: Params) {
   const whatsNewArticles = await getWhatsNewArticles();
   const story = await retrieveStoryContent(params);
 
-  const { file } = await generateMarkdown(story.storyContent[0].content);
+  const { file } = await generateMarkdown(
+    `${story.storyContent[0].content} :end-icon`,
+  );
   const testContent = await generateMarkdown(
     `>blockquote   "It’s really interesting for us because now we’re showing that not only the Northern Hemisphere was burning, but the Southern Hemisphere too,” he said. “It was global."`,
   );
@@ -330,7 +334,6 @@ export default async function StoriesPage({ params }: Params) {
                   </p>
                 </div>
               </div>
-              {/* <div>right col</div> */}
             </div>
 
             <StoryFooter

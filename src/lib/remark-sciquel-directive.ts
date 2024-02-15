@@ -18,6 +18,7 @@ const allowedDirectives = [
   "caption-citation",
   "dropdown",
   "gray-text",
+  "end-icon",
 ];
 
 const mapDirectiveNode: MapFunction = (node) => {

@@ -5,6 +5,7 @@ declare global {
       "caption-citation": React.HTMLAttributes;
       "gray-text": React.HTMLAttributes;
       dropdown: React.HTMLAttributes;
+      "end-icon": React.HTMLAttributes;
     }
   }
 }
