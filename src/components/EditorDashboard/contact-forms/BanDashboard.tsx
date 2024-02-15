@@ -128,9 +128,14 @@ export default function BannedUserDashboard() {
       </form>
       {searchResults ? (
         searchResults.length > 0 ? (
-          <div>
+          <div className="grid gap-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {searchResults.map((bannedUser, index) => (
-              <div></div>
+              <BannedUserBox
+                key={`search-user-${bannedUser.id}`}
+                record={bannedUser}
+                updateRecentsOnChange={false}
+                getRecents={() => {}}
+              />
             ))}
           </div>
         ) : (

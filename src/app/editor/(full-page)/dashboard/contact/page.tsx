@@ -13,7 +13,7 @@ export default async function ContactDashboardPage() {
         </Link>
       </h1>
       <Link
-        className="m-4 block w-fit rounded-full border-4 border-sciquelTeal px-4 py-2 text-xl font-bold"
+        className="m-4 block w-fit rounded-full border-4 border-sciquelTeal px-3 py-1 text-lg font-bold"
         href={"/editor/dashboard/contact/search"}
       >
         Go to search page
