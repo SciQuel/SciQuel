@@ -59,6 +59,11 @@ enum QuizType {
   POST_QUIZ
 }
 
+enum QuestionType {
+  MULTIPLE_CHOICE
+  TRUE_FALSE
+}
+
 model Story {
   id        String    @id @default(auto()) @map("_id") @db.ObjectId
   storyType StoryType
@@ -197,3 +202,13 @@ model Bookmark {
 
   @@unique([userId, storyId])
 }
+
+model QuizQuestion {
+  id            String       @id @default(auto()) @map("_id") @db.ObjectId
+  storyId       String       @db.ObjectId
+  questionType  QuestionType 
+  question      String
+  options       String[]
+  correctAnswer String[]
+}
+

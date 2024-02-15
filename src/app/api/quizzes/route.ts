@@ -1,15 +1,42 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+import { PrismaClient } from "@prisma/client";
 import { NextResponse, type NextRequest } from "next/server";
+import { createQuizSchema, getQuizzesSchema } from "./schema";
 
-export function POST(req: NextRequest) {
+const prisma = new PrismaClient();
+
+export async function POST(req: NextRequest) {
   try {
-    // 假设你能从请求中解析出所需的数据
-    const quizData = {
-      /* 你的处理逻辑 */
-    };
+    const requestBody = await req.json();
+    const parsed = createQuizSchema.safeParse(requestBody);
 
-    // 使用 NextResponse 创建 JSON 响应
+    if (!parsed.success) {
+      return new NextResponse(JSON.stringify({ error: parsed.error }), {
+        status: 400,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+    }
+
+    const quizData = parsed.data;
+
+    const createdQuiz = await prisma.quizQuestion.create({
+      data: {
+        storyId: quizData.storyId,
+        questionType: quizData.questionType,
+        question: quizData.question,
+        options: quizData.options,
+        correctAnswer: quizData.correctAnswer,
+      },
+    });
+
     return new NextResponse(
-      JSON.stringify({ message: "Quiz received", quizData }),
+      JSON.stringify({
+        message: "Quiz question created",
+        quizData: createdQuiz,
+      }),
       {
         status: 200,
         headers: {
@@ -18,12 +45,58 @@ export function POST(req: NextRequest) {
       },
     );
   } catch (error) {
-    console.error("处理请求时出错:", error);
-    return new NextResponse(JSON.stringify({ error: "内部服务器错误" }), {
-      status: 500,
+    console.error("Error processing request:", error);
+    return new NextResponse(
+      JSON.stringify({ error: "Internal Server Error" }),
+      {
+        status: 500,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
+    );
+  }
+}
+
+export async function GET(req: NextRequest) {
+  try {
+    const url = new URL(req.url);
+    const storyId = url.searchParams.get("storyId");
+
+    if (!storyId) {
+      return new NextResponse(
+        JSON.stringify({ error: "storyId is required" }),
+        {
+          status: 400,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+      );
+    }
+
+    const quizzes = await prisma.quizQuestion.findMany({
+      where: {
+        storyId: storyId,
+      },
+    });
+
+    return new NextResponse(JSON.stringify({ quizzes }), {
+      status: 200,
       headers: {
         "Content-Type": "application/json",
       },
     });
+  } catch (error) {
+    console.error("error processing request:", error);
+    return new NextResponse(
+      JSON.stringify({ error: "Internal Server Error" }),
+      {
+        status: 500,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
+    );
   }
 }
