@@ -40,7 +40,7 @@ export default function ArticleCard({
               "ml-auto w-[175px]": mini && preferHorizontal,
             },
             mini && !preferHorizontal
-              ? "min-h-[105%] min-w-[265px] max-w-xs"
+              ? "min-h-[270px] min-w-[265px] max-w-xs"
               : "min-w-[300px]",
             preferHorizontal ? "flex-row" : "flex-col",
           )}
@@ -50,7 +50,7 @@ export default function ArticleCard({
               "flex flex-col gap-4",
               mini
                 ? preferHorizontal
-                  ? "w-full py-2"
+                  ? "w-full"
                   : "grow  p-3"
                 : preferHorizontal
                 ? "w-2/3 p-3"
@@ -90,7 +90,11 @@ export default function ArticleCard({
                 </h1>
               </div>
               <div className="flex items-center">
-                <p className={clsx("line-clamp-3", mini ? "text-xs" : "")}>
+                <p
+                  className={clsx(
+                    mini ? "line-clamp-2 text-xs" : "line-clamp-3",
+                  )}
+                >
                   {subtitle}
                 </p>
               </div>

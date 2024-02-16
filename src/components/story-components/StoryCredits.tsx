@@ -1,6 +1,6 @@
 "use client";
 
-import { GetStoryResult } from "@/app/api/stories/[year]/[month]/[day]/[slug]/route";
+import { type GetStoryResult } from "@/app/api/stories/[year]/[month]/[day]/[slug]/route";
 import { type StoryTopic } from "@prisma/client";
 import { DateTime } from "luxon";
 import Image from "next/image";
@@ -86,17 +86,17 @@ export default function StoryCredits({ story }: Props) {
   }, [headerFont]);
 
   const buildAuthors = () => {
-    let authors: string[] = [];
+    const authors: string[] = [];
 
-    let authorIcons: (string | null)[] = [];
+    const authorIcons: (string | null)[] = [];
 
     let illustrators: string[] = [];
     let illustratorIcons: (string | null)[] = [];
 
-    let animators: string[] = [];
-    let animatorIcons: (string | null)[] = [];
+    const animators: string[] = [];
+    const animatorIcons: (string | null)[] = [];
 
-    let largestList = 0;
+    const largestList = 0;
 
     story.storyContributions.forEach((contributor, index) => {
       switch (contributor.contributionType) {
@@ -315,9 +315,9 @@ export default function StoryCredits({ story }: Props) {
   };
 
   const buildPrintAuthors = () => {
-    let authors: string[] = [];
-    let illustrators: string[] = [];
-    let animators: string[] = [];
+    const authors: string[] = [];
+    const illustrators: string[] = [];
+    const animators: string[] = [];
     story.storyContributions.forEach((contributor, index) => {
       switch (contributor.contributionType) {
         case "AUTHOR":
@@ -487,7 +487,7 @@ export default function StoryCredits({ story }: Props) {
 
   return isPrintMode ? (
     <>
-      <div className="relative mx-0 w-screen max-w-[768px] px-2 pt-10 md:mx-auto md:px-0">
+      <div className="relative mx-0 max-w-[768px] px-2 pt-10 md:mx-auto md:px-0">
         <Image
           src={story.thumbnailUrl}
           className="w-full min-w-0 object-cover"
@@ -502,7 +502,7 @@ export default function StoryCredits({ story }: Props) {
         <h2 className="font-sourceSerif4 text-2xl">{story.summary}</h2>
       </div>
 
-      <div className="relative mx-2 mt-5 flex w-screen flex-col px-2 sm:mx-auto md:w-[768px] md:px-0">
+      <div className="relative mx-2 mt-5 flex flex-col px-2 sm:mx-auto md:w-[768px] md:px-0">
         <div className="pointer-events-none top-0 flex flex-1 flex-row justify-start xl:hidden">
           <ShareLinks storyId={story.id} observe={false} />
         </div>
@@ -545,7 +545,7 @@ export default function StoryCredits({ story }: Props) {
     </>
   ) : (
     <>
-      <div className="absolute left-0 top-0 m-0 flex min-h-screen w-screen items-end">
+      <div className="absolute left-0 top-0 m-0 flex min-h-screen items-end">
         <Image
           src={story.thumbnailUrl}
           className="h-full object-cover"
@@ -581,11 +581,11 @@ export default function StoryCredits({ story }: Props) {
         </div>
       </div>
       <div className="h-[calc(100vh_-_6rem)] w-full" />{" "}
-      <p className="my-0 w-screen px-2 py-0 font-sourceSerif4">
+      <p className="my-0 px-2 py-0 font-sourceSerif4">
         Title Image provided by Source name
       </p>
       <div className="mt-0 justify-self-start pt-0">
-        <div className="relative mx-0 mt-0 flex w-screen flex-col px-2 md:mx-auto md:w-[768px]">
+        <div className="relative mx-0 mt-0 flex flex-col px-2 md:mx-auto md:w-[768px]">
           <div className="pointer-events-none top-0 flex flex-1 flex-row flex-wrap justify-start xl:hidden">
             <ShareLinks storyId={story.id} observe={false} />
           </div>
