@@ -11,6 +11,7 @@ export const createQuizSchema = z.object({
   question: z.string(),
   options: z.array(z.string()),
   correctAnswer: z.array(z.string()),
+  explanation: z.string(),
 });
 
 export const getQuizzesSchema = z.object({
