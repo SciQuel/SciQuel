@@ -20,7 +20,7 @@ export default function MoreCard({ articles1, articles2 }: Props) {
           </div>
         )}
         {articles2 && (
-          <div className="justify-self-center">
+          <div className="max-w-xs justify-self-center">
             <div className="mb-8">
               <HomepageSection heading="Popular" />
             </div>

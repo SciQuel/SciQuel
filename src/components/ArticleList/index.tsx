@@ -19,11 +19,11 @@ export default function ArticleList({
       className={clsx(
         mini
           ? preferHorizontal
-            ? ""
-            : "grid grid-cols-1 gap-10 lg:grid-cols-2 lg:gap-10 2xl:grid-cols-3 2xl:gap-10"
+            ? "grid grid-cols-1 gap-5"
+            : "grid grid-cols-1 gap-8 lg:grid-cols-2 2xl:grid-cols-3"
           : preferHorizontal
-          ? "grid grid-cols-1 gap-4"
-          : "grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3",
+          ? "grid grid-cols-1 gap-10"
+          : "grid grid-cols-1 gap-10 md:grid-cols-2 xl:grid-cols-3",
       )}
     >
       {articles.map((article) => (

@@ -1,6 +1,6 @@
 "use client";
 
-import { GetStoryResult } from "@/app/api/stories/[year]/[month]/[day]/[slug]/route";
+import { type GetStoryResult } from "@/app/api/stories/[year]/[month]/[day]/[slug]/route";
 import { type StoryTopic } from "@prisma/client";
 import { DateTime } from "luxon";
 import Image from "next/image";
@@ -86,17 +86,17 @@ export default function StoryCredits({ story }: Props) {
   }, [headerFont]);
 
   const buildAuthors = () => {
-    let authors: string[] = [];
+    const authors: string[] = [];
 
-    let authorIcons: (string | null)[] = [];
+    const authorIcons: (string | null)[] = [];
 
     let illustrators: string[] = [];
     let illustratorIcons: (string | null)[] = [];
 
-    let animators: string[] = [];
-    let animatorIcons: (string | null)[] = [];
+    const animators: string[] = [];
+    const animatorIcons: (string | null)[] = [];
 
-    let largestList = 0;
+    const largestList = 0;
 
     story.storyContributions.forEach((contributor, index) => {
       switch (contributor.contributionType) {
@@ -315,9 +315,9 @@ export default function StoryCredits({ story }: Props) {
   };
 
   const buildPrintAuthors = () => {
-    let authors: string[] = [];
-    let illustrators: string[] = [];
-    let animators: string[] = [];
+    const authors: string[] = [];
+    const illustrators: string[] = [];
+    const animators: string[] = [];
     story.storyContributions.forEach((contributor, index) => {
       switch (contributor.contributionType) {
         case "AUTHOR":
@@ -585,8 +585,8 @@ export default function StoryCredits({ story }: Props) {
         Title Image provided by Source name
       </p>
       <div className="mt-0 justify-self-start pt-0">
-        <div className="relative mx-0 mt-0 flex w-screen flex-col px-2 md:mx-auto md:w-[768px] md:px-0">
-          <div className="pointer-events-none top-0 flex flex-1 flex-row flex-wrap justify-start px-1 xl:hidden">
+        <div className="relative mx-0 mt-0 flex w-screen flex-col px-2 md:mx-auto md:w-[768px]">
+          <div className="pointer-events-none top-0 flex flex-1 flex-row flex-wrap justify-start xl:hidden">
             <ShareLinks storyId={story.id} observe={false} />
           </div>
 
