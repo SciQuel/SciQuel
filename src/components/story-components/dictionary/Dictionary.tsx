@@ -244,7 +244,7 @@ export default function Dictionary() {
                   }
                 }}
                 type="button"
-                className="-mt-4 me-auto ms-8 h-14 w-14"
+                className="-mt-5 me-auto ms-5 h-14 w-14"
               >
                 <BookmarkIcon
                   className={`h-full w-full ${
@@ -385,6 +385,12 @@ export default function Dictionary() {
                   </span>
                 </button>
               </p>
+              <p className="text-sm text-gray-800">
+                {fullDictionary.selectedInstance?.index
+                  ? fullDictionary.selectedInstance.index + 1
+                  : 1}{" "}
+                of {fullDictionary.word.instances.length}
+              </p>
               {fullDictionary.word.instances.map((item, index) => (
                 <button
                   type="button"
@@ -453,7 +459,7 @@ export default function Dictionary() {
                     {item.word}
                   </button>
 
-                  <div className="mb-2 mt-1 w-2/5 border-b-2 border-sciquelTeal" />
+                  <div className="mb-2 mt-1 w-1/4 border-b-2 border-sciquelTeal" />
                   <p className="text-sciquelCitation">Definition</p>
                   <p className="border-b-2 border-sciquelTeal py-2">
                     {item.definition}

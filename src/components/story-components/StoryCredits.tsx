@@ -133,7 +133,7 @@ export default function StoryCredits({ story }: Props) {
     illustratorIcons = authorIcons.slice(0, 1);
 
     return (
-      <div className="ml-0 flex flex-col">
+      <div className="mx-0 flex flex-col">
         <div className="flex flex-row">
           <div className="flex flex-row justify-self-start">
             {/* author icons */}
@@ -502,7 +502,7 @@ export default function StoryCredits({ story }: Props) {
         <h2 className="font-sourceSerif4 text-2xl">{story.summary}</h2>
       </div>
 
-      <div className="relative mx-2 mt-5 flex w-screen flex-col px-2 sm:mx-auto md:w-[768px] md:px-0">
+      <div className="relative mx-0 mt-5 flex w-screen flex-col px-2 sm:mx-auto md:w-[768px] md:px-0">
         <div className="pointer-events-none top-0 flex flex-1 flex-row justify-start xl:hidden">
           <ShareLinks storyId={story.id} observe={false} />
         </div>
@@ -585,8 +585,8 @@ export default function StoryCredits({ story }: Props) {
         Title Image provided by Source name
       </p>
       <div className="mt-0 justify-self-start pt-0">
-        <div className="relative mx-0 mt-0 flex w-screen flex-col px-2 md:mx-auto md:w-[768px]">
-          <div className="pointer-events-none top-0 flex flex-1 flex-row flex-wrap justify-start xl:hidden">
+        <div className="relative mx-0 mt-0 flex w-screen flex-col px-2 md:mx-auto md:w-[768px] md:px-0">
+          <div className="pointer-events-none top-0 flex flex-1 flex-row flex-wrap justify-start px-1 xl:hidden">
             <ShareLinks storyId={story.id} observe={false} />
           </div>
 

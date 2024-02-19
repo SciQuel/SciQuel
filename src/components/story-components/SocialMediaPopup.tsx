@@ -70,7 +70,7 @@ const SocialMediaPopup = forwardRef(
     ${show ? "opacity-1" : "max-h-0 max-w-0 opacity-0 sm:-translate-y-2"}  
     fixed bottom-0 left-0 z-[19] h-screen w-screen items-end overflow-hidden bg-neutral-800/75 transition-all` +
             ` sm:absolute sm:top-0 sm:-ml-2 sm:mt-16 sm:h-fit sm:w-fit sm:items-start sm:justify-center sm:bg-transparent` +
-            ` xl:absolute xl:top-14 xl:mt-3 xl:w-fit`
+            ` xl:static  xl:top-14 xl:mt-3 xl:w-fit`
           }
         >
           <div
@@ -81,16 +81,16 @@ const SocialMediaPopup = forwardRef(
                   ? "translate-y-0"
                   : "max-h-0 translate-y-full opacity-0 sm:-translate-y-0"
               }  absolute bottom-0 z-[19] flex w-screen flex-col pt-0 transition-transform duration-500` +
-              ` sm:relative sm:px-0 md:w-[768px] md:pl-0 md:pr-0 xl:relative xl:w-fit xl:before:left-0 xl:before:ml-7 ` +
-              ` sm:before:absolute sm:before:left-2 sm:before:top-3 sm:before:z-[2] sm:before:ml-5 sm:before:h-7 sm:before:w-7 sm:before:rotate-45 sm:before:border-l-2 sm:before:border-t-2 sm:before:border-sciquelCardBorder sm:before:bg-sciquelCardBg  `
+              ` sm:relative sm:px-0 md:w-[768px] md:pl-0 md:pr-0 xl:relative  xl:h-fit xl:w-fit xl:before:left-0 xl:before:top-1 xl:before:ml-7 ` +
+              ` sm:before:absolute sm:before:left-2 sm:before:top-1 sm:before:z-[2] sm:before:ml-3 sm:before:h-6 sm:before:w-6 sm:before:rotate-45 sm:before:border-l-2 sm:before:border-t-2 sm:before:border-sciquelCardBorder sm:before:bg-sciquelCardBg xl:before:h-7 xl:before:w-7  `
             }
           >
             <div
-              className={`relative flex w-full flex-col-reverse sm:p-4 xl:-left-4 xl:flex-row`}
+              className={`relative flex w-full flex-col-reverse sm:p-2   xl:flex-row  xl:px-0 xl:py-2`}
             >
               {/* button + side-popout container */}
               <div
-                className={`pointer-events-auto  relative m-0 flex flex-row border-x-2 border-sciquelCardBorder bg-sciquelCardBg pb-4 sm:rounded-b sm:border-b-2 sm:pb-2 md:px-1 lg:h-fit xl:top-2 xl:w-[5.5rem] xl:flex-col xl:rounded xl:border-2 xl:px-2 xl:py-4`}
+                className={`pointer-events-auto  relative m-0 flex flex-row border-x-2 border-sciquelCardBorder bg-sciquelCardBg pb-4 sm:rounded-b sm:border-b-2 sm:pb-2 md:px-1 lg:h-fit xl:top-2  xl:w-[5.5rem] xl:flex-col xl:rounded xl:border-2 xl:px-2 xl:py-4`}
               >
                 {/*  before:pointer-events-none */}
                 {/* buttons container */}
@@ -176,11 +176,11 @@ const SocialMediaPopup = forwardRef(
               <div
                 className={`${
                   showFull
-                    ? " pointer-events-auto p-4 pb-2  xl:p-3"
+                    ? " pointer-events-auto p-4 pb-2 xl:mx-3 xl:mt-7  xl:p-3"
                     : show
-                    ? "pointer-events-auto p-4 pb-2 xl:pointer-events-none xl:w-0 xl:-translate-x-3 xl:p-0 xl:opacity-0"
+                    ? "pointer-events-auto p-4 pb-2 xl:pointer-events-none   xl:w-0 xl:-translate-x-3 xl:p-0 xl:opacity-0"
                     : "w-0 -translate-x-3 p-0 opacity-0"
-                } m-0 mt-2 flex flex-row  justify-center rounded-t border-x-2 border-t-2 border-sciquelCardBorder bg-sciquelCardBg transition-all lg:h-fit xl:mx-3 xl:mt-7 xl:rounded xl:border-2`}
+                } m-0 mt-2 flex flex-row  justify-center rounded-t border-x-2 border-t-2 border-sciquelCardBorder bg-sciquelCardBg transition-all lg:h-fit xl:rounded xl:border-2`}
               >
                 {/* floating input for copying link */}
                 <button
