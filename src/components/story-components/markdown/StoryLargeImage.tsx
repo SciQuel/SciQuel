@@ -134,7 +134,7 @@ export default function StoryLargeImage({
   return (
     <div className="flex justify-center">
       <figure
-        className="mx-auto table gap-2 p-8 lg:w-min lg:p-0"
+        className="mx-auto table gap-8 p-8 lg:w-min lg:p-0"
         ref={figureRef}
       >
         <img
@@ -144,7 +144,7 @@ export default function StoryLargeImage({
           } max-w-screen max-h-[900px] w-auto`}
           alt={alt}
         />
-        <figcaption className="table-caption w-full caption-bottom px-8 font-sourceSerif4 text-base lg:px-0">
+        <figcaption className="mt-4 table-caption w-full caption-bottom px-8 font-sourceSerif4 text-base lg:px-0">
           {children}
         </figcaption>
       </figure>

@@ -584,7 +584,7 @@ export default function StoryCredits({ story }: Props) {
       <p className="my-0 w-screen px-2 py-0 font-sourceSerif4">
         Title Image provided by Source name
       </p>
-      <div className="mt-0 justify-self-start pt-0">
+      <div className=" -mt-6 justify-self-start pt-0">
         <div className="relative mx-0 mt-0 flex w-screen flex-col px-2 md:mx-auto md:w-[768px]">
           <div className="pointer-events-none top-0 flex flex-1 flex-row flex-wrap justify-start xl:hidden">
             <ShareLinks storyId={story.id} observe={false} />
@@ -596,7 +596,7 @@ export default function StoryCredits({ story }: Props) {
                 ? story.category.slice(0, 1) +
                   story.category.slice(1).toLowerCase()
                 : ""}{" "}
-              |{" "}
+              I |{" "}
               {story.storyType
                 ? story.storyType.slice(0, 1) +
                   story.storyType.slice(1).toLowerCase() +

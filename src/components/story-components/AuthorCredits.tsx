@@ -24,7 +24,7 @@ export default function AuthorCredits({ storyContributions }: Props) {
   return isPrintMode ? (
     <div>
       {storyContributions.map((element, index) => (
-        <div key={element.user.id}>
+        <div key={element.user.id} className="my-2">
           <p className="w-[calc( 100% - 1rem )] mx-2 mb-1 p-0 font-sourceSerif4 text-xl font-semibold md:mx-auto md:w-[768px]">
             {element.contributionType.slice(0, 1) +
               element.contributionType.slice(1).toLowerCase()}
@@ -44,12 +44,12 @@ export default function AuthorCredits({ storyContributions }: Props) {
       ))}
     </div>
   ) : (
-    <>
+    <div className="mb-8">
       {storyContributions.map((element, index) => (
         <div
           //
           key={`contributor-footer-${index}`}
-          className="w-[calc( 100% - 1rem )] mx-2 mb-3 flex flex-row items-stretch rounded-2xl border border-sciquelCardBorder p-3 shadow-md md:mx-auto md:w-[768px]"
+          className="w-[calc( 100% - 1rem )] mx-2 mb-4 flex flex-row items-stretch rounded-2xl border border-sciquelCardBorder p-3 shadow-md md:mx-auto md:w-[768px]"
         >
           <Avatar
             imageUrl={element.user.avatarUrl ?? undefined}
@@ -71,6 +71,6 @@ export default function AuthorCredits({ storyContributions }: Props) {
           </div>
         </div>
       ))}
-    </>
+    </div>
   );
 }

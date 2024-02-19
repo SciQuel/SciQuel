@@ -141,7 +141,7 @@ export default function StoryBlockquote({
       className={`${
         isPrintMode
           ? "h-fit w-screen justify-center py-3   [&>*]:text-2xl"
-          : "h-fit min-h-screen w-screen items-center bg-gradient-to-b from-[#196E8C] to-[#65A69E] py-16 text-sciquelCardBg [&>*]:font-alegreyaSansSC [&>*]:text-5xl [&>*]:md:w-full [&>*]:md:px-36"
+          : "my-8 h-fit min-h-screen w-screen items-center bg-gradient-to-b from-[#196E8C] to-[#65A69E] py-16 text-sciquelCardBg [&>*]:font-alegreyaSansSC [&>*]:text-5xl [&>*]:md:w-full [&>*]:md:px-36"
       } relative flex justify-self-start  text-center  [&>*]:px-2 `}
     >
       {children}

@@ -79,7 +79,7 @@ export default function DictionaryButton({ observe }: Props) {
       style={{
         transform: `translateX(${offset * -1}px)`,
       }}
-      className="pointer-events-auto relative z-10 block h-fit w-fit rounded-full px-3 py-1 xl:sticky xl:top-28"
+      className="pointer-events-auto relative  block h-fit w-fit rounded-full px-3 py-1 xl:sticky xl:top-28"
     >
       <Image src={ShareIcon} alt={"open dictionary"} width={45} height={45} />
     </button>

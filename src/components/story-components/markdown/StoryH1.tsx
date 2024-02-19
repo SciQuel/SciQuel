@@ -12,7 +12,7 @@ export default function StoryH1({ children }: PropsWithChildren<unknown>) {
         isPrintMode
           ? "font-sourceSerif4 text-3xl"
           : "text-4xl text-sciquelTeal "
-      } mx-auto mt-4 w-full font-medium  md:w-[768px]`}
+      } mx-auto mt-8 w-full font-medium  md:w-[768px]`}
     >
       {children}
     </h1>
