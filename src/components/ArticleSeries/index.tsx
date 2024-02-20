@@ -12,19 +12,27 @@ export default function ArticleSeries() {
       >
         <div className="flex grow flex-row justify-between py-2">
           <span className="invisible">|</span>
-          <Link href="/">Name of Series</Link>
+          <Link href="/" className="hover:underline">
+            Name of Series
+          </Link>
           <span className="opacity-50">|</span>
         </div>
-        <div className="grow cursor-pointer py-2">
-          <Link href="/">Article 1</Link>
+        <div className="grow py-2">
+          <Link href="/" className="hover:underline">
+            Article 1
+          </Link>
         </div>
 
-        <div className="grow cursor-pointer py-2">
-          <Link href="/">Article 2</Link>
+        <div className="grow py-2">
+          <Link href="/" className="hover:underline">
+            Article 2
+          </Link>
         </div>
 
-        <div className="grow cursor-pointer py-2">
-          <Link href="/">Article 3</Link>
+        <div className="grow py-2">
+          <Link href="/" className="hover:underline">
+            Article 3
+          </Link>
         </div>
       </div>
     </div>
