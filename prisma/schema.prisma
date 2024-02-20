@@ -197,3 +197,15 @@ model Bookmark {
 
   @@unique([userId, storyId])
 }
+
+model DictionaryDefinition {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  word              String   @unique
+  definition        String
+  exampleSentences  String[]
+  alternativeSpellings String[]
+  pluralForms String[]
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
