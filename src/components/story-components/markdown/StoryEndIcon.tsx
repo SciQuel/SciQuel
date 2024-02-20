@@ -1,14 +1,8 @@
+"use client";
+
 import Image from "next/image";
-import SciquelIcon from "../../../../public/assets/images/logo.png";
+import TestIcon from "../../../../public/assets/images/logo_with_guides-02.svg";
 
 export default function StoryEndIcon() {
-  return (
-    <Image
-      width={35}
-      height={40}
-      className="inline rounded-full bg-sciquelTeal p-0.5"
-      alt="Sciquel icon"
-      src={SciquelIcon.src}
-    />
-  );
+  return <TestIcon className="inline h-8 w-8 fill-sciquelTeal" />;
 }

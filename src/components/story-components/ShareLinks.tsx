@@ -218,7 +218,7 @@ export default function ShareLinks({ storyId, observe }: Props) {
             setShowOptions("share");
           }
         }}
-        className={`pointer-events-auto absolute flex h-fit w-fit flex-col  xl:left-[calc(100%_-_4.5rem)] xl:items-start `}
+        className={`pointer-events-auto absolute flex h-fit w-fit flex-col  xl:left-[calc(100%_-_5.25rem)] xl:items-start `}
       >
         <button
           type="button"

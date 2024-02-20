@@ -385,7 +385,7 @@ export default function Dictionary() {
                   </span>
                 </button>
               </p>
-              <p className="text-sm text-gray-800">
+              <p className="text-sm text-sciquelTeal">
                 {fullDictionary.selectedInstance?.index
                   ? fullDictionary.selectedInstance.index + 1
                   : 1}{" "}
@@ -459,9 +459,9 @@ export default function Dictionary() {
                     {item.word}
                   </button>
 
-                  <div className="mb-2 mt-1 w-1/4 border-b-2 border-sciquelTeal" />
+                  <div className="my-4 w-1/4 border-b-2 border-sciquelTeal" />
                   <p className="text-sciquelCitation">Definition</p>
-                  <p className="border-b-2 border-sciquelTeal py-2">
+                  <p className="border-b-2 border-sciquelTeal pb-4">
                     {item.definition}
                   </p>
                 </div>
