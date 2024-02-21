@@ -62,6 +62,9 @@ enum QuizType {
 enum QuestionType {
   MULTIPLE_CHOICE
   TRUE_FALSE
+  DIRECT_MATCHING
+  COMPLEX_MATCHING
+  SELECT_ALL
 }
 
 model Story {
@@ -204,12 +207,15 @@ model Bookmark {
 }
 
 model QuizQuestion {
-  id            String       @id @default(auto()) @map("_id") @db.ObjectId
-  storyId       String       @db.ObjectId
-  questionType  QuestionType 
-  question      String
-  options       String[]
-  correctAnswer String[]
-  explanation   String[]
+  id                String       @id @default(auto()) @map("_id") @db.ObjectId
+  storyId           String       @db.ObjectId
+  contentCategory   String
+  questionType      QuestionType
+  quesitionName     String 
+  question          String
+  options           String[]
+  correctAnswer     String[]
+  totalScore        Int
+  explanation       String[]
 }
 

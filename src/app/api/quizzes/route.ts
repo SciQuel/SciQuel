@@ -25,7 +25,9 @@ export async function POST(req: NextRequest) {
     const createdQuiz = await prisma.quizQuestion.create({
       data: {
         storyId: quizData.storyId,
+        contentCategory: quizData.contentCategory,
         questionType: quizData.questionType,
+        quesitionName: quizData.questionName,
         question: quizData.question,
         options: quizData.options,
         correctAnswer: quizData.correctAnswer,
