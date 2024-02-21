@@ -204,7 +204,6 @@ model DictionaryDefinition {
   definition        String
   exampleSentences  String[]
   alternativeSpellings String[]
-  pluralForms String[]
 
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
