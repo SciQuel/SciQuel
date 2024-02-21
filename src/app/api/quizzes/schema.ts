@@ -11,11 +11,14 @@ export const createQuizSchema = z.object({
     "SELECT_ALL",
   ]),
   questionName: z.string(),
-  question: z.string(),
-  options: z.array(z.string()),
-  correctAnswer: z.array(z.string()),
-  totalScore: z.number(),
-  explanation: z.string(),
+  subparts: z.array(
+    z.object({
+      question: z.string(),
+      options: z.array(z.string()),
+      correctAnswer: z.array(z.string()),
+      explanation: z.string(),
+    }),
+  ),
 });
 
 export const getQuizzesSchema = z.object({

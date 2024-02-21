@@ -211,11 +211,7 @@ model QuizQuestion {
   storyId           String       @db.ObjectId
   contentCategory   String
   questionType      QuestionType
-  quesitionName     String 
-  question          String
-  options           String[]
-  correctAnswer     String[]
-  totalScore        Int
-  explanation       String[]
+  questionName      String
+  subparts          Json
 }
 
