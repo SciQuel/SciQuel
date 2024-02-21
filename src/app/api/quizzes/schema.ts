@@ -11,6 +11,7 @@ export const createQuizSchema = z.object({
     "SELECT_ALL",
   ]),
   questionName: z.string(),
+  totalScore: z.number(),
   subparts: z.array(
     z.object({
       question: z.string(),

@@ -28,6 +28,7 @@ export async function POST(req: NextRequest) {
         contentCategory: quizData.contentCategory,
         questionType: quizData.questionType,
         questionName: quizData.questionName,
+        totalScore: quizData.totalScore,
         subparts: quizData.subparts,
       },
     });

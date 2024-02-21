@@ -212,6 +212,7 @@ model QuizQuestion {
   contentCategory   String
   questionType      QuestionType
   questionName      String
+  totalScore        Int
   subparts          Json
 }
 
