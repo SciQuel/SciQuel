@@ -76,6 +76,9 @@ export async function GET(req: NextRequest) {
 
     const quizzes = await prisma.quizQuestion.findMany({
       where: { storyId: storyId },
+      include:{
+        subparts: true,
+      },
     });
 
     return new NextResponse(JSON.stringify({ quizzes }), {
