@@ -1,8 +1,9 @@
+/* eslint-disable prettier/prettier */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { PrismaClient } from "@prisma/client";
 import { NextResponse, type NextRequest } from "next/server";
-import { createQuizSchema, getQuizzesSchema } from "./schema";
+import { createQuizSchema } from "./schema";
 
 const prisma = new PrismaClient();
 
@@ -29,7 +30,9 @@ export async function POST(req: NextRequest) {
         questionType: quizData.questionType,
         questionName: quizData.questionName,
         totalScore: quizData.totalScore,
-        subparts: quizData.subparts,
+        subparts: {
+          create: quizData.subparts,
+        },
       },
     });
 
@@ -65,39 +68,25 @@ export async function GET(req: NextRequest) {
     const storyId = url.searchParams.get("storyId");
 
     if (!storyId) {
-      return new NextResponse(
-        JSON.stringify({ error: "storyId is required" }),
-        {
-          status: 400,
-          headers: {
-            "Content-Type": "application/json",
-          },
-        },
-      );
+      return new NextResponse(JSON.stringify({ error: "storyId is required" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
     }
 
     const quizzes = await prisma.quizQuestion.findMany({
-      where: {
-        storyId: storyId,
-      },
+      where: { storyId: storyId },
     });
 
     return new NextResponse(JSON.stringify({ quizzes }), {
       status: 200,
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
-    console.error("error processing request:", error);
-    return new NextResponse(
-      JSON.stringify({ error: "Internal Server Error" }),
-      {
-        status: 500,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      },
-    );
+    console.error("Error processing request:", error);
+    return new NextResponse(JSON.stringify({ error: "Internal Server Error" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 }

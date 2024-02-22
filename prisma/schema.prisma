@@ -207,12 +207,21 @@ model Bookmark {
 }
 
 model QuizQuestion {
-  id                String       @id @default(auto()) @map("_id") @db.ObjectId
-  storyId           String       @db.ObjectId
-  contentCategory   String
-  questionType      QuestionType
-  questionName      String
-  totalScore        Int
-  subparts          Json
+  id              String       @id @default(auto()) @map("_id") @db.ObjectId
+  storyId         String       @db.ObjectId
+  contentCategory String
+  questionType    QuestionType
+  questionName    String
+  totalScore      Int
+  subparts        Subpart[]
 }
 
+model Subpart {
+  id             String        @id @default(auto()) @map("_id") @db.ObjectId
+  question       String
+  options        String[]
+  correctAnswer  String[]
+  explanation    String
+  QuizQuestion   QuizQuestion? @relation(fields: [quizQuestionId], references: [id])
+  quizQuestionId String?       @db.ObjectId
+}

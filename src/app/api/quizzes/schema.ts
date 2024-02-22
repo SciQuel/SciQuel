@@ -23,5 +23,5 @@ export const createQuizSchema = z.object({
 });
 
 export const getQuizzesSchema = z.object({
-  storyID: z.string(),
+  storyId: z.string(),
 });
