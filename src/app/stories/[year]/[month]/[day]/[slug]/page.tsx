@@ -1,6 +1,5 @@
 import { type GetStoryResult } from "@/app/api/stories/[year]/[month]/[day]/[slug]/route";
 import { type GetStoriesResult } from "@/app/api/stories/route";
-import ArticleSeries from "@/components/ArticleSeries";
 import Avatar from "@/components/Avatar";
 import MoreCard from "@/components/MoreCard";
 import FromThisSeries from "@/components/story-components/FromThisSeries";
@@ -29,7 +28,6 @@ export default async function StoriesPage({ params }: Params) {
   const { file } = await generateMarkdown(story.storyContent[0].content);
   return (
     <div>
-      <ArticleSeries></ArticleSeries>
       <div className="flex flex-col">
         <div className="relative h-screen">
           <Image
@@ -97,10 +95,10 @@ export default async function StoriesPage({ params }: Params) {
           {file.result as ReactNode}
         </div>
         <p className="w-[calc( 100% - 1rem )] mx-2 my-5 border-t-2 border-[#616161]  text-sm text-[#616161] md:mx-auto md:w-[720px]">
-          Animation provided by Source name 1. Sources provided by Source name 2.
-          We thank Funding 1 for their support, and Professor 2 for their
-          guidance. Ex. Cover Image: “Hawaiian Bobtail Squid” is licensed under CC
-          BY-NC 4.0.
+          Animation provided by Source name 1. Sources provided by Source name
+          2. We thank Funding 1 for their support, and Professor 2 for their
+          guidance. Ex. Cover Image: “Hawaiian Bobtail Squid” is licensed under
+          CC BY-NC 4.0.
         </p>
         {story.storyContributions.map((element, index) => (
           <div
