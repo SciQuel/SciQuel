@@ -225,3 +225,20 @@ model Subpart {
   QuizQuestion   QuizQuestion? @relation(fields: [quizQuestionId], references: [id])
   quizQuestionId String?       @db.ObjectId
 }
+
+model UserResponse {
+  id               String            @id @default(auto()) @map("_id") @db.ObjectId
+  storyId          String
+  questionType     QuestionType
+  userId           String            @db.ObjectId
+  quizQuestionId   String            @db.ObjectId
+  responseSubparts ResponseSubpart[]
+}
+
+model ResponseSubpart {
+  id              String        @id @default(auto()) @map("_id") @db.ObjectId
+  subpartId       String        @db.ObjectId
+  subpartUserAns  String[]
+  UserResponse    UserResponse? @relation(fields: [userResponseId], references: [id])
+  userResponseId  String?       @db.ObjectId
+}
