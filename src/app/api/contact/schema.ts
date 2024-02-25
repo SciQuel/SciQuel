@@ -1,4 +1,4 @@
-import { ContactMessage } from "@prisma/client";
+import { type ContactMessage } from "@prisma/client";
 import { z } from "zod";
 
 export const contactSchema = z.object({

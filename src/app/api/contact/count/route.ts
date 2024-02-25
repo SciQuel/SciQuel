@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import { NextResponse, type NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 import { isEditor } from "../tools";
 
 export type GetContactCountResult = {

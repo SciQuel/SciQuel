@@ -1,6 +1,6 @@
 "use client";
 
-import { ContactPatchResult } from "@/app/api/contact/schema";
+import { type ContactPatchResult } from "@/app/api/contact/schema";
 import env from "@/lib/env";
 import { type ContactMessage } from "@prisma/client";
 import axios from "axios";
