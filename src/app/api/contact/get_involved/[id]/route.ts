@@ -55,10 +55,15 @@ export async function PATCH(req: NextRequest, { params }: { params: Params }) {
   });
 
   if (parsedRequest.data.send_reply) {
+    let ccList = ["edward@sciquel.org"];
+
+    if (process.env.SCIQUEL_TEAM_EMAIL) {
+      ccList.push(process.env.SCIQUEL_TEAM_EMAIL);
+    }
     await mailer.sendMail({
       from: process.env.SCIQUEL_TEAM_EMAIL,
       replyTo: process.env.SCIQUEL_TEAM_EMAIL,
-      cc: ["edward@sciquel.org", process.env.SCIQUEL_TEAM_EMAIL],
+      cc: ccList,
       to: foundFeedback.email,
       subject: "Re: Your Sciquel Get Involved Submission",
       text: parsedRequest.data.reply_text,
