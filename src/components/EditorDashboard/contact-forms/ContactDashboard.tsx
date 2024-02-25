@@ -220,19 +220,27 @@ export default function ContactDashboard() {
                             }
                             switch (item) {
                               case "Unopened":
-                                setUnopened((state) =>
-                                  state.toSpliced(index, 1),
-                                );
+                                setUnopened((state) => {
+                                  let newState = [...state];
+                                  newState.splice(index, 1);
+                                  return newState;
+                                });
                                 setUnopenedTotal((state) => state - 1);
                                 break;
                               case "In-Progress":
-                                setInProgress((state) =>
-                                  state.toSpliced(index, 1),
-                                );
+                                setInProgress((state) => {
+                                  let newState = [...state];
+                                  newState.splice(index, 1);
+                                  return newState;
+                                });
                                 setInProgressTotal((state) => state - 1);
                                 break;
                               case "Closed":
-                                setClosed((state) => state.toSpliced(index, 1));
+                                setClosed((state) => {
+                                  let newState = [...state];
+                                  newState.splice(index, 1);
+                                  return newState;
+                                });
                                 setClosedTotal((state) => state - 1);
                                 break;
                               default:
