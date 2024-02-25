@@ -17,7 +17,7 @@ export default function MessageIcon() {
       const { new_messages } = (await count.json()) as GetContactCountResult;
       setNewMessageCount(new_messages);
     })()
-      .then(() => {})
+      .then()
       .catch((err) => {
         console.error(err);
         setNewMessageCount(undefined);

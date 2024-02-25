@@ -25,7 +25,7 @@ export default function BannedUserDashboard() {
   useEffect(() => {
     getRecents(startIndex)
       .then()
-      .catch((err) => {
+      .catch(() => {
         setRecentBans(undefined);
       });
   }, [startIndex]);
@@ -83,6 +83,7 @@ export default function BannedUserDashboard() {
               setSearchError("");
             })
             .catch((err) => {
+              console.error(err);
               setSearchError("Something went wrong.  Please try again later");
             });
         }}
@@ -129,12 +130,11 @@ export default function BannedUserDashboard() {
       {searchResults ? (
         searchResults.length > 0 ? (
           <div className="grid gap-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {searchResults.map((bannedUser, index) => (
+            {searchResults.map((bannedUser) => (
               <BannedUserBox
                 key={`search-user-${bannedUser.id}`}
                 record={bannedUser}
                 updateRecentsOnChange={false}
-                getRecents={() => {}}
               />
             ))}
           </div>
@@ -151,16 +151,48 @@ export default function BannedUserDashboard() {
             {" "}
             <h2>
               Showing Accounts {startIndex + 1} through{" "}
-              {Math.min(startIndex + 6, totalBans ? totalBans : 0)} of{" "}
-              {totalBans}
+              {Math.min(startIndex + 8, totalBans ? totalBans : startIndex + 9)}{" "}
+              of {totalBans}
+              {startIndex > 0 ? (
+                <button
+                  className="mx-2 my-1 rounded-md border border-black px-1 "
+                  onClick={() => {
+                    setStartIndex((oldIndex) => {
+                      return Math.max(oldIndex - 8, 0);
+                    });
+                  }}
+                >
+                  {"< "}back
+                </button>
+              ) : (
+                <></>
+              )}
+              {totalBans && startIndex + 8 < totalBans ? (
+                <button
+                  className="mx-2 my-1 rounded-md border border-black px-1 "
+                  onClick={() => {
+                    setStartIndex((oldIndex) => {
+                      return oldIndex + 8;
+                    });
+                  }}
+                >
+                  next{" >"}
+                </button>
+              ) : (
+                <></>
+              )}
             </h2>
             <div className="grid gap-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {recentBans ? (
-                recentBans?.map((ban, index) => (
+                recentBans?.map((ban) => (
                   <BannedUserBox
                     updateRecentsOnChange={true}
                     getRecents={() => {
-                      getRecents(startIndex);
+                      getRecents(startIndex)
+                        .then()
+                        .catch((err) => {
+                          console.error(err);
+                        });
                     }}
                     record={ban}
                     key={`ban-block-${ban.id}`}

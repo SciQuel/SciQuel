@@ -1,3 +1,4 @@
+import { ContactMessage } from "@prisma/client";
 import { z } from "zod";
 
 export const contactSchema = z.object({
@@ -49,3 +50,7 @@ export const contactPatchSchema = z.object({
     required_error: "reply_text is required.",
   }),
 });
+
+export interface ContactPatchResult {
+  updatedFeedback: ContactMessage;
+}

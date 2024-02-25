@@ -8,7 +8,7 @@ import { useState, type FormEvent } from "react";
 interface Props {
   message: ContactMessage;
   closeFunction: () => void;
-  updateScreenFunction: () => void;
+  updateScreenFunction?: () => void;
 }
 
 export default function UserBanForm({
@@ -57,54 +57,42 @@ export default function UserBanForm({
     try {
       if (useIp) {
         if (endTime) {
-          const ipResponse = await axios.post(
-            `${env.NEXT_PUBLIC_SITE_URL}/api/contact/admin`,
-            {
-              method: "IP",
-              value: message.senderIp,
-              reason: reason,
-              should_archive: shouldArchive,
-              end_time: endTime,
-            },
-          );
+          await axios.post(`${env.NEXT_PUBLIC_SITE_URL}/api/contact/admin`, {
+            method: "IP",
+            value: message.senderIp,
+            reason: reason,
+            should_archive: shouldArchive,
+            end_time: endTime,
+          });
         } else {
-          const ipResponse = await axios.post(
-            `${env.NEXT_PUBLIC_SITE_URL}/api/contact/admin`,
-            {
-              method: "IP",
-              value: message.senderIp,
-              reason: reason,
-              should_archive: shouldArchive,
-            },
-          );
+          await axios.post(`${env.NEXT_PUBLIC_SITE_URL}/api/contact/admin`, {
+            method: "IP",
+            value: message.senderIp,
+            reason: reason,
+            should_archive: shouldArchive,
+          });
         }
       }
       if (useEmail) {
         if (endTime) {
-          const emailResponse = await axios.post(
-            `${env.NEXT_PUBLIC_SITE_URL}/api/contact/admin`,
-            {
-              method: "EMAIL",
-              value: message.email,
-              reason: reason,
-              should_archive: shouldArchive,
-              end_time: endTime,
-            },
-          );
+          await axios.post(`${env.NEXT_PUBLIC_SITE_URL}/api/contact/admin`, {
+            method: "EMAIL",
+            value: message.email,
+            reason: reason,
+            should_archive: shouldArchive,
+            end_time: endTime,
+          });
         } else {
-          const emailResponse = await axios.post(
-            `${env.NEXT_PUBLIC_SITE_URL}/api/contact/admin`,
-            {
-              method: "EMAIL",
-              value: message.email,
-              reason: reason,
-              should_archive: shouldArchive,
-            },
-          );
+          await axios.post(`${env.NEXT_PUBLIC_SITE_URL}/api/contact/admin`, {
+            method: "EMAIL",
+            value: message.email,
+            reason: reason,
+            should_archive: shouldArchive,
+          });
         }
       }
 
-      if (shouldArchive) {
+      if (shouldArchive && updateScreenFunction) {
         updateScreenFunction();
       } else {
         closeFunction();
@@ -125,7 +113,11 @@ export default function UserBanForm({
       </button>
       <form
         onSubmit={(e) => {
-          submitForm(e);
+          submitForm(e)
+            .then()
+            .catch((err) => {
+              console.error(err);
+            });
         }}
       >
         <h1>Ban this user from submitting contact forms?</h1>

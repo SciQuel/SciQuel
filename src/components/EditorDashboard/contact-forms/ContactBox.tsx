@@ -1,5 +1,6 @@
 "use client";
 
+import { ContactPatchResult } from "@/app/api/contact/schema";
 import env from "@/lib/env";
 import { type ContactMessage } from "@prisma/client";
 import axios from "axios";
@@ -43,8 +44,9 @@ export default function ContactBox({
 
       console.log(status);
       if (status.status == 200) {
-        const newMessage = status.data.updatedContactMessage as ContactMessage;
-        updateMessage(newMessage);
+        const newMessage = status.data as ContactPatchResult;
+
+        updateMessage(newMessage.updatedFeedback);
       }
     } catch (err) {
       console.error(err);
@@ -79,8 +81,9 @@ export default function ContactBox({
 
         console.log(status);
         if (status.status == 200) {
-          const newMessage = status.data.updatedFeedback as ContactMessage;
-          updateMessage(newMessage);
+          const newMessage = status.data as ContactPatchResult;
+
+          updateMessage(newMessage.updatedFeedback);
         }
       } catch (err) {
         console.error(err);
@@ -133,7 +136,11 @@ export default function ContactBox({
 
       <form
         onSubmit={(e) => {
-          updateStatus(e);
+          updateStatus(e)
+            .then()
+            .catch((err) => {
+              console.error(err);
+            });
         }}
         className="mt-2 flex flex-col border-t-2 border-sciquelTeal pt-2"
       >
@@ -221,7 +228,13 @@ export default function ContactBox({
       </form>
       {message.status == "CLOSED" ? (
         <button
-          onClick={archive}
+          onClick={() => {
+            archive()
+              .then()
+              .catch((err) => {
+                console.error(err);
+              });
+          }}
           type="button"
           className="my-2 w-fit rounded bg-red-500 p-2 text-white"
         >

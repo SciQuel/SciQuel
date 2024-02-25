@@ -55,7 +55,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Params }) {
   });
 
   if (parsedRequest.data.send_reply) {
-    let ccList = ["edward@sciquel.org"];
+    const ccList = ["edward@sciquel.org"];
 
     if (process.env.SCIQUEL_TEAM_EMAIL) {
       ccList.push(process.env.SCIQUEL_TEAM_EMAIL);

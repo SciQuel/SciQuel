@@ -9,7 +9,7 @@ import { useState } from "react";
 interface Props {
   record: BlockedUser;
   updateRecentsOnChange: boolean;
-  getRecents: () => void;
+  getRecents?: () => void;
 }
 
 export default function BannedUserBox({
@@ -31,7 +31,7 @@ export default function BannedUserBox({
       );
 
       if (res.status == 200) {
-        if (updateRecentsOnChange) {
+        if (updateRecentsOnChange && getRecents) {
           getRecents();
         }
       }
@@ -71,7 +71,11 @@ export default function BannedUserBox({
             <div className="flex flex-row">
               <button
                 onClick={() => {
-                  reverseBan();
+                  reverseBan()
+                    .then()
+                    .catch((err) => {
+                      console.error(err);
+                    });
                 }}
                 className="me-2 flex-1 bg-red-500 text-white"
                 type="button"

@@ -1,9 +1,7 @@
-import { type GetContactResult } from "@/app/api/contact/route";
 import ContactDashboard from "@/components/EditorDashboard/contact-forms/ContactDashboard";
-import env from "@/lib/env";
 import Link from "next/link";
 
-export default async function ContactDashboardPage() {
+export default function ContactDashboardPage() {
   return (
     <div className="p-3">
       <h1 className="my-2 flex h-fit justify-between text-3xl font-semibold text-sciquelTeal">

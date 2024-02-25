@@ -5,7 +5,6 @@ import env from "@/lib/env";
 import { type ContactMessage } from "@prisma/client";
 import axios from "axios";
 import { DateTime } from "luxon";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export default function ContactArchiveDashboard() {
@@ -93,7 +92,7 @@ export default function ContactArchiveDashboard() {
         )}
       </h2>
       <div className="flex flex-row flex-wrap">
-        {messages.map((message, index) =>
+        {messages.map((message) =>
           message ? (
             <div
               key={message.id}

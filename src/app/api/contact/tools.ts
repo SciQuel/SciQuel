@@ -50,7 +50,7 @@ export async function checkSpam(useEmail: boolean, data: string) {
         newBanDate.setTime(newBanDate.getTime() + cooldown);
         // 1000 ms/s * 60 s/min * 60 min/hour * 24 hours/day * 7 days
 
-        const newTempBan = await prisma.blockedUser.create({
+        await prisma.blockedUser.create({
           data: {
             email: data,
             reason: "automated ban from contact box spam",
@@ -84,7 +84,7 @@ export async function checkSpam(useEmail: boolean, data: string) {
         newBanDate.setTime(newBanDate.getTime() + cooldown);
         // 1000 ms/s * 60 s/min * 60 min/hour * 24 hours/day * 7 days
 
-        const newTempBan = await prisma.blockedUser.create({
+        await prisma.blockedUser.create({
           data: {
             ip: data,
             reason: "automated ban from contact box spam",
@@ -115,9 +115,19 @@ export async function checkBans(email: string, ip?: string) {
         email: {
           equals: email,
         },
-        banEndTime: {
-          gte: now,
-        },
+        OR: [
+          {
+            banEndTime: {
+              gte: now,
+            },
+          },
+
+          {
+            banEndTime: {
+              equals: null,
+            },
+          },
+        ],
       },
     },
   };

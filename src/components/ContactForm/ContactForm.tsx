@@ -24,8 +24,9 @@ export function ContactForm({ endpoint }: Props) {
         contact_name: name,
         reply_email: email,
       });
-
-      setSubmitted(true);
+      if (response.status == 200) {
+        setSubmitted(true);
+      }
     } catch (err) {
       console.error(err);
       setShowError(true);

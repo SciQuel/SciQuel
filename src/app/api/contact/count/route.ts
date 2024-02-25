@@ -6,7 +6,7 @@ export type GetContactCountResult = {
   new_messages: number;
 };
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   const editorStatus = await isEditor();
 
   if (!editorStatus) {

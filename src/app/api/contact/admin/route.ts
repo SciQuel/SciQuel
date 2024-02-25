@@ -1,4 +1,3 @@
-import { parse } from "path";
 import prisma from "@/lib/prisma";
 import { type BlockedUser, type Prisma } from "@prisma/client";
 import { NextResponse, type NextRequest } from "next/server";
@@ -102,7 +101,7 @@ export async function POST(req: NextRequest) {
               status: "ARCHIVED",
             },
           };
-          const alteredDocs = await prisma.contactMessage.updateMany(toArchive);
+          await prisma.contactMessage.updateMany(toArchive);
         }
 
         return NextResponse.json({
@@ -131,7 +130,7 @@ export async function POST(req: NextRequest) {
               status: "ARCHIVED",
             },
           };
-          const alteredDocs = await prisma.contactMessage.updateMany(toArchive);
+          await prisma.contactMessage.updateMany(toArchive);
         }
         return NextResponse.json({
           id: newDoc.id,

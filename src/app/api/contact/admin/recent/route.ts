@@ -35,7 +35,7 @@ export async function GET(req: NextRequest) {
   try {
     const banList = await prisma.blockedUser.findMany({
       skip: start_index,
-      take: 10,
+      take: 8,
       orderBy: {
         lastUpdated: "desc",
       },

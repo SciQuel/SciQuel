@@ -50,7 +50,7 @@ export default function ContactSearch() {
         onSubmit={(e) => {
           e.preventDefault();
           search()
-            .then((result) => {
+            .then(() => {
               setError("");
             })
             .catch((err) => {
@@ -114,9 +114,19 @@ export default function ContactSearch() {
                 type={
                   item.contactType == "FEEDBACK" ? "feedback" : "get involved"
                 }
-                updateMessage={() => {}}
+                updateScreenFunction={() => {
+                  search()
+                    .then()
+                    .catch((err) => {
+                      console.error(err);
+                    });
+                }}
+                updateMessage={(newMessage: ContactMessage) => {
+                  const newList = [...searchResults];
+                  newList.splice(index, 1, newMessage);
+                  setSearchResults(newList);
+                }}
                 message={item}
-                updateScreenFunction={() => {}}
                 key={`search-results-${item.id}`}
               />
             ))

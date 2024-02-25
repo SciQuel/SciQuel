@@ -7,7 +7,6 @@ import axios from "axios";
 import Link from "next/link";
 import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 import ContactBox from "./ContactBox";
-import ContactSearch from "./ContactSearch";
 
 export default function ContactDashboard() {
   const [unopened, setUnopened] = useState<ContactMessage[]>([]);
@@ -27,7 +26,7 @@ export default function ContactDashboard() {
 
   useEffect(() => {
     updateUnopened(unopenedStart)
-      .then((result) => {
+      .then(() => {
         console.log("updated unopened list");
       })
       .catch((err) => {
@@ -124,25 +123,25 @@ export default function ContactDashboard() {
 
     return (
       <>
-        {widgetList.map((item, index) => {
+        {widgetList.map((item) => {
           let list;
           let total;
-          let start;
+
           let setStart: Dispatch<SetStateAction<number>>;
           if (item == "Unopened") {
             list = unopened;
             total = unopenedTotal;
-            start = unopenedStart;
+
             setStart = setUnopenedStart;
           } else if (item == "In-Progress") {
             list = inProgress;
             total = inProgressTotal;
-            start = inProgressStart;
+
             setStart = setInProgressStart;
           } else {
             list = closed;
             total = closedTotal;
-            start = closedStart;
+
             setStart = setClosedStart;
           }
           return (
@@ -221,7 +220,7 @@ export default function ContactDashboard() {
                             switch (item) {
                               case "Unopened":
                                 setUnopened((state) => {
-                                  let newState = [...state];
+                                  const newState = [...state];
                                   newState.splice(index, 1);
                                   return newState;
                                 });
@@ -229,7 +228,7 @@ export default function ContactDashboard() {
                                 break;
                               case "In-Progress":
                                 setInProgress((state) => {
-                                  let newState = [...state];
+                                  const newState = [...state];
                                   newState.splice(index, 1);
                                   return newState;
                                 });
@@ -237,7 +236,7 @@ export default function ContactDashboard() {
                                 break;
                               case "Closed":
                                 setClosed((state) => {
-                                  let newState = [...state];
+                                  const newState = [...state];
                                   newState.splice(index, 1);
                                   return newState;
                                 });
