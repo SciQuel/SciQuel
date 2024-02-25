@@ -585,7 +585,7 @@ export default function StoryCredits({ story }: Props) {
         Title Image provided by Source name
       </p>
       <div className=" -mt-6 justify-self-start pt-0">
-        <div className="relative mx-0 mt-0 flex w-screen flex-col px-2 md:mx-auto md:w-[768px]">
+        <div className="relative mx-0 mt-0 flex w-screen flex-col overflow-hidden px-2 md:mx-auto md:w-[768px]">
           <div className="pointer-events-none top-0 flex flex-1 flex-row flex-wrap justify-start xl:hidden">
             <ShareLinks storyId={story.id} observe={false} />
           </div>
