@@ -106,11 +106,18 @@ export async function checkSpam(useEmail: boolean, data: string) {
 export async function checkBans(email: string, ip?: string) {
   // check if user is on ban list
 
+  const now = new Date();
+
   // email first
   const data: Prisma.BlockedUserFindFirstArgs = {
     where: {
-      email: {
-        equals: email,
+      AND: {
+        email: {
+          equals: email,
+        },
+        banEndTime: {
+          gte: now,
+        },
       },
     },
   };
@@ -125,8 +132,13 @@ export async function checkBans(email: string, ip?: string) {
       if (ip) {
         const ipData: Prisma.BlockedUserFindFirstArgs = {
           where: {
-            ip: {
-              equals: ip,
+            AND: {
+              ip: {
+                equals: ip,
+              },
+              banEndTime: {
+                gte: now,
+              },
             },
           },
         };

@@ -1,10 +1,5 @@
 import prisma from "@/lib/prisma";
-import {
-  type ContactMessage,
-  type ContactStatus,
-  type Prisma,
-} from "@prisma/client";
-import { getServerSession } from "next-auth";
+import { type ContactMessage, type ContactStatus } from "@prisma/client";
 import { NextResponse, type NextRequest } from "next/server";
 import { contactGetSchema } from "./schema";
 import { isEditor } from "./tools";
@@ -17,18 +12,19 @@ export type GetContactResult = {
 export async function GET(req: NextRequest) {
   const params = Object.fromEntries(req.nextUrl.searchParams);
 
-  const parsedRequest = contactGetSchema.safeParse(params);
-
-  if (!parsedRequest.success) {
+  let parsedRequest;
+  try {
+    parsedRequest = contactGetSchema.parse(params);
+  } catch (err) {
     return NextResponse.json(
       {
-        error: parsedRequest.error ? parsedRequest.error : "Bad Request",
+        error: err,
       },
       { status: 400 },
     );
   }
 
-  const { start_index, end_index, status } = parsedRequest.data;
+  const { start_index, end_index, status } = parsedRequest;
 
   const editorStatus = await isEditor();
 

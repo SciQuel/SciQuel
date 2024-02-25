@@ -12,17 +12,19 @@ export type GetRecentBanResult = {
 export async function GET(req: NextRequest) {
   const params = Object.fromEntries(req.nextUrl.searchParams);
 
-  const parsedRequest = RecentBanGetSchema.safeParse(params);
-  if (!parsedRequest.success) {
+  let parsedRequest;
+  try {
+    parsedRequest = RecentBanGetSchema.parse(params);
+  } catch (err) {
     return NextResponse.json(
       {
-        error: parsedRequest.error ? parsedRequest.error : "Bad Request",
+        error: err,
       },
       { status: 400 },
     );
   }
 
-  const { start_index } = parsedRequest.data;
+  const { start_index } = parsedRequest;
 
   const editorStatus = await isEditor();
 

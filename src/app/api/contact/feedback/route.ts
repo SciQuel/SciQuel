@@ -1,10 +1,10 @@
 import mailer from "@/lib/mailer";
 import prisma from "@/lib/prisma";
-import { type ContactStatus, type Prisma } from "@prisma/client";
+import { type Prisma } from "@prisma/client";
 import { DateTime } from "luxon";
 import { NextResponse, type NextRequest } from "next/server";
-import { contactGetSchema, contactSchema } from "../schema";
-import { checkBans, checkSpam, isEditor } from "../tools";
+import { contactSchema } from "../schema";
+import { checkBans, checkSpam } from "../tools";
 
 export async function POST(req: NextRequest) {
   const parsedRequest = contactSchema.safeParse(await req.json());
@@ -133,64 +133,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ id: feedbackDocument.id });
   } catch (err) {
     console.error(err);
-    return NextResponse.json(
-      { error: "Internal Server Error" },
-      { status: 500 },
-    );
-  }
-}
-
-export async function GET(req: NextRequest) {
-  const params = Object.fromEntries(req.nextUrl.searchParams);
-
-  const parsedRequest = contactGetSchema.safeParse(params);
-
-  if (!parsedRequest.success) {
-    return NextResponse.json(
-      {
-        error: parsedRequest.error ? parsedRequest.error : "Bad Request",
-      },
-      { status: 400 },
-    );
-  }
-
-  const { start_index, end_index, status } = parsedRequest.data;
-
-  const editorStatus = await isEditor();
-
-  if (!editorStatus) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
-
-  try {
-    const messageList = await prisma.contactMessage.findMany({
-      skip: start_index,
-      take: end_index - start_index + 1,
-      where: {
-        AND: [
-          {
-            status: {
-              equals: status as ContactStatus,
-            },
-          },
-          {
-            contactType: {
-              equals: "FEEDBACK",
-            },
-          },
-        ],
-      },
-    });
-
-    if (messageList) {
-      return NextResponse.json({ messages: messageList });
-    } else {
-      return NextResponse.json(
-        { error: "Internal Server Error" },
-        { status: 500 },
-      );
-    }
-  } catch (err) {
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 },
