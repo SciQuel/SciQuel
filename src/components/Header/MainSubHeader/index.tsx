@@ -9,7 +9,7 @@ export default function MainSubHeader() {
 
   return (
     <div
-      className={`sticky flex h-auto flex-row bg-sciquelTeal px-40 text-center text-white transition-all duration-500
+      className={`sticky flex h-auto flex-row bg-sciquelTeal  text-center text-white transition-all duration-500 md:px-10 lg:px-40
       ${isScrollingUp ? "top-16" : "top-6"}`}
     >
       <div className="grow cursor-pointer py-2 hover:bg-sciquelHover">
