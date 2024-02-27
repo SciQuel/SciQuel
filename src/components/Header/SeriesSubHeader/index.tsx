@@ -8,7 +8,7 @@ export default function SeriesSubHeader() {
 
   return (
     <div
-      className={`sticky flex h-auto flex-row bg-sciquelTeal text-center text-white transition-all duration-500 md:px-10 lg:px-40
+      className={`sticky flex h-auto flex-row bg-sciquelTeal text-center text-white transition-all duration-500 lg:px-40
       ${isScrollingUp ? "top-16" : "top-6"}`}
     >
       <div className="flex grow flex-row justify-between py-2">
