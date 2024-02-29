@@ -133,6 +133,8 @@ model User {
 
   roles   UserRole[] @default([])
   quizzes Quiz[]
+  firstQuizRecord       Json?
+  mostRecentQuizRecord  Json?
 }
 
 model AuthVerification {

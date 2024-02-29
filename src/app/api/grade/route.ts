@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable prettier/prettier */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, type Prisma } from "@prisma/client";
 import { NextResponse, type NextRequest } from "next/server";
 import { userResponseSchema } from "./schema";
 
@@ -41,55 +43,89 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    interface ResponseSubpart {
-      id: string;
-      subpartId: string;
-      subpartUserAns: string[];
+    // get user info
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      return new NextResponse(JSON.stringify({ error: "User not found" }), {
+        status: 404,
+        headers: { "Content-Type": "application/json" },
+      });
     }
 
-    // find corresponding subpart
-    const gradeSubpart = responseSubparts.map(
-      (responseSubpart: ResponseSubpart) => {
-        const correspondingSubpart = quizQuestion.subparts.find(
-          (subpart) => subpart.id === responseSubpart.subpartId,
-        );
+    const firstQuizRecord = user.firstQuizRecord || {};
+    const mostRecentQuizRecord = user.mostRecentQuizRecord || {};
 
-        if (!correspondingSubpart || !correspondingSubpart.correctAnswer) {
-          return {
-            error: "Subpart not found or correctAnswer is undefined",
-            subpartId: responseSubpart.subpartId,
-          };
-        }
+    // console.log("Existing firstQuizRecord:", firstQuizRecord);
+    // console.log("Existing mostRecentQuizRecord:", mostRecentQuizRecord);
 
-        if (!responseSubpart.subpartUserAns) {
-          return {
-            error: "User response is undefined",
-            subpartId: responseSubpart.subpartId,
-          };
-        }
+      interface ResponseSubpart {
+        id: string;
+        subpartId: string;
+        subpartUserAns: string[];
+      }
 
-        function arraysEqual(a: string | any[], b: string | any[]) {
-          if (a.length !== b.length) return false;
-          for (let i = 0; i < a.length; i++) {
-            if (a[i] !== b[i]) return false;
-          }
-          return true;
-        }
+      // find corresponding subpart
+      const gradeResults = await Promise.all(
+        responseSubparts.map(async (responseSubpart: { subpartId: string; subpartUserAns: any[]; }) => {
+            const correspondingSubpart = quizQuestion.subparts.find(subpart => subpart.id === responseSubpart.subpartId);
+            if (!correspondingSubpart || !correspondingSubpart.correctAnswer) {
+                return { error: "Subpart not found or correctAnswer is undefined", subpartId: responseSubpart.subpartId };
+            }
 
-        const isCorrect = arraysEqual(
-          responseSubpart.subpartUserAns,
-          correspondingSubpart.correctAnswer,
-        );
+            if (!responseSubpart.subpartUserAns) {
+                return { error: "User response is undefined", subpartId: responseSubpart.subpartId };
+            }
 
-        return {
-          subpartId: responseSubpart.subpartId,
-          isCorrect: isCorrect,
-          explanation: correspondingSubpart.explanation,
-        };
-      },
+            const isCorrect = JSON.stringify(responseSubpart.subpartUserAns.sort()) === JSON.stringify(correspondingSubpart.correctAnswer.sort());
+            return { subpartId: responseSubpart.subpartId, isCorrect: isCorrect, explanation: correspondingSubpart.explanation, userResponses:responseSubpart.subpartUserAns};
+        })
     );
 
-    return new NextResponse(JSON.stringify({ gradeSubpart }), {
+    const updatedFirstQuizRecord = user.firstQuizRecord 
+  ? (typeof user.firstQuizRecord === 'string' 
+    ? JSON.parse(user.firstQuizRecord) 
+    : user.firstQuizRecord)
+  : {};
+const updatedMostRecentQuizRecord = user.mostRecentQuizRecord 
+  ? (typeof user.mostRecentQuizRecord === 'string' 
+    ? JSON.parse(user.mostRecentQuizRecord) 
+    : user.mostRecentQuizRecord)
+  : {};
+
+    // console.log("Existing firstQuizRecord:", updatedFirstQuizRecord);
+    // console.log("Existing mostRecentQuizRecord:", updatedMostRecentQuizRecord);
+
+    gradeResults.forEach(grade => {
+      if (!updatedFirstQuizRecord.hasOwnProperty(grade.subpartId)) {
+        updatedFirstQuizRecord[grade.subpartId] = {
+          isCorrect: grade.isCorrect,
+          userResponses: grade.userResponses,
+        };
+      }
+      updatedMostRecentQuizRecord[grade.subpartId] = {
+        isCorrect: grade.isCorrect,
+        userResponses: grade.userResponses,
+      };
+    });
+    
+    console.log("Updated firstQuizRecord before saving:", updatedFirstQuizRecord);
+    console.log("Updated mostRecentQuizRecord before saving:", updatedMostRecentQuizRecord);
+
+    const updateUser = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        firstQuizRecord: JSON.stringify(updatedFirstQuizRecord),
+      mostRecentQuizRecord: JSON.stringify(updatedMostRecentQuizRecord),
+      },
+    });
+    
+    //console.log("User after update:", updateUser);
+  
+
+    return new NextResponse(JSON.stringify({ gradeSubpart: gradeResults }), {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
