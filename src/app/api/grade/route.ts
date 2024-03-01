@@ -69,7 +69,8 @@ export async function POST(req: NextRequest) {
 
       // find corresponding subpart
       const gradeResults = await Promise.all(
-        responseSubparts.map(async (responseSubpart: { subpartId: string; subpartUserAns: any[]; }) => {
+        // eslint-disable-next-line @typescript-eslint/require-await
+        responseSubparts.map(async (responseSubpart: { subpartId: string; subpartUserAns: string[]; }) => {
             const correspondingSubpart = quizQuestion.subparts.find(subpart => subpart.id === responseSubpart.subpartId);
             if (!correspondingSubpart || !correspondingSubpart.correctAnswer) {
                 return { error: "Subpart not found or correctAnswer is undefined", subpartId: responseSubpart.subpartId };
