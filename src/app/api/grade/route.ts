@@ -140,3 +140,48 @@ const updatedMostRecentQuizRecord = user.mostRecentQuizRecord
     );
   }
 }
+
+export async function GET(req: NextRequest) {
+  const userId = req.nextUrl.searchParams.get('userId');
+
+  if (!userId) {
+    return new NextResponse(JSON.stringify({ error: "User ID is required" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        firstQuizRecord: true,
+        mostRecentQuizRecord: true,
+      },
+    });
+
+    if (!user) {
+      return new NextResponse(JSON.stringify({ error: "User not found" }), {
+        status: 404,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    return new NextResponse(JSON.stringify({
+      firstQuizRecord: user.firstQuizRecord,
+      mostRecentQuizRecord: user.mostRecentQuizRecord,
+    }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (error) {
+    console.error("Error processing request:", error);
+    return new NextResponse(
+      JSON.stringify({ error: "Internal Server Error" }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      },
+    );
+  }
+}
