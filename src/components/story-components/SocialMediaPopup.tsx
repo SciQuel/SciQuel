@@ -69,7 +69,7 @@ const SocialMediaPopup = forwardRef(
             `
     ${show ? "opacity-1" : "max-h-0 max-w-0 opacity-0 sm:-translate-y-2"}  
     fixed bottom-0 left-0 z-[19] h-screen w-screen items-end overflow-hidden bg-neutral-800/75 transition-all` +
-            ` sm:absolute sm:top-0 sm:-ml-2 sm:mt-16 sm:h-fit sm:w-fit sm:items-start sm:justify-center sm:bg-transparent` +
+            ` sm:absolute sm:top-0 sm:-ml-1 sm:mt-16 sm:h-fit sm:w-fit sm:items-start sm:justify-center sm:bg-transparent` +
             ` xl:static  xl:top-14 xl:mt-3 xl:w-fit`
           }
         >
@@ -81,7 +81,7 @@ const SocialMediaPopup = forwardRef(
                   ? "translate-y-0"
                   : "max-h-0 translate-y-full opacity-0 sm:-translate-y-0"
               }  absolute bottom-0 z-[19] flex w-screen flex-col pt-0 transition-transform duration-500` +
-              ` sm:relative sm:px-0 md:w-[768px] md:pl-0 md:pr-0 xl:relative  xl:h-fit xl:w-fit xl:before:left-0 xl:before:top-1 xl:before:ml-7 ` +
+              ` sm:relative sm:px-0 md:w-[768px] md:pl-0 md:pr-0 xl:relative  xl:h-fit xl:w-fit xl:before:left-0 xl:before:top-1 xl:before:ml-[1.9rem] ` +
               ` sm:before:absolute sm:before:left-2 sm:before:top-1 sm:before:z-[2] sm:before:ml-3 sm:before:h-6 sm:before:w-6 sm:before:rotate-45 sm:before:border-l-2 sm:before:border-t-2 sm:before:border-sciquelCardBorder sm:before:bg-sciquelCardBg xl:before:h-7 xl:before:w-7  `
             }
           >
@@ -111,7 +111,7 @@ const SocialMediaPopup = forwardRef(
                       setShowFull(true);
                     }
                   }}
-                  className={` h-fit w-fit rounded-full p-3`}
+                  className={` h-fit w-fit rounded-full px-3 py-1`}
                 >
                   <Image
                     src={shareIcon}
@@ -121,7 +121,7 @@ const SocialMediaPopup = forwardRef(
                   />
                 </button>
                 <a
-                  className={` h-fit w-fit rounded-full p-3`}
+                  className={` h-fit w-fit rounded-full px-3 py-1`}
                   tabIndex={show ? 0 : -1}
                   target="_blank"
                   href={`https://www.facebook.com/sharer/sharer.php?u=sciquel.org${pathname}`}
@@ -136,7 +136,7 @@ const SocialMediaPopup = forwardRef(
                 <a
                   tabIndex={show ? 0 : -1}
                   href={`mailto:?subject=Check Out This Article&body=sciquel.org${pathname}`}
-                  className={` h-fit w-fit rounded-full p-3 transition ease-linear`}
+                  className={` h-fit w-fit rounded-full px-3 py-1 transition ease-linear`}
                   target="_blank"
                 >
                   <Image
@@ -149,7 +149,7 @@ const SocialMediaPopup = forwardRef(
                 <a
                   tabIndex={show ? 0 : -1}
                   href={`https://www.linkedin.com/sharing/share-offsite/?url=sciquel.org${pathname}`}
-                  className={` h-fit w-fit rounded-full p-3 transition ease-linear`}
+                  className={` h-fit w-fit rounded-full px-3 py-1 transition ease-linear`}
                   target="_blank"
                 >
                   <Image
@@ -162,7 +162,7 @@ const SocialMediaPopup = forwardRef(
                 <a
                   tabIndex={show ? 0 : -1}
                   href={`https://twitter.com/intent/tweet?text=sciquel.org${pathname}`}
-                  className={` h-fit w-fit rounded-full p-3 transition ease-linear`}
+                  className={` h-fit w-fit rounded-full px-3 py-1 transition ease-linear`}
                   target="_blank"
                 >
                   <Image

@@ -144,7 +144,7 @@ export default function StoryLargeImage({
           } max-w-screen max-h-[900px] w-auto`}
           alt={alt}
         />
-        <figcaption className="mt-4 table-caption w-full caption-bottom px-8 font-sourceSerif4 text-base lg:px-0">
+        <figcaption className="mt-2 table-caption w-full caption-bottom px-8 font-sourceSerif4 text-base lg:px-0">
           {children}
         </figcaption>
       </figure>

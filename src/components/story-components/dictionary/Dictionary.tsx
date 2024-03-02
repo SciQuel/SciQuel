@@ -434,39 +434,42 @@ export default function Dictionary() {
               </button>
             </div>
           ) : (
-            fullDictionary.dictionary.map((item, index) => {
-              return (
-                <div
-                  className="px-4 py-2 font-sourceSerif4"
-                  key={`${item.id}-${index}`}
-                >
-                  <p className="text-sciquelCitation">Term</p>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      fullDictionary?.setWord(item);
-
-                      if (fullDictionary.previousWords) {
-                        fullDictionary.setPreviousWords([
-                          ...fullDictionary.previousWords,
-                          "fullDict",
-                        ]);
-                      } else {
-                        fullDictionary.setPreviousWords(["fullDict"]);
-                      }
-                    }}
+            <div className="mt-1">
+              {" "}
+              {fullDictionary.dictionary.map((item, index) => {
+                return (
+                  <div
+                    className="px-4 py-2 font-sourceSerif4"
+                    key={`${item.id}-${index}`}
                   >
-                    {item.word}
-                  </button>
+                    <p className="text-sciquelCitation">Term</p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        fullDictionary?.setWord(item);
 
-                  <div className="my-4 w-1/4 border-b-2 border-sciquelTeal" />
-                  <p className="text-sciquelCitation">Definition</p>
-                  <p className="border-b-2 border-sciquelTeal pb-4">
-                    {item.definition}
-                  </p>
-                </div>
-              );
-            })
+                        if (fullDictionary.previousWords) {
+                          fullDictionary.setPreviousWords([
+                            ...fullDictionary.previousWords,
+                            "fullDict",
+                          ]);
+                        } else {
+                          fullDictionary.setPreviousWords(["fullDict"]);
+                        }
+                      }}
+                    >
+                      {item.word}
+                    </button>
+
+                    <div className="my-4 w-1/4 border-b-2 border-sciquelTeal" />
+                    <p className="text-sciquelCitation">Definition</p>
+                    <p className="border-b-2 border-sciquelTeal pb-4">
+                      {item.definition}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
           )}
         </div>
       </div>

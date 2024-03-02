@@ -10,7 +10,7 @@ export default function StoryH2({ children }: PropsWithChildren<unknown>) {
     <h2
       className={`${
         isPrintMode ? "font-sourceSerif4 text-2xl" : "text-3xl text-sciquelTeal"
-      } mx-auto mt-8 w-full font-medium md:w-[768px]`}
+      } mx-auto mt-4 w-full font-medium md:w-[768px]`}
     >
       {children}
     </h2>
