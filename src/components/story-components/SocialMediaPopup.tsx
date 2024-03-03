@@ -69,8 +69,8 @@ const SocialMediaPopup = forwardRef(
             `
     ${show ? "opacity-1" : "max-h-0 max-w-0 opacity-0 sm:-translate-y-2"}  
     fixed bottom-0 left-0 z-[19] h-screen w-screen items-end overflow-hidden bg-neutral-800/75 transition-all` +
-            ` sm:absolute sm:top-0 sm:-ml-1 sm:mt-16 sm:h-fit sm:w-fit sm:items-start sm:justify-center sm:bg-transparent` +
-            ` xl:static  xl:top-14 xl:mt-3 xl:w-fit`
+            ` sm:static sm:top-0 sm:-ml-1 sm:mt-2 sm:h-fit sm:w-fit sm:items-start sm:justify-center sm:bg-transparent` +
+            ` xl:static xl:top-14  xl:ml-0.5 xl:mt-3 xl:w-fit`
           }
         >
           <div
@@ -81,16 +81,19 @@ const SocialMediaPopup = forwardRef(
                   ? "translate-y-0"
                   : "max-h-0 translate-y-full opacity-0 sm:-translate-y-0"
               }  absolute bottom-0 z-[19] flex w-screen flex-col pt-0 transition-transform duration-500` +
-              ` sm:relative sm:px-0 md:w-[768px] md:pl-0 md:pr-0 xl:relative  xl:h-fit xl:w-fit xl:before:left-0 xl:before:top-1 xl:before:ml-[1.9rem] ` +
-              ` sm:before:absolute sm:before:left-2 sm:before:top-1 sm:before:z-[2] sm:before:ml-3 sm:before:h-6 sm:before:w-6 sm:before:rotate-45 sm:before:border-l-2 sm:before:border-t-2 sm:before:border-sciquelCardBorder sm:before:bg-sciquelCardBg xl:before:h-7 xl:before:w-7  `
+              ` sm:relative sm:px-0 md:w-[768px] md:pl-0 md:pr-0 xl:relative  xl:h-fit xl:w-fit ` +
+              ` `
             }
           >
+            <div className="z-20 sm:absolute sm:left-2 sm:top-1 sm:z-[2] sm:ml-3 sm:h-6 sm:w-6  sm:rotate-45 sm:border-l-2 sm:border-t-2 sm:border-sciquelCardBorder sm:bg-sciquelCardBg xl:left-0 xl:top-1 xl:ml-[1.4rem] xl:h-7 xl:w-7  ">
+              {/* this is the arrow, created from a rotated div */}
+            </div>
             <div
-              className={`relative flex w-full flex-col-reverse sm:p-2   xl:flex-row  xl:px-0 xl:py-2`}
+              className={`relative   flex w-full flex-col-reverse sm:p-2 xl:flex-row  xl:px-0 xl:py-2`}
             >
               {/* button + side-popout container */}
               <div
-                className={`pointer-events-auto  relative m-0 flex flex-row border-x-2 border-sciquelCardBorder bg-sciquelCardBg pb-4 sm:rounded-b sm:border-b-2 sm:pb-2 md:px-1 lg:h-fit xl:top-2  xl:w-[5.5rem] xl:flex-col xl:rounded xl:border-2 xl:px-2 xl:py-4`}
+                className={`pointer-events-auto  relative m-0 flex flex-row border-x-2 border-sciquelCardBorder bg-sciquelCardBg py-1 pb-4 sm:rounded-b sm:border-b-2 sm:pb-2 md:px-1 lg:h-fit  xl:top-2 xl:w-max xl:flex-col xl:rounded xl:border-2 xl:px-0`}
               >
                 {/*  before:pointer-events-none */}
                 {/* buttons container */}
@@ -111,7 +114,7 @@ const SocialMediaPopup = forwardRef(
                       setShowFull(true);
                     }
                   }}
-                  className={` h-fit w-fit rounded-full px-3 py-1`}
+                  className={`relative z-30 h-fit w-fit rounded-full px-3 py-1`}
                 >
                   <Image
                     src={shareIcon}
@@ -176,7 +179,7 @@ const SocialMediaPopup = forwardRef(
               <div
                 className={`${
                   showFull
-                    ? " pointer-events-auto p-4 pb-2 xl:mx-3 xl:mt-7  xl:p-3"
+                    ? " pointer-events-auto p-4 pb-2 xl:mx-3 xl:mt-2  xl:p-3"
                     : show
                     ? "pointer-events-auto p-4 pb-2 xl:pointer-events-none   xl:w-0 xl:-translate-x-3 xl:p-0 xl:opacity-0"
                     : "w-0 -translate-x-3 p-0 opacity-0"
