@@ -1,21 +1,11 @@
 import { randomUUID } from "crypto";
 import { tagUser } from "@/lib/cache";
+import { bucket, bucketUrlPrefix } from "@/lib/gcs";
 import prisma from "@/lib/prisma";
-import { Storage } from "@google-cloud/storage";
 import { getServerSession } from "next-auth";
 import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 import { putProfileImageSchema } from "./schema";
-
-const storage = new Storage({
-  projectId: process.env.GCS_PROJECT ?? "",
-  credentials: {
-    client_email: process.env.GCS_CLIENT ?? "",
-    private_key: process.env.GCS_KEY ?? "",
-  },
-});
-const bucket = storage.bucket(process.env.GCS_BUCKET ?? "");
-const bucketUrlPrefix = `https://storage.googleapis.com/${process.env.GCS_BUCKET}/`;
 
 export async function PUT(request: Request) {
   try {

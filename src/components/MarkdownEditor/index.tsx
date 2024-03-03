@@ -1,11 +1,21 @@
 "use client";
 
+import { type patchStorySchema } from "@/app/api/stories/schema";
 import { generateMarkdown } from "@/lib/markdown";
+import axios from "axios";
 import clsx from "clsx";
 import { type editor } from "monaco-editor";
 import dynamic from "next/dynamic";
 import { Inter } from "next/font/google";
-import { useCallback, useEffect, useState, type ReactNode } from "react";
+import { useRouter } from "next/navigation";
+import {
+  useCallback,
+  useEffect,
+  useState,
+  useTransition,
+  type ReactNode,
+} from "react";
+import { type z } from "zod";
 import StatusBar from "./StatusBar";
 import Toolbar from "./Toolbar";
 import bold from "./Toolbar/actions/bold";
@@ -21,13 +31,21 @@ const Editor = dynamic(
 
 const inter = Inter({ subsets: ["latin"] });
 
-export default function MarkdownEditor() {
-  const [value, setValue] = useState("");
+interface Props {
+  initialValue?: string;
+  id: string;
+}
+
+export default function MarkdownEditor({ initialValue, id }: Props) {
+  const router = useRouter();
+  const [dirty, setDirty] = useState(false);
+  const [value, setValue] = useState(initialValue ?? "");
   const [renderedContent, setRenderedContent] = useState<ReactNode>(null);
   const [editor, setEditor] = useState<editor.IStandaloneCodeEditor | null>(
     null,
   );
   const [stats, setStats] = useState<Record<string, number>>({});
+  const [loading, startTransition] = useTransition();
 
   useEffect(() => {
     void generateMarkdown(value).then(({ file, wordStats }) => {
@@ -87,18 +105,41 @@ export default function MarkdownEditor() {
     [],
   );
 
+  const handleEditorSubmit = useCallback(() => {
+    startTransition(async () => {
+      if (dirty) {
+        await axios.patch<z.infer<typeof patchStorySchema>>(
+          `/api/stories/id/${id}`,
+          {
+            content: value,
+          },
+        );
+      }
+      router.push(`/editor/dashboard`);
+    });
+  }, [value, id]);
+
   return (
     <div className="flex h-full grow flex-row">
       <div className={clsx("flex w-1/2 flex-col border-r", inter.className)}>
-        <Toolbar editor={editor} />
+        <Toolbar
+          editor={editor}
+          onSubmit={handleEditorSubmit}
+          loading={loading}
+          storyId={id}
+        />
         <div className="grow">
           <Editor
             language="markdown"
             loading={<></>}
             value={value}
-            onChange={(v) => setValue(v ?? "")}
+            onChange={(v) => {
+              setValue(v ?? "");
+              setDirty(true);
+            }}
             options={{
               wordWrap: "on",
+              readOnly: loading,
               padding: { top: 10 },
               minimap: { enabled: false },
               lineNumbers: "off",
