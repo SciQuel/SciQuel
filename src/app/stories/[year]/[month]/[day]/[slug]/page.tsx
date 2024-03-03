@@ -293,15 +293,15 @@ export default async function StoriesPage({ params }: Params) {
                     </DictionarySentence>
                   </StoryParagraph>
                 </div>
-                <div className="w-[calc( 100% - 1rem )] mx-2 mb-8 mt-16 border-t-2 border-[#616161] pt-1  md:mx-auto md:w-[768px] ">
-                  <p className="mt-4 text-sm text-[#616161]">
+                <div className="w-[calc( 100% - 1rem )] mx-2 mb-8 mt-8 border-t-2 border-[#616161] pt-1  md:mx-auto md:w-[768px] ">
+                  <p className=" mt-2 text-sm text-[#616161]">
                     <span className="font-semibold">Acknowledgements:</span>{" "}
                     Animation provided by Source name 1. Sources provided by
                     Source name 2. We thank Funding 1 for their support, and
                     Professor 2 for their guidance. Ex. Cover Image: “Hawaiian
                     Bobtail Squid” is licensed under CC BY-NC 4.0.
                   </p>
-                  <p className="mt-4 text-sm text-[#616161]">
+                  <p className=" mt-2 text-sm text-[#616161]">
                     <span className="font-semibold">Notes:</span> All crosses
                     were performed at 26ºC on standard molasses fly food. Males
                     were used for all experiments. Flies were transferred to
@@ -311,21 +311,21 @@ export default async function StoriesPage({ params }: Params) {
                     {`>`}Lst8 flies were put on either +RU486 or +Vehicle food
                     after eclosion.
                   </p>
-                  <p className="mt-4 text-sm font-semibold text-[#616161]">
+                  <p className=" mt-2 text-sm font-semibold text-[#616161]">
                     References:
                   </p>
-                  <p className="mt-4 text-sm text-[#616161]">
+                  <p className=" mt-2 text-sm text-[#616161]">
                     Agarwal, V. (2018). Predicting microRNA targeting efficacy
                     in Drosophila. Genome Biology, 19, 152.
                     10.1186/s13059-018-1504-3{" "}
                   </p>
-                  <p className="mt-4 text-sm text-[#616161]">
+                  <p className=" mt-2 text-sm text-[#616161]">
                     Bilen, J. , Liu, N. , Burnett, B. G. , Pittman, R. N. , &
                     Bonini, N. M. (2006). MicroRNA pathways modulate
                     polyglutamine‐induced neurodegeneration. Molecular Cell,
                     24(1), 157–163. 10.1016/j.molcel.2006.07.030
                   </p>
-                  <p className="mt-4 text-sm text-[#616161]">
+                  <p className=" mt-2 text-sm text-[#616161]">
                     Liu, N. , Landreh, M. , Cao, K. , Abe, M. , Hendriks, G.‐J.
                     , Kennerdell, J. R. , Zhu, Y. , Wang, L.‐S. , & Bonini, N.
                     M. (2012). The microRNA miR‐34 modulates ageing and

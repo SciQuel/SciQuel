@@ -305,7 +305,7 @@ export default function Dictionary() {
                     />
                   </button>
                 </p>
-                <p className="relative flex w-fit items-start pb-2 pt-3 text-start font-semibold">
+                <p className="relative flex w-fit items-start pb-2 pt-0 text-start font-semibold">
                   {fullDictionary.word.word}
                 </p>
                 <div className="my-3 w-2/5 border-b-2 border-sciquelTeal" />
