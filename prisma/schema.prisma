@@ -26,24 +26,23 @@ enum ContributionType {
   ANIMATOR
 }
 
-// deleted enum, instead use model 'StoryTopic'
-// enum StoryTopic {
-//   ASTRONOMY
-//   BIOLOGY
-//   CHEMICAL_ENGINEERING
-//   CHEMISTRY
-//   COMPUTER_SCIENCE
-//   ELECTRICAL_ENGINEERING
-//   ENVIRONMENTAL_SCIENCE
-//   GEOLOGY
-//   MATHEMATICS
-//   MECHANICAL_ENGINEERING
-//   MEDICINE
-//   PHYSICS
-//   PSYCHOLOGY
-//   SOCIOLOGY
-//   TECHNOLOGY
-// }
+enum StoryTopic {
+  ASTRONOMY
+  BIOLOGY
+  CHEMICAL_ENGINEERING
+  CHEMISTRY
+  COMPUTER_SCIENCE
+  ELECTRICAL_ENGINEERING
+  ENVIRONMENTAL_SCIENCE
+  GEOLOGY
+  MATHEMATICS
+  MECHANICAL_ENGINEERING
+  MEDICINE
+  PHYSICS
+  PSYCHOLOGY
+  SOCIOLOGY
+  TECHNOLOGY
+}
 
 enum AuthVerificationType {
   EMAIL_VERIFICATION
@@ -101,12 +100,9 @@ model Story {
 
   slug String // Title slug for URL conforming to RFC 3986
 
-  topicId          String         @db.ObjectId
-  subtopicId       String         @db.ObjectId
-  generalSubjectId String         @db.ObjectId
-  topic            Topic          @relation(fields: [topicId], references: [id])
-  subtopic         Subtopic       @relation(fields: [subtopicId], references: [id])
-  generalSubject   GeneralSubject @relation(fields: [generalSubjectId], references: [id])
+  topics          StoryTopic[]
+  subtopics       Subtopic[]
+  generalSubjects GeneralSubject[]
 
   storyContributions StoryContribution[]
   storyContent       StoryContent[]
@@ -121,31 +117,45 @@ model Story {
   thumbnailUrl String
   coverCaption String @default("")
 
-  quizzes Quiz[]
-}
-
-model Topic {
-  id        String     @id @default(auto()) @map("_id") @db.ObjectId
-  name      String     @unique
-  subtopics Subtopic[]
-  Story     Story[]
+  quizzes               Quiz[]
+  SubtopicOnStory       SubtopicOnStory[]
+  GeneralSubjectOnStory GeneralSubjectOnStory[]
 }
 
 model Subtopic {
-  id              String           @id @default(auto()) @map("_id") @db.ObjectId
-  name            String           @unique
-  generalSubjects GeneralSubject[]
-  topicId         String           @db.ObjectId
-  topic           Topic            @relation(fields: [topicId], references: [id])
-  Story           Story[]
+  id              String            @id @default(auto()) @map("_id") @db.ObjectId
+  name            String            @unique
+  Story           Story?            @relation(fields: [storyId], references: [id])
+  storyId         String?           @db.ObjectId
+  SubtopicOnStory SubtopicOnStory[]
 }
 
 model GeneralSubject {
+  id                    String                  @id @default(auto()) @map("_id") @db.ObjectId
+  name                  String                  @unique
+  Story                 Story?                  @relation(fields: [storyId], references: [id])
+  storyId               String?                 @db.ObjectId
+  GeneralSubjectOnStory GeneralSubjectOnStory[]
+}
+
+model SubtopicOnStory {
   id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  name       String   @unique
+  storyId    String   @db.ObjectId
   subtopicId String   @db.ObjectId
+  story      Story    @relation(fields: [storyId], references: [id])
   subtopic   Subtopic @relation(fields: [subtopicId], references: [id])
-  Story      Story[]
+
+  @@unique([storyId, subtopicId])
+}
+
+model GeneralSubjectOnStory {
+  id               String         @id @default(auto()) @map("_id") @db.ObjectId
+  storyId          String         @db.ObjectId
+  generalSubjectId String         @db.ObjectId
+  story            Story          @relation(fields: [storyId], references: [id])
+  generalSubject   GeneralSubject @relation(fields: [generalSubjectId], references: [id])
+
+  @@unique([storyId, generalSubjectId])
 }
 
 model StoryContribution {
