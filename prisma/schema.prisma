@@ -59,6 +59,14 @@ enum QuizType {
   POST_QUIZ
 }
 
+enum QuestionType {
+  MULTIPLE_CHOICE
+  TRUE_FALSE
+  DIRECT_MATCHING
+  COMPLEX_MATCHING
+  SELECT_ALL
+}
+
 model Story {
   id        String    @id @default(auto()) @map("_id") @db.ObjectId
   storyType StoryType
@@ -125,6 +133,8 @@ model User {
 
   roles   UserRole[] @default([])
   quizzes Quiz[]
+  firstQuizRecord       Json?
+  mostRecentQuizRecord  Json?
 }
 
 model AuthVerification {
@@ -196,4 +206,41 @@ model Bookmark {
   createdAt DateTime @default(now())
 
   @@unique([userId, storyId])
+}
+
+model QuizQuestion {
+  id              String       @id @default(auto()) @map("_id") @db.ObjectId
+  storyId         String       @db.ObjectId
+  contentCategory String
+  questionType    QuestionType
+  questionName    String
+  totalScore      Int
+  subparts        Subpart[]
+}
+
+model Subpart {
+  id             String        @id @default(auto()) @map("_id") @db.ObjectId
+  question       String
+  options        String[]
+  correctAnswer  String[]
+  explanation    String
+  QuizQuestion   QuizQuestion? @relation(fields: [quizQuestionId], references: [id])
+  quizQuestionId String?       @db.ObjectId
+}
+
+model UserResponse {
+  id               String            @id @default(auto()) @map("_id") @db.ObjectId
+  storyId          String
+  questionType     QuestionType
+  userId           String            @db.ObjectId
+  quizQuestionId   String            @db.ObjectId
+  responseSubparts ResponseSubpart[]
+}
+
+model ResponseSubpart {
+  id              String        @id @default(auto()) @map("_id") @db.ObjectId
+  subpartId       String        @db.ObjectId
+  subpartUserAns  String[]
+  UserResponse    UserResponse? @relation(fields: [userResponseId], references: [id])
+  userResponseId  String?       @db.ObjectId
 }
