@@ -24,6 +24,9 @@ enum ContributionType {
   AUTHOR
   ILLUSTRATOR
   ANIMATOR
+  PHOTOGRAPHER
+  VIDEOGRAPHER
+  OTHER
 }
 
 enum StoryTopic {
@@ -100,6 +103,9 @@ model StoryContribution {
   storyId String @db.ObjectId
 
   contributionType ContributionType
+  otherContributorType String
+  otherContributorCredit String
+  contributorByline String
 
   bio String?
 }
