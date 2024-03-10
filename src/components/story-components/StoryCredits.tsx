@@ -316,168 +316,221 @@ export default function StoryCredits({ story }: Props) {
 
   const buildPrintAuthors = () => {
     const authors: string[] = [];
+
+    const authorIcons: (string | null)[] = [];
+
     const illustrators: string[] = [];
+    const illustratorIcons: (string | null)[] = [];
+
     const animators: string[] = [];
+    const animatorIcons: (string | null)[] = [];
+
     story.storyContributions.forEach((contributor, index) => {
       switch (contributor.contributionType) {
         case "AUTHOR":
           authors.push(
             `${contributor.user.firstName} ${contributor.user.lastName}`,
           );
+          authorIcons.push(contributor.user.avatarUrl);
 
           break;
         case "ILLUSTRATOR":
           illustrators.push(
             `${contributor.user.firstName} ${contributor.user.lastName}`,
           );
-
+          illustratorIcons.push(contributor.user.avatarUrl);
           break;
         case "ANIMATOR":
           animators.push(
             `${contributor.user.firstName} ${contributor.user.lastName}`,
           );
-
+          animatorIcons.push(contributor.user.avatarUrl);
           break;
         default:
           authors.push(
             `${contributor.user.firstName} ${contributor.user.lastName}`,
           );
-
+          authorIcons.push(contributor.user.avatarUrl);
           break;
       }
     });
 
     return (
       <div>
-        {authors.length > 0 ? (
-          <p>
-            by{" "}
-            {authors.slice(0, -1).map((author, index) => {
-              if (authors.length > 2) {
-                return (
-                  <>
-                    <a
-                      href={`/contributors/${author
-                        .replaceAll(" ", "-")
-                        .toLowerCase()}`}
-                    >
-                      {author}
-                    </a>
-                    ,{" "}
-                  </>
-                );
-              } else {
-                return (
-                  <>
-                    <a
-                      href={`/contributors/${author
-                        .replaceAll(" ", "-")
-                        .toLowerCase()}`}
-                    >
-                      {author}
-                    </a>{" "}
-                  </>
-                );
-              }
-            })}{" "}
-            {authors.length > 1 ? "and " : ""}{" "}
-            <a
-              href={`/contributors/${authors
-                .slice(-1)[0]
-                .replaceAll(" ", "-")
-                .toLowerCase()}`}
-            >
-              {authors.slice(-1)[0]}
-            </a>
-          </p>
-        ) : (
-          ""
-        )}
+        <div className="flex flex-row items-center">
+          {authors.length > 0 ? (
+            <>
+              <div className="flex flex-row justify-self-start">
+                {/* author icons */}
+                {authorIcons.map((icon, index) => (
+                  <Avatar
+                    key={`author-icons-${icon}-${index}`}
+                    imageUrl={icon ? icon : undefined}
+                    label={authors[index].slice(0, 1)}
+                    className="m-0.5"
+                    size="md"
+                  />
+                ))}
+              </div>
+              <p>
+                by{" "}
+                {authors.slice(0, -1).map((author, index) => {
+                  if (authors.length > 2) {
+                    return (
+                      <>
+                        <a
+                          href={`/contributors/${author
+                            .replaceAll(" ", "-")
+                            .toLowerCase()}`}
+                        >
+                          {author}
+                        </a>
+                        ,{" "}
+                      </>
+                    );
+                  } else {
+                    return (
+                      <>
+                        <a
+                          href={`/contributors/${author
+                            .replaceAll(" ", "-")
+                            .toLowerCase()}`}
+                        >
+                          {author}
+                        </a>{" "}
+                      </>
+                    );
+                  }
+                })}{" "}
+                {authors.length > 1 ? "and " : ""}{" "}
+                <a
+                  href={`/contributors/${authors
+                    .slice(-1)[0]
+                    .replaceAll(" ", "-")
+                    .toLowerCase()}`}
+                >
+                  {authors.slice(-1)[0]}
+                </a>
+              </p>
+            </>
+          ) : (
+            ""
+          )}
+        </div>
+
         {illustrators.length > 0 ? (
-          <p>
-            Illustrations by{" "}
-            {illustrators.slice(0, -1).map((illustrator, index) => {
-              if (illustrators.length > 2) {
-                return (
-                  <>
-                    <a
-                      href={`/contributors/${illustrator
-                        .replaceAll(" ", "-")
-                        .toLowerCase()}`}
-                    >
-                      {illustrator}
-                    </a>
-                    ,{" "}
-                  </>
-                );
-              } else {
-                return (
-                  <>
-                    <a
-                      href={`/contributors/${illustrator
-                        .replaceAll(" ", "-")
-                        .toLowerCase()}`}
-                    >
-                      {illustrator}
-                    </a>{" "}
-                  </>
-                );
-              }
-            })}{" "}
-            {illustrators.length > 1 ? "and " : ""}{" "}
-            <a
-              href={`/contributors/${illustrators
-                .slice(-1)[0]
-                .replaceAll(" ", "-")
-                .toLowerCase()}`}
-            >
-              {illustrators.slice(-1)[0]}
-            </a>
-          </p>
+          <div className="flex flex-row items-center">
+            <div className="flex flex-row justify-self-start">
+              {/* illust icons */}
+              {illustratorIcons.map((icon, index) => (
+                <Avatar
+                  key={`illustrator-icons-${icon}-${index}`}
+                  imageUrl={icon ? icon : undefined}
+                  label={illustrators[index].slice(0, 1)}
+                  className="m-0.5"
+                  size="md"
+                />
+              ))}
+            </div>
+            <p>
+              Illustrations by{" "}
+              {illustrators.slice(0, -1).map((illustrator, index) => {
+                if (illustrators.length > 2) {
+                  return (
+                    <>
+                      <a
+                        href={`/contributors/${illustrator
+                          .replaceAll(" ", "-")
+                          .toLowerCase()}`}
+                      >
+                        {illustrator}
+                      </a>
+                      ,{" "}
+                    </>
+                  );
+                } else {
+                  return (
+                    <>
+                      <a
+                        href={`/contributors/${illustrator
+                          .replaceAll(" ", "-")
+                          .toLowerCase()}`}
+                      >
+                        {illustrator}
+                      </a>{" "}
+                    </>
+                  );
+                }
+              })}{" "}
+              {illustrators.length > 1 ? "and " : ""}{" "}
+              <a
+                href={`/contributors/${illustrators
+                  .slice(-1)[0]
+                  .replaceAll(" ", "-")
+                  .toLowerCase()}`}
+              >
+                {illustrators.slice(-1)[0]}
+              </a>
+            </p>
+          </div>
         ) : (
           ""
         )}
         {animators.length > 0 ? (
-          <p>
-            Animations by{" "}
-            {animators.slice(0, -1).map((animator, index) => {
-              if (animators.length > 2) {
-                return (
-                  <>
-                    <a
-                      href={`/contributors/${animator
-                        .replaceAll(" ", "-")
-                        .toLowerCase()}`}
-                    >
-                      {animator}
-                    </a>
-                    ,{" "}
-                  </>
-                );
-              } else {
-                return (
-                  <>
-                    <a
-                      href={`/contributors/${animator
-                        .replaceAll(" ", "-")
-                        .toLowerCase()}`}
-                    >
-                      {animator}
-                    </a>{" "}
-                  </>
-                );
-              }
-            })}{" "}
-            {animators.length > 1 ? "and " : ""}{" "}
-            <a
-              href={`/contributors/${animators
-                .slice(-1)[0]
-                .replaceAll(" ", "-")
-                .toLowerCase()}`}
-            >
-              {animators.slice(-1)[0]}
-            </a>
-          </p>
+          <div className="flex flex-row items-center">
+            <div className="flex flex-row justify-self-start">
+              {/* animator icons */}
+              {animatorIcons.map((icon, index) => (
+                <Avatar
+                  key={`animator-icons-${icon}-${index}`}
+                  imageUrl={icon ? icon : undefined}
+                  label={animators[index].slice(0, 1)}
+                  className="m-0.5"
+                  size="md"
+                />
+              ))}
+            </div>
+            <p>
+              Animations by{" "}
+              {animators.slice(0, -1).map((animator, index) => {
+                if (animators.length > 2) {
+                  return (
+                    <>
+                      <a
+                        href={`/contributors/${animator
+                          .replaceAll(" ", "-")
+                          .toLowerCase()}`}
+                      >
+                        {animator}
+                      </a>
+                      ,{" "}
+                    </>
+                  );
+                } else {
+                  return (
+                    <>
+                      <a
+                        href={`/contributors/${animator
+                          .replaceAll(" ", "-")
+                          .toLowerCase()}`}
+                      >
+                        {animator}
+                      </a>{" "}
+                    </>
+                  );
+                }
+              })}{" "}
+              {animators.length > 1 ? "and " : ""}{" "}
+              <a
+                href={`/contributors/${animators
+                  .slice(-1)[0]
+                  .replaceAll(" ", "-")
+                  .toLowerCase()}`}
+              >
+                {animators.slice(-1)[0]}
+              </a>
+            </p>
+          </div>
         ) : (
           ""
         )}
@@ -557,7 +610,7 @@ export default function StoryCredits({ story }: Props) {
           className={`relative m-10 flex min-h-0 w-full flex-col justify-end overflow-hidden `}
         >
           <h1
-            className="mb-0 p-8 pb-0 font-alegreyaSansSC text-6xl font-bold sm:text-8xl lg:w-4/5"
+            className="mb-0 p-8 pb-0 font-customTest text-6xl font-bold sm:text-8xl lg:w-4/5"
             style={{
               color: story.titleColor,
 
@@ -568,7 +621,7 @@ export default function StoryCredits({ story }: Props) {
             {story.title}
           </h1>
           <h2
-            className="p-8 pt-0 font-alegreyaSansSC text-4xl font-semibold lg:w-5/6"
+            className="p-8 pt-0 font-customTest text-4xl font-semibold lg:w-5/6"
             style={{
               color: story.summaryColor,
 
@@ -596,7 +649,7 @@ export default function StoryCredits({ story }: Props) {
                 ? story.category.slice(0, 1) +
                   story.category.slice(1).toLowerCase()
                 : ""}{" "}
-              I |{" "}
+              |{" "}
               {story.storyType
                 ? story.storyType.slice(0, 1) +
                   story.storyType.slice(1).toLowerCase() +

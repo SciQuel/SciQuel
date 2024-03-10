@@ -16,6 +16,7 @@ module.exports = {
       fontFamily: {
         alegreyaSansSC: "var(--font-alegreya-sans-sc)",
         sourceSerif4: "var(--font-source-serif-4)",
+        customTest: ["custom-test", "sans-serif"],
       },
       colors: {
         sciquelDarkText: "#333333",
