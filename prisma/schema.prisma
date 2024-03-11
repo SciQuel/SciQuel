@@ -208,6 +208,11 @@ model DictionaryDefinition {
   storyId String @db.ObjectId
   story Story @relation(fields: [storyId], references: [id])
 
+  // db fields for cloud storage url referencing audio files
+  wordAudioUrl String? 
+  definitionAudioUrl String? 
+  useAudioUrl String? 
+
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 }
