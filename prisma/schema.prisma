@@ -208,6 +208,7 @@ model Bookmark {
   @@unique([userId, storyId])
 }
 
+
 model QuizQuestion {
   id              String       @id @default(auto()) @map("_id") @db.ObjectId
   storyId         String       @db.ObjectId
