@@ -133,6 +133,8 @@ model User {
 
   roles   UserRole[] @default([])
   quizzes Quiz[]
+
+  contactUpdates ContactMessage[]
   firstQuizRecord       Json?
   mostRecentQuizRecord  Json?
 }
@@ -206,6 +208,49 @@ model Bookmark {
   createdAt DateTime @default(now())
 
   @@unique([userId, storyId])
+}
+
+// feedback schema
+
+enum ContactStatus {
+  UNOPENED
+  NEEDS_RESPONSE
+  CLOSED
+  ARCHIVED
+}
+
+enum ContactType {
+  FEEDBACK
+  GET_INVOLVED
+}
+
+model ContactMessage {
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  contactType ContactType
+
+  name     String
+  email    String
+  message  String
+  senderIp String
+
+  status      ContactStatus
+  createdAt   DateTime
+  lastUpdated DateTime
+
+  lastUpdatedUser   User?   @relation(fields: [lastUpdatedUserId], references: [id])
+  lastUpdatedUserId String? @db.ObjectId
+}
+
+model BlockedUser {
+  id    String  @id @default(auto()) @map("_id") @db.ObjectId
+  email String?
+  ip    String?
+
+  reason String
+
+  banEndTime DateTime?
+
+  lastUpdated DateTime
 }
 
 model QuizQuestion {
