@@ -93,7 +93,7 @@ const SocialMediaPopup = forwardRef(
             >
               {/* button + side-popout container */}
               <div
-                className={`pointer-events-auto  relative m-0 flex flex-row border-x-2 border-sciquelCardBorder bg-sciquelCardBg py-1 pb-4 sm:rounded-b sm:border-b-2 sm:pb-2 md:px-1 lg:h-fit  xl:top-2 xl:w-max xl:flex-col xl:rounded xl:border-2 xl:px-0`}
+                className={`pointer-events-auto  relative m-0 flex flex-row border-x-2 border-sciquelCardBorder bg-sciquelCardBg py-1 pb-4 sm:rounded-b sm:border-b-2 sm:pb-2 md:px-1 lg:h-fit  xl:top-2 xl:w-max xl:flex-col xl:gap-1 xl:rounded xl:border-2 xl:px-0`}
               >
                 {/*  before:pointer-events-none */}
                 {/* buttons container */}

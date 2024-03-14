@@ -4,7 +4,7 @@ import testImg from "../../../public/assets/images/bobtail.png";
 
 export default function FromThisSeries() {
   return (
-    <div className="mt-8 bg-gradient-to-l from-[#2779A8] to-[#63A49E] p-8 text-sciquelCardBg">
+    <div className="mt-8 bg-gradient-to-l from-[#2779A8] to-[#63A49E] px-8 py-12  text-sciquelCardBg">
       <div className="flex w-full flex-col text-center">
         <h1 className="text-xl">More from the series:</h1>
         <h2 className="text-2xl font-bold">Exploring Ecology</h2>
@@ -42,7 +42,7 @@ export default function FromThisSeries() {
       </div>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:gap-10">
         <Link className="rounded-lg bg-[#d9d9d9]/[0.3] " href="/">
-          <div className="flex h-[168px] flex-row gap-2 p-2">
+          <div className="flex h-[168px] flex-row gap-2 p-4">
             <div className="relative bg-red-500 pr-[41%]">
               <Image
                 className="absolute top-0 h-full w-full object-cover"
@@ -66,7 +66,7 @@ export default function FromThisSeries() {
           </div>
         </Link>
         <Link className="rounded-lg bg-[#d9d9d9]/[0.3] " href="/">
-          <div className="flex h-[168px] flex-row gap-2 p-2">
+          <div className="flex h-[168px] flex-row gap-2 p-4">
             <div className="relative bg-red-500 pr-[41%]">
               <Image
                 className="absolute top-0 h-full w-full object-cover"

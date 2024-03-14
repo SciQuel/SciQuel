@@ -224,7 +224,7 @@ export default function ShareLinks({ storyId, observe }: Props) {
           type="button"
           aria-haspopup={true}
           aria-expanded={showOptions == "share"}
-          className="pointer-events-auto h-fit w-fit rounded-full py-1 pr-3 xl:ml-4 xl:pr-0"
+          className="pointer-events-auto h-fit w-fit rounded-full py-0.5 pr-3 xl:ml-4 xl:pr-0"
           onClick={() => {
             if (showOptions == "share") {
               setShowOptions("none");
@@ -246,7 +246,7 @@ export default function ShareLinks({ storyId, observe }: Props) {
       <button
         type="button"
         onClick={handleBrain}
-        className="pointer-events-auto ml-[3.5rem] h-fit w-fit rounded-full px-3 py-1 xl:ml-0  xl:mt-[3.25rem]"
+        className="pointer-events-auto ml-[3.5rem] h-fit w-fit rounded-full px-3 py-0.5 xl:ml-0  xl:mt-[3.2rem]"
       >
         <Image
           src={shareIcon}
@@ -296,7 +296,7 @@ export default function ShareLinks({ storyId, observe }: Props) {
       <button
         type="button"
         onClick={handleBookmark}
-        className="pointer-events-auto h-fit w-fit rounded-full px-3 py-1"
+        className="pointer-events-auto h-fit w-fit rounded-full px-3 py-0.5"
       >
         <Image
           src={shareIcon}
@@ -346,7 +346,7 @@ export default function ShareLinks({ storyId, observe }: Props) {
       </div>
       <button
         type="button"
-        className="pointer-events-auto h-fit w-fit rounded-full px-3 py-1"
+        className="pointer-events-auto h-fit w-fit rounded-full px-3 py-0.5"
         onClick={() => {
           if (toggleFunction) {
             window.scrollTo(0, 0);

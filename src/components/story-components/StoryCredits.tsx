@@ -133,7 +133,7 @@ export default function StoryCredits({ story }: Props) {
     illustratorIcons = authorIcons.slice(0, 1);
 
     return (
-      <div className="mx-0 flex flex-col">
+      <div className="mx-0 flex flex-col  ">
         <div className="flex flex-row">
           <div className="flex flex-row justify-self-start">
             {/* author icons */}
@@ -142,12 +142,12 @@ export default function StoryCredits({ story }: Props) {
                 key={`author-icons-${icon}-${index}`}
                 imageUrl={icon ? icon : undefined}
                 label={authors[index].slice(0, 1)}
-                className="m-0.5"
+                className="my-1 me-2  "
                 size="md"
               />
             ))}
           </div>
-          <p className="mx-1 self-center justify-self-stretch">
+          <p className="mx-0 self-center justify-self-stretch">
             {/* authors */}
             by{" "}
             {authors.slice(0, -1).map((author, index) => {
@@ -200,12 +200,12 @@ export default function StoryCredits({ story }: Props) {
                   key={`illustrator-icons-${icon}-${index}`}
                   imageUrl={icon ? icon : undefined}
                   label={illustrators[index].slice(0, 1)}
-                  className="m-0.5"
+                  className="my-1 me-2  "
                   size="md"
                 />
               ))}
             </div>
-            <p className="mx-1 self-center  justify-self-stretch">
+            <p className="mx-0 self-center  justify-self-stretch">
               {/* illustrators */}
               illustrations by{" "}
               {illustrators.slice(0, -1).map((illustrator, index) => {
@@ -260,12 +260,12 @@ export default function StoryCredits({ story }: Props) {
                   key={`animator-icons-${icon}-${index}`}
                   imageUrl={icon ? icon : undefined}
                   label={animators[index].slice(0, 1)}
-                  className="m-0.5"
+                  className="my-1 me-2  "
                   size="md"
                 />
               ))}
             </div>
-            <p className="mx-1 self-center  justify-self-stretch">
+            <p className="mx-0 self-center  justify-self-stretch">
               {/* animators */}
               Animations by{" "}
               {animators.slice(0, -1).map((animator, index) => {
@@ -367,7 +367,7 @@ export default function StoryCredits({ story }: Props) {
                     key={`author-icons-${icon}-${index}`}
                     imageUrl={icon ? icon : undefined}
                     label={authors[index].slice(0, 1)}
-                    className="m-0.5"
+                    className="my-1 me-2  "
                     size="md"
                   />
                 ))}
@@ -427,7 +427,7 @@ export default function StoryCredits({ story }: Props) {
                   key={`illustrator-icons-${icon}-${index}`}
                   imageUrl={icon ? icon : undefined}
                   label={illustrators[index].slice(0, 1)}
-                  className="m-0.5"
+                  className="my-1 me-2  "
                   size="md"
                 />
               ))}
@@ -485,7 +485,7 @@ export default function StoryCredits({ story }: Props) {
                   key={`animator-icons-${icon}-${index}`}
                   imageUrl={icon ? icon : undefined}
                   label={animators[index].slice(0, 1)}
-                  className="m-0.5"
+                  className="my-1 me-2  "
                   size="md"
                 />
               ))}
@@ -551,17 +551,17 @@ export default function StoryCredits({ story }: Props) {
         <p className="my-1 font-sourceSerif4">
           Title Image provided by Source name
         </p>
-        <h1 className="my-4 font-sourceSerif4 text-4xl">{story.title}</h1>
-        <h2 className="font-sourceSerif4 text-2xl">{story.summary}</h2>
+        <h1 className="my-4  font-customTest text-4xl">{story.title}</h1>
+        <h2 className="font-customTest text-2xl">{story.summary}</h2>
       </div>
 
-      <div className="relative mx-0 mt-5 flex w-screen flex-col px-2 sm:mx-auto md:w-[768px] md:px-0">
+      <div className="relative mx-0 mt-5 flex w-screen flex-col px-2 font-sourceSerif4 sm:mx-auto md:w-[768px] md:px-0">
         <div className="pointer-events-none top-0 flex flex-1 flex-row justify-start xl:hidden">
           <ShareLinks storyId={story.id} observe={false} />
         </div>
 
         <div className="flex flex-row ">
-          <p className="mr-2">
+          <p className="mr-1 ">
             {story.category
               ? story.category.slice(0, 1) +
                 story.category.slice(1).toLowerCase()
@@ -637,14 +637,14 @@ export default function StoryCredits({ story }: Props) {
       <p className="my-0 w-screen px-2 py-0 font-sourceSerif4">
         Title Image provided by Source name
       </p>
-      <div className=" -mt-6 justify-self-start pt-0">
+      <div className=" -mt-6 justify-self-start pt-0 font-sourceSerif4">
         <div className="relative mx-0 mt-0 flex w-screen flex-col overflow-hidden px-2 md:mx-auto md:w-[768px] md:px-0">
           <div className="pointer-events-none top-0 flex flex-1 flex-row flex-wrap justify-start xl:hidden">
             <ShareLinks storyId={story.id} observe={false} />
           </div>
 
-          <div className="mt-2 flex flex-row">
-            <p className="mr-2">
+          <div className="mt-4 flex flex-row">
+            <p className="mr-1  ">
               {story.category
                 ? story.category.slice(0, 1) +
                   story.category.slice(1).toLowerCase()
@@ -653,7 +653,7 @@ export default function StoryCredits({ story }: Props) {
               {story.storyType
                 ? story.storyType.slice(0, 1) +
                   story.storyType.slice(1).toLowerCase() +
-                  " | "
+                  " |"
                 : ""}
             </p>
             {story.tags.map((item: StoryTopic, index: number) => {
@@ -662,7 +662,7 @@ export default function StoryCredits({ story }: Props) {
           </div>
 
           {buildAuthors()}
-          <p>
+          <p className=" ">
             {DateTime.fromJSDate(story.publishedAt).toFormat(
               "LLLL d',' y',' t ZZZZ",
             )}

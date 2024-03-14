@@ -155,7 +155,7 @@ export default function AuthorCredits({ storyContributions }: Props) {
           <div className="m-5 flex flex-[2.3] flex-col">
             <p className="flex-1 font-sourceSerif4 text-xl">
               <a
-                className="font-alegreyaSansSC text-2xl font-medium text-sciquelTeal"
+                className="font-alegreyaSansSC text-3xl font-medium text-sciquelTeal"
                 href={`/contributors/${element.user.firstName.toLowerCase()}-${element.user.lastName.toLowerCase()}`}
               >
                 {element.user.firstName} {element.user.lastName}{" "}
