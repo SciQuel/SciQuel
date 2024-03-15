@@ -1,4 +1,4 @@
-import { useQuizContext } from "@/components/Quiz/QuizContext";
+import { useQuizContext } from "@/components/Quiz/oldFile/QuizContext";
 import QuizButtons from "@/components/QuizButtons";
 import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
@@ -697,7 +697,7 @@ export default function MultipleMatchQuiz({
         return false; // Handle the case where userAnswers is null or empty.
       }
 
-      if(isPreQuiz) {
+      if (isPreQuiz) {
         // save user's submitted answers
         // "submit" the prequiz answers
         const updatedRecord = userAnswers.map(

@@ -1,4 +1,4 @@
-import { useQuizContext } from "@/components/Quiz/QuizContext";
+import { useQuizContext } from "@/components/Quiz/oldFile/QuizContext";
 import QuizButtons from "@/components/QuizButtons";
 import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";

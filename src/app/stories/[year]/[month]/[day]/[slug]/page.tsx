@@ -11,7 +11,11 @@ import {
   type AllQuestions,
   type MultipleChoiceQuestion,
 } from "@/components/quiz-components/QuizContext";
-import { QuizProvider } from "@/components/Quiz/QuizContext";
+import MultipChoice from "@/components/Quiz/MulitpleChoice";
+import MultipMatch from "@/components/Quiz/MultipleMatch";
+import { QuizProvider } from "@/components/Quiz/oldFile/QuizContext";
+import OneMatch from "@/components/Quiz/OneMatch";
+import TrueFalse from "@/components/Quiz/TrueFalse";
 import FromThisSeries from "@/components/story-components/FromThisSeries";
 import ShareLinks from "@/components/story-components/ShareLinks";
 import TopicTag from "@/components/TopicTag";
@@ -19,8 +23,8 @@ import { tagUser } from "@/lib/cache";
 import env from "@/lib/env";
 import { generateMarkdown } from "@/lib/markdown";
 import {
-  OneMatchQuestion,
   type MultipleMatchQuestion,
+  type OneMatchQuestion,
   type Question,
 } from "@/lib/Question";
 import { type StoryTopic } from "@prisma/client";
@@ -50,29 +54,29 @@ function useQuiz(
   // const router = useRouter();
   // const { query } = router;
 
-  const preQuizComponent = (
-    <Quiz
-      isPreQuiz={true}
-      shareLinkIdentifier={"query.uid"}
-      topic={story.tags[0]}
-      quizObjective={quizObjective}
-      quizQuestionType={quizQuestionType}
-      questionList={questionList}
-    />
-  );
+  // const preQuizComponent = (
+  //   <Quiz
+  //     isPreQuiz={true}
+  //     shareLinkIdentifier={"query.uid"}
+  //     topic={story.tags[0]}
+  //     quizObjective={quizObjective}
+  //     quizQuestionType={quizQuestionType}
+  //     questionList={questionList}
+  //   />
+  // );
 
-  const postQuizComponent = (
-    <Quiz
-      isPreQuiz={false}
-      shareLinkIdentifier={"query.uid"}
-      topic={story.tags[0]}
-      quizObjective={quizObjective}
-      quizQuestionType={quizQuestionType}
-      questionList={questionList}
-    />
-  );
+  // const postQuizComponent = (
+  //   <Quiz
+  //     isPreQuiz={false}
+  //     shareLinkIdentifier={"query.uid"}
+  //     topic={story.tags[0]}
+  //     quizObjective={quizObjective}
+  //     quizQuestionType={quizQuestionType}
+  //     questionList={questionList}
+  //   />
+  // );
 
-  return [preQuizComponent, postQuizComponent];
+  // return [preQuizComponent, postQuizComponent];
 }
 
 const fakeQuestionList = [
@@ -409,12 +413,12 @@ export default async function StoriesPage({ params }: Params) {
     },
   ];
 
-  const [preQuiz, postQuiz] = useQuiz(
-    story,
-    "How much do you know already know about microglia?",
-    "True/False",
-    questionList_TF1,
-  );
+  // const [preQuiz, postQuiz] = useQuiz(
+  //   story,
+  //   "How much do you know already know about microglia?",
+  //   "True/False",
+  //   questionList_TF1,
+  // );
 
   return (
     <div className="flex flex-col">
@@ -481,7 +485,7 @@ export default async function StoriesPage({ params }: Params) {
         </p>
       </div>
       <div className="mx-2 mt-2 flex flex-col items-center gap-5 md:mx-auto">
-        <QuizProvider>
+        {/* <QuizProvider>
           <TestProvider quizInfo={fakeQuizData}>
             <PreQuiz />
             <PostQuiz />
@@ -489,7 +493,8 @@ export default async function StoriesPage({ params }: Params) {
             {file.result as ReactNode}
             {postQuiz}{" "}
           </TestProvider>
-        </QuizProvider>
+        </QuizProvider> */}
+        <Quiz />
       </div>
       <p className="w-[calc( 100% - 1rem )] mx-2 my-5 border-t-2 border-[#616161]  text-sm text-[#616161] md:mx-auto md:w-[720px]">
         Animation provided by Source name 1. Sources provided by Source name 2.

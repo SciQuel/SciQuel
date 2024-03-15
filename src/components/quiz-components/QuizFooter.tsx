@@ -1,9 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { Dispatch, SetStateAction, useEffect } from "react";
-import next_arrow from "../Quiz/next_arrow.png";
-import prev_arrow from "../Quiz/prev_arrow.png";
+import { useEffect, type Dispatch, type SetStateAction } from "react";
+import next_arrow from "../Quiz/oldFile/next_arrow.png";
+import prev_arrow from "../Quiz/oldFile/prev_arrow.png";
 
 interface Props {
   userAnswers: (number | boolean[] | undefined)[];
@@ -82,7 +82,7 @@ export default function QuizFooter({
         console.log(setFinalPostAnswers);
         if (setFinalPostAnswers) {
           setFinalPostAnswers((state) => {
-            let newState = [...state];
+            const newState = [...state];
             newState[questionIndex] = userAnswers[questionIndex];
             return newState;
           });

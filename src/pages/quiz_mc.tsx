@@ -1,12 +1,10 @@
-import Quiz from "@/components/Quiz";
+import Quiz from "@/components/Quiz/oldFile";
 import { type Question } from "@/lib/Question";
 import React from "react";
-
 import "tailwindcss/tailwind.css";
 import "../app/globals.css";
 import clsx from "clsx";
 import { Alegreya_Sans_SC, Quicksand, Source_Serif_4 } from "next/font/google";
-
 
 const quicksand = Quicksand({
   subsets: ["latin"],

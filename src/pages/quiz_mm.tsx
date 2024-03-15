@@ -1,4 +1,4 @@
-import Quiz from "@/components/Quiz";
+import Quiz from "@/components/Quiz/oldFile";
 import { type MultipleMatchQuestion, type Question } from "@/lib/Question";
 import React from "react";
 import "tailwindcss/tailwind.css";

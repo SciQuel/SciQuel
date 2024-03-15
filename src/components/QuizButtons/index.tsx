@@ -1,7 +1,7 @@
 import Image from "next/image";
 import React from "react";
-import next_arrow from "../Quiz/next_arrow.png";
-import prev_arrow from "../Quiz/prev_arrow.png";
+import next_arrow from "../Quiz/oldFile/next_arrow.png";
+import prev_arrow from "../Quiz/oldFile/prev_arrow.png";
 
 interface Props {
   showPreviousButton: boolean;

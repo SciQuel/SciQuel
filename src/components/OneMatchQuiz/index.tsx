@@ -1,4 +1,4 @@
-import { useQuizContext } from "@/components/Quiz/QuizContext";
+import { useQuizContext } from "@/components/Quiz/oldFile/QuizContext";
 import QuizButtons from "@/components/QuizButtons";
 import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
@@ -513,14 +513,14 @@ export default function OneMatchQuiz({
     (currentQuestion <= totalQuestions && hasAnswered);
   const showSubmitButton =
     !showAnswerExplanation && !isPreQuiz && !quizComplete;
-    const showFeedback =
+  const showFeedback =
     hasAnswered ||
     (!isPreQuiz && quizComplete) ||
     (isPreQuiz &&
       preQuizAnswers &&
       preQuizAnswers[currentQuestion - 1] &&
       preQuizAnswers[currentQuestion - 1].length > 0 &&
-      quizComplete);  
+      quizComplete);
   let shortenMatchLine = false;
 
   return (

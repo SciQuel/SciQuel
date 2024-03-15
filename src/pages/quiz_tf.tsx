@@ -1,7 +1,6 @@
-import Quiz from "@/components/Quiz";
+import Quiz from "@/components/Quiz/oldFile";
 import { type Question } from "@/lib/Question";
 import React from "react";
-
 import "tailwindcss/tailwind.css";
 import "../app/globals.css";
 import clsx from "clsx";
