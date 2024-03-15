@@ -37,7 +37,7 @@ export default function WhatsNewSection({ articles }: Props) {
             href={(() => {
               const publishDate = DateTime.fromJSDate(
                 headlineArticle.publishedAt,
-              );
+              ).toUTC();
               return `/stories/${publishDate.year}/${publishDate.toFormat(
                 "LL",
               )}/${publishDate.toFormat("dd")}/${headlineArticle.slug}`;
