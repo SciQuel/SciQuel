@@ -103,9 +103,9 @@ model StoryContribution {
   storyId String @db.ObjectId
 
   contributionType ContributionType
-  otherContributorType String
-  otherContributorCredit String
-  contributorByline String
+  otherContributorType String?
+  otherContributorCredit String?
+  contributorByline String?
 
   bio String?
 }
