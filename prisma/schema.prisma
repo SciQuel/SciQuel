@@ -59,6 +59,12 @@ enum QuizType {
   POST_QUIZ
 }
 
+enum PublishStatus {
+  SCHEDULED
+  VISIBLE
+  NOT_VISIBLE
+}
+
 model Story {
   id        String    @id @default(auto()) @map("_id") @db.ObjectId
   storyType StoryType
@@ -84,10 +90,16 @@ model Story {
   thumbnailUrl String
   coverCaption String @default("")
 
-  createdAt   DateTime
-  publishedAt DateTime
-  updatedAt   DateTime
-  quizzes     Quiz[]
+  createdAt       DateTime
+  publishedAt     DateTime
+  updatedAt       DateTime
+  quizzes         Quiz[]
+  SeriesVersion   SeriesVersion? @relation(fields: [seriesVersionId], references: [id])
+  seriesVersionId String?        @db.ObjectId
+  Series          Series?        @relation(fields: [seriesId], references: [id])
+  seriesId        String?        @db.ObjectId
+
+  @@index([seriesId])
 }
 
 model StoryContribution {
@@ -196,4 +208,39 @@ model Bookmark {
   createdAt DateTime @default(now())
 
   @@unique([userId, storyId])
+}
+
+model Series {
+  id                   String    @id @default(auto()) @map("_id") @db.ObjectId
+  createdDate          DateTime  @default(now())
+  createdBy            String    @db.ObjectId
+  lastUpdatedDate      DateTime  @default(now())
+  scheduledPublishDate DateTime?
+  publishedDate        DateTime?
+  publishedByScheduler Boolean
+
+  versions SeriesVersion[]
+
+  seriesPublishStatus PublishStatus
+  seriesURL           String
+  seriesSlug          String        @unique
+  seriesDescription   String
+  stories             Story[]
+}
+
+model SeriesVersion {
+  id                          String        @id @default(auto()) @map("_id") @db.ObjectId
+  versionName                 String
+  versionDate                 DateTime      @default(now())
+  versionBy                   String        @db.ObjectId
+  versionScheduledPublishDate DateTime?
+  versionPublishDate          DateTime?
+  versionPublishedByScheduler Boolean       @default(false)
+  versionSeriesStatus         PublishStatus
+  stories                     Story[]
+
+  seriesId String @db.ObjectId
+  series   Series @relation(fields: [seriesId], references: [id])
+
+  @@index([seriesId])
 }
