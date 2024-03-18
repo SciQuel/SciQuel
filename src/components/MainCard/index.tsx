@@ -29,7 +29,7 @@ export default function MainCard({
     <Link href={href}>
       <div
         className={`relative z-0 mx-auto h-[50vh] h-[70vh] max-h-[500px] min-h-[300px]
-                  min-w-[300px] cursor-pointer text-center transition-all duration-300 hover:scale-[1.03] lg:h-[70vh]`}
+                  min-w-[300px] cursor-pointer text-center transition-all duration-300 hover:scale-[1.03] lg:h-[60vh]`}
       >
         <div
           className={`absolute right-0 top-0 z-10 h-full w-8/12
@@ -43,7 +43,7 @@ export default function MainCard({
             style={{ objectFit: "cover" }}
           />
         </div>
-        <div className="relative flex h-full w-7/12 w-full flex-col justify-end p-5 transition-all duration-300 lg:w-10/12">
+        <div className="relative flex h-full w-full flex-col justify-end p-5 transition-all duration-300 lg:w-6/12 ">
           <InnerCard
             title={title}
             subtitle={subtitle}
@@ -52,7 +52,7 @@ export default function MainCard({
             mediaType={mediaType}
             tag={tag}
           />
-          <div className="absolute bottom-0 bottom-[18%] z-10 mx-5 my-3 text-left transition-all duration-300 lg:block">
+          <div className="absolute bottom-[10%] z-10 mx-5 my-3 text-left transition-all duration-300 lg:block">
             <p className="font-sourceSerif4 text-xl font-[350] text-sciquelMuted">
               {author} | {date}
             </p>

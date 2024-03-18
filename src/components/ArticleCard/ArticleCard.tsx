@@ -31,7 +31,7 @@ export default function ArticleCard({
     <Link href={href ?? "#"}>
       <div
         className={clsx(
-          `flex h-full cursor-pointer overflow-clip rounded-lg transition hover:scale-[1.02]`,
+          `flex h-full cursor-pointer overflow-clip rounded-lg transition hover:scale-[1.005]`,
           {
             "border border-sciquelCardBorder bg-sciquelCardBg": !(
               mini && preferHorizontal

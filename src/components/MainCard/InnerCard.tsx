@@ -19,7 +19,7 @@ export default function InnerCard({
   mediaType,
 }: Props) {
   return (
-    <div className="absolute relative bottom-[0%] z-20 flex w-full flex-col rounded bg-white transition-all duration-300 lg:bottom-[27%] lg:bg-transparent">
+    <div className="absolute relative bottom-[0%] z-20 flex w-full flex-col rounded bg-white pb-8 pt-6 transition-all duration-300 lg:bottom-[22%] lg:h-64 lg:bg-transparent">
       <div className="absolute inset-0 rounded bg-gradient-to-b from-[#196e8c] to-[#65a69e] opacity-0 transition-opacity duration-300 lg:px-5 lg:pt-12 lg:opacity-100"></div>
       <div className="z-10 flex flex-col rounded p-5">
         <div className="flex items-start justify-between">

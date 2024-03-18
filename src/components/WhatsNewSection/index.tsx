@@ -11,7 +11,7 @@ interface Props {
 
 export default function WhatsNewSection({ articles }: Props) {
   const headlineArticle = articles?.[0];
-  const readMoreArticles = articles?.slice(1, 4) ?? [];
+  const readMoreArticles = articles?.slice(1, 7) ?? [];
 
   return (
     <HomepageSection heading="Read what's new">
