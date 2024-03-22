@@ -20,6 +20,7 @@ export type Stories = (Story & {
       firstName: string;
       lastName: string;
     };
+    // placeholder need to add storyContent
     contributionType: ContributionType;
   }[];
 })[];
@@ -212,20 +213,41 @@ export async function PUT(request: NextRequest) {
 
     const newStory = await prisma.story.create({
       data: {
+        storyType: parsedRequest.data.storyType,
+        category: parsedRequest.data.category,
         title: parsedRequest.data.title,
+        titleColor: parsedRequest.data.titleColor,
+        slug: parsedRequest.data.slug,
         summary: parsedRequest.data.summary,
-        storyType: StoryType.ESSAY,
-        category: Category.ARTICLE,
-        titleColor: "#ffffff",
-        slug: slug(parsedRequest.data.title),
-        summaryColor: "#ffffff",
-        createdAt: timestamp,
-        publishedAt: timestamp,
-        updatedAt: timestamp,
-        staffPick: false,
-        published: false,
-        thumbnailUrl,
+        summaryColor: parsedRequest.data.summaryColor,
+        topics: parsedRequest.data.topics,
+        subtopics: {
+          connect: parsedRequest.data.subtopics.map((subtopic) => ({
+            id: subtopic.id,
+          })),
+        },
+        generalSubjects: {
+          connect: parsedRequest.data.generalSubjects.map((subject) => ({
+            id: subject.id,
+          })),
+        },
+        staffPick: parsedRequest.data.staffPick,
+        published: parsedRequest.data.published,
+        thumbnailUrl: parsedRequest.data.imageUrl || "",
         coverCaption: parsedRequest.data.imageCaption,
+        storyContent: {
+          create: {
+            // ! need to run npx prisma generate
+            content: parsedRequest.data.content,
+            footer: parsedRequest.data.footer,
+          },
+          storyContributions: {
+            create: parsedRequest.data.contributions,
+          },
+        },
+        createdAt: new Date(),
+        publishedAt: parsedRequest.data.published ? new Date() : (null as any),
+        updatedAt: new Date(),
       },
     });
 

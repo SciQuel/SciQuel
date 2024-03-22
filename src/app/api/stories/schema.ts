@@ -1,4 +1,9 @@
-import { ContributionType, StoryTopic, StoryType } from "@prisma/client";
+import {
+  Category,
+  ContributionType,
+  StoryTopic,
+  StoryType,
+} from "@prisma/client";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 
@@ -52,16 +57,46 @@ export const postStorySchema = z.object({
   content: z.string(),
 });
 
+const subtopicSchema = z.object({
+  id: z.string(),
+});
+
+const generalSubjectSchema = z.object({
+  id: z.string(),
+});
+
+const storyContributionSchema = z.object({
+  userId: z.string(),
+  contributionType: z.nativeEnum(ContributionType),
+  bio: z.string().optional(),
+});
+
 export const putStorySchema = zfd.formData({
   id: zfd.text().optional(),
+  storyType: z.nativeEnum(StoryType),
+  category: z.nativeEnum(Category),
   title: zfd.text(),
+  titleColor: zfd.text(),
+  slug: zfd.text(),
   summary: zfd.text(),
+  summaryColor: zfd.text(),
+  topics: z.array(z.nativeEnum(StoryTopic)),
+  subtopics: z.array(subtopicSchema),
+  generalSubjects: z.array(generalSubjectSchema),
+  staffPick: zfd.checkbox(),
   image: z.preprocess(
     (val) => (val instanceof Blob && val.size === 0 ? undefined : val),
     z.instanceof(Blob).optional(),
   ),
   imageUrl: zfd.text().optional(),
-  imageCaption: zfd.text(),
+  imageCaption: zfd.text().optional(),
+  // storyContent
+  content: zfd.text(),
+  footer: zfd.text().optional(),
+  // storyContribution, 1 to many relationship
+  contributions: z.array(storyContributionSchema),
+
+  published: zfd.checkbox(),
 });
 
 export const patchStorySchema = z.object({
