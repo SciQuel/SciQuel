@@ -4,6 +4,7 @@ import Avatar from "@/components/Avatar";
 import MoreCard from "@/components/MoreCard";
 import FromThisSeries from "@/components/story-components/FromThisSeries";
 import ShareLinks from "@/components/story-components/ShareLinks";
+import StoryTitle from "@/components/story-components/story-titles/StoryTitle";
 import TopicTag from "@/components/TopicTag";
 import { tagUser } from "@/lib/cache";
 import env from "@/lib/env";
@@ -28,28 +29,8 @@ export default async function StoriesPage({ params }: Params) {
   const { file } = await generateMarkdown(story.storyContent[0].content);
   return (
     <div className="flex flex-col">
-      <div className="relative h-screen">
-        <Image
-          src={story.thumbnailUrl}
-          className="-z-10 h-full object-cover"
-          fill={true}
-          alt={story.title}
-        />
-        <div className="relative flex h-full flex-col justify-end px-12 pb-24 pt-10">
-          <h1
-            className="w-4/5 p-8 font-alegreyaSansSC text-6xl font-bold sm:text-8xl"
-            style={{ color: story.titleColor }}
-          >
-            {story.title}
-          </h1>
-          <h2
-            className="w-5/6 p-8 pt-0 font-alegreyaSansSC text-4xl font-semibold"
-            style={{ color: story.summaryColor }}
-          >
-            {story.summary}
-          </h2>
-        </div>
-      </div>
+      <StoryTitle story={story} />
+
       <div className="relative mx-2 mt-5 flex w-screen flex-col md:mx-auto md:w-[720px]">
         <div className="absolute right-0 top-0 flex flex-1 flex-row justify-center xl:-left-24  xl:flex-col xl:pt-3">
           <ShareLinks />
