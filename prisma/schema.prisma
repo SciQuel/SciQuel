@@ -98,8 +98,8 @@ model Story {
   storyType StoryType
   category  Category
 
-  image    String
-  imageUrl String
+  image    String?
+  imageUrl String?
 
   title      String
   titleColor String

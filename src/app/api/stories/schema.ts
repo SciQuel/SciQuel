@@ -80,9 +80,18 @@ export const putStorySchema = zfd.formData({
   slug: zfd.text(),
   summary: zfd.text(),
   summaryColor: zfd.text(),
-  topics: z.array(z.nativeEnum(StoryTopic)),
-  subtopics: z.array(subtopicSchema),
-  generalSubjects: z.array(generalSubjectSchema),
+  topics: z.preprocess(
+    (val) => (typeof val == "string" ? JSON.parse(val) : ""),
+    z.array(z.nativeEnum(StoryTopic)),
+  ),
+  subtopics: z.preprocess(
+    (val) => (typeof val == "string" ? JSON.parse(val) : ""),
+    z.array(subtopicSchema),
+  ),
+  generalSubjects: z.preprocess(
+    (val) => (typeof val == "string" ? JSON.parse(val) : ""),
+    z.array(generalSubjectSchema),
+  ),
   staffPick: zfd.checkbox(),
   image: z.preprocess(
     (val) => (val instanceof Blob && val.size === 0 ? undefined : val),
@@ -94,7 +103,10 @@ export const putStorySchema = zfd.formData({
   content: zfd.text(),
   footer: zfd.text().optional(),
   // storyContribution, 1 to many relationship
-  contributions: z.array(storyContributionSchema),
+  contributions: z.preprocess(
+    (val) => (typeof val == "string" ? JSON.parse(val) : ""),
+    z.array(storyContributionSchema),
+  ),
 
   published: zfd.checkbox(),
 });
