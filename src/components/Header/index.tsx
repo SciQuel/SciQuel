@@ -125,7 +125,7 @@ export default function Header() {
           className=" grow cursor-pointer py-2 transition-colors hover:bg-sciquelHover"
           style={{ display: scroll ? "none" : "block" }}
         >
-          <Link href="/">LATEST</Link>
+          <Link href="/stories/latest">LATEST</Link>
         </div>
         <div
           className="grow cursor-pointer py-2 transition-colors hover:bg-sciquelHover"
