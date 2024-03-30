@@ -1,4 +1,3 @@
-import { randomUUID } from "crypto";
 import { bucket, bucketUrlPrefix } from "@/lib/gcs";
 import prisma from "@/lib/prisma";
 import {
@@ -8,6 +7,7 @@ import {
   type ContributionType,
   type Story,
 } from "@prisma/client";
+import { randomUUID } from "crypto";
 import { getServerSession } from "next-auth";
 import { NextResponse, type NextRequest } from "next/server";
 import slug from "slug";
@@ -99,7 +99,7 @@ export async function GET(req: NextRequest) {
         storyContributions: {
           select: {
             contributionType: true,
-            user: { select: { firstName: true, lastName: true } },
+            contributor: { select: { firstName: true, lastName: true } },
           },
         },
       },

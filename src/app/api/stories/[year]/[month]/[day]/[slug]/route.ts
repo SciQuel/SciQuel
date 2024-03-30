@@ -12,7 +12,7 @@ interface Params {
 
 export type GetStoryResult = Story & {
   storyContributions: {
-    user: {
+    contributor: {
       id: string;
       firstName: string;
       lastName: string;
@@ -68,7 +68,7 @@ export async function GET(req: Request, { params }: { params: Params }) {
         storyContributions: {
           select: {
             contributionType: true,
-            user: {
+            contributor: {
               select: {
                 id: true,
                 firstName: true,

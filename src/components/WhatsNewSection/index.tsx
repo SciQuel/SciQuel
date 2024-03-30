@@ -26,7 +26,7 @@ export default function WhatsNewSection({ articles }: Props) {
                 (value) => value.contributionType === "AUTHOR",
               );
               return author
-                ? `${author.user.firstName} ${author.user.lastName}`
+                ? `${author.contributor.firstName} ${author.contributor.lastName}`
                 : "";
             })()}
             date={DateTime.fromJSDate(
