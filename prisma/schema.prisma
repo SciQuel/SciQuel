@@ -67,6 +67,13 @@ enum QuestionType {
   SELECT_ALL
 }
 
+enum HeadlineConfiguration {
+  TITLE_ON_IMAGE
+  TITLE_LEFT
+  TITLE_RIGHT
+  TITLE_TOP
+}
+
 model Story {
   id        String    @id @default(auto()) @map("_id") @db.ObjectId
   storyType StoryType
@@ -74,6 +81,8 @@ model Story {
 
   title      String
   titleColor String
+
+  headlineConfiguration HeadlineConfiguration?
 
   slug String // Title slug for URL conforming to RFC 3986
 
@@ -134,9 +143,9 @@ model User {
   roles   UserRole[] @default([])
   quizzes Quiz[]
 
-  contactUpdates ContactMessage[]
-  firstQuizRecord       Json?
-  mostRecentQuizRecord  Json?
+  contactUpdates       ContactMessage[]
+  firstQuizRecord      Json?
+  mostRecentQuizRecord Json?
 }
 
 model AuthVerification {
@@ -283,9 +292,9 @@ model UserResponse {
 }
 
 model ResponseSubpart {
-  id              String        @id @default(auto()) @map("_id") @db.ObjectId
-  subpartId       String        @db.ObjectId
-  subpartUserAns  String[]
-  UserResponse    UserResponse? @relation(fields: [userResponseId], references: [id])
-  userResponseId  String?       @db.ObjectId
+  id             String        @id @default(auto()) @map("_id") @db.ObjectId
+  subpartId      String        @db.ObjectId
+  subpartUserAns String[]
+  UserResponse   UserResponse? @relation(fields: [userResponseId], references: [id])
+  userResponseId String?       @db.ObjectId
 }

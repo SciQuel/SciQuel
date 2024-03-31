@@ -16,7 +16,7 @@ export default function TitleRight({ story }: Props) {
 
   return (
     <>
-      <div className="fmd:grid-cols-2 m-0 grid w-screen  grid-cols-1  content-center">
+      <div className="m-0 mt-8 flex w-screen max-w-[720px] flex-col-reverse content-center px-2 md:mt-0 md:grid md:max-w-[100vw] md:grid-cols-2  md:px-0">
         <div className="relative h-screen w-full md:h-auto md:w-auto">
           <Image
             fill
@@ -25,7 +25,7 @@ export default function TitleRight({ story }: Props) {
             alt={story.title}
           />
         </div>
-        <div className=" bg-teal-900">
+        <div className=" mb-2 bg-teal-950 md:mb-0">
           <div
             ref={headerRef}
             className={`relative m-10 flex h-fit min-h-0 flex-col  overflow-hidden`}

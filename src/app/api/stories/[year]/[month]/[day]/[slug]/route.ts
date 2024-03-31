@@ -79,6 +79,7 @@ export async function GET(req: Request, { params }: { params: Params }) {
             },
           },
         },
+
         storyContent:
           includeContent === "true"
             ? {

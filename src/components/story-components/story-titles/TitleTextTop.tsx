@@ -10,55 +10,28 @@ interface Props {
 }
 
 export default function TitleTop({ story }: Props) {
-  const headerRef = useRef<HTMLDivElement>(null);
-
-  const headerFont = useFontSize(headerRef);
-
   return (
     <>
-      <div className="m-0 flex w-screen flex-col ">
-        <div className=" flex h-screen flex-col justify-center bg-teal-900">
-          <div
-            ref={headerRef}
-            className={`relative m-10 flex h-fit min-h-0 flex-col items-center overflow-hidden`}
-          >
-            <h1
-              className="  p-8 pb-0  font-bold  "
-              style={{
-                color: story.titleColor,
-
-                fontSize: `${Math.max(headerFont, 14)}px`,
-                lineHeight: `${Math.max(headerFont + 3, 14)}px`,
-              }}
-            >
-              {story.title}
-            </h1>
-            <h2
-              className="  p-8 pt-0  font-semibold  "
-              style={{
-                color: story.summaryColor,
-
-                fontSize: `${Math.max(headerFont - 28, 14)}px`,
-                lineHeight: `${Math.max(headerFont - 25, 14)}px`,
-              }}
-            >
-              {story.summary}
-            </h2>
-          </div>
+      <div className="relative mx-auto w-screen max-w-[720px] px-2 pt-10 md:px-0">
+        <div className=" flex flex-col justify-start">
+          <h1 className="py-4 pb-0 text-4xl  font-bold  ">{story.title}</h1>
+          <h2 className="py-4 pt-0 text-2xl  font-semibold  ">
+            {story.summary}
+          </h2>
         </div>
-        <div className="relative h-screen w-full   md:w-auto">
+        <div className="relative  w-full  ">
           <Image
-            fill
             src={story.thumbnailUrl}
-            className="  object-cover"
+            className="w-full min-w-0  object-cover"
+            width={700}
+            height={400}
             alt={story.title}
           />
         </div>
+        <p className="my-2 font-sourceSerif4 ">
+          Title Image provided by Source name
+        </p>
       </div>
-
-      <p className="my-0 w-screen px-2 py-0 font-sourceSerif4">
-        Title Image provided by Source name
-      </p>
     </>
   );
 }

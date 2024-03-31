@@ -204,6 +204,7 @@ export async function PUT(request: NextRequest) {
           thumbnailUrl,
           coverCaption: parsedRequest.data.imageCaption,
           updatedAt: timestamp,
+          headlineConfiguration: "TITLE_ON_IMAGE",
         },
       });
 
@@ -226,6 +227,7 @@ export async function PUT(request: NextRequest) {
         published: false,
         thumbnailUrl,
         coverCaption: parsedRequest.data.imageCaption,
+        headlineConfiguration: "TITLE_ON_IMAGE",
       },
     });
 

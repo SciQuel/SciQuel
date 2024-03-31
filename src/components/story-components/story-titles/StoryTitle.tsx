@@ -9,5 +9,18 @@ interface Props {
 }
 
 export default function StoryTitle({ story }: Props) {
-  return <TitleTop story={story} />;
+  switch (story.headlineConfiguration) {
+    case "TITLE_LEFT":
+      return <TitleLeft story={story} />;
+    case "TITLE_ON_IMAGE":
+      return <TitleOnImage story={story} />;
+    case "TITLE_RIGHT":
+      return <TitleRight story={story} />;
+
+    case "TITLE_TOP":
+      return <TitleTop story={story} />;
+
+    default:
+      return <TitleOnImage story={story} />;
+  }
 }
