@@ -12,7 +12,7 @@ interface Props {
 export default function TitleTop({ story }: Props) {
   return (
     <>
-      <div className="relative mx-auto w-screen max-w-[720px] px-2 pt-10 md:px-0">
+      <div className="relative mx-auto w-screen max-w-[720px] px-2 pt-6 md:px-0 md:pt-8">
         <div className=" flex flex-col justify-start">
           <h1 className="py-4 pb-0 text-4xl  font-bold  ">{story.title}</h1>
           <h2 className="py-4 pt-0 text-2xl  font-semibold  ">
