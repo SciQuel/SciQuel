@@ -61,7 +61,7 @@ export default async function StoriesPage({ params }: Params) {
               story.storyType.slice(1).toLowerCase()}{" "}
             | we need to add article type |
           </p>{" "}
-          {story.topics.map((item: StoryTopic, index: number) => {
+          {story.topics?.map((item: StoryTopic, index: number) => {
             return <TopicTag name={item} key={`${item}-${index}`} />;
           })}
         </div>
