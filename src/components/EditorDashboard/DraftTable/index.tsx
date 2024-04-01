@@ -58,7 +58,7 @@ export default function DraftTable() {
                 <td>{`${story.storyType[0]}${story.storyType
                   .slice(1)
                   .toLowerCase()}`}</td>
-                <td>{story.tags.join(" ").toLowerCase()}</td>
+                <td>{story.topics.join(" ").toLowerCase()}</td>
                 <td>
                   {DateTime.fromISO(
                     story.createdAt as unknown as string,
