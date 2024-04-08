@@ -96,6 +96,36 @@ model Story {
   publishedAt DateTime
   updatedAt   DateTime
   quizzes     Quiz[]
+
+  readTime ReadTime?              //This is set to optional for now because need to confirm at meeting before manipulating test db
+  useCustomReadTime Boolean
+  customReadTime CustomReadTime?
+}
+
+model ReadTime {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  story Story @relation(fields: [id], references: [id])
+
+  //11-14 minutes, 14 = upper, 11 = lower
+  timeReadUpper Int?
+  timeReadLower Int?
+
+  timeListen Int?
+  timeWatch Int?
+}
+
+model CustomReadTime {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  story Story @relation(fields: [id], references: [id])
+
+  timeRange Boolean
+
+  timeRead Int?
+  timeReadUpper Int?
+  timeReadLower Int?
+
+  timeListen Int?
+  timeWatch Int?
 }
 
 model StoryContribution {
