@@ -1,69 +1,237 @@
-import { type GetLatestStoriesResult } from "@/app/api/stories/latest/route";
-import ArticleList from "@/components/ArticleList";
-import HomepageSection from "@/components/HomepageSection";
-import Pagination from "@/components/StoriesList/Pagination";
-import env from "@/lib/env";
+import { randomUUID } from "crypto";
+import { bucket, bucketUrlPrefix } from "@/lib/gcs";
+import prisma from "@/lib/prisma";
+import {
+  Category,
+  Prisma,
+  StoryType,
+  type ContributionType,
+  type Story,
+} from "@prisma/client";
+import { getServerSession } from "next-auth";
+import { NextResponse, type NextRequest } from "next/server";
+import slug from "slug";
+import { type z } from "zod";
+import { getStorySchema, putStorySchema } from "../schema";
 
-interface Params {
-  topic: string;
-  page_number: string;
-}
+export type Stories = (Story & {
+  storyContributions: {
+    user: {
+      firstName: string;
+      lastName: string;
+    };
+    contributionType: ContributionType;
+  }[];
+})[];
 
-export default async function StoriesLatestPage({
-  searchParams,
-}: {
-  searchParams: Params;
-}) {
-  const { topic, page_number } = searchParams;
-  const params = {
-    ...(topic ? { topic } : {}),
-    page: page_number || "1",
-  };
+export type GetLatestStoriesResult = {
+  stories: Stories;
+  page_number: number;
+  total_pages: number;
+};
 
-  const { stories, total_pages } = await getStories(params);
-
-  const headerText = topic
-    ? `${topic.toUpperCase()} | LATEST`
-    : "ALL TOPICS | LATEST";
-
-  return (
-    <>
-      <div className="mx-[10%] my-10 flex flex-col gap-12">
-        <HomepageSection heading={headerText}>
-          {stories.length > 0 ? (
-            <>
-              <ArticleList articles={stories} preferHorizontal={true} />
-              <Pagination total_pages={total_pages} />
-            </>
-          ) : (
-            <h2 className="text-3xl font-[550] text-sciquelHeading">
-              No Result
-            </h2>
-          )}
-        </HomepageSection>
-      </div>
-    </>
+export async function GET(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
+  const parsedParams = getStorySchema.safeParse(
+    Object.fromEntries(searchParams),
   );
-}
-
-async function getStories(params: Record<string, string>) {
-  const searchParams = new URLSearchParams(params);
-  const route = `/stories/latest/?${searchParams.toString()}`;
-
-  const res = await fetch(`${env.NEXT_PUBLIC_SITE_URL}/api${route}`, {
-    next: { revalidate: 60 },
-  });
-
-  if (!res.ok) {
-    throw new Error("Failed to fetch data");
+  if (!parsedParams.success) {
+    return NextResponse.json(parsedParams.error, { status: 400 });
   }
 
-  const data: GetLatestStoriesResult = await res.json().then();
+  const {
+    page,
+    page_size,
+    keyword,
+    staff_pick,
+    topic,
+    type,
+    date_from,
+    date_to,
+    sort_by,
+    published,
+  } = parsedParams.data;
 
-  data.stories = data.stories.map((story) => ({
-    ...story,
-    publishedAt: new Date(story.publishedAt),
-  }));
+  if (published === false) {
+    const session = await getServerSession();
+    const user = await prisma.user.findUnique({
+      where: { email: session?.user.email ?? "noemail" },
+    });
 
-  return data;
+    if (!user || !user.roles.includes("EDITOR")) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+  }
+
+  const numPagesToSkip = (page && page - 1) || 0;
+  const numStoriesPerPage = page_size || 10; // default page size
+
+  date_to?.setDate(date_to.getDate() + 1);
+
+  try {
+    const query: Prisma.StoryFindManyArgs = {
+      where: {
+        ...(keyword
+          ? {
+              OR: [
+                { title: { contains: keyword, mode: "insensitive" } },
+                { summary: { contains: keyword, mode: "insensitive" } },
+              ],
+            }
+          : {}),
+        staffPick: staff_pick,
+        ...(topic ? { tags: { has: topic } } : {}),
+        storyType: type,
+        createdAt: {
+          gte: date_from,
+          lt: date_to,
+        },
+        published,
+      },
+    };
+
+    const stories = await prisma.story.findMany({
+      skip: numPagesToSkip * numStoriesPerPage,
+      take: numStoriesPerPage,
+      include: {
+        storyContributions: {
+          select: {
+            contributionType: true,
+            user: { select: { firstName: true, lastName: true } },
+          },
+        },
+      },
+      where: { ...query.where, category: Category.ARTICLE },
+      orderBy: {
+        publishedAt: "desc",
+        ...(sort_by === "newest" ? { publishedAt: "desc" } : {}),
+        ...(sort_by === "oldest" ? { publishedAt: "asc" } : {}),
+      },
+    });
+
+    const numStories = await prisma.story.count({
+      where: query.where,
+    });
+
+    return NextResponse.json(
+      {
+        stories,
+        page_number: numPagesToSkip + 1,
+        total_pages: Math.ceil(numStories / numStoriesPerPage),
+      } ?? { stories: [] },
+    );
+  } catch (e) {
+    if (e instanceof Prisma.PrismaClientValidationError) {
+      console.log(e.message);
+      return NextResponse.json({ error: "Bad Request" }, { status: 400 });
+    }
+
+    return NextResponse.json({ error: e }, { status: 500 });
+  }
+}
+
+async function processThumbnailImage(
+  data: z.infer<typeof putStorySchema>,
+): Promise<string | null> {
+  if (data.image) {
+    const imageMimeType = data.image.type;
+    const extension =
+      imageMimeType === "image/jpeg"
+        ? "jpg"
+        : imageMimeType === "image/png"
+        ? "png"
+        : "gif";
+    const thumbnailFilename = `${randomUUID()}.${extension}`;
+    const thumbnailUrl = `${bucketUrlPrefix}${thumbnailFilename}`;
+    await bucket
+      .file(thumbnailFilename)
+      .save(Buffer.from(await data.image.arrayBuffer()));
+    return thumbnailUrl;
+  }
+  return data.imageUrl ?? null;
+}
+
+export async function PUT(request: NextRequest) {
+  try {
+    const session = await getServerSession();
+    const user = await prisma.user.findUnique({
+      where: { email: session?.user.email ?? "noemail" },
+    });
+
+    if (!user || !user.roles.includes("EDITOR")) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    const parsedRequest = putStorySchema.safeParse(await request.formData());
+    if (!parsedRequest.success) {
+      return NextResponse.json({ error: "Bad Request" }, { status: 400 });
+    }
+
+    const timestamp = new Date();
+
+    const thumbnailUrl = await processThumbnailImage(parsedRequest.data);
+
+    if (thumbnailUrl === null) {
+      return NextResponse.json({ error: "Bad Request" }, { status: 400 });
+    }
+
+    if (parsedRequest.data.id) {
+      const story = await prisma.story.findUnique({
+        where: { id: parsedRequest.data.id },
+      });
+
+      if (!story) {
+        return NextResponse.json({ error: "Not Found" }, { status: 404 });
+      }
+
+      if (
+        story.thumbnailUrl &&
+        story.thumbnailUrl.startsWith(bucketUrlPrefix)
+      ) {
+        await bucket
+          .file(story.thumbnailUrl.slice(bucketUrlPrefix.length))
+          .delete({ ignoreNotFound: true });
+      }
+
+      await prisma.story.update({
+        where: { id: parsedRequest.data.id },
+        data: {
+          title: parsedRequest.data.title,
+          summary: parsedRequest.data.summary,
+          thumbnailUrl,
+          coverCaption: parsedRequest.data.imageCaption,
+          updatedAt: timestamp,
+        },
+      });
+
+      return NextResponse.json({ id: parsedRequest.data.id });
+    }
+
+    const newStory = await prisma.story.create({
+      data: {
+        title: parsedRequest.data.title,
+        summary: parsedRequest.data.summary,
+        storyType: StoryType.ESSAY,
+        category: Category.ARTICLE,
+        titleColor: "#ffffff",
+        slug: slug(parsedRequest.data.title),
+        summaryColor: "#ffffff",
+        createdAt: timestamp,
+        publishedAt: timestamp,
+        updatedAt: timestamp,
+        staffPick: false,
+        published: false,
+        thumbnailUrl,
+        coverCaption: parsedRequest.data.imageCaption,
+      },
+    });
+
+    return NextResponse.json({ id: newStory.id });
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 },
+    );
+  }
 }
