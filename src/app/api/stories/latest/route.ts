@@ -1,13 +1,18 @@
+import { randomUUID } from "crypto";
+import { bucket, bucketUrlPrefix } from "@/lib/gcs";
 import prisma from "@/lib/prisma";
 import {
   Category,
   Prisma,
+  StoryType,
   type ContributionType,
   type Story,
 } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { NextResponse, type NextRequest } from "next/server";
-import { getStorySchema } from "./../schema";
+import slug from "slug";
+import { type z } from "zod";
+import { getStorySchema, putStorySchema } from "./../schema";
 
 export type Stories = (Story & {
   storyContributions: {
@@ -122,5 +127,111 @@ export async function GET(req: NextRequest) {
     }
 
     return NextResponse.json({ error: e }, { status: 500 });
+  }
+}
+
+async function processThumbnailImage(
+  data: z.infer<typeof putStorySchema>,
+): Promise<string | null> {
+  if (data.image) {
+    const imageMimeType = data.image.type;
+    const extension =
+      imageMimeType === "image/jpeg"
+        ? "jpg"
+        : imageMimeType === "image/png"
+        ? "png"
+        : "gif";
+    const thumbnailFilename = `${randomUUID()}.${extension}`;
+    const thumbnailUrl = `${bucketUrlPrefix}${thumbnailFilename}`;
+    await bucket
+      .file(thumbnailFilename)
+      .save(Buffer.from(await data.image.arrayBuffer()));
+    return thumbnailUrl;
+  }
+  return data.imageUrl ?? null;
+}
+
+export async function PUT(request: NextRequest) {
+  try {
+    const session = await getServerSession();
+    const user = await prisma.user.findUnique({
+      where: { email: session?.user.email ?? "noemail" },
+    });
+
+    if (!user || !user.roles.includes("EDITOR")) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    const parsedRequest = putStorySchema.safeParse(await request.formData());
+    if (!parsedRequest.success) {
+      return NextResponse.json({ error: "Bad Request" }, { status: 400 });
+    }
+
+    const timestamp = new Date();
+
+    const thumbnailUrl = await processThumbnailImage(parsedRequest.data);
+
+    if (thumbnailUrl === null) {
+      return NextResponse.json({ error: "Bad Request" }, { status: 400 });
+    }
+
+    if (parsedRequest.data.id) {
+      const story = await prisma.story.findUnique({
+        where: { id: parsedRequest.data.id },
+      });
+
+      if (!story) {
+        return NextResponse.json({ error: "Not Found" }, { status: 404 });
+      }
+
+      if (
+        story.thumbnailUrl &&
+        story.thumbnailUrl.startsWith(bucketUrlPrefix)
+      ) {
+        await bucket
+          .file(story.thumbnailUrl.slice(bucketUrlPrefix.length))
+          .delete({ ignoreNotFound: true });
+      }
+
+      await prisma.story.update({
+        where: { id: parsedRequest.data.id },
+        data: {
+          title: parsedRequest.data.title,
+          summary: parsedRequest.data.summary,
+          thumbnailUrl,
+          coverCaption: parsedRequest.data.imageCaption,
+          updatedAt: timestamp,
+        },
+      });
+
+      return NextResponse.json({ id: parsedRequest.data.id });
+    }
+
+    const newStory = await prisma.story.create({
+      data: {
+        title: parsedRequest.data.title,
+        summary: parsedRequest.data.summary,
+        storyType: StoryType.ESSAY,
+        category: Category.ARTICLE,
+        titleColor: "#ffffff",
+        slug: slug(parsedRequest.data.title),
+        summaryColor: "#ffffff",
+        createdAt: timestamp,
+        publishedAt: timestamp,
+        updatedAt: timestamp,
+        staffPick: false,
+        published: false,
+        thumbnailUrl,
+        coverCaption: parsedRequest.data.imageCaption,
+      },
+    });
+
+    return NextResponse.json({ id: newStory.id });
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 },
+    );
   }
 }
