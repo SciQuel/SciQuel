@@ -22,7 +22,9 @@ export default async function StoriesLatestPage({
 
   const { stories, total_pages } = await getStories(params);
 
-  let headerText = topic ? `${topic.toUpperCase()} | LATEST` : "ALL TOPICS | LATEST";
+  const headerText = topic 
+    ? `${topic.toUpperCase()} | LATEST` 
+    : "ALL TOPICS | LATEST";
 
   return (
     <>
