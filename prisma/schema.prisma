@@ -223,6 +223,7 @@ model Series {
 
   seriesPublishStatus PublishStatus
   seriesURL           String
+  seriesName          String
   seriesSlug          String        @unique
   seriesDescription   String
   stories             Story[]
