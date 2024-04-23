@@ -1,7 +1,7 @@
 "use client";
 
 import axios from "axios";
-import { PropsWithChildren, useRef, useState } from "react";
+import React, { useRef, useState, type PropsWithChildren } from "react";
 
 interface Props {
   id: string;
@@ -11,7 +11,7 @@ const SentenceBox = ({ children }: PropsWithChildren) => {
   return <span className="rounded border-2 p-1">{children}</span>;
 };
 
-export default function DictionaryForm({ id }: Props) {
+export default function DictionaryDefinitionForm({ id }: Props) {
   const [word, setWord] = useState("");
   const [definition, setDefinition] = useState("");
 
@@ -27,8 +27,11 @@ export default function DictionaryForm({ id }: Props) {
   const defRef = useRef<HTMLInputElement>(null);
   const [defAudio, setDefAudio] = useState<File | string | null>();
 
-  const [error, setError] = useState("");
+  const usageRef = useRef<HTMLInputElement>(null);
+  const [useAudio, setUseAudio] = useState<File | string | null>();
+
   const [done, setDone] = useState(false);
+  const [error, setError] = useState("");
 
   return done ? (
     <div>
@@ -46,6 +49,7 @@ export default function DictionaryForm({ id }: Props) {
 
           setWordAudio(null);
           setDefAudio(null);
+          setUseAudio(null);
 
           setError("");
           setDone(false);
@@ -65,29 +69,30 @@ export default function DictionaryForm({ id }: Props) {
           !definition ||
           exSentences.length < 1 ||
           !(wordAudio instanceof File) ||
-          !(defAudio instanceof File)
+          !(defAudio instanceof File) ||
+          !(useAudio instanceof File)
         ) {
-          setError("Please add all fields.");
+          setError(
+            "Please add all required fields (word, definition, at least one example sentence, and all files).",
+          );
         } else {
-          axios
-            .post(
-              "/api/stories/definitions",
-              {
-                word: word,
-                definition: definition,
-                exampleSentences: exSentences,
-                alternativeSpellings: altSpells,
-                storyId: id,
+          const formData = new FormData();
+          formData.append("word", word);
+          formData.append("definition", definition);
+          formData.append("exampleSentences", JSON.stringify(exSentences));
+          formData.append("alternativeSpellings", JSON.stringify(altSpells));
+          formData.append("storyId", id);
 
-                wordAudio: new File([wordAudio], wordAudio.name),
-                definitionAudio: new File([defAudio], defAudio.name),
+          formData.append("wordAudio", wordAudio, wordAudio.name);
+          formData.append("definitionAudio", defAudio, defAudio.name);
+          formData.append("usageAudio", useAudio, useAudio.name);
+
+          axios
+            .post("/api/stories/definitions", formData, {
+              headers: {
+                "Content-Type": "multipart/form-data",
               },
-              {
-                headers: {
-                  "Content-Type": "multipart/form-data",
-                },
-              },
-            )
+            })
             .then((response) => {
               console.log(response);
               setDone(true);
@@ -142,6 +147,18 @@ export default function DictionaryForm({ id }: Props) {
             setDefAudio(e.target.files?.[0] ?? null);
           }}
           ref={defRef}
+          accept=".mp4"
+          type="file"
+        />
+      </label>
+
+      <label>
+        Usage Example Sentence Audio:{" "}
+        <input
+          onChange={(e) => {
+            setUseAudio(e.target.files?.[0] ?? null);
+          }}
+          ref={usageRef}
           accept=".mp4"
           type="file"
         />
