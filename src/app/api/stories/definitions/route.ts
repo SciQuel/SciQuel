@@ -33,10 +33,12 @@ export async function POST(req: NextResponse) {
         useAudioUrl: await uploadFile(parsedData.data.usageAudio),
       },
     });
-    return newDefinition;
+    return NextResponse.json({ data: newDefinition }, { status: 201 });
   } catch (error) {
-    console.error("Failed to save to DB:", error);
-    throw new Error("Database operation failed");
+    return NextResponse.json(
+      { error: "Database operation failed" },
+      { status: 500 },
+    );
   }
 }
 

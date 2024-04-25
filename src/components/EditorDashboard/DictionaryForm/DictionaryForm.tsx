@@ -55,7 +55,7 @@ export default function DictionaryDefinitionForm({ id }: Props) {
           setDone(false);
         }}
       >
-        new submission
+        New Submission
       </button>
     </div>
   ) : (
