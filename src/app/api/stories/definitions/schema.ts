@@ -6,27 +6,14 @@ import { zfd, type json } from "zod-form-data";
 export const postDefinitionSchema = zfd.formData({
   word: zfd.text(),
   definition: zfd.text(),
-  exampleSentences: zfd
-    .text()
-    .transform((str, ctx): z.infer<ReturnType<typeof json>> => {
-      try {
-        return JSON.parse(str);
-      } catch (e) {
-        ctx.addIssue({ code: "custom", message: "Invalid JSON" });
-        return z.NEVER;
-      }
-    }),
-  alternativeSpellings: zfd
-    .text()
-    .transform((str, ctx): z.infer<ReturnType<typeof json>> => {
-      try {
-        return JSON.parse(str);
-      } catch (e) {
-        ctx.addIssue({ code: "custom", message: "Invalid JSON" });
-        return z.NEVER;
-      }
-    })
-    .optional(),
+  exampleSentences: z.preprocess(
+    (val) => (typeof val == "string" ? JSON.parse(val) : undefined),
+    z.array(z.string()),
+  ),
+  alternativeSpellings: z.preprocess(
+    (val) => (typeof val == "string" ? JSON.parse(val) : undefined),
+    z.array(z.string()).optional(),
+  ),
   storyId: zfd.text(),
   wordAudio: zfd.file(),
   definitionAudio: zfd.file(),
