@@ -81,7 +81,7 @@ export async function GET(req: NextRequest) {
               ],
             }
           : {}),
-        staffPick: staff_pick,
+        // staffPick: staff_pick,
         ...(topic ? { tags: { has: topic } } : {}),
         storyType: type,
         createdAt: {
@@ -222,7 +222,7 @@ export async function PUT(request: NextRequest) {
         createdAt: timestamp,
         publishedAt: timestamp,
         updatedAt: timestamp,
-        staffPick: false,
+        // staffPick: false,
         published: false,
         thumbnailUrl,
         coverCaption: parsedRequest.data.imageCaption,

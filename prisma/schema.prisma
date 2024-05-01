@@ -67,6 +67,12 @@ enum QuestionType {
   SELECT_ALL
 }
 
+enum StaffPickRecordType {
+  CREATE
+  DELETE
+  UPDATE
+}
+
 model Story {
   id        String    @id @default(auto()) @map("_id") @db.ObjectId
   storyType StoryType
@@ -87,15 +93,15 @@ model Story {
 
   published Boolean
 
-  staffPick Boolean
-
   thumbnailUrl String
   coverCaption String @default("")
 
-  createdAt   DateTime
-  publishedAt DateTime
-  updatedAt   DateTime
-  quizzes     Quiz[]
+  createdAt       DateTime
+  publishedAt     DateTime
+  updatedAt       DateTime
+  quizzes         Quiz[]
+  staffPick       StaffPick?
+  StaffPickRecord StaffPickRecord[]
 }
 
 model StoryContribution {
@@ -134,9 +140,10 @@ model User {
   roles   UserRole[] @default([])
   quizzes Quiz[]
 
-  contactUpdates ContactMessage[]
-  firstQuizRecord       Json?
-  mostRecentQuizRecord  Json?
+  contactUpdates       ContactMessage[]
+  firstQuizRecord      Json?
+  mostRecentQuizRecord Json?
+  StaffPickRecord      StaffPickRecord[]
 }
 
 model AuthVerification {
@@ -283,9 +290,43 @@ model UserResponse {
 }
 
 model ResponseSubpart {
-  id              String        @id @default(auto()) @map("_id") @db.ObjectId
-  subpartId       String        @db.ObjectId
-  subpartUserAns  String[]
-  UserResponse    UserResponse? @relation(fields: [userResponseId], references: [id])
-  userResponseId  String?       @db.ObjectId
+  id             String        @id @default(auto()) @map("_id") @db.ObjectId
+  subpartId      String        @db.ObjectId
+  subpartUserAns String[]
+  UserResponse   UserResponse? @relation(fields: [userResponseId], references: [id])
+  userResponseId String?       @db.ObjectId
+}
+
+model StaffPick {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  storyId String @unique @db.ObjectId
+  story   Story  @relation(fields: [storyId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  description String
+
+  @@unique([storyId, id])
+}
+
+model StaffPickRecord {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  storyId String @db.ObjectId
+  story   Story  @relation(fields: [storyId], references: [id])
+
+  staffId String @db.ObjectId
+  staff   User   @relation(fields: [staffId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  updateType StaffPickRecordType
+
+  oldDescription String?
+
+  newDescription String?
+
+  @@index([storyId])
+  @@index([staffId])
 }
