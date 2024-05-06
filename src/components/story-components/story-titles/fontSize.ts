@@ -1,19 +1,20 @@
 "use client";
 
 import {
-  RefObject,
   useEffect,
   useLayoutEffect,
   useReducer,
   useRef,
+  type RefObject,
 } from "react";
 
 interface FontAction {
   type: "window update";
 }
 
-type action = 1 | 0 | -1;
-// 1 grow
+type action = 2 | 1 | 0 | -1;
+// 2 grow
+// 1 same (should have grown)
 // 0 same
 // -1 shrink
 
@@ -69,56 +70,53 @@ export default function useFontSize(containerRef: RefObject<HTMLDivElement>) {
               prevHeightRef.current.length >= 4
             ) {
               // if we havent changed, are we so far in a loop?
-              let allSame = true;
-              // checking if all prev checks were on the same height
+              let allPrevHeightsSame = true;
               for (let i = 1; i < prevHeightRef.current.length; i++) {
                 if (prevHeightRef.current[i] != prevHeightRef.current[0]) {
-                  allSame = false;
+                  allPrevHeightsSame = false;
                   break;
                 }
               }
-              if (!allSame) {
-                console.log("still checking in grow section. grow?");
+              if (allPrevHeightsSame) {
+                let rising = false;
+                let falling = false;
+                let risingFailed = false;
+
+                for (let i = 0; i < prevRef.current.length; i++) {
+                  const currentAction = prevRef.current[i];
+                  if (currentAction == 1) {
+                    risingFailed = true;
+                    break;
+                  }
+                  if (currentAction == 2) {
+                    rising = true;
+                  } else if (currentAction == -1) {
+                    falling = true;
+                  }
+                  if (rising && falling) {
+                    break;
+                  }
+                }
+
+                if (risingFailed || (rising && falling)) {
+                  prevHeightRef.current.push(window.innerHeight);
+                  prevRef.current.push(1);
+                  return state;
+                } else {
+                  prevRef.current.push(2);
+                  prevHeightRef.current.push(window.innerHeight);
+                  return state + 2;
+                }
+              } else {
+                prevRef.current.push(2);
                 prevHeightRef.current.push(window.innerHeight);
-                // prevRef.current.push(state + 2);
-                prevRef.current.push(1);
                 return state + 2;
               }
-
-              // if all same are we in a loop or something?
-              // that would involve both a grow and shrink at this height?
-              let grew = false;
-              let shrank = false;
-              for (let i = 0; i < prevRef.current.length; i++) {
-                if (prevRef.current[i] == 1) {
-                  grew = true;
-                }
-                if (prevRef.current[i] == -1) {
-                  shrank = true;
-                }
-                if (grew && shrank) {
-                  break;
-                }
-              }
-              if (grew && shrank) {
-                console.log("in a loop?");
-                prevHeightRef.current.push(window.innerHeight);
-
-                prevRef.current.push(0);
-                return state;
-              }
-
-              // grow...?
-              console.log("not in a loop... grow?");
+            } else {
+              prevRef.current.push(2);
               prevHeightRef.current.push(window.innerHeight);
-              prevRef.current.push(1);
               return state + 2;
             }
-
-            console.log("grow container");
-            prevRef.current.push(1);
-            prevHeightRef.current.push(window.innerHeight);
-            return state + 2;
           } else {
             // we're in between and fine?
             console.log("return state in else");
@@ -160,7 +158,7 @@ export default function useFontSize(containerRef: RefObject<HTMLDivElement>) {
       console.log(prevRef.current);
 
       for (let i = 1; i < prevRef.current.length; i++) {
-        if (prevRef.current[i] != 0) {
+        if (prevRef.current[i] != 0 && prevRef.current[i] != 1) {
           done = false;
         }
       }
