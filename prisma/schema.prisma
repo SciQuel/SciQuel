@@ -123,6 +123,8 @@ model Contributor {
 
   bio String?
 
+  contributorSlug String @unique
+  
   storyContributions StoryContribution[]
 }
 

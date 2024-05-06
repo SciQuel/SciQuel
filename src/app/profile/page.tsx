@@ -8,6 +8,7 @@ import Pagination from "@/components/StoriesList/Pagination";
 import TopicTag from "@/components/TopicTag";
 import env from "@/lib/env";
 import prisma from "@/lib/prisma";
+import NotFound from "../not-found";
 
 interface Params {
   searchParams: { [key: string]: string };
@@ -28,7 +29,7 @@ export default async function ProfilePage({
     page: page_number || "1",
   };
   if (id == null) {
-    throw new Error("This person is not an author");
+    return NotFound();
   }
   const authorsPromise = retrieveAuthors(id);
   const [authors, { stories, total_pages }] = await Promise.all([

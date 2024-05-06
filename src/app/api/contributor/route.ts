@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
         const contributorId = url.searchParams.get("contributorId");
         const staffPick: "True" | "False" = url.searchParams.get("staffPick") as "True" | "False";
         if (staffPick !== 'True' && staffPick !== "False") {
-            throw new Error("Invalid staffPick parameter");
+            return NextResponse.json({ error: "Invalid request response" }, { status: 400 });
         }
         const isStaffPick = (staffPick === "True");
         let contributions = null
