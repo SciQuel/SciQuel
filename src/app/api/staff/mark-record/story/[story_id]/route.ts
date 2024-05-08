@@ -3,12 +3,12 @@ import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
 interface Params {
-  id: string;
+  story_id: string;
 }
 
 export async function GET(req: NextRequest, { params }: { params: Params }) {
   try {
-    const { id } = params;
+    const { story_id } = params;
     const session = await getServerSession();
     const user = await prisma.user.findUnique({
       where: { email: session?.user.email ?? "noemail" },
@@ -19,7 +19,7 @@ export async function GET(req: NextRequest, { params }: { params: Params }) {
     }
 
     const record = await prisma.staffPickRecord.findMany({
-      where: { storyId: id },
+      where: { storyId: story_id },
     });
     return NextResponse.json({ record }, { status: 200 });
   } catch (err) {

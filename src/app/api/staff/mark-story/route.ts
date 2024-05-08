@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
         staffId: user.id,
         storyId: story_id,
         updateType: "CREATE",
-        newDescription: description,
+        description,
       },
     });
     return NextResponse.json({ staff_pick: staffPick }, { status: 201 });
