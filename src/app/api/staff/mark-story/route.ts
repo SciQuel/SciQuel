@@ -13,8 +13,18 @@ export async function POST(request: NextRequest) {
     if (!user || !user.roles.includes("EDITOR")) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
+
     const { description, story_id } = postSchema.parse(await request.json());
     const story = await prisma.story.findFirst({ where: { id: story_id } });
+    const staffPickCheck = await prisma.staffPick.findUnique({
+      where: { storyId: story_id },
+    });
+    if (staffPickCheck) {
+      return NextResponse.json(
+        { error: "Story has already been Staff-picked" },
+        { status: 404 },
+      );
+    }
     if (!story) {
       return NextResponse.json({ error: "Story not found" }, { status: 404 });
     }
