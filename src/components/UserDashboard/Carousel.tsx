@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { type Reading } from "./GreetingCard";
-import { NextButton } from "./NextButton";
-import { PrevButton } from "./PrevButton";
+import { NextButton } from "../UserSettings/NextButton";
+import { PrevButton } from "../UserSettings/PrevButton";
 import ReadButton from "./ReadButton";
 
+//left over from old greeting on user dashboard just in case it is necessary in the future
 export default function Carousel({
   stories,
   autoSlide = false,
@@ -59,17 +60,20 @@ export default function Carousel({
       </div>
       <div className="flex justify-between bg-white px-6 py-4">
         <div className="h-fit basis-5/6">
-          <p className="line-clamp-1 text-xl font-semibold">
-            {stories[readingHistoryIndex].title}
-          </p>
+          {stories.length > 0 && readingHistoryIndex < stories.length && (
+            <p className="line-clamp-1 text-xl font-semibold">
+              {stories[readingHistoryIndex].title}
+            </p>
+          )}
           <p>
             by{" "}
             <span className="text-[#69A297]">
-              {
-                stories[readingHistoryIndex].storyContributions[0].user
-                  .firstName
-              }{" "}
-              {stories[readingHistoryIndex].storyContributions[0].user.lastName}
+              {stories.length > 0 && stories[readingHistoryIndex].storyContributions && stories[readingHistoryIndex].storyContributions.length > 0 && stories[readingHistoryIndex].storyContributions[0].user && (
+                <>
+                  {stories[readingHistoryIndex].storyContributions[0].user.firstName}{" "}
+                  {stories[readingHistoryIndex].storyContributions[0].user.lastName}
+                </>
+              )}
             </span>
           </p>
         </div>

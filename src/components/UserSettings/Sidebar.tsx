@@ -16,8 +16,8 @@ function SidebarItem(props: {
       href={props.href}
       className={clsx({
         "hover:font-semibold": true,
-        "hover:text-red-800": true,
-        "text-red-800": active,
+        "hover:text-red-800 dark:hover:text-sciquelMuted2": true,
+        "text-red-800 dark:text-sciquelMuted2": active,
         "font-semibold": active,
         "md:mt-16": props.margin,
       })}
@@ -37,10 +37,10 @@ export default function Sidebar() {
     .replace(/-/g, " ");
   return (
     <div className="z-10 pt-6 md:fixed md:w-56">
-      <h2 className="text-center text-3xl font-semibold text-[#50808e] md:text-left">
+      <h2 className="text-center text-3xl font-semibold text-[#50808e] md:text-left dark:text-white">
         {title}
       </h2>
-      <div className="mt-8 flex flex-wrap justify-between gap-4 gap-y-8 text-center text-xl text-[#50808e] md:flex-col md:gap-y-2 md:text-left">
+      <div className="mt-8 flex flex-wrap justify-between gap-4 gap-y-8 text-center text-xl text-[#50808e] md:flex-col md:gap-y-2 md:text-left dark:text-white">
         <SidebarItem href="/user-settings/dashboard" path={path}>
           Dashboard
         </SidebarItem>

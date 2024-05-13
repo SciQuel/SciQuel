@@ -1,4 +1,4 @@
-import DashboardCard from "@/components/UserSettings/DashboardCard";
+import DashboardCard from "@/components/UserDashboard/DashboardCard";
 
 // mock data
 const items = [

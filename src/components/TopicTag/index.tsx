@@ -25,12 +25,11 @@ const topicTagColors: Record<StoryTopic, string> = {
 export default function TopicTag({ name }: Props) {
   return (
     <span
-      className="flex w-fit items-center rounded-full px-3 py-1"
-      // Tailwind compilation only supports style, not interpolated arbitrary values
+      className={`flex w-fit items-center rounded-full px-3 py-1 overflow-hidden`}
       style={{ backgroundColor: topicTagColors[name] }}
     >
-      <p className="m-0 text-xs font-medium text-white">
-        {name.replace("_", " ").toLowerCase()}
+      <p className="m-0 text-xs font-medium text-white truncate">
+        {name.replace("_", " ")}
       </p>
     </span>
   );
