@@ -69,8 +69,8 @@ const SocialMediaPopup = forwardRef(
             `
     ${show ? "opacity-1" : "max-h-0 max-w-0 opacity-0 sm:-translate-y-2"}  
     fixed bottom-0 left-0 z-[19] h-screen w-screen items-end overflow-hidden bg-neutral-800/75 transition-all` +
-            ` sm:static sm:top-0 sm:-ml-1 sm:mt-2 sm:h-fit sm:w-fit sm:items-start sm:justify-center sm:bg-transparent` +
-            ` xl:static xl:top-14  xl:ml-0.5 xl:mt-3 xl:w-fit`
+            ` sm:static sm:top-0 sm:ml-[-4.75rem] sm:mt-2 sm:h-fit sm:w-fit sm:items-start sm:justify-center sm:bg-transparent` +
+            ` xl:-mt-20 xl:ml-8 xl:w-fit xl:px-8`
           }
         >
           <div
@@ -80,22 +80,20 @@ const SocialMediaPopup = forwardRef(
                 show
                   ? "translate-y-0"
                   : "max-h-0 translate-y-full opacity-0 sm:-translate-y-0"
-              }  absolute bottom-0 z-[19] flex w-screen flex-col pt-0 transition-transform duration-500` +
-              ` sm:relative sm:px-0 md:w-[768px] md:pl-0 md:pr-0 xl:relative  xl:h-fit xl:w-fit ` +
-              ` `
+              }  absolute bottom-0 z-[19] flex w-screen flex-col pt-0 transition-transform duration-500 ` +
+              ` sm:relative sm:px-0 md:w-[768px] md:pl-0 md:pr-0 xl:relative  xl:h-fit xl:w-fit `
             }
           >
-            <div className="z-20 sm:absolute sm:left-2 sm:top-1 sm:z-[2] sm:ml-3 sm:h-6 sm:w-6  sm:rotate-45 sm:border-l-2 sm:border-t-2 sm:border-sciquelCardBorder sm:bg-sciquelCardBg xl:left-0 xl:top-1 xl:ml-[1.4rem] xl:h-7 xl:w-7  ">
+            <div className="z-20 sm:absolute sm:left-20 sm:top-1 sm:z-[2] sm:ml-1 sm:h-6  sm:w-6 sm:rotate-45 sm:rounded-tl sm:border-l-2 sm:border-t-2 sm:border-sciquelCardBorder sm:bg-sciquelCardBg xl:left-0 xl:top-10 xl:ml-[1.3rem] xl:h-7 xl:w-7 xl:rounded-bl xl:rounded-tl-none xl:border-b-2 xl:border-t-0">
               {/* this is the arrow, created from a rotated div */}
             </div>
             <div
-              className={`relative   flex w-full flex-col-reverse sm:p-2 xl:flex-row  xl:px-0 xl:py-2`}
+              className={`relative flex w-full flex-col-reverse sm:p-2 xl:left-8 xl:flex-row xl:px-0 xl:py-2`}
             >
               {/* button + side-popout container */}
               <div
-                className={`pointer-events-auto  relative m-0 flex flex-row border-x-2 border-sciquelCardBorder bg-sciquelCardBg py-1 pb-4 sm:rounded-b sm:border-b-2 sm:pb-2 md:px-1 lg:h-fit  xl:top-2 xl:w-max xl:flex-col xl:gap-1 xl:rounded xl:border-2 xl:px-0`}
+                className={`pointer-events-auto  relative m-0 flex flex-row border-x-2 border-sciquelCardBorder bg-sciquelCardBg py-1 pb-4 sm:rounded-b-xl sm:border-b-2 sm:pb-2 md:px-1 lg:h-fit xl:top-2 xl:w-max xl:flex-col xl:gap-1 xl:rounded-xl xl:border-2 xl:px-0 xl:pt-2`}
               >
-                {/*  before:pointer-events-none */}
                 {/* buttons container */}
                 <button
                   type="button"
@@ -183,7 +181,7 @@ const SocialMediaPopup = forwardRef(
                     : show
                     ? "pointer-events-auto p-4 pb-2 xl:pointer-events-none   xl:w-0 xl:-translate-x-3 xl:p-0 xl:opacity-0"
                     : "w-0 -translate-x-3 p-0 opacity-0"
-                } m-0 mt-2 flex flex-row  justify-center rounded-t border-x-2 border-t-2 border-sciquelCardBorder bg-sciquelCardBg transition-all lg:h-fit xl:rounded xl:border-2`}
+                } m-0 mt-2 flex flex-row  justify-center rounded-t-xl border-x-2 border-t-2 border-sciquelCardBorder bg-sciquelCardBg transition-all lg:h-fit xl:rounded-xl xl:border-2`}
               >
                 {/* floating input for copying link */}
                 <button
@@ -207,7 +205,7 @@ const SocialMediaPopup = forwardRef(
                   type="text"
                   className={`${
                     !showFull ? "xl:hidden " : ""
-                  } w-full border p-1 xl:mt-0 xl:w-96`}
+                  } w-full rounded-lg border p-1 xl:mt-0 xl:w-96`}
                   value={`sciquel.org${pathname}`}
                   onClick={() => {
                     navigator.clipboard.writeText(`sciquel.org${pathname}`);
