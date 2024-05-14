@@ -16,3 +16,9 @@ export const patchSchema = z.object({
     required_error: "description is required",
   }),
 });
+
+export const staffpickIdSchema = z
+  .string({ invalid_type_error: "staff_pick_id must be a ObjectId" })
+  .regex(/^[0-9a-f]{24}$/, {
+    message: "staff_pick_id must be a valid ObjectId",
+  });

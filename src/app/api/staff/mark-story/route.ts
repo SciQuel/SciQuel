@@ -1,7 +1,7 @@
 import prisma from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { NextResponse, type NextRequest } from "next/server";
-import { patchSchema, postSchema } from "./schema";
+import { postSchema } from "./schema";
 
 export async function POST(request: NextRequest) {
   try {
@@ -14,28 +14,42 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const { description, story_id } = postSchema.parse(await request.json());
-    const story = await prisma.story.findFirst({ where: { id: story_id } });
-    const staffPickCheck = await prisma.staffPick.findUnique({
+    const postParse = postSchema.safeParse(await request.json());
+    if (!postParse.success) {
+      return NextResponse.json(
+        { error: postParse.error.issues[0].message },
+        { status: 400 },
+      );
+    }
+    const { description, story_id } = postParse.data;
+
+    const storyPromise = prisma.story.findFirst({ where: { id: story_id } });
+    const staffPickCheckPromise = prisma.staffPick.findUnique({
       where: { storyId: story_id },
     });
+
+    const [story, staffPickCheck] = await Promise.all([
+      storyPromise,
+      staffPickCheckPromise,
+    ]);
+
     if (staffPickCheck) {
       return NextResponse.json(
         { error: "Story has already been Staff-picked" },
-        { status: 404 },
+        { status: 400 },
       );
     }
     if (!story) {
       return NextResponse.json({ error: "Story not found" }, { status: 404 });
     }
-    const staffPick = await prisma.staffPick.create({
+    const staffPickPromise = prisma.staffPick.create({
       data: {
         description,
         storyId: story_id,
       },
     });
     //create for record
-    await prisma.staffPickRecord.create({
+    const recordPromise = prisma.staffPickRecord.create({
       data: {
         staffId: user.id,
         storyId: story_id,
@@ -43,6 +57,11 @@ export async function POST(request: NextRequest) {
         description,
       },
     });
+    const [staffPick, record] = await Promise.all([
+      staffPickPromise,
+      recordPromise,
+    ]);
+
     return NextResponse.json({ staff_pick: staffPick }, { status: 201 });
   } catch (err) {
     console.error(err);

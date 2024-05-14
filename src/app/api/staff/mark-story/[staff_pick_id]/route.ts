@@ -1,7 +1,7 @@
 import prisma from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
-import { patchSchema } from "../schema";
+import { patchSchema, staffpickIdSchema } from "../schema";
 
 interface Params {
   staff_pick_id: string;
@@ -9,6 +9,15 @@ interface Params {
 export async function DELETE(req: NextRequest, { params }: { params: Params }) {
   try {
     const { staff_pick_id } = params;
+    //check valid type
+    const idParse = staffpickIdSchema.safeParse(staff_pick_id);
+    if (!idParse.success) {
+      return NextResponse.json(
+        { error: idParse.error.issues[0].message },
+        { status: 400 },
+      );
+    }
+
     const session = await getServerSession();
     const user = await prisma.user.findUnique({
       where: { email: session?.user.email ?? "noemail" },
@@ -18,7 +27,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Params }) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
     const staffPickOld = await prisma.staffPick.findUnique({
-      where: { id: staff_pick_id },
+      where: { id: idParse.data },
     });
     if (!staffPickOld) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
@@ -51,22 +60,44 @@ export async function PATCH(
   { params }: { params: Params },
 ) {
   try {
+    const { staff_pick_id } = params;
+    //check valid type
+    const idParse = staffpickIdSchema.safeParse(staff_pick_id);
+    if (!idParse.success) {
+      return NextResponse.json(
+        { error: idParse.error.issues[0].message },
+        { status: 400 },
+      );
+    }
+
     const session = await getServerSession();
-    const user = await prisma.user.findUnique({
+    const userPromise = prisma.user.findUnique({
       where: { email: session?.user.email ?? "noemail" },
     });
-    const { staff_pick_id } = params;
+    const staffPickOldPromise = prisma.staffPick.findUnique({
+      where: { id: staff_pick_id },
+    });
+    const [user, staffPickOld] = await Promise.all([
+      userPromise,
+      staffPickOldPromise,
+    ]);
 
     if (!user || !user.roles.includes("EDITOR")) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
-    const staffPickOld = await prisma.staffPick.findUnique({
-      where: { id: staff_pick_id },
-    });
     if (!staffPickOld) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
-    const { description } = patchSchema.parse(await request.json());
+    const parseSchema = patchSchema.safeParse(await request.json());
+
+    if (!parseSchema.success) {
+      return NextResponse.json(
+        { error: parseSchema.error.issues[0].message },
+        { status: 400 },
+      );
+    }
+
+    const description = parseSchema.data.description;
 
     const updateStaffPickPromise = prisma.staffPick.update({
       where: { id: staff_pick_id },
