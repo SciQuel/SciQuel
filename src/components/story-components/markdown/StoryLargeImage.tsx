@@ -132,16 +132,16 @@ export default function StoryLargeImage({
   }
 
   return (
-    <div className="flex justify-center">
+    <div className="flex w-full items-center justify-center sm:w-auto sm:min-w-[30rem]">
       <figure
-        className="mx-auto table gap-8 p-8 lg:w-min lg:p-0"
+        className="mx-auto table w-full gap-8 p-8 lg:w-min lg:p-0"
         ref={figureRef}
       >
         <img
           src={src}
           className={`${
             isPrintMode ? "md:max-w-[768px]" : "lg:max-w-[1000px]"
-          } max-w-screen max-h-[900px] w-auto`}
+          } max-w-screen mx-auto max-h-[900px] w-auto`}
           alt={alt}
         />
         <figcaption className="mt-2 table-caption w-full caption-bottom px-8 font-sourceSerif4 text-base lg:px-0">
