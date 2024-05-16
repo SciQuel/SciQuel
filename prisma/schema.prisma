@@ -289,3 +289,38 @@ model ResponseSubpart {
   UserResponse    UserResponse? @relation(fields: [userResponseId], references: [id])
   userResponseId  String?       @db.ObjectId
 }
+
+model CurStoryHeadline{
+  id                        String        @id @default(auto()) @map("_id") @db.ObjectId
+  version                   Int           @unique
+  prevVersion               Int
+  headline                  String
+  displayHeadline           String
+  subHeadline               String
+  headlineColor             String        @default("black")
+  subheadlineColor          String        @default("black")
+  headlineConfiguration     String
+  headlineBackgroundColor   String?
+  isCurrent                 Boolean       @default(true)
+  createdAt                 DateTime      @default(now())
+  updatedAt                 DateTime      @updatedAt
+
+}
+
+model HistoryStoryHeadline{
+  id                        String        @id @default(auto()) @map("_id") @db.ObjectId
+  version                   Int           @unique
+  prevVersion               Int
+  headline                  String
+  displayHeadline           String
+  subHeadline               String
+  headlineColor             String        @default("black")
+  subheadlineColor          String        @default("black")
+  headlineConfiguration     String
+  headlineBackgroundColor   String?
+  isCurrent                 Boolean       @default(true)
+  createdAt                 DateTime      @default(now())
+  updatedAt                 DateTime      @updatedAt
+
+  @@index([createdAt, version], name: "createdAt_version_idx")
+}
