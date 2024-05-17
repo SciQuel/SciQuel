@@ -16,6 +16,7 @@
 import { z } from "zod";
 
 export const curStoryHeadlineSchema = z.object({
+  operation: z.string(),
   headline: z.string(),
   displayHeadline: z.string(),
   subHeadline: z.string(),
@@ -34,3 +35,7 @@ export const historyStoryHeadlineSchema = z.object({
   headlineConfiguration: z.string(),
   headlineBackgroundColor: z.string().optional(),
 });
+
+export const rollbackStoryHeadlineSchema = z.object({
+  targetVersion: z.number()
+})

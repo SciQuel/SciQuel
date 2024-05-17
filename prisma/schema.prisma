@@ -324,3 +324,9 @@ model HistoryStoryHeadline{
 
   @@index([createdAt, version], name: "createdAt_version_idx")
 }
+
+model rollbackHistoryStoryHeadline{
+  id                        String        @id @default(auto()) @map("_id") @db.ObjectId
+  curVersion                Int
+  targetVersion             Int
+}
