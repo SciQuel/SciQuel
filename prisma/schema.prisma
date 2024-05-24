@@ -99,16 +99,16 @@ model StoryContribution {
   //user   User   @relation(fields: [userId], references: [id])
   //userId String @db.ObjectId
 
-  contributor Contributor? @relation(fields: [contributorId], references: [id])
-  contributorId String? @db.ObjectId
+  contributor   Contributor? @relation(fields: [contributorId], references: [id])
+  contributorId String?      @db.ObjectId
 
   story   Story  @relation(fields: [storyId], references: [id], onDelete: NoAction)
   storyId String @db.ObjectId
 
-  contributionType ContributionType
-  otherContributorType String?
+  contributionType       ContributionType
+  otherContributorType   String?
   otherContributorCredit String?
-  contributorByline String?
+  contributorByline      String?
 
   bio String?
 }
@@ -118,13 +118,13 @@ model Contributor {
 
   firstName String
   lastName  String
-  email     String?  @unique
+  email     String? @unique
   avatarUrl String?
 
   bio String?
 
   contributorSlug String @unique
-  
+
   storyContributions StoryContribution[]
 }
 
@@ -145,7 +145,7 @@ model User {
   verified Boolean @default(false)
 
   //storyContributions StoryContribution[]
-  authVerifications  AuthVerification[]
+  authVerifications AuthVerification[]
 
   roles   UserRole[] @default([])
   quizzes Quiz[]

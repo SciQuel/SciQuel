@@ -14,12 +14,15 @@ export type GetStoryResult = Story & {
   storyContributions: {
     contributor: {
       id: string;
+      contributorSlug: string;
       firstName: string;
       lastName: string;
-      bio: string;
       avatarUrl: string | null;
     };
     contributionType: ContributionType;
+    otherContributorType: string | undefined;
+    otherContributorCredit: string | undefined;
+    contributorByline: string;
   }[];
   storyContent: {
     content: string;
@@ -68,12 +71,15 @@ export async function GET(req: Request, { params }: { params: Params }) {
         storyContributions: {
           select: {
             contributionType: true,
+            otherContributorType: true,
+            otherContributorCredit: true,
+            contributorByline: true,
             contributor: {
               select: {
                 id: true,
+                contributorSlug: true,
                 firstName: true,
                 lastName: true,
-                bio: true,
                 avatarUrl: true,
               },
             },
