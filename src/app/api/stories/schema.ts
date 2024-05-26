@@ -58,11 +58,11 @@ export const postStorySchema = z.object({
 });
 
 const subtopicSchema = z.object({
-  id: z.string(),
+  name: z.string(),
 });
 
 const generalSubjectSchema = z.object({
-  id: z.string(),
+  name: z.string(),
 });
 
 const storyContributionSchema = z.object({

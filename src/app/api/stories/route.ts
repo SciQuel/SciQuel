@@ -223,12 +223,12 @@ export async function PUT(request: NextRequest) {
         topics: parsedRequest.data.topics,
         subtopics: {
           connect: parsedRequest.data.subtopics.map((subtopic) => ({
-            id: subtopic.id,
+            name: subtopic.name,
           })),
         },
         generalSubjects: {
           connect: parsedRequest.data.generalSubjects.map((subject) => ({
-            id: subject.id,
+            name: subject.name,
           })),
         },
         staffPick: parsedRequest.data.staffPick,
@@ -241,9 +241,9 @@ export async function PUT(request: NextRequest) {
             content: parsedRequest.data.content,
             footer: parsedRequest.data.footer,
           },
-          storyContributions: {
-            create: parsedRequest.data.contributions,
-          },
+        },
+        storyContributions: {
+          create: parsedRequest.data.contributions,
         },
         createdAt: new Date(),
         publishedAt: parsedRequest.data.published ? new Date() : (null as any),

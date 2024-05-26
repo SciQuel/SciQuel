@@ -22,12 +22,13 @@ export default function WhatsNewSection({ articles }: Props) {
             title={headlineArticle.title}
             subtitle={headlineArticle.summary}
             author={(() => {
-              const author = headlineArticle.storyContributions.find(
-                (value) => value.contributionType === "AUTHOR",
-              );
-              return author
-                ? `${author.user.firstName} ${author.user.lastName}`
-                : "";
+              // const author = headlineArticle.storyContributions.find(
+              //   (value) => value.contributionType === "AUTHOR",
+              // );
+              // return author
+              //   ? `${author.user.firstName} ${author.user.lastName}`
+              //   : "";
+              return "";
             })()}
             date={DateTime.fromJSDate(
               headlineArticle.publishedAt,
