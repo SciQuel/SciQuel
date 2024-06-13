@@ -29,7 +29,7 @@ export default async function StoriesPage({ params }: Params) {
   return (
     <div>
       <div className="flex flex-col">
-        <div className="relative h-screen">
+        <div className="relative -mt-10 h-screen">
           <Image
             src={story.thumbnailUrl}
             className="-z-10 h-full object-cover"

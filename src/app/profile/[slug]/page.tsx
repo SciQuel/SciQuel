@@ -106,7 +106,7 @@ export default async function ProfilePage({ searchParams, params }: Params) {
       <div className="flex h-fit min-h-[calc(100vh_-_4rem)] w-full flex-col justify-between md:flex-row">
         <ProfileSidebar contributor={startingArticles.contributor} />
 
-        <div className="flex h-full flex-1 flex-col gap-3 p-6 pt-16 text-center">
+        <div className="flex h-full flex-1 flex-col gap-3 p-6 pt-8 text-center">
           <ProfileButton slug={contributorSlug} searchParams={searchParams} />
 
           <div className="flex flex-col gap-4">
