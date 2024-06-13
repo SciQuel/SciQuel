@@ -11,7 +11,6 @@ import {
   type ContributionType,
   type Contributor,
   type StoryContribution,
-  type User,
 } from "@prisma/client";
 import axios from "axios";
 import clsx from "clsx";

@@ -12,7 +12,7 @@ import {
   useListNavigation,
   useRole,
 } from "@floating-ui/react";
-import { type Contributor, type User } from "@prisma/client";
+import { type Contributor } from "@prisma/client";
 import clsx from "clsx";
 import { useCallback, useRef, useState } from "react";
 import Item from "./Item";

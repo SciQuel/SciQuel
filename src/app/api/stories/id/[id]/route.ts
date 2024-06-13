@@ -1,10 +1,5 @@
 import prisma from "@/lib/prisma";
-import {
-  Contributor,
-  type ContributionType,
-  type Prisma,
-  type Story,
-} from "@prisma/client";
+import { type ContributionType, type Prisma, type Story } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { NextResponse, type NextRequest } from "next/server";
 import { patchStorySchema } from "../../schema";

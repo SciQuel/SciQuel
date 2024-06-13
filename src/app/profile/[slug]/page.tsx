@@ -1,14 +1,10 @@
 import { type GetContributionResult } from "@/app/api/contributor/route";
 import { type GetStoriesResult } from "@/app/api/stories/route";
 import ArticleCard from "@/components/ArticleCard/ArticleCard";
-import ArticleList from "@/components/ArticleList";
-import Avatar from "@/components/Avatar";
-import FooterIcon from "@/components/Footer/FooterIcon";
 import HomepageSection from "@/components/HomepageSection";
 import ProfileButton from "@/components/profile-page/ProfileButtons";
 import ProfileSidebar from "@/components/profile-page/ProfileSidebar";
 import Pagination from "@/components/StoriesList/Pagination";
-import TopicTag from "@/components/TopicTag";
 import env from "@/lib/env";
 import prisma from "@/lib/prisma";
 import { DateTime } from "luxon";
