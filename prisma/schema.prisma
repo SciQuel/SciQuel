@@ -24,6 +24,9 @@ enum ContributionType {
   AUTHOR
   ILLUSTRATOR
   ANIMATOR
+  PHOTOGRAPHER
+  VIDEOGRAPHER
+  OTHER
 }
 
 enum StoryTopic {
@@ -107,15 +110,33 @@ model Story {
 model StoryContribution {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  user   User   @relation(fields: [userId], references: [id])
-  userId String @db.ObjectId
+  contributor   Contributor? @relation(fields: [contributorId], references: [id])
+  contributorId String?      @db.ObjectId
 
   story   Story  @relation(fields: [storyId], references: [id], onDelete: NoAction)
   storyId String @db.ObjectId
 
-  contributionType ContributionType
+  contributionType       ContributionType
+  otherContributorType   String?
+  otherContributorCredit String?
+  contributorByline      String?
 
   bio String?
+}
+
+model Contributor {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  firstName String
+  lastName  String
+  email     String? @unique
+  avatarUrl String?
+
+  bio String?
+
+  contributorSlug String @unique
+
+  storyContributions StoryContribution[]
 }
 
 model User {
@@ -134,8 +155,7 @@ model User {
 
   verified Boolean @default(false)
 
-  storyContributions StoryContribution[]
-  authVerifications  AuthVerification[]
+  authVerifications AuthVerification[]
 
   roles   UserRole[] @default([])
   quizzes Quiz[]

@@ -1,10 +1,20 @@
 import StoryContributorForm from "@/components/EditorDashboard/StoryContributorForm";
 import prisma from "@/lib/prisma";
+import { type Story, type StoryContribution } from "@prisma/client";
 import { redirect } from "next/navigation";
 
 interface SearchParams {
   id?: string;
 }
+
+type FullStoryContribution = StoryContribution & {
+  contributor: {
+    firstName: string;
+    lastName: string;
+    email?: string;
+    bio?: string;
+  };
+};
 
 export default async function StoryContributorEditorPage({
   searchParams: { id },
@@ -35,12 +45,12 @@ export default async function StoryContributorEditorPage({
 
 async function retrieveStory(id?: string) {
   if (id) {
-    return await prisma.story.findUnique({
+    return (await prisma.story.findUnique({
       where: { id },
       include: {
         storyContributions: {
           include: {
-            user: {
+            contributor: {
               select: {
                 firstName: true,
                 lastName: true,
@@ -51,14 +61,15 @@ async function retrieveStory(id?: string) {
           },
         },
       },
-    });
+    })) as Story & {
+      storyContributions: FullStoryContribution[];
+    };
   }
   return null;
 }
 
 async function retrieveAuthors() {
-  const authors = await prisma.user.findMany({
-    where: { roles: { has: "AUTHOR" } },
+  const authors = await prisma.contributor.findMany({
     select: {
       firstName: true,
       lastName: true,

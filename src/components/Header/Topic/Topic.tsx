@@ -1,38 +1,83 @@
-import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import Astronomy from "./TopicIcons/Astronomy.png";
-import Biology from "./TopicIcons/Biology.png";
-import ChemEng from "./TopicIcons/ChemEng.png";
-import Chemistry from "./TopicIcons/Chemistry.png";
-import ComputerS from "./TopicIcons/ComputerS.png";
-import ElectricEng from "./TopicIcons/ElectricEng.png";
-import EnviroS from "./TopicIcons/EnviroS.png";
-import Geology from "./TopicIcons/Geology.png";
-import Math from "./TopicIcons/Math.png";
-import MechEng from "./TopicIcons/MechEng.png";
-import Medicine from "./TopicIcons/Medicine.png";
-import Physics from "./TopicIcons/Physics.png";
-import Psychology from "./TopicIcons/Psychology.png";
-import Sociology from "./TopicIcons/Sociology.png";
-import Technology from "./TopicIcons/Technology.png";
+import TopicIcon from "./TopicIcon";
 
 export default function Topic() {
   const topics = [
-    { Topic: "Astronomy", Image: Astronomy },
-    { Topic: "Biology", Image: Biology },
-    { Topic: "Chemistry", Image: Chemistry },
-    { Topic: "Computer Science", Image: ComputerS },
-    { Topic: "Chemical", Image: ChemEng },
-    { Topic: "Electrical", Image: ElectricEng },
-    { Topic: "Environmental Science", Image: EnviroS },
-    { Topic: "Geology", Image: Geology },
-    { Topic: "Mathematics", Image: Math },
-    { Topic: "Mechanical Engineering", Image: MechEng },
-    { Topic: "Medicine", Image: Medicine },
-    { Topic: "Physics", Image: Physics },
-    { Topic: "Psychology", Image: Psychology },
-    { Topic: "Sociology", Image: Sociology },
-    { Topic: "Technology", Image: Technology },
+    {
+      Topic: "Astronomy",
+      Image: <TopicIcon type="Astronomy" />,
+      Hover: <TopicIcon type="AstronomyAct" />,
+    },
+    {
+      Topic: "Biology",
+      Image: <TopicIcon type="Biology" />,
+      Hover: <TopicIcon type="BiologyAct" />,
+    },
+    {
+      Topic: "Chemistry",
+      Image: <TopicIcon type="Chemistry" />,
+      Hover: <TopicIcon type="ChemistryAct" />,
+    },
+    {
+      Topic: "Computer Science",
+      Image: <TopicIcon type="ComputerS" />,
+      Hover: <TopicIcon type="ComputerSAct" />,
+    },
+    {
+      Topic: "Chemical",
+      Image: <TopicIcon type="Chemical" />,
+      Hover: <TopicIcon type="ChemicalAct" />,
+    },
+    {
+      Topic: "Electrical",
+      Image: <TopicIcon type="Electrical" />,
+      Hover: <TopicIcon type="ElectricalAct" />,
+    },
+    {
+      Topic: "Environmental Science",
+      Image: <TopicIcon type="Environmental" />,
+      Hover: <TopicIcon type="EnvironmentalAct" />,
+    },
+    {
+      Topic: "Geology",
+      Image: <TopicIcon type="Geology" />,
+      Hover: <TopicIcon type="GeologyAct" />,
+    },
+    {
+      Topic: "Mathematics",
+      Image: <TopicIcon type="Math" />,
+      Hover: <TopicIcon type="MathAct" />,
+    },
+    {
+      Topic: "Mechanical Engineering",
+      Image: <TopicIcon type="Mechanical" />,
+      Hover: <TopicIcon type="MechanicalAct" />,
+    },
+    {
+      Topic: "Medicine",
+      Image: <TopicIcon type="Medicine" />,
+      Hover: <TopicIcon type="MedicineAct" />,
+    },
+    {
+      Topic: "Physics",
+      Image: <TopicIcon type="Physics" />,
+      Hover: <TopicIcon type="PhysicsAct" />,
+    },
+    {
+      Topic: "Psychology",
+      Image: <TopicIcon type="Psychology" />,
+      Hover: <TopicIcon type="PsychologyAct" />,
+    },
+    {
+      Topic: "Sociology",
+      Image: <TopicIcon type="Sociology" />,
+      Hover: <TopicIcon type="SociologyAct" />,
+    },
+    {
+      Topic: "Technology",
+      Image: <TopicIcon type="Technology" />,
+      Hover: <TopicIcon type="TechnologyAct" />,
+    },
   ];
   const [showTopic, setShowTopic] = useState(false);
   const topicRef = useRef<HTMLDivElement>(null);
@@ -61,7 +106,9 @@ export default function Topic() {
 
   return (
     <div>
-      <div onClick={() => setShowTopic((showTopic) => !showTopic)}>TOPIC</div>
+      <button onClick={() => setShowTopic((showTopic) => !showTopic)}>
+        TOPIC
+      </button>
       <div
         className="fixed left-0 right-0 z-50 mt-2 h-full cursor-default overflow-y-auto 
       overflow-x-hidden bg-black bg-opacity-40  "
@@ -73,20 +120,20 @@ export default function Topic() {
               <div className="w-[20%] p-6 text-left">
                 <ul>
                   {topics.map((topic, index) => (
-                    <li
-                      key={index}
-                      className=" hover: my-3 flex cursor-pointer items-center text-[#50808e] "
-                      onMouseEnter={() => onMouseEnter(topic.Topic)}
-                      style={{
-                        color: currentTopic === topic.Topic ? "#ad2319" : "",
-                      }}
-                    >
-                      <Image
-                        src={topic.Image}
-                        className="h-[2rem] w-auto"
-                        alt="SciQuel"
-                      />
-                      <span>{topic.Topic}</span>
+                    <li key={index}>
+                      <button
+                        className="my-3 flex cursor-pointer items-center text-[#50808e]"
+                        onMouseEnter={() => onMouseEnter(topic.Topic)}
+                        style={{
+                          color: currentTopic === topic.Topic ? "#ad2319" : "",
+                        }}
+                      >
+                        {currentTopic === topic.Topic
+                          ? topic.Hover
+                          : topic.Image}
+
+                        <span>{topic.Topic}</span>
+                      </button>
                     </li>
                   ))}
                 </ul>

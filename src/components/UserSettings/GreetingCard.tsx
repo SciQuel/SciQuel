@@ -2,7 +2,7 @@
 
 import { type ReadingHistory } from "@/app/user-settings/actions/getReadingHistory";
 import TopicTag from "@/components/TopicTag";
-import { StoryTopic, type User } from "@prisma/client";
+import { StoryTopic, type Contributor, type User } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import Avatar from "../Avatar";
 import AvatarEditorButton from "../Avatar/AvatarEditorButton";
@@ -10,7 +10,7 @@ import Carousel from "./Carousel";
 
 export type Reading = {
   storyContributions: {
-    user: User;
+    contributor: Contributor;
   }[];
   title: string;
   thumbnailUrl: string;
