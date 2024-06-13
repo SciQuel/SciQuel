@@ -84,14 +84,13 @@ export default function DraftTable() {
                 </td>
               </tr>
             )}
-            {(!data || !data.stories || data.stories.length === 0) &&
-              !isLoading && (
-                <tr>
-                  <td colSpan={7} className="py-3 text-center italic">
-                    No data
-                  </td>
-                </tr>
-              )}
+            {(!data || data.stories?.length === 0) && !isLoading && (
+              <tr>
+                <td colSpan={7} className="py-3 text-center italic">
+                  No data
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
