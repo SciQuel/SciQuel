@@ -29,7 +29,7 @@ type StoryResult = Story & {
 
 export interface GetContributionResult {
   contributor: Contributor;
-  stories: StoryResult;
+  stories: StoryResult[];
   count: number;
 }
 
@@ -57,7 +57,7 @@ export async function GET(req: NextRequest) {
   const storyArgs: Prisma.StoryFindManyArgs & {
     where: Prisma.StoryWhereInput;
   } = {
-    take: 30,
+    take: 9,
     where: {
       published: {
         equals: true,
@@ -115,7 +115,7 @@ export async function GET(req: NextRequest) {
   }
 
   if (pageNum) {
-    storyArgs["skip"] = pageNum * 30;
+    storyArgs["skip"] = pageNum * 9;
   }
 
   try {

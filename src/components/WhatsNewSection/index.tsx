@@ -25,7 +25,7 @@ export default function WhatsNewSection({ articles }: Props) {
               const author = headlineArticle.storyContributions.find(
                 (value) => value.contributionType === "AUTHOR",
               );
-              return author
+              return author?.contributor
                 ? `${author.contributor.firstName} ${author.contributor.lastName}`
                 : "";
             })()}

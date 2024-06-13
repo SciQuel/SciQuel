@@ -9,6 +9,7 @@ import FormUserCombobox, {
 } from "@/components/Form/FormUserCombobox";
 import {
   type ContributionType,
+  type Contributor,
   type StoryContribution,
   type User,
 } from "@prisma/client";
@@ -20,18 +21,18 @@ import { type z } from "zod";
 
 interface Props {
   contributors?: (StoryContribution & {
-    user: {
+    contributor: {
       firstName: string;
       lastName: string;
-      email: string;
-      bio: string;
+      email?: string;
+      bio?: string;
     };
   })[];
   authorDirectory: {
-    firstName: User["firstName"];
-    lastName: User["lastName"];
-    email: User["email"];
-    bio: User["bio"];
+    firstName: Contributor["firstName"];
+    lastName: Contributor["lastName"];
+    email: Contributor["email"];
+    bio: Contributor["bio"];
   }[];
   id: string;
 }
@@ -115,11 +116,11 @@ export default function StoryContributorForm({
     contributors.map((contributor) => ({
       contributionType: contributor.contributionType,
       author: {
-        text: `${contributor.user.firstName} ${contributor.user.lastName} <${contributor.user.email}>`,
-        name: `${contributor.user.firstName} ${contributor.user.lastName}`,
-        email: contributor.user.email,
+        text: `${contributor.contributor.firstName} ${contributor.contributor.lastName} <${contributor.contributor.email}>`,
+        name: `${contributor.contributor.firstName} ${contributor.contributor.lastName}`,
+        email: contributor.contributor.email,
       },
-      bio: contributor.user.bio,
+      bio: contributor.contributor.bio,
     })),
   );
   const [dirty, setDirty] = useState(false);
@@ -175,7 +176,7 @@ export default function StoryContributorForm({
                 }}
               />
               <FormUserCombobox
-                title="User"
+                title="Contributor"
                 required
                 indicateRequired
                 value={row.author}

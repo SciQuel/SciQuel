@@ -1,5 +1,6 @@
 import { type GetContributionResult } from "@/app/api/contributor/route";
 import { type GetStoriesResult } from "@/app/api/stories/route";
+import ArticleCard from "@/components/ArticleCard/ArticleCard";
 import ArticleList from "@/components/ArticleList";
 import Avatar from "@/components/Avatar";
 import FooterIcon from "@/components/Footer/FooterIcon";
@@ -10,6 +11,7 @@ import Pagination from "@/components/StoriesList/Pagination";
 import TopicTag from "@/components/TopicTag";
 import env from "@/lib/env";
 import prisma from "@/lib/prisma";
+import { DateTime } from "luxon";
 import { notFound } from "next/navigation";
 
 interface Params {
@@ -33,8 +35,8 @@ function parsePageNum(page: string | undefined) {
   return int;
 }
 
-function parseStaffPick(staffPick: string | undefined) {
-  if (staffPick == "true") {
+function parseStaffPick(category: string | undefined) {
+  if (category == "staff_picks") {
     return true;
   }
   return false;
@@ -51,7 +53,12 @@ async function getArticles(slug: string, page: number, staffPick: boolean) {
         }`,
       );
       if (res.ok) {
-        return (await res.json()) as GetContributionResult;
+        const raw = (await res.json()) as GetContributionResult;
+        raw.stories = raw.stories.map((story) => ({
+          ...story,
+          publishedAt: new Date(story.publishedAt),
+        }));
+        return raw;
       }
     } catch (err) {
       console.error(err);
@@ -65,7 +72,12 @@ async function getArticles(slug: string, page: number, staffPick: boolean) {
         }/api/contributor?contributorSlug=${slug}&pageNum=${page - 1}`,
       );
       if (res.ok) {
-        return (await res.json()) as GetContributionResult;
+        const raw = (await res.json()) as GetContributionResult;
+        raw.stories = raw.stories.map((story) => ({
+          ...story,
+          publishedAt: new Date(story.publishedAt),
+        }));
+        return raw;
       }
     } catch (err) {
       console.error(err);
@@ -81,37 +93,68 @@ async function getArticles(slug: string, page: number, staffPick: boolean) {
 */
 export default async function ProfilePage({ searchParams, params }: Params) {
   const pageNum = parsePageNum(searchParams["page"]);
-  const staffPick = parseStaffPick(searchParams["Sr"]);
+  const staffPick = parseStaffPick(searchParams["category"]);
+  const category = staffPick ? "Staff Pick" : null;
   const contributorSlug = params.slug;
   const startingArticles = await getArticles(
     contributorSlug,
     pageNum,
     staffPick,
   );
+
   if (!startingArticles) {
     notFound();
   }
-
+  const pageSize = 9;
+  const totalPages = Math.ceil(startingArticles.count / pageSize);
   return (
     <>
-      <div className="flex h-fit min-h-[calc(100vh_-_4rem)] w-full flex-col justify-between sm:flex-row">
+      <div className="flex h-fit min-h-[calc(100vh_-_4rem)] w-full flex-col justify-between md:flex-row">
         <ProfileSidebar contributor={startingArticles.contributor} />
 
-        <div className="flex h-full w-5/6 p-6 pt-16 text-center">
+        <div className="flex h-full flex-1 flex-col gap-3 p-6 pt-16 text-center">
           <ProfileButton slug={contributorSlug} searchParams={searchParams} />
-          <div>
-            <div className="my-3 text-left">
-              {/* <HomepageSection
-                        heading={
-                          category ? category + " Stories" : "Recent Stories"
-                        }
-                      /> */}
+
+          <div className="flex flex-col gap-4">
+            <div className=" text-left">
+              <HomepageSection
+                heading={category ? category + " Stories" : "Recent Stories"}
+              />
             </div>
-            <div className="my-3 text-left">
-              {/* <ArticleList articles={stories} /> */}
+            <div className="grid flex-1 grid-cols-1 gap-4 text-left lg:grid-cols-2 xl:grid-cols-3 ">
+              {startingArticles.stories.map((article) => (
+                <ArticleCard
+                  href={(() => {
+                    const publishDate = DateTime.fromJSDate(
+                      article.publishedAt,
+                    ).toUTC();
+                    return `/stories/${publishDate.year}/${publishDate.toFormat(
+                      "LL",
+                    )}/${publishDate.toFormat("dd")}/${article.slug}`;
+                  })()}
+                  key={article.title}
+                  topic={article.tags[0]}
+                  title={article.title}
+                  subtitle={article.summary}
+                  author={(() => {
+                    const author = article.storyContributions.find(
+                      (value) => value.contributionType === "AUTHOR",
+                    );
+                    return author
+                      ? `${author.contributor.firstName} ${author.contributor.lastName}`
+                      : "";
+                  })()}
+                  date={DateTime.fromJSDate(article.publishedAt).toLocaleString(
+                    DateTime.DATE_FULL,
+                  )}
+                  thumbnailUrl={article.thumbnailUrl}
+                  mini={false}
+                  preferHorizontal={false}
+                />
+              ))}
             </div>
-            <div className="my-3 text-right">
-              {/* <Pagination total_pages={total_pages} /> */}
+            <div className="mt-4 text-right">
+              <Pagination total_pages={totalPages} />
             </div>
           </div>
         </div>
