@@ -11,14 +11,29 @@ interface Props {
 
 export default function FooterIcon({ type }: Props) {
   const iconMap: Record<typeof type, JSX.Element> = {
-    instagram: <InstagramIcon className="h-[2rem] w-auto" />,
-    arrow: (
-      <div className="flex h-[2rem] w-[2rem] items-center justify-center">
-        <ArrowIcon />
-      </div>
+    instagram: (
+      <button>
+        <InstagramIcon className="h-[2rem] w-auto" />{" "}
+      </button>
     ),
-    facebook: <FacebookIcon className="h-[2rem] w-auto" />,
-    youtube: <YouTubeIcon className="h-[2rem] w-auto" />,
+    arrow: (
+      <button>
+        <div className="flex h-[2rem] w-[2rem] items-center justify-center">
+          <ArrowIcon />
+        </div>
+      </button>
+    ),
+    facebook: (
+      <button>
+        <FacebookIcon className="h-[2rem] w-auto" />
+      </button>
+    ),
+    youtube: (
+      <button>
+        {" "}
+        <YouTubeIcon className="h-[2rem] w-auto" />{" "}
+      </button>
+    ),
   };
   return iconMap[type];
 }

@@ -29,6 +29,13 @@ const config = {
 
     "isaacscript/complete-sentences-jsdoc": "warn",
     "isaacscript/format-jsdoc-comments": "warn",
+    "prettier/prettier": [
+      "error",
+      {
+        "endOfLine": "auto"
+      }
+    ]    
+    
   },
 };
 
