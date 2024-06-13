@@ -120,18 +120,21 @@ export default function Topic() {
               <div className="w-[20%] p-6 text-left">
                 <ul>
                   {topics.map((topic, index) => (
-                    <button
-                      key={index}
-                      className=" hover: my-3 flex cursor-pointer items-center text-[#50808e] "
-                      onMouseEnter={() => onMouseEnter(topic.Topic)}
-                      style={{
-                        color: currentTopic === topic.Topic ? "#ad2319" : "",
-                      }}
-                    >
-                      {currentTopic === topic.Topic ? topic.Hover : topic.Image}
+                    <li key={index}>
+                      <button
+                        className="my-3 flex cursor-pointer items-center text-[#50808e]"
+                        onMouseEnter={() => onMouseEnter(topic.Topic)}
+                        style={{
+                          color: currentTopic === topic.Topic ? "#ad2319" : "",
+                        }}
+                      >
+                        {currentTopic === topic.Topic
+                          ? topic.Hover
+                          : topic.Image}
 
-                      <span>{topic.Topic}</span>
-                    </button>
+                        <span>{topic.Topic}</span>
+                      </button>
+                    </li>
                   ))}
                 </ul>
               </div>
