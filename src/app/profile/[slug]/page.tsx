@@ -1,12 +1,10 @@
 import { type GetContributionResult } from "@/app/api/contributor/route";
-import { type GetStoriesResult } from "@/app/api/stories/route";
 import ArticleCard from "@/components/ArticleCard/ArticleCard";
 import HomepageSection from "@/components/HomepageSection";
 import ProfileButton from "@/components/profile-page/ProfileButtons";
 import ProfileSidebar from "@/components/profile-page/ProfileSidebar";
 import Pagination from "@/components/StoriesList/Pagination";
 import env from "@/lib/env";
-import prisma from "@/lib/prisma";
 import { DateTime } from "luxon";
 import { notFound } from "next/navigation";
 
@@ -157,43 +155,4 @@ export default async function ProfilePage({ searchParams, params }: Params) {
       </div>
     </>
   );
-}
-
-async function getStories(params: Record<string, string>) {
-  const searchParams = new URLSearchParams(params);
-  const route = `/stories?${searchParams.toString()}&page_size=30`;
-
-  const res = await fetch(`${env.NEXT_PUBLIC_SITE_URL}/api${route}`, {
-    next: { revalidate: 60 },
-  });
-
-  if (!res.ok) {
-    throw new Error("Failed to fetch data");
-  }
-
-  const data: GetStoriesResult = await res.json().then();
-
-  data.stories = data.stories.map((story) => ({
-    ...story,
-    createdAt: new Date(story.createdAt),
-    publishedAt: new Date(story.publishedAt),
-    updatedAt: new Date(story.updatedAt),
-  }));
-
-  return data;
-}
-
-async function retrieveAuthors(id: string) {
-  const authors = await prisma.user.findUnique({
-    where: { id: id },
-    select: {
-      firstName: true,
-      lastName: true,
-      email: true,
-      bio: true,
-      roles: true,
-    },
-  });
-
-  return authors;
 }
