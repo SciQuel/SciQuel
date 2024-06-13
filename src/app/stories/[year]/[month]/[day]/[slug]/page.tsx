@@ -116,7 +116,7 @@ export default async function StoriesPage({ params }: Params) {
                 {element.contributor.firstName} {element.contributor.lastName}
               </p>
               <p className="flex-1 font-sourceSerif4 text-xl">
-                {element.contributor.bio}
+                {element.bio ?? element.contributorByline ?? ""}
               </p>
             </div>
           </div>

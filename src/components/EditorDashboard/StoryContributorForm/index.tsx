@@ -40,7 +40,7 @@ interface Props {
 type State = {
   contributionType: ContributionType;
   author: ComboboxValue;
-  bio: string;
+  bio: string | null | undefined;
 }[];
 
 type Action =
@@ -111,7 +111,7 @@ export default function StoryContributorForm({
     [authorDirectory],
   );
 
-  const [state, dispatch] = useReducer(
+  const [state, dispatch] = useReducer<(state: State, action: Action) => State>(
     reducer,
     contributors.map((contributor) => ({
       contributionType: contributor.contributionType,
@@ -170,7 +170,7 @@ export default function StoryContributorForm({
                       index,
                       contributionType: e.target.value as ContributionType,
                       author: row.author,
-                      bio: row.bio,
+                      bio: row.bio ?? "",
                     },
                   });
                 }}
@@ -189,7 +189,7 @@ export default function StoryContributorForm({
                       index,
                       contributionType: row.contributionType,
                       author: data,
-                      bio: row.bio,
+                      bio: row.bio ?? "",
                     },
                   });
                 }}
@@ -214,7 +214,7 @@ export default function StoryContributorForm({
               title="Author's Bio (only applies to this story)"
               required
               indicateRequired
-              value={row.bio}
+              value={row.bio ?? ""}
               disabled={loading}
               onChange={(e) => {
                 setDirty(true);

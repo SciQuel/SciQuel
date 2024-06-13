@@ -23,6 +23,7 @@ export type GetStoryResult = Story & {
     otherContributorType: string | undefined;
     otherContributorCredit: string | undefined;
     contributorByline: string;
+    bio: string | null;
   }[];
   storyContent: {
     content: string;
@@ -74,6 +75,7 @@ export async function GET(req: Request, { params }: { params: Params }) {
             otherContributorType: true,
             otherContributorCredit: true,
             contributorByline: true,
+            bio: true,
             contributor: {
               select: {
                 id: true,
