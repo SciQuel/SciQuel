@@ -1,6 +1,6 @@
 import prisma from "@/lib/prisma";
 import { getServerSession } from "next-auth";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 import { patchSchema, staffpickIdSchema } from "../schema";
 
 interface Params {
@@ -115,7 +115,7 @@ export async function PATCH(
       },
     });
 
-    const [staffUpdate, record] = await Promise.all([
+    const [staffUpdate] = await Promise.all([
       updateStaffPickPromise,
       createRecordPromise,
     ]);

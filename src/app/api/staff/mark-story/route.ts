@@ -57,10 +57,7 @@ export async function POST(request: NextRequest) {
         description,
       },
     });
-    const [staffPick, record] = await Promise.all([
-      staffPickPromise,
-      recordPromise,
-    ]);
+    const [staffPick] = await Promise.all([staffPickPromise, recordPromise]);
 
     return NextResponse.json({ staff_pick: staffPick }, { status: 201 });
   } catch (err) {

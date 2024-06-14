@@ -1,6 +1,6 @@
 import prisma from "@/lib/prisma";
 import { getServerSession } from "next-auth";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 
 interface Params {
   story_id: string;
