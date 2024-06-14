@@ -1,6 +1,5 @@
 import getCurrentUser from "@/app/user-settings/actions/getCurrentUser";
 import BrainedArticleCarousel from "@/components/UserDashboard/BrainedArticleCarousel";
-import GreetingCard from "@/components/UserDashboard/BrainedArticleCarousel";
 import { type User } from "@prisma/client";
 
 export default async function Greeting() {
@@ -27,7 +26,7 @@ export default async function Greeting() {
       date: "2",
       image: "/user-settings/ArticleImage.svg",
       type: "articles",
-    }
+    },
   ];
-  return <BrainedArticleCarousel user={currUser} articles={items} />;
+  return <BrainedArticleCarousel articles={items} />;
 }

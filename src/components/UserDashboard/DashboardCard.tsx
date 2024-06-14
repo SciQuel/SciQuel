@@ -10,7 +10,6 @@ interface ArticleItem {
   author?: string;
 }
 
-
 function ListItem({ info }: { info: ArticleItem }) {
   return (
     <li className="p-1 py-2 dark:bg-sciquelMuted">
@@ -20,7 +19,7 @@ function ListItem({ info }: { info: ArticleItem }) {
           width={100}
           height={100}
           alt="article image"
-          className="mr-3 h-12 w-12 "
+          className="mr-3 h-12 w-12"
         />
         <div className="flex grow flex-col">
           <div className="flex items-center justify-between">
@@ -59,13 +58,16 @@ export default function DashboardCard({
   const items: ArticleItem[] = articles.filter(
     (a: ArticleItem) => a.type === targetType,
   );
-  const capitalizedTargetType = targetType.charAt(0).toUpperCase() + targetType.slice(1);
+  const capitalizedTargetType =
+    targetType.charAt(0).toUpperCase() + targetType.slice(1);
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex justify-between items-center">
-        <h3 className="font-semibold text-lg">{title}</h3>
+      <div className="flex items-center justify-between">
+        <h3 className="text-lg font-semibold">{title}</h3>
         <div className="flex items-center gap-2">
-          <span className="text-lg font-semibold">View All {capitalizedTargetType}</span>
+          <span className="text-lg font-semibold">
+            View All {capitalizedTargetType}
+          </span>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
@@ -81,7 +83,7 @@ export default function DashboardCard({
         </div>
       </div>
       <div className="rounded-md border bg-white px-6 py-8 dark:bg-sciquelMuted">
-        <div className="flex justify-between items-center mb-4">
+        <div className="mb-4 flex items-center justify-between">
           <div className="mr-6 flex grow items-center rounded-full bg-gray-200 p-1 px-2">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -126,4 +128,3 @@ export default function DashboardCard({
     </div>
   );
 }
-

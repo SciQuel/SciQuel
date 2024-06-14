@@ -1,22 +1,29 @@
-import React from 'react';
+import React from "react";
 
 interface ProgressBarProps {
   numerator: number;
   denominator: number;
 }
 
-const ProgressBar: React.FC<ProgressBarProps> = ({ numerator, denominator }) => {
+const ProgressBar: React.FC<ProgressBarProps> = ({
+  numerator,
+  denominator,
+}) => {
   return (
     <div>
-      <div className="flex justify-between mb-1">
-        <span className="text-base font-medium text-gray-700 dark:text-gray"></span>
-        <span className="text-sm font-medium text-gray-400 dark:text-gray">{numerator}/{denominator} XP</span>
+      <div className="mb-1 flex justify-between">
+        <span className="dark:text-gray text-base font-medium text-gray-700"></span>
+        <span className="dark:text-gray text-sm font-medium text-gray-400">
+          {numerator}/{denominator} XP
+        </span>
       </div>
-      <div className="w-full bg-gray-200 rounded-full h-10 dark:gray-700">
-        <div className="bg-gradient-to-r from-sciquelGreen to-sciquelTeal h-10 rounded-full" style={{ width: `${(numerator / denominator) * 100}%` }}></div>
+      <div className="dark:gray-700 h-10 w-full rounded-full bg-gray-200">
+        <div
+          className="h-10 rounded-full bg-gradient-to-r from-sciquelGreen to-sciquelTeal"
+          style={{ width: `${(numerator / denominator) * 100}%` }}
+        ></div>
       </div>
     </div>
-
   );
 };
 

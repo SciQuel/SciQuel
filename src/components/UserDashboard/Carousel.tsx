@@ -69,17 +69,19 @@ export default function Carousel({
             by{" "}
             <span className="text-[#69A297]">
               {stories.length > 0 &&
-                stories[readingHistoryIndex].storyContributions &&
-                stories[readingHistoryIndex].storyContributions.length > 0 &&
-                stories[readingHistoryIndex].storyContributions[0].user && (
+                stories[readingHistoryIndex].story.storyContributions &&
+                stories[readingHistoryIndex].story.storyContributions.length >
+                  0 &&
+                stories[readingHistoryIndex].story.storyContributions[0]
+                  .contributor && (
                   <>
                     {
                       stories[readingHistoryIndex].story.storyContributions[0]
-                        .user.firstName
+                        .contributor.firstName
                     }{" "}
                     {
                       stories[readingHistoryIndex].story.storyContributions[0]
-                        .user.lastName
+                        .contributor.lastName
                     }
                   </>
                 )}

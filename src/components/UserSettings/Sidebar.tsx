@@ -37,10 +37,10 @@ export default function Sidebar() {
     .replace(/-/g, " ");
   return (
     <div className="z-10 pt-6 md:fixed md:w-56">
-      <h2 className="text-center text-3xl font-semibold text-[#50808e] md:text-left dark:text-white">
+      <h2 className="text-center text-3xl font-semibold text-[#50808e] dark:text-white md:text-left">
         {title}
       </h2>
-      <div className="mt-8 flex flex-wrap justify-between gap-4 gap-y-8 text-center text-xl text-[#50808e] md:flex-col md:gap-y-2 md:text-left dark:text-white">
+      <div className="mt-8 flex flex-wrap justify-between gap-4 gap-y-8 text-center text-xl text-[#50808e] dark:text-white md:flex-col md:gap-y-2 md:text-left">
         <SidebarItem href="/user-settings/dashboard" path={path}>
           Dashboard
         </SidebarItem>

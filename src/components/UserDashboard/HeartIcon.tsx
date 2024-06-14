@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { type FC } from "react";
 
 interface HeartIconProps {
   size: string;
@@ -20,6 +20,6 @@ const HeartIcon: FC<HeartIconProps> = ({ size, color }) => {
       />
     </svg>
   );
-}
+};
 
 export default HeartIcon;

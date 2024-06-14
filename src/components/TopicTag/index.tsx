@@ -25,10 +25,10 @@ const topicTagColors: Record<StoryTopic, string> = {
 export default function TopicTag({ name }: Props) {
   return (
     <span
-      className={`flex w-fit items-center rounded-full px-3 py-1 overflow-hidden`}
+      className={`flex w-fit items-center overflow-hidden rounded-full px-3 py-1`}
       style={{ backgroundColor: topicTagColors[name] }}
     >
-      <p className="m-0 text-xs font-medium text-white truncate">
+      <p className="m-0 truncate text-xs font-medium text-white">
         {name.replace("_", " ")}
       </p>
     </span>
