@@ -1,7 +1,7 @@
 "use client";
 
+import { type ReadingHistory } from "@/app/user-settings/actions/getReadingHistory";
 import { useEffect, useState } from "react";
-import { type Reading } from "./GreetingCard";
 import { NextButton } from "../UserSettings/NextButton";
 import { PrevButton } from "../UserSettings/PrevButton";
 import ReadButton from "./ReadButton";
@@ -12,7 +12,7 @@ export default function Carousel({
   autoSlide = false,
   autoSlideInterval = 3000,
 }: {
-  stories: Reading[];
+  stories: ReadingHistory[];
   autoSlide?: boolean;
   autoSlideInterval?: number;
 }) {
@@ -50,7 +50,7 @@ export default function Carousel({
           {stories.map((story, idx) => (
             <img
               key={idx}
-              src={story.thumbnailUrl}
+              src={story.story.thumbnailUrl}
               alt="article image"
               className="h-full w-full flex-none"
             />
@@ -62,18 +62,27 @@ export default function Carousel({
         <div className="h-fit basis-5/6">
           {stories.length > 0 && readingHistoryIndex < stories.length && (
             <p className="line-clamp-1 text-xl font-semibold">
-              {stories[readingHistoryIndex].title}
+              {stories[readingHistoryIndex].story.title}
             </p>
           )}
           <p>
             by{" "}
             <span className="text-[#69A297]">
-              {stories.length > 0 && stories[readingHistoryIndex].storyContributions && stories[readingHistoryIndex].storyContributions.length > 0 && stories[readingHistoryIndex].storyContributions[0].user && (
-                <>
-                  {stories[readingHistoryIndex].storyContributions[0].user.firstName}{" "}
-                  {stories[readingHistoryIndex].storyContributions[0].user.lastName}
-                </>
-              )}
+              {stories.length > 0 &&
+                stories[readingHistoryIndex].storyContributions &&
+                stories[readingHistoryIndex].storyContributions.length > 0 &&
+                stories[readingHistoryIndex].storyContributions[0].user && (
+                  <>
+                    {
+                      stories[readingHistoryIndex].story.storyContributions[0]
+                        .user.firstName
+                    }{" "}
+                    {
+                      stories[readingHistoryIndex].story.storyContributions[0]
+                        .user.lastName
+                    }
+                  </>
+                )}
             </span>
           </p>
         </div>
