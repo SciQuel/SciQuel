@@ -36,6 +36,8 @@ export default function StoryLargeImage({
           children={children}
           handleClick={handleClick}
           imageRef={imageRef}
+          alt = {alt}
+          
         />
       ) : (
         <div className="flex justify-center hover:cursor-pointer">

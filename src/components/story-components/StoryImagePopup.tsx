@@ -1,14 +1,18 @@
 import { useState } from "react";
 
+interface Props {
+  src: string,
+  handleClick: ()=> void,
+  }
+
 //TODO DO ALL PROPTYPES AND INTERFACES
-const StoryImagePopup = ({ src, children, handleClick, imageRef }) => {
+const StoryImagePopup = ({ src, children, handleClick, imageRef, alt}) => {
   const [imageClicked, setImageClicked] = useState(false);
   const [imagePosition, setImagePosition] = useState({ x: null, y: null });
   const [dragging, setDragging] = useState(false);
   const [scaleLevel, setScaleLevel] = useState(1.5);
 
   const handleImageClick = () => {
-    console.log(scaleLevel);
     if (scaleLevel === 3) {
       setImageClicked(false);
       console.log(imageClicked);
@@ -36,15 +40,15 @@ const StoryImagePopup = ({ src, children, handleClick, imageRef }) => {
       className={`fixed left-1/2 top-1/2 z-50 flex h-screen w-screen -translate-x-1/2 -translate-y-1/2 transform flex-col items-center justify-center border border-solid border-slate-800 bg-white hover:cursor-pointer`}
       onClick={handleClick}
     >
-      <div className={`h-auto w-auto border border-solid border-slate-700 `}>
+      <>
         <img
           src={src}
-          className={`relative mx-auto max-h-[700px] ${
-            scaleLevel < 3 ? "hover:cursor-zoom-in" : "hover:cursor-zoom-out"
-          }  `}
+          className={`w-[900px] h-[700px] relative mx-auto max-h-[700px] ${scaleLevel < 3 ? "hover:cursor-zoom-in" : "hover:cursor-zoom-out"}`}
+
           ref={imageRef}
           onClick={handleImageClick}
           onMouseMove={handleImageDrag}
+          alt = {alt}
           style={{
             transformOrigin: `${
               imagePosition.x !== null
@@ -54,12 +58,12 @@ const StoryImagePopup = ({ src, children, handleClick, imageRef }) => {
             transform: imageClicked ? `scale(${scaleLevel})` : "none",
           }}
         />
-      </div>
+      </>
 
       <p> {children} </p>
       <p> {scaleLevel} </p>
 
-      <button className="absolute right-0 top-0 mr-5 mt-3 text-3xl">x</button>
+      <button aria-label = 'close' className="absolute right-0 top-0 mr-5 mt-3 text-3xl">x</button>
     </div>
   );
 };
