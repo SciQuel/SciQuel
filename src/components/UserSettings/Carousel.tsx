@@ -66,10 +66,13 @@ export default function Carousel({
             by{" "}
             <span className="text-[#69A297]">
               {
-                stories[readingHistoryIndex].storyContributions[0].user
+                stories[readingHistoryIndex].storyContributions[0].contributor
                   .firstName
               }{" "}
-              {stories[readingHistoryIndex].storyContributions[0].user.lastName}
+              {
+                stories[readingHistoryIndex].storyContributions[0].contributor
+                  .lastName
+              }
             </span>
           </p>
         </div>
