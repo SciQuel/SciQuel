@@ -94,6 +94,10 @@ export default async function StoriesPage({ params }: Params) {
         </div>
         <div className="mx-2 mt-2 flex flex-col items-center gap-5 md:mx-auto">
           {file.result as ReactNode}
+          <StoryLargeImage
+            src="https://www.cats.org.uk/media/13136/220325case013.jpg?width=500&height=333.49609375"
+            alt="small image"
+          />
         </div>
         <p className="w-[calc( 100% - 1rem )] mx-2 my-5 border-t-2 border-[#616161]  text-sm text-[#616161] md:mx-auto md:w-[720px]">
           Animation provided by Source name 1. Sources provided by Source name
