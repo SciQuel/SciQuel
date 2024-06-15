@@ -4,6 +4,7 @@ import Avatar from "@/components/Avatar";
 import MoreCard from "@/components/MoreCard";
 import FromThisSeries from "@/components/story-components/FromThisSeries";
 import ShareLinks from "@/components/story-components/ShareLinks";
+import StoryLargeImage from "@/components/story-components/StoryLargeImage";
 import TopicTag from "@/components/TopicTag";
 import { tagUser } from "@/lib/cache";
 import env from "@/lib/env";
