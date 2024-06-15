@@ -10,10 +10,15 @@ const prisma = new PrismaClient();
 
 export async function POST(req: NextRequest) {
   try {
+    console.log("Received request:", req);
     const requestBody = await req.json();
+    console.log("Request body:", requestBody);
+
     const parsed = createCommentSchema.safeParse(requestBody);
+    console.log("Validation result:", parsed);
 
     if (!parsed.success) {
+      console.error("Validation error:", parsed.error);
       return new NextResponse(JSON.stringify({ error: parsed.error }), {
         status: 400,
         headers: {
@@ -28,7 +33,7 @@ export async function POST(req: NextRequest) {
       data: {
         content: commentData.content,
         quote: commentData.quote,
-        parentCommentId: commentData.parentCommentId,
+        // parentCommentId: commentData.parentCommentId,
         userId: commentData.userId,
         storyId: commentData.storyId,
       },
@@ -60,32 +65,74 @@ export async function POST(req: NextRequest) {
   }
 }
 
+// export async function GET(req: NextRequest) {
+//   try {
+//     const url = new URL(req.url);
+//     const storyId = url.searchParams.get("storyId");
+
+//     if (!storyId) {
+//       return new NextResponse(
+//         JSON.stringify({ error: "storyId is required" }),
+//         {
+//           status: 400,
+//           headers: { "Content-Type": "application/json" },
+//         },
+//       );
+//     }
+
+//     const comments = await prisma.comment.findMany({
+//       where: { storyId: storyId },
+//       include: {
+//         replies: true, // Including nested replies in the response
+//       },
+//     });
+
+//     return new NextResponse(JSON.stringify({ comments }), {
+//       status: 200,
+//       headers: { "Content-Type": "application/json" },
+//     });
+//   } catch (error) {
+//     console.error("Error processing request:", error);
+//     return new NextResponse(
+//       JSON.stringify({ error: "Internal Server Error" }),
+//       {
+//         status: 500,
+//         headers: { "Content-Type": "application/json" },
+//       },
+//     );
+//   }
+// }
+
 export async function GET(req: NextRequest) {
   try {
     const url = new URL(req.url);
     const storyId = url.searchParams.get("storyId");
+    const userId = url.searchParams.get("userId");
 
-    if (!storyId) {
-      return new NextResponse(
-        JSON.stringify({ error: "storyId is required" }),
-        {
-          status: 400,
-          headers: { "Content-Type": "application/json" },
+    if (storyId) {
+      const comments = await prisma.comment.findMany({
+        where: { storyId: storyId },
+        include: {
+          replies: true, // Including nested replies in the response
         },
-      );
+      });
+
+      return new NextResponse(JSON.stringify({ comments }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    } else if (userId) {
+      const comments = await prisma.comment.findMany({
+        where: { userId: userId },
+        include: {
+          replies: true,
+        },
+      });
+      return new NextResponse(JSON.stringify({ comments }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
     }
-
-    const comments = await prisma.comment.findMany({
-      where: { storyId: storyId },
-      include: {
-        replies: true, // Including nested replies in the response
-      },
-    });
-
-    return new NextResponse(JSON.stringify({ comments }), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
   } catch (error) {
     console.error("Error processing request:", error);
     return new NextResponse(
@@ -97,4 +144,3 @@ export async function GET(req: NextRequest) {
     );
   }
 }
-
