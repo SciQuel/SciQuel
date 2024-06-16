@@ -3,7 +3,7 @@ import FooterIcon from "./FooterIcon";
 
 export default function Footer() {
   return (
-    <div className="bottom-0  flex flex-col bg-sciquelFooter text-white ">
+    <div className=" z-10 flex w-full flex-col bg-sciquelFooter text-white ">
       <div className="relative">
         <div className=" flex w-full flex-row justify-between gap-4 px-10 py-4 align-middle">
           <div className="flex flex-col gap-4 pt-4 ">

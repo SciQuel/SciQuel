@@ -408,7 +408,7 @@ async function retrieveStoryContent({
         tags: [
           storyRoute,
           ...prefetchedMetadata.storyContributions.map((contribution) =>
-            tagUser(contribution.user.id),
+            tagUser(contribution.contributor.id),
           ),
         ],
       },
