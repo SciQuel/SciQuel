@@ -10,14 +10,18 @@ import { PrintContext } from "./PrintContext";
 
 interface Props {
   storyContributions: {
-    user: {
+    contributor: {
       id: string;
       firstName: string;
       lastName: string;
-      bio: string;
+      contributorSlug: string;
       avatarUrl: string | null;
     };
     contributionType: ContributionType;
+    otherContributorType?: string;
+    otherContributorCredit?: string;
+    contributorByline?: string;
+    bio: string | null;
   }[];
 
   articles1: Stories;

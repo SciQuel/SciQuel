@@ -102,28 +102,28 @@ export default function StoryCredits({ story }: Props) {
       switch (contributor.contributionType) {
         case "AUTHOR":
           authors.push(
-            `${contributor.user.firstName} ${contributor.user.lastName}`,
+            `${contributor.contributor.firstName} ${contributor.contributor.lastName}`,
           );
-          authorIcons.push(contributor.user.avatarUrl);
+          authorIcons.push(contributor.contributor.avatarUrl);
 
           break;
         case "ILLUSTRATOR":
           illustrators.push(
-            `${contributor.user.firstName} ${contributor.user.lastName}`,
+            `${contributor.contributor.firstName} ${contributor.contributor.lastName}`,
           );
-          illustratorIcons.push(contributor.user.avatarUrl);
+          illustratorIcons.push(contributor.contributor.avatarUrl);
           break;
         case "ANIMATOR":
           animators.push(
-            `${contributor.user.firstName} ${contributor.user.lastName}`,
+            `${contributor.contributor.firstName} ${contributor.contributor.lastName}`,
           );
-          animatorIcons.push(contributor.user.avatarUrl);
+          animatorIcons.push(contributor.contributor.avatarUrl);
           break;
         default:
           authors.push(
-            `${contributor.user.firstName} ${contributor.user.lastName}`,
+            `${contributor.contributor.firstName} ${contributor.contributor.lastName}`,
           );
-          authorIcons.push(contributor.user.avatarUrl);
+          authorIcons.push(contributor.contributor.avatarUrl);
           break;
       }
     });
@@ -329,28 +329,28 @@ export default function StoryCredits({ story }: Props) {
       switch (contributor.contributionType) {
         case "AUTHOR":
           authors.push(
-            `${contributor.user.firstName} ${contributor.user.lastName}`,
+            `${contributor.contributor.firstName} ${contributor.contributor.lastName}`,
           );
-          authorIcons.push(contributor.user.avatarUrl);
+          authorIcons.push(contributor.contributor.avatarUrl);
 
           break;
         case "ILLUSTRATOR":
           illustrators.push(
-            `${contributor.user.firstName} ${contributor.user.lastName}`,
+            `${contributor.contributor.firstName} ${contributor.contributor.lastName}`,
           );
-          illustratorIcons.push(contributor.user.avatarUrl);
+          illustratorIcons.push(contributor.contributor.avatarUrl);
           break;
         case "ANIMATOR":
           animators.push(
-            `${contributor.user.firstName} ${contributor.user.lastName}`,
+            `${contributor.contributor.firstName} ${contributor.contributor.lastName}`,
           );
-          animatorIcons.push(contributor.user.avatarUrl);
+          animatorIcons.push(contributor.contributor.avatarUrl);
           break;
         default:
           authors.push(
-            `${contributor.user.firstName} ${contributor.user.lastName}`,
+            `${contributor.contributor.firstName} ${contributor.contributor.lastName}`,
           );
-          authorIcons.push(contributor.user.avatarUrl);
+          authorIcons.push(contributor.contributor.avatarUrl);
           break;
       }
     });

@@ -6,14 +6,18 @@ import Avatar from "../Avatar";
 import { PrintContext } from "./PrintContext";
 
 interface StoryContribution {
-  user: {
+  contributor: {
     id: string;
     firstName: string;
     lastName: string;
-    bio: string;
+    contributorSlug: string;
     avatarUrl: string | null;
   };
   contributionType: ContributionType;
+  otherContributorType?: string;
+  otherContributorCredit?: string;
+  contributorByline?: string;
+  bio: string | null;
 }
 
 interface Props {
@@ -54,15 +58,15 @@ export default function AuthorCredits({ storyContributions }: Props) {
           <div className="w-[calc( 100% - 1rem )] mx-2 mb-2 p-0 font-sourceSerif4 text-lg md:mx-auto md:w-[768px]">
             <h1 className="font-bold">Author{authors.length > 1 ? "s" : ""}</h1>
             {authors.map((element) => (
-              <p key={`footer-credits-${element.user.id}`} className="">
+              <p key={`footer-credits-${element.contributor.id}`} className="">
                 <a
                   className="font-semibold"
-                  href={`/contributors/${element.user.firstName.toLowerCase()}-${element.user.lastName.toLowerCase()}`}
+                  href={`/contributors/${element.contributor.firstName.toLowerCase()}-${element.contributor.lastName.toLowerCase()}`}
                 >
                   {" "}
-                  {element.user.firstName} {element.user.lastName}{" "}
+                  {element.contributor.firstName} {element.contributor.lastName}{" "}
                 </a>
-                {element.user.bio}
+                {element.bio ?? element.contributorByline ?? ""}
               </p>
             ))}
           </div>
@@ -75,15 +79,15 @@ export default function AuthorCredits({ storyContributions }: Props) {
               Illustrator{illustrators.length > 1 ? "s" : ""}
             </h1>
             {illustrators.map((element) => (
-              <p key={`footer-credits-${element.user.id}`}>
+              <p key={`footer-credits-${element.contributor.id}`}>
                 <a
                   className="font-semibold"
-                  href={`/contributors/${element.user.firstName.toLowerCase()}-${element.user.lastName.toLowerCase()}`}
+                  href={`/contributors/${element.contributor.firstName.toLowerCase()}-${element.contributor.lastName.toLowerCase()}`}
                 >
                   {" "}
-                  {element.user.firstName} {element.user.lastName}{" "}
+                  {element.contributor.firstName} {element.contributor.lastName}{" "}
                 </a>
-                {element.user.bio}
+                {element.bio ?? element.contributorByline ?? ""}
               </p>
             ))}
           </div>
@@ -96,15 +100,15 @@ export default function AuthorCredits({ storyContributions }: Props) {
               Animator{animators.length > 1 ? "s" : ""}
             </h1>
             {animators.map((element) => (
-              <p key={`footer-credits-${element.user.id}`}>
+              <p key={`footer-credits-${element.contributor.id}`}>
                 <a
                   className="font-semibold"
-                  href={`/contributors/${element.user.firstName.toLowerCase()}-${element.user.lastName.toLowerCase()}`}
+                  href={`/contributors/${element.contributor.firstName.toLowerCase()}-${element.contributor.lastName.toLowerCase()}`}
                 >
                   {" "}
-                  {element.user.firstName} {element.user.lastName}{" "}
+                  {element.contributor.firstName} {element.contributor.lastName}{" "}
                 </a>
-                {element.user.bio}
+                {element.bio ?? element.contributorByline ?? ""}
               </p>
             ))}
           </div>
@@ -119,7 +123,7 @@ export default function AuthorCredits({ storyContributions }: Props) {
     <div>
       {buildPrintCredits()}
       {/* {storyContributions.map((element, index) => (
-        <div key={element.user.id} className="my-2">
+        <div key={element.contributor.id} className="my-2">
           <p className="w-[calc( 100% - 1rem )] mx-2 mb-1 p-0 font-sourceSerif4 text-xl font-semibold md:mx-auto md:w-[768px]">
             {element.contributionType.slice(0, 1) +
               element.contributionType.slice(1).toLowerCase()}
@@ -128,12 +132,12 @@ export default function AuthorCredits({ storyContributions }: Props) {
           <p className="w-[calc( 100% - 1rem )] mx-2 mb-2 p-0 font-sourceSerif4 text-lg md:mx-auto md:w-[768px]">
             <a
               className="font-semibold"
-              href={`/contributors/${element.user.firstName.toLowerCase()}-${element.user.lastName.toLowerCase()}`}
+              href={`/contributors/${element.contributor.firstName.toLowerCase()}-${element.contributor.lastName.toLowerCase()}`}
             >
               {" "}
-              {element.user.firstName} {element.user.lastName}{" "}
+              {element.contributor.firstName} {element.contributor.lastName}{" "}
             </a>
-            {element.user.bio}
+            {element.contributor.bio}
           </p>
         </div>
       ))} */}
@@ -147,8 +151,8 @@ export default function AuthorCredits({ storyContributions }: Props) {
           className="w-[calc( 100% - 1rem )] mx-2 mb-4 flex flex-row items-stretch rounded-2xl border border-sciquelCardBorder p-3 shadow-md md:mx-auto md:w-[768px]"
         >
           <Avatar
-            imageUrl={element.user.avatarUrl ?? undefined}
-            label={element.user.firstName[0]}
+            imageUrl={element.contributor.avatarUrl ?? undefined}
+            label={element.contributor.firstName[0]}
             className="m-5"
             size="4xl"
           />
@@ -156,12 +160,12 @@ export default function AuthorCredits({ storyContributions }: Props) {
             <p className="flex-1 font-sourceSerif4 text-xl">
               <a
                 className="font-alegreyaSansSC text-3xl font-medium text-sciquelTeal"
-                href={`/contributors/${element.user.firstName.toLowerCase()}-${element.user.lastName.toLowerCase()}`}
+                href={`/contributors/${element.contributor.firstName.toLowerCase()}-${element.contributor.lastName.toLowerCase()}`}
               >
-                {element.user.firstName} {element.user.lastName}{" "}
+                {element.contributor.firstName} {element.contributor.lastName}{" "}
               </a>
 
-              {element.user.bio}
+              {element.bio ?? element.contributorByline ?? ""}
             </p>
           </div>
         </div>
