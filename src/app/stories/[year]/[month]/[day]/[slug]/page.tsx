@@ -95,9 +95,12 @@ export default async function StoriesPage({ params }: Params) {
         <div className="mx-2 mt-2 flex flex-col items-center gap-5 md:mx-auto">
           {file.result as ReactNode}
           <StoryLargeImage
-            src="https://www.cats.org.uk/media/13136/220325case013.jpg?width=500&height=333.49609375"
+            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMbhc_N3jzah8UJlH5VAdGQ0mGLO2x6v70SQ&s"
             alt="small image"
-          />
+          >
+            Some small caption with a sentence or two about a cell. Extra text
+            for testing purposes.
+          </StoryLargeImage>
         </div>
         <p className="w-[calc( 100% - 1rem )] mx-2 my-5 border-t-2 border-[#616161]  text-sm text-[#616161] md:mx-auto md:w-[720px]">
           Animation provided by Source name 1. Sources provided by Source name
