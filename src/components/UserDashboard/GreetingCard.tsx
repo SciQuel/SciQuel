@@ -50,7 +50,7 @@ export default function GreetingCard({ user }: { user: User }) {
         <div className="relative flex h-[6.75rem] w-[6.75rem] items-center justify-center rounded-full bg-gradient-to-b from-[#A1C9C1] to-[#58ABF8]">
           <AvatarEditorButton />
           <Avatar
-            imageUrl={session.data?.user.image ?? undefined}
+            imageUrl={user.avatarUrl ?? undefined}
             label={user.firstName[0]}
             size="2xl"
           />
