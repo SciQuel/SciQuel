@@ -1,5 +1,6 @@
 import prisma from "@/lib/prisma";
 import { DateTime } from "luxon";
+import { getServerSession } from "next-auth";
 import { NextResponse, type NextRequest } from "next/server";
 import slug from "slug";
 import { getSeriesSchema, postSeriesSchema } from "./schema";
@@ -73,17 +74,17 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    // const session = await getServerSession();
-    // const user = await prisma.user.findUnique({
-    //   where: { email: session?.user.email ?? "noemail" },
-    // });
+    const session = await getServerSession();
+    const user = await prisma.user.findUnique({
+      where: { email: session?.user.email ?? "noemail" },
+    });
 
-    // if (!user || !user.roles.includes("EDITOR")) {
-    //   return NextResponse.json(
-    //     { error: "User is not an editor" },
-    //     { status: 403 },
-    //   );
-    // }
+    if (!user || !user.roles.includes("EDITOR")) {
+      return NextResponse.json(
+        { error: "User is not an editor" },
+        { status: 403 },
+      );
+    }
 
     const parsedRequest = postSeriesSchema.safeParse(await request.json());
     if (!parsedRequest.success) {

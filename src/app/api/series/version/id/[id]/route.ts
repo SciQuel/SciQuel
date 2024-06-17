@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import { getServerSession } from "next-auth";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function GET(
@@ -6,17 +7,17 @@ export async function GET(
   { params }: { params: { id: string } },
 ) {
   try {
-    // const session = await getServerSession();
-    // const user = await prisma.user.findUnique({
-    //   where: { email: session?.user.email ?? "noemail" },
-    // });
+    const session = await getServerSession();
+    const user = await prisma.user.findUnique({
+      where: { email: session?.user.email ?? "noemail" },
+    });
 
-    // if (!user || !user.roles.includes("EDITOR")) {
-    //   return NextResponse.json(
-    //     { error: "User is not an editor" },
-    //     { status: 403 },
-    //   );
-    // }
+    if (!user || !user.roles.includes("EDITOR")) {
+      return NextResponse.json(
+        { error: "User is not an editor" },
+        { status: 403 },
+      );
+    }
 
     const { id } = params;
 

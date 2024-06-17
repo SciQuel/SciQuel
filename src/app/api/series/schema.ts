@@ -2,31 +2,7 @@ import { PublishStatus } from "@prisma/client";
 import { z } from "zod";
 
 export const getSeriesSchema = z.object({
-  // createdDateFrom: z
-  //   .preprocess((value) => new Date(z.string().parse(value)), z.date())
-  //   .optional(),
-  // createdDateTo: z
-  //   .preprocess((value) => new Date(z.string().parse(value)), z.date())
-  //   .optional(),
   createdBy: z.string().optional(),
-  // lastUpdatedDateFrom: z
-  //   .preprocess((value) => new Date(z.string().parse(value)), z.date())
-  //   .optional(),
-  // lastUpdatedDateTo: z
-  //   .preprocess((value) => new Date(z.string().parse(value)), z.date())
-  //   .optional(),
-  // scheduledPublishDateFrom: z
-  //   .preprocess((value) => new Date(z.string().parse(value)), z.date())
-  //   .optional(),
-  // scheduledPublishDateTo: z
-  //   .preprocess((value) => new Date(z.string().parse(value)), z.date())
-  //   .optional(),
-  // publishedDateFrom: z
-  //   .preprocess((value) => new Date(z.string().parse(value)), z.date())
-  //   .optional(),
-  // publishedDateTo: z
-  //   .preprocess((value) => new Date(z.string().parse(value)), z.date())
-  //   .optional(),
   publishedByScheduler: z.boolean().optional(),
   seriesPublishStatus: z.nativeEnum(PublishStatus).optional(),
 });

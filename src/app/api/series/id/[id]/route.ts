@@ -1,5 +1,6 @@
 import prisma from "@/lib/prisma";
 import { DateTime } from "luxon";
+import { getServerSession } from "next-auth";
 import { NextResponse, type NextRequest } from "next/server";
 import slug from "slug";
 import { patchSeriesSchema } from "../../schema";
@@ -17,17 +18,17 @@ export async function PATCH(
   }
 
   try {
-    // const session = await getServerSession();
-    // const user = await prisma.user.findUnique({
-    //   where: { email: session?.user.email ?? "noemail" },
-    // });
+    const session = await getServerSession();
+    const user = await prisma.user.findUnique({
+      where: { email: session?.user.email ?? "noemail" },
+    });
 
-    // if (!user || !user.roles.includes("EDITOR")) {
-    //   return NextResponse.json(
-    //     { error: "User is not an editor" },
-    //     { status: 403 },
-    //   );
-    // }
+    if (!user || !user.roles.includes("EDITOR")) {
+      return NextResponse.json(
+        { error: "User is not an editor" },
+        { status: 403 },
+      );
+    }
 
     const { id } = params;
 
@@ -164,17 +165,17 @@ export async function GET(
   { params }: { params: { id: string } },
 ) {
   try {
-    // const session = await getServerSession();
-    // const user = await prisma.user.findUnique({
-    //   where: { email: session?.user.email ?? "noemail" },
-    // });
+    const session = await getServerSession();
+    const user = await prisma.user.findUnique({
+      where: { email: session?.user.email ?? "noemail" },
+    });
 
-    // if (!user || !user.roles.includes("EDITOR")) {
-    //   return NextResponse.json(
-    //     { error: "User is not an editor" },
-    //     { status: 403 },
-    //   );
-    // }
+    if (!user || !user.roles.includes("EDITOR")) {
+      return NextResponse.json(
+        { error: "User is not an editor" },
+        { status: 403 },
+      );
+    }
 
     const { id } = params;
 
@@ -202,17 +203,17 @@ export async function DELETE(
   { params }: { params: { id: string } },
 ) {
   try {
-    // const session = await getServerSession();
-    // const user = await prisma.user.findUnique({
-    //   where: { email: session?.user.email ?? "noemail" },
-    // });
+    const session = await getServerSession();
+    const user = await prisma.user.findUnique({
+      where: { email: session?.user.email ?? "noemail" },
+    });
 
-    // if (!user || !user.roles.includes("EDITOR")) {
-    //   return NextResponse.json(
-    //     { error: "User is not an editor" },
-    //     { status: 403 },
-    //   );
-    // }
+    if (!user || !user.roles.includes("EDITOR")) {
+      return NextResponse.json(
+        { error: "User is not an editor" },
+        { status: 403 },
+      );
+    }
 
     const { id } = params;
 
