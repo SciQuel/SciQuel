@@ -11,7 +11,7 @@ import { getStorySchema } from "./../schema";
 
 export type Stories = (Story & {
   storyContributions: {
-    user: {
+    contributor: {
       firstName: string;
       lastName: string;
     };
@@ -92,7 +92,7 @@ export async function GET(req: NextRequest) {
         storyContributions: {
           select: {
             contributionType: true,
-            user: { select: { firstName: true, lastName: true } },
+            contributor: { select: { firstName: true, lastName: true } },
           },
         },
       },
