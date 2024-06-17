@@ -1,11 +1,11 @@
 import prisma from "@/lib/prisma";
-import { type User } from "@prisma/client";
+import { type Contributor } from "@prisma/client";
 import { getServerSession } from "next-auth";
 
 export type ReadingHistory = {
   story: {
     storyContributions: {
-      user: User;
+      contributor: Contributor;
     }[];
     title: string;
     thumbnailUrl: string;
@@ -37,7 +37,7 @@ export default async function getReadingHistory() {
             thumbnailUrl: true,
             storyContributions: {
               select: {
-                user: true,
+                contributor: true,
               },
             },
           },
