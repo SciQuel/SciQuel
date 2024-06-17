@@ -99,6 +99,7 @@ model Story {
   publishedAt DateTime
   updatedAt   DateTime
   quizzes     Quiz[]
+  comments    Comment[]
 }
 
 model StoryContribution {
@@ -151,8 +152,9 @@ model User {
 
   authVerifications AuthVerification[]
 
-  roles   UserRole[] @default([])
-  quizzes Quiz[]
+  roles    UserRole[] @default([])
+  quizzes  Quiz[]
+  comments Comment[]
 
   contactUpdates       ContactMessage[]
   firstQuizRecord      Json?
@@ -308,4 +310,22 @@ model ResponseSubpart {
   subpartUserAns String[]
   UserResponse   UserResponse? @relation(fields: [userResponseId], references: [id])
   userResponseId String?       @db.ObjectId
+}
+
+model Comment {
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  content         String
+  likeNum         Int       @default(0)
+  quote           String?
+  parentCommentId String?   @db.ObjectId
+  parentComment   Comment?  @relation("CommentReplies", fields: [parentCommentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  replies         Comment[] @relation("CommentReplies")
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @db.ObjectId
+
+  story   Story  @relation(fields: [storyId], references: [id], onDelete: NoAction)
+  storyId String @db.ObjectId
 }

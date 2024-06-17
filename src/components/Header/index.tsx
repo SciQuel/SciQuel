@@ -1,3 +1,4 @@
+/* eslint-disable isaacscript/complete-sentences-jsdoc */
 "use client";
 
 import Image from "next/image";
