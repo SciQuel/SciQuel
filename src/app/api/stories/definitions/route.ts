@@ -11,6 +11,23 @@ const storage = new Storage({
   },
 });
 
+// TODO: definitely need more checks for file types, size, etc
+async function uploadFile(file: File) {
+  try {
+    const buffer = await file.arrayBuffer();
+    const fileName = `${Date.now()}-${file.name}`;
+    const fileUrl = `https://storage.googleapis.com/sciquel-dictionary-audio/${fileName}`;
+    await storage
+      .bucket("sciquel-dictionary-audio")
+      .file(fileName)
+      .save(Buffer.from(buffer));
+    return fileUrl;
+  } catch (error) {
+    console.error("File failed to upload to GCS", error);
+    throw new Error("Failed to upload file");
+  }
+}
+
 // TODO: need to prevent file upload before prisma errors (how?)
 // checks for duplicate uploads, user permissions?
 export async function POST(req: NextResponse) {
@@ -39,22 +56,5 @@ export async function POST(req: NextResponse) {
       { error: "Database operation failed" },
       { status: 500 },
     );
-  }
-}
-
-// TODO: definitely need more checks for file types, size, etc
-async function uploadFile(file: File) {
-  try {
-    const buffer = await file.arrayBuffer();
-    const fileName = `${Date.now()}-${file.name}`;
-    const fileUrl = `https://storage.googleapis.com/sciquel-dictionary-audio/${fileName}`;
-    await storage
-      .bucket("sciquel-dictionary-audio")
-      .file(fileName)
-      .save(Buffer.from(buffer));
-    return fileUrl;
-  } catch (error) {
-    console.error("File failed to upload to GCS", error);
-    throw new Error("Failed to upload file");
   }
 }
