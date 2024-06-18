@@ -1,0 +1,41 @@
+.inputTest {
+  border: 1px solid black;
+  border-radius: 5px;
+  margin-left: 5px;
+}
+.testBox {
+  display: flex;
+  flex-direction: row;
+  margin: auto;
+  justify-items: space-between;
+  padding-top: 5px;
+}
+.quizBox {
+  margin: auto;
+  border: 1px solid black;
+  padding: 5px;
+  width: 400px;
+  height: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.gradeBox {
+  border: 1px solid black;
+  margin: auto;
+  margin-left: 20px;
+  padding: 5px;
+  width: 400px;
+  height: 400px;
+  display: flex;
+  gap: 10px;
+  flex-direction: column;
+}
+.buttonQuizTest {
+  padding: 5px;
+  border: 1px solid black;
+  background-color: aquamarine;
+}
+.buttonContainerTest {
+  align-self: flex-end;
+}
