@@ -55,9 +55,14 @@ export default async function RootLayout({
           >
             Skip to main content
           </a>
-          <Header></Header>
+          <div className="min-h-screen">
+            <Header></Header>
 
-          <main id="main">{children}</main>
+            <main className="pt-10" id="main">
+              {children}
+            </main>
+          </div>
+
           <Footer />
         </AuthProvider>
       </body>

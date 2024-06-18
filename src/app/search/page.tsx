@@ -6,21 +6,17 @@ import env from "@/lib/env";
 
 interface Params {
   searchParams: { [key: string]: string };
-  page_number: string;
 }
 
-export default async function SearchPage({
-  searchParams,
-  page_number,
-}: Params) {
-  const { keyword, type, date_from, date_to, sort_by } = searchParams;
+export default async function SearchPage({ searchParams }: Params) {
+  const { keyword, page, type, date_from, date_to, sort_by } = searchParams;
   const params = {
     ...(keyword ? { keyword } : {}),
     ...(type ? { type } : {}),
     ...(date_from ? { date_from } : {}),
     ...(date_to ? { date_to } : {}),
     ...(sort_by ? { sort_by } : {}),
-    page: page_number || "1",
+    page: page || "1",
   };
   const { stories, total_pages } = await getStories(params);
 
@@ -30,7 +26,7 @@ export default async function SearchPage({
 
       <div className="mx-[10%] my-10 flex flex-col gap-12">
         <SearchArticle articles={stories} />
-        <Pagination total_pages={total_pages} />
+        <Pagination total_pages={Math.max(total_pages, 1)} />
       </div>
     </div>
   );

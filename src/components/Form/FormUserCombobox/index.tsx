@@ -12,7 +12,7 @@ import {
   useListNavigation,
   useRole,
 } from "@floating-ui/react";
-import { type User } from "@prisma/client";
+import { type Contributor } from "@prisma/client";
 import clsx from "clsx";
 import { useCallback, useRef, useState } from "react";
 import Item from "./Item";
@@ -26,9 +26,9 @@ interface Props {
   invalid?: boolean;
   disabled?: boolean;
   directory?: {
-    firstName: User["firstName"];
-    lastName: User["lastName"];
-    email: User["email"];
+    firstName: Contributor["firstName"];
+    lastName: Contributor["lastName"];
+    email: Contributor["email"];
   }[];
 }
 
@@ -76,15 +76,15 @@ export default function FormUserCombobox({
 
   const items = directory.reduce<
     {
-      firstName: User["firstName"];
-      lastName: User["lastName"];
-      email: User["email"];
+      firstName: Contributor["firstName"];
+      lastName: Contributor["lastName"];
+      email: Contributor["email"];
     }[]
   >((accumulator, curr) => {
     if (
       curr.firstName.toLowerCase().startsWith(inputValue.text.toLowerCase()) ||
       curr.lastName.toLowerCase().startsWith(inputValue.text.toLowerCase()) ||
-      curr.email.toLowerCase().startsWith(inputValue.text.toLowerCase())
+      curr.email?.toLowerCase().startsWith(inputValue.text.toLowerCase())
     ) {
       return [...accumulator, curr];
     }
@@ -146,7 +146,7 @@ export default function FormUserCombobox({
                 combinedSetValue({
                   text: newValue,
                   name: newValue,
-                  email: items[activeIndex].email,
+                  email: items[activeIndex].email ?? "",
                 });
                 setActiveIndex(null);
                 setIsOpen(false);
@@ -194,7 +194,7 @@ export default function FormUserCombobox({
                       combinedSetValue({
                         text: newValue,
                         name: newValue,
-                        email: item.email,
+                        email: item.email ?? "",
                       });
                       setIsOpen(false);
                       (

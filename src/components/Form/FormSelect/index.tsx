@@ -29,7 +29,6 @@ export default function FormSelect({
             focus:ring-0`,
           "disabled:pointer-events-none disabled:bg-gray-50 disabled:text-gray-300",
         )}
-        placeholder={title}
         value={value}
         onChange={onChange}
         disabled={disabled}
