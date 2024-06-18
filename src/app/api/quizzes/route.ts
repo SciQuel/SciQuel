@@ -23,7 +23,9 @@ const prisma = new PrismaClient();
 export async function POST(req: NextRequest) {
   try {
     const user = new User();
-    if (!(await user.isEditor())) {
+    const isEditor = await user.isEditor();
+    const userId = await user.getUserId();
+    if (!isEditor || !userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -75,6 +77,13 @@ export async function POST(req: NextRequest) {
         maxScore: quizData.max_score,
         subpartId: subpart.id,
         subheader: quizData.subheader,
+      },
+    });
+    await prisma.quizQuestionRecord.create({
+      data: {
+        staffId: userId,
+        updateType: "CREATE",
+        quizQuestionId: createdQuiz.id,
       },
     });
     return new NextResponse(
@@ -221,6 +230,8 @@ export async function DELETE(req: NextRequest) {
     const quizQuestionId = url.searchParams.get("quiz_question_id");
     const quizQuestionIdParse = quizQuestionIdSchema.safeParse(quizQuestionId);
     const user = new User();
+    const userId = await user.getUserId();
+    const isEditor = await user.isEditor();
     if (!quizQuestionIdParse.success) {
       return new NextResponse(
         JSON.stringify({ error: quizQuestionIdParse.error.errors[0].message }),
@@ -230,7 +241,7 @@ export async function DELETE(req: NextRequest) {
       );
     }
 
-    if (!(await user.isEditor())) {
+    if (!userId || !isEditor) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -252,8 +263,17 @@ export async function DELETE(req: NextRequest) {
       where: { id: quizQuestionIdParse.data },
       data: { deleted: true },
     });
-
-    await Promise.all([quizQuestionDeletePromise]);
+    const createQuizQuestionRecordPromise = prisma.quizQuestionRecord.create({
+      data: {
+        staffId: userId,
+        updateType: "DELETE",
+        quizQuestionId: quizQuestionIdParse.data,
+      },
+    });
+    await Promise.all([
+      quizQuestionDeletePromise,
+      createQuizQuestionRecordPromise,
+    ]);
 
     return new NextResponse(
       JSON.stringify({
@@ -297,15 +317,22 @@ export async function PATCH(req: NextRequest) {
     }
 
     const requestBody = await req.json();
+    console.log(requestBody);
     const parsed = modifiedQuizSchema.safeParse(requestBody);
 
     if (!parsed.success) {
-      return new NextResponse(JSON.stringify({ error: parsed.error }), {
-        status: 400,
-        headers: {
-          "Content-Type": "application/json",
+      return new NextResponse(
+        JSON.stringify({
+          error: parsed.error.errors[0].message,
+          errors: parsed.error.errors.map((err) => err.message),
+        }),
+        {
+          status: 400,
+          headers: {
+            "Content-Type": "application/json",
+          },
         },
-      });
+      );
     }
     const quizData = parsed.data;
 
@@ -366,7 +393,7 @@ export async function PATCH(req: NextRequest) {
       createQuizQuestionPromise,
       hideOldQuizQuestionPromise,
     ]);
-    prisma.quizQuestionRecord.create({
+    await prisma.quizQuestionRecord.create({
       data: {
         quizQuestionId: quizQuestion.id,
         staffId: userId,

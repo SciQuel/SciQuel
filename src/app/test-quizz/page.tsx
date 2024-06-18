@@ -255,7 +255,7 @@ const dummyDataGrade = [
   },
   {
     question_type: "MULTIPLE_CHOICE EMPTY",
-    answer: [-1],
+    answer: -1,
   },
 ];
 
@@ -288,7 +288,7 @@ export default function TestBackEnd() {
     axios
       .patch(
         "/api/quizzes",
-        { story_id: storyId, data: dummyDataUpdate[indexQuizType] },
+        { story_id: storyId, ...dummyDataUpdate[indexQuizType] },
         { params: { quiz_question_id: quizQuestionId } },
       )
       .then((data) => console.log(data.data));

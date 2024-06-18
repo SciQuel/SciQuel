@@ -276,6 +276,7 @@ function trueFalseGrade(
   return { errorMessage, errors, results, correctCount, total, userResponse };
 }
 
+//insert data if data is not found
 export async function insertIfNotExists<
   Model extends Prisma.ModelName,
   WhereUniqueInput,
@@ -290,16 +291,15 @@ export async function insertIfNotExists<
   }
 
   // Check if the record already exists
-  const existingRecord = await modelDelegate.findUnique({
+  const existingRecordCount = await modelDelegate.count({
     where,
-    select: {},
   });
 
   // If the record does not exist, create a new record
-  if (!existingRecord) {
+  if (existingRecordCount === 0) {
     await modelDelegate.create({
       data,
-      select: {},
+      select: { id: true },
     });
     return true;
   } else {

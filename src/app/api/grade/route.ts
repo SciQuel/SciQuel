@@ -4,7 +4,12 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { PrismaClient, QuizType } from "@prisma/client";
+import {
+  Prisma,
+  PrismaClient,
+  QuestionAnswerFirstTime,
+  QuizType,
+} from "@prisma/client";
 import { NextResponse, type NextRequest } from "next/server";
 import { getSubpartQuizAnswear } from "../tools/SubpartQuiz";
 import User from "../tools/User";
@@ -129,6 +134,7 @@ export async function POST(req: NextRequest) {
     const updatequizRecordPromise = prisma.quizRecord.update({
       where: { id: bodyParam.quiz_record_id },
       data: {
+        score: { increment: score },
         quizQuestionIdRemain: quizRecord.quizQuestionIdRemain.filter(
           (str) => str != quizQuestion.quizQuestionId,
         ),
@@ -136,9 +142,13 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    const userFirstAnsPromise = insertIfNotExists({
+    const userFirstAnsPromise = insertIfNotExists<
+      "QuestionAnswerFirstTime",
+      Prisma.QuestionAnswerFirstTimeWhereInput,
+      Prisma.QuestionAnswerFirstTimeCreateInput
+    >({
       model: "QuestionAnswerFirstTime",
-      where: { userId, questionId: quizQuestion.quizQuestionId },
+      where: { userId, quizQuestionId: quizQuestion.quizQuestionId },
       data: {
         userId,
         quizQuestionId: quizQuestion.quizQuestionId,
@@ -151,7 +161,11 @@ export async function POST(req: NextRequest) {
       resolve(0);
     });
     if (isLastQuestion) {
-      insertIfNotExists({
+      insertIfNotExists<
+        "StoryQuizScoreFirstTime",
+        Prisma.StoryQuizScoreFirstTimeWhereInput,
+        Prisma.StoryQuizScoreFirstTimeCreateInput
+      >({
         model: "StoryQuizScoreFirstTime",
         where: {
           userId: userId,

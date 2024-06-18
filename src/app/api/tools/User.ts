@@ -9,11 +9,11 @@ export default class User {
   constructor() {
     this.session = null;
     this.user = null;
-    this.checkUserInforFirstTime = false;
+    this.checkUserInforFirstTime = true;
   }
 
   async _getUserInfo() {
-    this.checkUserInforFirstTime = true;
+    this.checkUserInforFirstTime = false;
     this.session = await getServerSession();
     this.user = await prisma.user.findUnique({
       where: { email: this.session?.user.email ?? "noemail" },
@@ -24,7 +24,6 @@ export default class User {
     if (!this.session && this.checkUserInforFirstTime) {
       await this._getUserInfo();
     }
-
     if (!this.user || !this.user.roles.includes("EDITOR")) {
       return false;
     }
