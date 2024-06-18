@@ -29,11 +29,7 @@ export default async function StoriesPage({ params }: Params) {
   return (
     <div>
       <div className="flex flex-col">
-<<<<<<< HEAD
-        <div className="relative h-screen">
-=======
         <div className="relative -mt-10 h-screen">
->>>>>>> origin/main
           <Image
             src={story.thumbnailUrl}
             className="-z-10 h-full object-cover"
@@ -75,13 +71,8 @@ export default async function StoriesPage({ params }: Params) {
               return (
                 <p key={`contributor-header-${index}`}>
                   {element.contributionType == "AUTHOR"
-<<<<<<< HEAD
-                    ? `by ${element.user.firstName} ${element.user.lastName}`
-                    : `${element.contributionType} by ${element.user.firstName} ${element.user.lastName}`}
-=======
                     ? `by ${element.contributor.firstName} ${element.contributor.lastName}`
                     : `${element.contributionType} by ${element.contributor.firstName} ${element.contributor.lastName}`}
->>>>>>> origin/main
                 </p>
               );
             })}
@@ -115,29 +106,17 @@ export default async function StoriesPage({ params }: Params) {
             className="w-[calc( 100% - 1rem )] mx-2 mb-3 flex flex-row items-stretch rounded-2xl border border-sciquelCardBorder p-3 shadow-md md:mx-auto md:w-[720px]"
           >
             <Avatar
-<<<<<<< HEAD
-              imageUrl={element.user.avatarUrl ?? undefined}
-              label={element.user.firstName[0]}
-=======
               imageUrl={element.contributor.avatarUrl ?? undefined}
               label={element.contributor.firstName[0]}
->>>>>>> origin/main
               className="m-5"
               size="4xl"
             />
             <div className="m-5 flex flex-[2.3] flex-col">
               <p className="font-alegreyaSansSC text-4xl font-medium text-sciquelTeal">
-<<<<<<< HEAD
-                {element.user.firstName} {element.user.lastName}
-              </p>
-              <p className="flex-1 font-sourceSerif4 text-xl">
-                {element.user.bio}
-=======
                 {element.contributor.firstName} {element.contributor.lastName}
               </p>
               <p className="flex-1 font-sourceSerif4 text-xl">
                 {element.bio ?? element.contributorByline ?? ""}
->>>>>>> origin/main
               </p>
             </div>
           </div>
