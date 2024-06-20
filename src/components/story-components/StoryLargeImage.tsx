@@ -20,6 +20,7 @@ export default function StoryLargeImage({
 
   const handleClick = (e) => {
     if (isClicked) {
+      console.log(e.target)
       if (imageRef.current && !imageRef.current.contains(e.target)) {
         setIsClicked(false);
       }
