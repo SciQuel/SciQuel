@@ -2,7 +2,7 @@
 //new to next.js, is it fine if i use client rendering instead to be able to access hooks and interactivity
 "use client";
 
-import { useRef, useState, type PropsWithChildren } from "react";
+import { MouseEvent, useRef, useState, type PropsWithChildren } from "react";
 import StoryImagePopup from "./StoryImagePopup";
 
 interface Props {
@@ -16,12 +16,13 @@ export default function StoryLargeImage({
   children,
 }: PropsWithChildren<Props>) {
   const [isClicked, setIsClicked] = useState(false);
-  const imageRef = useRef();
+  const imageRef = useRef<HTMLImageElement>(null);
 
-  const handleClick = (e) => {
+  const handleClick = (e: MouseEvent<HTMLDivElement>) => {
+    const divTarget = e.target as HTMLDivElement;
     if (isClicked) {
-      console.log(e.target)
-      if (imageRef.current && !imageRef.current.contains(e.target)) {
+      console.log(e.target);
+      if (imageRef.current && !imageRef.current.contains(divTarget)) {
         setIsClicked(false);
       }
     } else {
@@ -37,8 +38,7 @@ export default function StoryLargeImage({
           children={children}
           handleClick={handleClick}
           imageRef={imageRef}
-          alt = {alt}
-          
+          alt={alt}
         />
       ) : (
         <div className="flex justify-center hover:cursor-pointer">
