@@ -230,6 +230,8 @@ model QuizRecord {
   grades               Grade[]
 
   @@index([createAt])
+  @@index([storyId, userId])
+  @@index([userId])
 }
 
 model Bookmark {
@@ -344,13 +346,15 @@ model SelectAllSubpart {
   explanations  String[]
 }
 
-model UserResponse {
+model UserResponseSubpart {
   id             String       @id @default(auto()) @map("_id") @db.ObjectId
   questionType   QuestionType
   userId         String?      @db.ObjectId
   quizQuestionId String       @db.ObjectId
   userAns        String[]
   grade          Grade?
+
+  @@index([userId, quizQuestionId])
 }
 
 model QuestionAnswerFirstTime {
@@ -378,17 +382,17 @@ model StoryQuizScoreFirstTime {
 }
 
 model Grade {
-  id             String       @id @default(auto()) @map("_id") @db.ObjectId
-  userId         String?      @db.ObjectId
-  userResponseId String       @db.ObjectId
-  userResponse   UserResponse @relation(fields: [userResponseId], references: [id])
-  quizQuestionId String       @db.ObjectId
-  totalScore     Int
-  maxScore       Int
-  quizRecord     QuizRecord?  @relation(fields: [quizRecordId], references: [id])
-  quizRecordId   String?      @db.ObjectId
+  id                    String              @id @default(auto()) @map("_id") @db.ObjectId
+  userId                String?             @db.ObjectId
+  userResponseSubpartId String              @db.ObjectId
+  UserResponseSubpart   UserResponseSubpart @relation(fields: [userResponseSubpartId], references: [id])
+  quizQuestionId        String              @db.ObjectId
+  totalScore            Int
+  maxScore              Int
+  quizRecord            QuizRecord?         @relation(fields: [quizRecordId], references: [id])
+  quizRecordId          String?             @db.ObjectId
 
-  @@unique([userResponseId])
+  @@unique([userResponseSubpartId])
   @@index([quizRecordId])
   @@index([userId, quizQuestionId])
 }

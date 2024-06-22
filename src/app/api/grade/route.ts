@@ -4,48 +4,46 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import {
-  Prisma,
-  PrismaClient,
-  QuestionAnswerFirstTime,
-  QuizType,
-} from "@prisma/client";
+import { Prisma, PrismaClient, QuizType } from "@prisma/client";
 import { NextResponse, type NextRequest } from "next/server";
+import { checkValidInput } from "../tools/SchemaTool";
 import { getSubpartQuizAnswear } from "../tools/SubpartQuiz";
 import User from "../tools/User";
-import { postSchema, storyIdSchema } from "./schema";
+import { postSchema, scoreSchema, storyIdSchema } from "./schema";
 import { grading, insertIfNotExists } from "./tools";
 
-const ROUND_UP_DECIMAL = 2;
-const prisma = new PrismaClient();
-interface quizRecordI {
+interface QuizRecordI {
+  storyId: string;
+  maxScore: number;
   grades: {
-    userResponse: {
+    userResponseSubpart: {
       id: string;
     };
     maxScore: number;
     totalScore: number;
   }[];
-  createAt: Date;
-  storyId: string;
   quizType: QuizType;
-  maxScore: number;
   score: number;
+  createAt: Date;
 }
+
+const ROUND_UP_DECIMAL = 1;
+const prisma = new PrismaClient();
+
+/**
+ * grade user answer and give out grade result, explaination
+ * and percentage of people answer right
+ */
 export async function POST(req: NextRequest) {
   try {
-    const bodyParamParse = postSchema.safeParse(await req.json());
     const user = new User();
-    const isLogedIn = await user.isLogIn();
-    if (!bodyParamParse.success) {
-      return new NextResponse(
-        JSON.stringify({ error: bodyParamParse.error.errors[0].message }),
-        {
-          status: 400,
-        },
-      );
+    //check valid input
+    const parseResult = checkValidInput([postSchema], [await req.json()]);
+    if (parseResult.nextErrorReponse) {
+      return parseResult.nextErrorReponse;
     }
-    const bodyParam = bodyParamParse.data;
+
+    const [bodyParam] = parseResult.parsedData;
     //get quiz record
     const quizRecordPromise = prisma.quizRecord.findUnique({
       where: { id: bodyParam.quiz_record_id },
@@ -95,10 +93,11 @@ export async function POST(req: NextRequest) {
     }
 
     //start grading
-    const { errorMessage, errors, results, score, userResponse } = grading({
-      ...quizQuestion,
-      userAnswer: bodyParam.answer,
-    });
+    const { errorMessage, errors, results, score, userResponseSubpart } =
+      grading({
+        ...quizQuestion,
+        userAnswer: bodyParam.answer,
+      });
     if (errorMessage) {
       return new NextResponse(JSON.stringify({ error: errorMessage, errors }), {
         status: 400,
@@ -109,10 +108,10 @@ export async function POST(req: NextRequest) {
     const isCorrect = results.every((result) => result.every((val) => val));
     const isLastQuestion = quizRecord.quizQuestionIdRemain.length === 1;
     //create user response
-    const userRes = await prisma.userResponse.create({
+    const userRes = await prisma.userResponseSubpart.create({
       data: {
         userId,
-        userAns: userResponse,
+        userAns: userResponseSubpart,
         quizQuestionId: quizQuestion.quizQuestionId,
         questionType: quizQuestion.questionType,
       },
@@ -122,7 +121,7 @@ export async function POST(req: NextRequest) {
     const createGradePromise = prisma.grade.create({
       data: {
         userId,
-        userResponseId: userRes.id,
+        userResponseSubpartId: userRes.id,
         quizQuestionId: quizQuestion.quizQuestionId,
         totalScore: score,
         maxScore: quizQuestion.maxScore,
@@ -136,9 +135,10 @@ export async function POST(req: NextRequest) {
       data: {
         score: { increment: score },
         quizQuestionIdRemain: quizRecord.quizQuestionIdRemain.filter(
-          (str) => str != quizQuestion.quizQuestionId,
+          (str, index) => index !== indexFound,
         ),
         totalCorrectAnswer: { increment: isCorrect ? 1 : 0 },
+        lastUpdate: new Date(),
       },
     });
 
@@ -148,9 +148,14 @@ export async function POST(req: NextRequest) {
       Prisma.QuestionAnswerFirstTimeCreateInput
     >({
       model: "QuestionAnswerFirstTime",
-      where: { userId, quizQuestionId: quizQuestion.quizQuestionId },
+      where: userId
+        ? {
+            userId: userId,
+            quizQuestionId: quizQuestion.quizQuestionId,
+          }
+        : null,
       data: {
-        userId,
+        userId: userId,
         quizQuestionId: quizQuestion.quizQuestionId,
         correct: isCorrect,
       },
@@ -167,10 +172,12 @@ export async function POST(req: NextRequest) {
         Prisma.StoryQuizScoreFirstTimeCreateInput
       >({
         model: "StoryQuizScoreFirstTime",
-        where: {
-          userId: userId,
-          storyId: quizRecord.storyId,
-        },
+        where: userId
+          ? {
+              userId: userId,
+              storyId: quizRecord.storyId,
+            }
+          : null,
         data: {
           userId,
           storyId: quizRecord.storyId,
@@ -185,6 +192,7 @@ export async function POST(req: NextRequest) {
       userFirstAnsPromise,
       userFirstScorePromise,
     ]);
+
     //count how many people answer correct question
     const countPeopleAnswerCorrectPromise =
       prisma.questionAnswerFirstTime.count({
@@ -198,7 +206,9 @@ export async function POST(req: NextRequest) {
       countPeopleAnswerPromise,
     ]);
     const percentage = (countPeopleAnswerCorrect / countPeopleAnswer) * 100;
-
+    const percentageRoundUp =
+      Math.round(percentage * Math.pow(10, ROUND_UP_DECIMAL)) /
+      Math.pow(10, ROUND_UP_DECIMAL);
     //return result
     return new NextResponse(
       JSON.stringify({
@@ -211,7 +221,7 @@ export async function POST(req: NextRequest) {
             explaination: quizQuestion.explanations[index],
           };
         }),
-        percent_people_answer_correct: percentage.toFixed(ROUND_UP_DECIMAL),
+        percent_people_answer_correct: percentageRoundUp,
       }),
       {
         status: 200,
@@ -231,75 +241,46 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
-  const user = new User();
-  const userId = await user.getUserId();
-
-  if (!userId) {
-    return new NextResponse(JSON.stringify({ error: "User ID is required" }), {
-      status: 401,
-      headers: { "Content-Type": "application/json" },
-    });
-  }
-
-  const { searchParams } = new URL(req.url);
-
-  //get story_id and check type if exist
-  const storyId = searchParams.get("story_id");
-  let storyIdParse = null;
-  if (storyId) {
-    storyIdParse = storyIdSchema.safeParse(storyId);
-    if (!storyIdParse.success) {
-      return new NextResponse(
-        JSON.stringify({ error: storyIdParse.error.errors[0].message }),
-        {
-          status: 400,
-          headers: { "Content-Type": "application/json" },
-        },
-      );
-    }
-  }
-
-  const quizRecordArg = {
-    where: {
-      userId: userId,
-      storyId: storyIdParse ? storyIdParse.data : undefined,
-    },
-    select: {
-      storyId: true,
-      quizType: true,
-      maxScore: true,
-      score: true,
-      createAt: true,
-      grades: {
-        select: {
-          userResponse: {
-            select: {
-              id: true,
-            },
-          },
-          totalScore: true,
-          maxScore: true,
-        },
-      },
-    },
-  };
   try {
-    const firstQuizRecordPromise = await prisma.quizRecord.findFirst({
-      ...quizRecordArg,
-      orderBy: {
-        createAt: "asc",
-      },
-    });
-    const mostRecentQuizRecordPromise = await prisma.quizRecord.findFirst({
-      ...quizRecordArg,
-      orderBy: {
-        createAt: "desc",
-      },
-    });
+    const user = new User();
+
+    const { searchParams } = new URL(req.url);
+
+    //get story_id and check type if exist
+    const storyIdParam = searchParams.get("story_id");
+    const scoreParam = searchParams.get("score");
+    const result = checkValidInput(
+      [storyIdSchema, scoreSchema],
+      [storyIdParam, scoreParam],
+    );
+    //if there is an error input
+    if (result.nextErrorReponse) {
+      return result.nextErrorReponse;
+    }
+
+    const [storyId, score] = result.parsedData;
+    //count how many people answer correct question
+    const countPeopleGetExactScorePromise =
+      prisma.storyQuizScoreFirstTime.count({
+        where: { storyId: storyId, totalCorrectAnswer: score },
+      });
+    const countPeopleGetScoreStoryPromise =
+      prisma.storyQuizScoreFirstTime.count({
+        where: { storyId: storyId },
+      });
+    const [countPeopleGetExactScore, countPeopleGetScoreStory] =
+      await Promise.all([
+        countPeopleGetExactScorePromise,
+        countPeopleGetScoreStoryPromise,
+      ]);
+    const percentage =
+      (countPeopleGetExactScore / countPeopleGetScoreStory) * 100;
+    const percentageRoundUp =
+      Math.round(percentage * Math.pow(10, ROUND_UP_DECIMAL)) /
+      Math.pow(10, ROUND_UP_DECIMAL);
     return new NextResponse(
       JSON.stringify({
-        first_quiz_record: createResponseQuizRecord(firstQuizRecordPromise),
-        most_recent_quiz: createResponseQuizRecord(mostRecentQuizRecordPromise),
+        percent_people_get_score: percentageRoundUp,
       }),
       {
         status: 200,
@@ -316,23 +297,4 @@ export async function GET(req: NextRequest) {
       },
     );
   }
-}
-function createResponseQuizRecord(quizRecord: quizRecordI | null) {
-  if (!quizRecord) return null;
-  const { grades, createAt, storyId, score, maxScore, quizType } = quizRecord;
-  return {
-    story_id: storyId,
-    score,
-    max_score: maxScore,
-    quiz_type: quizType,
-    create_at: createAt,
-    grades: grades.map((grade) => {
-      const { userResponse, maxScore, totalScore } = grade;
-      return {
-        user_response_id: userResponse.id,
-        total_score: totalScore,
-        max_score: maxScore,
-      };
-    }),
-  };
 }

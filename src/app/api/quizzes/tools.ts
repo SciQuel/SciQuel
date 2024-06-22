@@ -23,119 +23,27 @@ export function createQuizSubpart(data: {
   subpartData: any;
 }) {
   const { question_type, subpartData } = data;
-  let errorMessage = null;
-  let subpartPromise = null;
-  let errors: string[] = [];
+  let result: {
+    errorMessage: string | null;
+    subpartPromise: Promise<any> | null;
+    errors: string[];
+  } = { errorMessage: null, subpartPromise: null, errors: [] };
   if (question_type === "COMPLEX_MATCHING") {
-    const parsedData = complexMatchingSubpartSchema.safeParse(subpartData);
-    if (!parsedData.success) {
-      errorMessage = parsedData.error.errors[0].message;
-      errors = parsedData.error.errors.map((value) => value.message);
-    } else {
-      const { categories, correct_answers, question, options, explanations } =
-        parsedData.data;
-      const correctAnswer = correct_answers.map((numbers) => {
-        let str = "";
-        numbers.forEach((number) => {
-          str += number + " ";
-        });
-        str = str.substring(0, str.length - 1);
-        return str;
-      });
-
-      subpartPromise = prisma.complexMatchingSubpart.create({
-        data: {
-          categories,
-          options,
-          correctAnswer,
-          question,
-          explanations,
-        },
-      });
-    }
+    result = createComplexMatchSubpart(subpartData);
   } else if (question_type === "DIRECT_MATCHING") {
-    const parsedData = directMatchingSubpartSchema.safeParse(subpartData);
-    if (!parsedData.success) {
-      errorMessage = parsedData.error.errors[0].message;
-      errors = parsedData.error.errors.map((value) => value.message);
-    } else {
-      const { categories, correct_answers, question, options, explanations } =
-        parsedData.data;
-
-      subpartPromise = prisma.directMatchingSubpart.create({
-        data: {
-          categories,
-          options,
-          correctAnswer: correct_answers,
-          question,
-          explanations,
-        },
-      });
-    }
+    result = createDirectMatchSubpart(subpartData);
   } else if (question_type === "MULTIPLE_CHOICE") {
-    const parsedData = multipleChoiceSubpartSchema.safeParse(subpartData);
-    if (!parsedData.success) {
-      errorMessage = parsedData.error.errors[0].message;
-      errors = parsedData.error.errors.map((value) => value.message);
-    } else {
-      const { question, options, correct_answer, explanations } =
-        parsedData.data;
-
-      subpartPromise = prisma.multipleChoiceSubpart.create({
-        data: {
-          options,
-          correctAnswer: correct_answer,
-          question,
-          explanations,
-        },
-      });
-    }
+    result = createMultipleChocieSubpart(subpartData);
   } else if (question_type === "SELECT_ALL") {
-    const parsedData = selectAllSubpartSchema.safeParse(subpartData);
-    if (!parsedData.success) {
-      errorMessage = parsedData.error.errors[0].message;
-      errors = parsedData.error.errors.map((value) => value.message);
-    } else {
-      const { correct_answers, question, options, explanations } =
-        parsedData.data;
-      const correctAnswer: boolean[] = [];
-      for (let i = 0; i < options.length; i++) {
-        correctAnswer.push(false);
-      }
-      correct_answers.forEach((val) => {
-        correctAnswer[val] = true;
-      });
-
-      subpartPromise = prisma.selectAllSubpart.create({
-        data: {
-          options,
-          correctAnswer,
-          question,
-          explanations,
-        },
-      });
-    }
+    result = createSelectAllSubpart(subpartData);
   } else if (question_type === "TRUE_FALSE") {
-    const parsedData = trueFalseSubpartSchema.safeParse(subpartData);
-    if (!parsedData.success) {
-      errorMessage = parsedData.error.errors[0].message;
-      errors = parsedData.error.errors.map((value) => value.message);
-    } else {
-      const { questions, correct_answers, explanations } = parsedData.data;
-      subpartPromise = prisma.trueFalseSubpart.create({
-        data: {
-          correctAnswer: correct_answers,
-          questions: questions,
-          explanations,
-        },
-      });
-    }
+    result = createTrueFalseSubpart(subpartData);
   } else {
     throw new Error(
       "Unknown type: " + question_type + " in modifiedQuiz function",
     );
   }
-  return { subpartPromise, errorMessage, errors };
+  return result;
 }
 
 export function getDeleteSuppart({
@@ -207,4 +115,153 @@ export function getSubpart(quiz: QuizQuestionI) {
       "Unknow type " + quiz.questionType + " in finding Subpart promise",
     );
   }
+}
+
+function createComplexMatchSubpart(subpartData: any) {
+  let errorMessage = null;
+  let subpartPromise = null;
+  let errors: string[] = [];
+  const parsedData = complexMatchingSubpartSchema.safeParse(subpartData);
+  if (!parsedData.success) {
+    errorMessage = parsedData.error.errors[0].message;
+    errors = parsedData.error.errors.map((value) => value.message);
+  } else {
+    const { categories, correct_answers, question, options, explanations } =
+      parsedData.data;
+    const correctAnswer = correct_answers.map((numbers) => {
+      let str = "";
+      numbers.forEach((number) => {
+        str += number + " ";
+      });
+      str = str.substring(0, str.length - 1);
+      return str;
+    });
+
+    subpartPromise = prisma.complexMatchingSubpart.create({
+      data: {
+        categories,
+        options,
+        correctAnswer,
+        question,
+        explanations,
+      },
+    });
+  }
+  return {
+    subpartPromise,
+    errorMessage,
+    errors,
+  };
+}
+function createDirectMatchSubpart(subpartData: any) {
+  let errorMessage = null;
+  let subpartPromise = null;
+  let errors: string[] = [];
+  const parsedData = directMatchingSubpartSchema.safeParse(subpartData);
+  if (!parsedData.success) {
+    errorMessage = parsedData.error.errors[0].message;
+    errors = parsedData.error.errors.map((value) => value.message);
+  } else {
+    const { categories, correct_answers, question, options, explanations } =
+      parsedData.data;
+
+    subpartPromise = prisma.directMatchingSubpart.create({
+      data: {
+        categories,
+        options,
+        correctAnswer: correct_answers,
+        question,
+        explanations,
+      },
+    });
+  }
+  return {
+    subpartPromise,
+    errorMessage,
+    errors,
+  };
+}
+function createTrueFalseSubpart(subpartData: any) {
+  let errorMessage = null;
+  let subpartPromise = null;
+  let errors: string[] = [];
+  const parsedData = trueFalseSubpartSchema.safeParse(subpartData);
+  if (!parsedData.success) {
+    errorMessage = parsedData.error.errors[0].message;
+    errors = parsedData.error.errors.map((value) => value.message);
+  } else {
+    const { questions, correct_answers, explanations } = parsedData.data;
+    subpartPromise = prisma.trueFalseSubpart.create({
+      data: {
+        correctAnswer: correct_answers,
+        questions: questions,
+        explanations,
+      },
+    });
+  }
+  return {
+    subpartPromise,
+    errorMessage,
+    errors,
+  };
+}
+function createSelectAllSubpart(subpartData: any) {
+  let errorMessage = null;
+  let subpartPromise = null;
+  let errors: string[] = [];
+  const parsedData = selectAllSubpartSchema.safeParse(subpartData);
+  if (!parsedData.success) {
+    errorMessage = parsedData.error.errors[0].message;
+    errors = parsedData.error.errors.map((value) => value.message);
+  } else {
+    const { correct_answers, question, options, explanations } =
+      parsedData.data;
+    const correctAnswer: boolean[] = [];
+    for (let i = 0; i < options.length; i++) {
+      correctAnswer.push(false);
+    }
+    correct_answers.forEach((val) => {
+      correctAnswer[val] = true;
+    });
+
+    subpartPromise = prisma.selectAllSubpart.create({
+      data: {
+        options,
+        correctAnswer,
+        question,
+        explanations,
+      },
+    });
+  }
+  return {
+    subpartPromise,
+    errorMessage,
+    errors,
+  };
+}
+function createMultipleChocieSubpart(subpartData: any) {
+  let errorMessage = null;
+  let subpartPromise = null;
+  let errors: string[] = [];
+  const parsedData = multipleChoiceSubpartSchema.safeParse(subpartData);
+  if (!parsedData.success) {
+    errorMessage = parsedData.error.errors[0].message;
+    errors = parsedData.error.errors.map((value) => value.message);
+  } else {
+    const { question, options, correct_answer, explanations } = parsedData.data;
+
+    subpartPromise = prisma.multipleChoiceSubpart.create({
+      data: {
+        options,
+        correctAnswer: correct_answer,
+        question,
+        explanations,
+      },
+    });
+  }
+  return {
+    subpartPromise,
+    errorMessage,
+    errors,
+  };
 }

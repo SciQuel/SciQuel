@@ -5,6 +5,7 @@ import { PrismaClient } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
+import { checkValidInput } from "../tools/SchemaTool";
 import User from "../tools/User";
 import {
   modifiedQuizSchema,
@@ -12,16 +13,19 @@ import {
   quizTypeSchema,
   storyIdSchema,
 } from "./schema";
-import { createQuizSubpart, getDeleteSuppart, getSubpart } from "./tools";
+import { createQuizSubpart, getSubpart } from "./tools";
 
 /**
- * create quizQuestionRecord for patch and delete
+ * Change all safe parse with checkValidInput
  */
-
 const prisma = new PrismaClient();
 
+/**
+ * Create a new quiz for story
+ */
 export async function POST(req: NextRequest) {
   try {
+    //check valid user
     const user = new User();
     const isEditor = await user.isEditor();
     const userId = await user.getUserId();
@@ -29,6 +33,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    //check valid body param
     const requestBody = await req.json();
     const parsed = modifiedQuizSchema.safeParse(requestBody);
     if (!parsed.success) {
@@ -52,6 +57,8 @@ export async function POST(req: NextRequest) {
     if (CountStoryExist === 0) {
       return NextResponse.json({ error: "Story not found" }, { status: 404 });
     }
+
+    //start create quiz
     const { subpartPromise, errorMessage, errors } = createQuizSubpart({
       subpartData: quizData.subpart,
       question_type: quizData.question_type,
@@ -86,10 +93,10 @@ export async function POST(req: NextRequest) {
         quizQuestionId: createdQuiz.id,
       },
     });
+
     return new NextResponse(
       JSON.stringify({
         message: "Quiz question created",
-        quizData: { ...createdQuiz, subpart },
       }),
       {
         status: 200,
@@ -112,6 +119,9 @@ export async function POST(req: NextRequest) {
   }
 }
 
+/**
+ * give a list of quiz questions from story
+ */
 export async function GET(req: NextRequest) {
   try {
     const url = new URL(req.url);
@@ -141,23 +151,7 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // const session = user.getSession();
-    // if (!session) {
-    //   return new NextResponse(
-    //     JSON.stringify({ error: "Authentication is required" }),
-    //     {
-    //       status: 400,
-    //       headers: { "Content-Type": "application/json" },
-    //     },
-    //   );
-    // }
     const userId = await user.getUserId();
-    if (!userId) {
-      return new NextResponse(JSON.stringify({ error: "user not found" }), {
-        status: 400,
-        headers: { "Content-Type": "application/json" },
-      });
-    }
 
     const quizzes = await prisma.quizQuestion.findMany({
       where: { storyId: storyIdParse.data, deleted: false },
@@ -224,6 +218,8 @@ export async function GET(req: NextRequest) {
     );
   }
 }
+
+//delete quiz question from quiz_question_id
 export async function DELETE(req: NextRequest) {
   try {
     const url = new URL(req.url);
@@ -296,48 +292,30 @@ export async function DELETE(req: NextRequest) {
   }
 }
 
+//update quiz question from quiz_question_id
 export async function PATCH(req: NextRequest) {
   try {
     const url = new URL(req.url);
-    const quizQuestionId = url.searchParams.get("quiz_question_id");
-    const quizQuestionIdParse = quizQuestionIdSchema.safeParse(quizQuestionId);
+    const quizQuestionIdParam = url.searchParams.get("quiz_question_id");
     const user = new User();
     const userId = await user.getUserId();
-    if (!quizQuestionIdParse.success) {
-      return new NextResponse(
-        JSON.stringify({ error: quizQuestionIdParse.error.errors[0].message }),
-        {
-          status: 400,
-        },
-      );
-    }
-
+    //only editor allow to use this method
     if (!user.isEditor() || !userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const requestBody = await req.json();
-    console.log(requestBody);
-    const parsed = modifiedQuizSchema.safeParse(requestBody);
+    const parseResult = checkValidInput(
+      [quizQuestionIdSchema, modifiedQuizSchema],
+      [quizQuestionIdParam, await req.json()],
+    );
 
-    if (!parsed.success) {
-      return new NextResponse(
-        JSON.stringify({
-          error: parsed.error.errors[0].message,
-          errors: parsed.error.errors.map((err) => err.message),
-        }),
-        {
-          status: 400,
-          headers: {
-            "Content-Type": "application/json",
-          },
-        },
-      );
+    if (parseResult.nextErrorReponse) {
+      return parseResult.nextErrorReponse;
     }
-    const quizData = parsed.data;
 
+    const [quizQuestionId, quizData] = parseResult.parsedData;
     const quizQuestionCheck = await prisma.quizQuestion.findUnique({
-      where: { id: quizQuestionIdParse.data },
+      where: { id: quizQuestionId },
       select: { subpartId: true, questionType: true },
     });
 
@@ -386,7 +364,7 @@ export async function PATCH(req: NextRequest) {
         deleted: true,
       },
       where: {
-        id: quizQuestionIdParse.data,
+        id: quizQuestionId,
       },
     });
     const [quizQuestion] = await Promise.all([
@@ -403,7 +381,6 @@ export async function PATCH(req: NextRequest) {
     return new NextResponse(
       JSON.stringify({
         message: "Quiz question updated",
-        quizData: { ...quizQuestion, subpart },
       }),
       {
         status: 200,

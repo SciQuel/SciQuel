@@ -20,7 +20,7 @@ interface resultGrade {
   results: boolean[][];
   correctCount: number;
   total: number;
-  userResponse: string[];
+  userResponseSubpart: string[];
 }
 
 /**
@@ -35,7 +35,7 @@ export function grading(params: questinoType) {
     errorMessage: null,
     errors: [],
     correctCount: 0,
-    userResponse: [],
+    userResponseSubpart: [],
   };
 
   //correctAnswer is taken from data base which is guarantee the correct type we are looking for
@@ -74,10 +74,16 @@ export function grading(params: questinoType) {
       throw new Error("Unknown type " + questionType + " in grading");
     }
   }
-  const { errorMessage, errors, correctCount, total, userResponse, results } =
-    resultGrade;
+  const {
+    errorMessage,
+    errors,
+    correctCount,
+    total,
+    userResponseSubpart,
+    results,
+  } = resultGrade;
   const score = Math.floor(maxScore * (correctCount / total));
-  return { errorMessage, results, errors, score, userResponse };
+  return { errorMessage, results, errors, score, userResponseSubpart };
 }
 
 /**
@@ -110,7 +116,7 @@ function complexMatchingGrade(
   let results: boolean[][] = [];
   let correctCount = 0;
   let total = 1;
-  let userResponse: string[] = [];
+  let userResponseSubpart: string[] = [];
   //check user answer type
   const userAnswerParse = complexMatchingAnswerSchema.safeParse(userAnswer);
   if (!userAnswerParse.success) {
@@ -131,10 +137,17 @@ function complexMatchingGrade(
         curResponse += curResponse.length === 0 ? `${number}` : ` ${number}`;
       });
       results.push(curResult);
-      userResponse.push(curResponse);
+      userResponseSubpart.push(curResponse);
     }
   }
-  return { errorMessage, errors, results, correctCount, total, userResponse };
+  return {
+    errorMessage,
+    errors,
+    results,
+    correctCount,
+    total,
+    userResponseSubpart,
+  };
 }
 
 function directMatchingGrade(
@@ -146,7 +159,7 @@ function directMatchingGrade(
   let results: boolean[][] = [];
   let correctCount = 0;
   let total = 1;
-  let userResponse: string[] = [];
+  let userResponseSubpart: string[] = [];
   total = correctAnswer.length;
 
   //check user answer type
@@ -166,10 +179,17 @@ function directMatchingGrade(
       const isCorrect = numbers[i] === correctAnswer[i];
       correctCount += isCorrect ? 1 : 0;
       results[i].push(isCorrect);
-      userResponse.push(numbers[i].toString());
+      userResponseSubpart.push(numbers[i].toString());
     }
   }
-  return { errorMessage, errors, results, correctCount, total, userResponse };
+  return {
+    errorMessage,
+    errors,
+    results,
+    correctCount,
+    total,
+    userResponseSubpart,
+  };
 }
 
 function multipleChoiceGrade(
@@ -181,7 +201,7 @@ function multipleChoiceGrade(
   let results: boolean[][] = [];
   let correctCount = 0;
   let total = 1;
-  let userResponse: string[] = [];
+  let userResponseSubpart: string[] = [];
 
   total = 1;
   //check user answer type
@@ -197,9 +217,16 @@ function multipleChoiceGrade(
     correctCount += isCorrect ? 1 : 0;
     results.push([]);
     results[0].push(isCorrect);
-    userResponse.push(number.toString());
+    userResponseSubpart.push(number.toString());
   }
-  return { errorMessage, errors, results, correctCount, total, userResponse };
+  return {
+    errorMessage,
+    errors,
+    results,
+    correctCount,
+    total,
+    userResponseSubpart,
+  };
 }
 
 function selectAllGrade(
@@ -211,7 +238,7 @@ function selectAllGrade(
   let results: boolean[][] = [];
   let correctCount = 0;
   let total = 1;
-  let userResponse: string[] = [];
+  let userResponseSubpart: string[] = [];
   total = correctAnswer.length;
 
   //check user answer type
@@ -239,11 +266,18 @@ function selectAllGrade(
         correctCount += isCorrect ? 1 : 0;
         results.push([]);
         results[i].push(isCorrect);
-        userResponse.push(userAnswer[i] ? "true" : "false");
+        userResponseSubpart.push(userAnswer[i] ? "true" : "false");
       }
     }
   }
-  return { errorMessage, errors, results, correctCount, total, userResponse };
+  return {
+    errorMessage,
+    errors,
+    results,
+    correctCount,
+    total,
+    userResponseSubpart,
+  };
 }
 
 function trueFalseGrade(
@@ -255,7 +289,7 @@ function trueFalseGrade(
   let results: boolean[][] = [];
   let correctCount = 0;
   let total = 1;
-  let userResponse: string[] = [];
+  let userResponseSubpart: string[] = [];
   total = correctAnswer.length;
 
   //check user answer type
@@ -270,10 +304,17 @@ function trueFalseGrade(
       correctCount += isCorrect ? 1 : 0;
       results.push([]);
       results[i].push(isCorrect);
-      userResponse.push(userAnswer[i] ? "true" : "false");
+      userResponseSubpart.push(userAnswer[i] ? "true" : "false");
     }
   }
-  return { errorMessage, errors, results, correctCount, total, userResponse };
+  return {
+    errorMessage,
+    errors,
+    results,
+    correctCount,
+    total,
+    userResponseSubpart,
+  };
 }
 
 //insert data if data is not found
@@ -281,7 +322,7 @@ export async function insertIfNotExists<
   Model extends Prisma.ModelName,
   WhereUniqueInput,
   CreateInput,
->(param: { model: Model; where: WhereUniqueInput; data: CreateInput }) {
+>(param: { model: Model; where: WhereUniqueInput | null; data: CreateInput }) {
   const { model, where, data } = param;
   // Dynamically get the model delegate
   const modelDelegate = (prisma as any)[model];
@@ -291,10 +332,11 @@ export async function insertIfNotExists<
   }
 
   // Check if the record already exists
-  const existingRecordCount = await modelDelegate.count({
-    where,
-  });
-
+  const existingRecordCount = where
+    ? await modelDelegate.count({
+        where,
+      })
+    : 0;
   // If the record does not exist, create a new record
   if (existingRecordCount === 0) {
     await modelDelegate.create({

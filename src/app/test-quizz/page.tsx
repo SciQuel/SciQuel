@@ -321,7 +321,7 @@ export default function TestBackEnd() {
             Quiz Route test
           </div>
           <label>
-            Quiz
+            Story Id
             <input
               className="inputTest"
               value={storyId}

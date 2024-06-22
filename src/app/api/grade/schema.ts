@@ -17,13 +17,19 @@ export const questionTypeSchema = z.enum(
 
 export const storyIdSchema = z
   .string({
-    required_error: "story_id is required",
+    required_error: "story_id is required in required in query param",
     invalid_type_error: "story_id must be a ObjectId",
   })
   .regex(/^[0-9a-f]{24}$/, {
     message: "story_id must be a valid ObjectId",
   });
-
+export const scoreSchema = z
+  .number({
+    required_error: "score is required in required in query param",
+    invalid_type_error: "score must be an integer",
+  })
+  .int("score must be an integer")
+  .nonnegative("score must be greater or equal to 0");
 export const postSchema = z.object({
   quiz_question_id: z
     .string({
