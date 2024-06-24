@@ -23,8 +23,9 @@ const StoryImagePopup = ({
   const [dragging, setDragging] = useState(false);
   const [scaleLevel, setScaleLevel] = useState(1);
 
+  
   const handleImageClick = () => {
-    if (scaleLevel === 4) {
+    if (scaleLevel === 3) {
       setImageClicked(false);
       setScaleLevel(1);
       return;
@@ -33,11 +34,11 @@ const StoryImagePopup = ({
     if (!imageClicked) {
       setImageClicked(true);
     } else {
-      setScaleLevel(scaleLevel + 1.5);
+      setScaleLevel(scaleLevel + 2);
     }
   };
 
-  //zoom and look feature
+  //zoom and look feature(ask to keep it , was something quick i figured out)
   const handleImageDrag = (e: MouseEvent<HTMLImageElement>) => {
     !dragging && setDragging(true);
     const divTarget = e.target as HTMLImageElement;
@@ -64,11 +65,11 @@ const StoryImagePopup = ({
       className={`fixed left-1/2 top-1/2 z-50 flex h-screen w-screen -translate-x-1/2 -translate-y-1/2 transform flex-col items-center justify-center border border-solid border-slate-800 bg-white hover:cursor-pointer`}
       onClick={handleClick}
     >
-      <div className="flex flex-wrap items-center justify-center gap-4">
+      <div className="flex flex-wrap items-center justify-center gap-4 z-0">
         <img
           src={src}
-          className={` relative mx-auto max-h-[700px] ${
-            scaleLevel < 3 ? "hover:cursor-zoom-in" : "hover:cursor-zoom-out"
+          className={` relative mx-auto max-h-[700px] min-w-[400px]  z-50  ${
+            scaleLevel === 1 ? "hover:cursor-zoom-in" : "hover:cursor-zoom-out"
           }`}
           ref={imageRef}
           onClick={handleImageClick}
@@ -77,11 +78,11 @@ const StoryImagePopup = ({
           style={imageStyles}
         />
 
-        {!imageClicked && <p> {children} </p>}
+        {!imageClicked && <p className = 'text-center'> {children} </p>}
       </div>
 
       <button
-        aria-label="close"
+        aria-label="close popup"
         className="absolute right-0 top-0 mr-5 mt-3 text-3xl"
       >
         x
