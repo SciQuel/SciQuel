@@ -23,6 +23,7 @@ import axios from "axios";
 import clsx from "clsx";
 import { useRouter } from "next/navigation";
 import { Fragment, useRef, useState, useTransition } from "react";
+import NewContributor from "./contributors/confirmNewContributer"; // Importing NewContributor component
 import { getData, randomBackgroundColor, setTagsColor } from "./StoryFormFunc";
 import NewSubject from "./subjectComponents/newSubject";
 import NewSubtopic from "./subtopicComponents/newSubtopic";
@@ -76,6 +77,8 @@ export default function StoryInfoForm({
   const [topiclist, setTopicList] = useState(data.topics);
   const [subtopiclist, setSubtopicList] = useState(data.subtopics);
   const [subjectlist, setSubjectList] = useState(data.subjects);
+
+  const [contributors, setContributors] = useState<string[]>([]); // Holds list of contributors
 
   const [isCreateSubtopicModalOpen, setIsCreateSubtopicModalOpen] =
     useState(false);
@@ -233,6 +236,11 @@ export default function StoryInfoForm({
     setSubjects((subjects) => [...subjects, newSubject]);
   };
 
+  // Function to add a new contributor to the list
+  const addContributor = (contributor: string) => {
+    setContributors([...contributors, contributor]);
+  };
+
   return (
     <div className="flex flex-col gap-2">
       <Form
@@ -259,7 +267,8 @@ export default function StoryInfoForm({
 
                 formData.append("staffPicks", "false");
 
-                formData.append("contributions", "[]");
+                // Add contributors to the formData
+                formData.append("contributions", JSON.stringify(contributors));
 
                 if (image === null) {
                   return;
@@ -333,6 +342,16 @@ export default function StoryInfoForm({
             }}
           />
         </label>
+
+        {/* Add the NewContributor component here */}
+        <NewContributor addContributor={addContributor} />
+
+        <ul className="list-disc pl-5">
+          {contributors.map((contributor, index) => (
+            <li key={index}>{contributor}</li>
+          ))}
+        </ul>
+
         <FormInput
           title="Slug"
           required
@@ -704,6 +723,7 @@ export default function StoryInfoForm({
         >
           <div className="flex flex-row justify-items-center gap-4">
             <label>Select subject</label>
+
             <Popover className="relative">
               <Popover.Button>
                 <PlusCircleIcon
@@ -788,6 +808,18 @@ export default function StoryInfoForm({
             ))}
           </div>
         </div>
+
+        <FormInput
+          title="Publish Date"
+          required
+          indicateRequired
+          value={caption}
+          onChange={(e) => {
+            setDirty(true);
+            setCaption(e.target.value);
+          }}
+          disabled={loading}
+        />
 
         <button
           type="submit"
