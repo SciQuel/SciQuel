@@ -70,7 +70,7 @@ enum QuestionType {
   SELECT_ALL
 }
 
-enum QuizQuestionRecordType {
+enum UpdateType {
   CREATE
   DELETE
   UPDATE
@@ -96,8 +96,6 @@ model Story {
 
   published Boolean
 
-  staffPick Boolean
-
   thumbnailUrl String
   coverCaption String @default("")
 
@@ -105,6 +103,8 @@ model Story {
   publishedAt   DateTime
   updatedAt     DateTime
   quizQuestions QuizQuestion[]
+  staffPick       StaffPick?
+  StaffPickRecord StaffPickRecord[]
 }
 
 model StoryContribution {
@@ -163,6 +163,7 @@ model User {
   contactUpdates       ContactMessage[]
   firstQuizRecord      Json?
   mostRecentQuizRecord Json?
+  StaffPickRecord      StaffPickRecord[]
 }
 
 model AuthVerification {
@@ -401,9 +402,41 @@ model QuizQuestionRecord {
   id             String                 @id @default(auto()) @map("_id") @db.ObjectId
   quizQuestionId String                 @db.ObjectId
   staffId        String                 @db.ObjectId
-  updateType     QuizQuestionRecordType
+  updateType     UpdateType
   createAt       DateTime               @default(now())
 
   @@index([quizQuestionId])
   @@index([createAt])
+}
+
+model StaffPick {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  storyId String @unique @db.ObjectId
+  story   Story  @relation(fields: [storyId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  description String
+
+  @@unique([storyId, id])
+}
+
+model StaffPickRecord {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  storyId String @db.ObjectId
+  story   Story  @relation(fields: [storyId], references: [id])
+
+  staffId String @db.ObjectId
+  staff   User   @relation(fields: [staffId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  updateType UpdateType
+
+  description String?
+
+  @@index([storyId])
+  @@index([staffId])
 }
