@@ -32,25 +32,13 @@ export async function POST(req: NextRequest) {
     if (!isEditor || !userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-
     //check valid body param
     const requestBody = await req.json();
-    const parsed = modifiedQuizSchema.safeParse(requestBody);
-    if (!parsed.success) {
-      return new NextResponse(
-        JSON.stringify({
-          error: parsed.error.errors[0].message,
-          errors: parsed.error.errors.map((err) => err.message),
-        }),
-        {
-          status: 400,
-          headers: {
-            "Content-Type": "application/json",
-          },
-        },
-      );
+    const parseResult = checkValidInput([modifiedQuizSchema], [requestBody]);
+    if (parseResult.nextErrorReponse) {
+      return parseResult.nextErrorReponse;
     }
-    const quizData = parsed.data;
+    const [quizData] = parseResult.parsedData;
     const CountStoryExist = await prisma.story.count({
       where: { id: quizData.story_id },
     });
@@ -125,36 +113,24 @@ export async function POST(req: NextRequest) {
 export async function GET(req: NextRequest) {
   try {
     const url = new URL(req.url);
-    const storyId = url.searchParams.get("story_id");
-    const quizType = url.searchParams.get("quiz_type");
-    const quizTypeParse = quizTypeSchema.safeParse(quizType);
-    const storyIdParse = storyIdSchema.safeParse(storyId);
-
+    const storyIdParam = url.searchParams.get("story_id");
+    const quizTypeParam = url.searchParams.get("quiz_type");
     const user = new User();
+    const parseResult = checkValidInput(
+      [quizTypeSchema, storyIdSchema],
+      [quizTypeParam, storyIdParam],
+    );
 
-    if (!storyIdParse.success) {
-      return new NextResponse(
-        JSON.stringify({ error: storyIdParse.error.errors[0].message }),
-        {
-          status: 400,
-          headers: { "Content-Type": "application/json" },
-        },
-      );
+    if (parseResult.nextErrorReponse) {
+      return parseResult.nextErrorReponse;
     }
-    if (!quizTypeParse.success) {
-      return new NextResponse(
-        JSON.stringify({ error: quizTypeParse.error.errors[0].message }),
-        {
-          status: 400,
-          headers: { "Content-Type": "application/json" },
-        },
-      );
-    }
+
+    const [quizType, storyId] = parseResult.parsedData;
 
     const userId = await user.getUserId();
 
     const quizzes = await prisma.quizQuestion.findMany({
-      where: { storyId: storyIdParse.data, deleted: false },
+      where: { storyId: storyId, deleted: false },
       select: {
         id: true,
         contentCategory: true,
@@ -179,13 +155,13 @@ export async function GET(req: NextRequest) {
     const subparts = await Promise.all(subpartPromises);
     const quizRecord = await prisma.quizRecord.create({
       data: {
-        storyId: storyIdParse.data,
+        storyId: storyId,
         userId: userId,
         maxScore: quizzes.reduce((sum, quiz) => sum + quiz.maxScore, 0),
         totalQuestion: quizzes.length,
         totalCorrectAnswer: 0,
         score: 0,
-        quizType: quizTypeParse.data,
+        quizType: quizType,
         quizQuestionIdRemain: quizzes.map((quiz) => quiz.id),
       },
     });
@@ -223,26 +199,24 @@ export async function GET(req: NextRequest) {
 export async function DELETE(req: NextRequest) {
   try {
     const url = new URL(req.url);
-    const quizQuestionId = url.searchParams.get("quiz_question_id");
-    const quizQuestionIdParse = quizQuestionIdSchema.safeParse(quizQuestionId);
     const user = new User();
     const userId = await user.getUserId();
     const isEditor = await user.isEditor();
-    if (!quizQuestionIdParse.success) {
-      return new NextResponse(
-        JSON.stringify({ error: quizQuestionIdParse.error.errors[0].message }),
-        {
-          status: 400,
-        },
-      );
+    const quizQuestionIdParam = url.searchParams.get("quiz_question_id");
+    const { nextErrorReponse, parsedData } = checkValidInput(
+      [quizQuestionIdSchema],
+      [quizQuestionIdParam],
+    );
+    if (nextErrorReponse) {
+      return nextErrorReponse;
     }
-
+    const [quizQuestionId] = parsedData;
     if (!userId || !isEditor) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const quizQuestionCheck = await prisma.quizQuestion.findUnique({
-      where: { id: quizQuestionIdParse.data },
+      where: { id: quizQuestionId },
       select: { subpartId: true, questionType: true },
     });
 
@@ -256,14 +230,14 @@ export async function DELETE(req: NextRequest) {
     }
 
     const quizQuestionDeletePromise = prisma.quizQuestion.update({
-      where: { id: quizQuestionIdParse.data },
+      where: { id: quizQuestionId },
       data: { deleted: true },
     });
     const createQuizQuestionRecordPromise = prisma.quizQuestionRecord.create({
       data: {
         staffId: userId,
         updateType: "DELETE",
-        quizQuestionId: quizQuestionIdParse.data,
+        quizQuestionId: quizQuestionId,
       },
     });
     await Promise.all([

@@ -1,10 +1,5 @@
 import { NextResponse } from "next/server";
-import { infer as Infer, ZodError, ZodSchema } from "zod";
-
-interface SafeParseResult<T> {
-  nextErrorReponse: NextResponse<unknown> | null;
-  parsedData: T[];
-}
+import { infer as Infer, ZodSchema } from "zod";
 
 export function checkValidInput<T extends ZodSchema<any>[]>(
   schemas: [...T],
