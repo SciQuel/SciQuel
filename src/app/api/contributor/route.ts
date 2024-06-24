@@ -110,8 +110,8 @@ export async function GET(req: NextRequest) {
   };
 
   if (staffPick) {
-    storyArgs.where.staffPick = true;
-    countArgs.where.staffPick = true;
+    storyArgs.where.staffPick = { isNot: null };
+    countArgs.where.staffPick = { isNot: null };
   }
 
   if (pageNum) {
