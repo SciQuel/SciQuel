@@ -31,7 +31,7 @@ const ROUND_UP_DECIMAL = 1;
 const prisma = new PrismaClient();
 
 /**
- * grade user answer and give out grade result, explaination
+ * grade user answer and give out grade result, explanation
  * and percentage of people answer right
  */
 export async function POST(req: NextRequest) {
@@ -218,7 +218,7 @@ export async function POST(req: NextRequest) {
         results: results.map((value, index) => {
           return {
             correct: value,
-            explaination: quizQuestion.explanations[index],
+            explanation: quizQuestion.explanations[index],
           };
         }),
         percent_people_answer_correct: percentageRoundUp,

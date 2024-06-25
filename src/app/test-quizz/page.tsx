@@ -309,7 +309,9 @@ export default function TestBackEnd() {
   }
 
   function getQuizRecord() {
-    axios.get("/api/grade").then((data) => console.log(data));
+    axios
+      .get("/api/quiz-record", { params: storyId ? { story_id: storyId } : {} })
+      .then((data) => console.log(data));
   }
   return (
     <div className="testBox">
