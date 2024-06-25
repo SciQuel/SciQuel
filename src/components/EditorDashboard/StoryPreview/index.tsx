@@ -38,7 +38,7 @@ interface Props {
   date?: Date | null;
 }
 
-export default function StoryInfoForm({
+export default function StoryPreview({
   id: storyId,
   title: initialTitle,
   summary: initialSummary,
@@ -249,10 +249,10 @@ export default function StoryInfoForm({
   const year = date?.getFullYear()
   const month = (date?.getMonth() + 1).toString().padStart(2, "0")
   const day = date?.getDate().toString().padStart(2, "0")
-
+  
   return (
     <div className="flex flex-col gap-2">
-      <Form
+      {/* <Form
         onSubmit={(e) => {
           e.preventDefault();
           startTransition(async () => {
@@ -306,7 +306,7 @@ export default function StoryInfoForm({
             }
           });
         }}
-      >
+      > */}
         <FormInput
           title="Story Title"
           required
@@ -823,21 +823,7 @@ export default function StoryInfoForm({
             ))}
           </div>
         </div>
-
-        <button
-          type="submit"
-          className="my-5 select-none rounded-md bg-teal-600 px-2 py-1 font-semibold text-white disabled:pointer-events-none disabled:opacity-50"
-          disabled={
-            title.length === 0 ||
-            summary.length === 0 ||
-            image === null ||
-            caption.length === 0 ||
-            loading
-          }
-        >
-          Continue
-        </button>
-      </Form>
+      
 
       <NewSubtopic
         isOpen={isCreateSubtopicModalOpen}
@@ -853,5 +839,6 @@ export default function StoryInfoForm({
         createSubject={createSubject}
       />
     </div>
+    
   );
 }
