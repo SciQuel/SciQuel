@@ -71,8 +71,7 @@ const StoryImagePopup = ({
 
       
       <div className=" flex flex-wrap items-center justify-center gap-4 z-0">
-        <div className="inline-block relative">
-        <div className = 'overflow-hidden'>
+
             {/* <div className = 'border border-solid border-slate-700 w-[700px] '> */}
         <img
           src={src}
@@ -85,8 +84,7 @@ const StoryImagePopup = ({
           alt={alt}
           style={imageStyles}
         />
-  </div>
-  </div>
+ 
         {!imageClicked && <p className = 'text-center' ref = {captionRef} > {children} </p>}
       </div>
 
