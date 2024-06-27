@@ -45,7 +45,6 @@ export default function StoryInfoForm({
   image: initialImage,
   caption: initialCaption,
   date: initialDate,
-
 }: Props) {
   const fileUploadRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
@@ -246,9 +245,9 @@ export default function StoryInfoForm({
   };
 
   //format date
-  const year = date?.getFullYear()
-  const month = (date?.getMonth() + 1).toString().padStart(2, "0")
-  const day = date?.getDate().toString().padStart(2, "0")
+  const year = date?.getFullYear();
+  const month = (date?.getMonth() + 1).toString().padStart(2, "0");
+  const day = date?.getDate().toString().padStart(2, "0");
 
   return (
     <div className="flex flex-col gap-2">
@@ -351,10 +350,17 @@ export default function StoryInfoForm({
             }}
           />
         </label>
-
-        {/* Add the NewContributor component here */}
-        <NewContributor addContributor={addContributor} />
-
+        {/* Add the NewContributor component here */
+        /* list all separate contributors in a list */}
+        <NewContributor
+          addContributor={addContributor}
+          value={slug}
+          disabled={loading}
+          onChange={(e) => {
+            setDirty(true);
+            setSlug(e.target.value);
+          }}
+        />
         <ul className="list-disc pl-5">
           {contributors.map((contributor, index) => (
             <li key={index}>{contributor}</li>
@@ -373,17 +379,17 @@ export default function StoryInfoForm({
           }}
         />
         <FormInput
-            title="Publish Date"
-            required
-            indicateRequired
-            type="date"
-            value={year+"-"+month+"-"+day}
-            onChange={(e) => {
-              setDirty(true);
-              setDate(e.target.value);
-            }}
-            disabled={loading}
-          />
+          title="Publish Date"
+          required
+          indicateRequired
+          type="date"
+          value={year + "-" + month + "-" + day}
+          onChange={(e) => {
+            setDirty(true);
+            setDate(e.target.value);
+          }}
+          disabled={loading}
+        />
         <div className="mt-5">
           <h3 className="mb-2">Background Image</h3>
           <label
@@ -524,7 +530,6 @@ export default function StoryInfoForm({
             <option value="TECHNOLOGY">Technology</option>
           </select>
         </label> */}
-
         <div className="grid w-1/3 grid-cols-1 gap-2">
           <div className="flex flex-row justify-items-center gap-4">
             <label>Select topic</label>
@@ -590,7 +595,6 @@ export default function StoryInfoForm({
             ))}
           </div>
         </div>
-
         {/* <label className="my-5 block">
           Select Subtopic
           <select
@@ -614,7 +618,6 @@ export default function StoryInfoForm({
             <option value="RHEUMATOLOGY">Rheumatology</option>
           </select>
         </label> */}
-
         <div className={`my-5 grid max-h-none w-1/3 grid-cols-1 gap-2`}>
           <div className="flex flex-row justify-items-center gap-4">
             <label>Select subtopic</label>
@@ -708,7 +711,6 @@ export default function StoryInfoForm({
             ))}
           </div>
         </div>
-
         {/* <label className="my-5 block">
           Select Subject
           <select
@@ -732,10 +734,7 @@ export default function StoryInfoForm({
             <option value="NUTRITION">Nutrition</option>
           </select>
         </label> */}
-
-        <div
-          className={`grid w-1/3 grid-cols-1 gap-2`}
-        >
+        <div className={`grid w-1/3 grid-cols-1 gap-2`}>
           <div className="flex flex-row justify-items-center gap-4">
             <label>Select subject</label>
 
@@ -823,7 +822,6 @@ export default function StoryInfoForm({
             ))}
           </div>
         </div>
-
         <button
           type="submit"
           className="my-5 select-none rounded-md bg-teal-600 px-2 py-1 font-semibold text-white disabled:pointer-events-none disabled:opacity-50"
