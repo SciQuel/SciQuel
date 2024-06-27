@@ -1,10 +1,11 @@
-import { MouseEvent, PropsWithChildren, RefObject, useState } from "react";
+import { MouseEvent, PropsWithChildren, RefObject, useState} from "react";
 
 interface Props {
   src: string;
   handleClick: (e: MouseEvent<HTMLDivElement>) => void;
   alt?: string;
   imageRef: RefObject<HTMLImageElement>;
+  captionRef: RefObject<HTMLParagraphElement>;
 }
 
 
@@ -13,6 +14,7 @@ const StoryImagePopup = ({
   children,
   handleClick,
   imageRef,
+  captionRef,
   alt,
 }: PropsWithChildren<Props>) => {
   const [imageClicked, setImageClicked] = useState(false);
@@ -85,7 +87,7 @@ const StoryImagePopup = ({
         />
   </div>
   </div>
-        {!imageClicked && <p className = 'text-center'> {children} </p>}
+        {!imageClicked && <p className = 'text-center' ref = {captionRef} > {children} </p>}
       </div>
 
       <button

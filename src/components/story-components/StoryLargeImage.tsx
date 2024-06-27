@@ -17,12 +17,13 @@ export default function StoryLargeImage({
 }: PropsWithChildren<Props>) {
   const [isClicked, setIsClicked] = useState(false);
   const imageRef = useRef<HTMLImageElement>(null);
+  const captionRef = useRef<HTMLParagraphElement>(null);
 
   const handleClick = (e: MouseEvent<HTMLDivElement>) => {
     const divTarget = e.target as HTMLDivElement;
     if (isClicked) {
       console.log(e.target);
-      if (imageRef.current && !imageRef.current.contains(divTarget)) {
+      if (imageRef.current && !imageRef.current.contains(divTarget) && captionRef.current && !captionRef.current.contains(divTarget)) {
         setIsClicked(false);
       }
     } else {
@@ -38,6 +39,7 @@ export default function StoryLargeImage({
           children={children}
           handleClick={handleClick}
           imageRef={imageRef}
+          captionRef = {captionRef}
           alt={alt}
         />
       ) : (
