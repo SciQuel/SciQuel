@@ -23,6 +23,7 @@ import axios from "axios";
 import clsx from "clsx";
 import { useRouter } from "next/navigation";
 import { Fragment, useRef, useState, useTransition } from "react";
+import ArticleBody from "./article/articleBody"; // Importing ArticleBody component
 import NewContributor from "./contributors/confirmNewContributer"; // Importing NewContributor component
 import { getData, randomBackgroundColor, setTagsColor } from "./StoryFormFunc";
 import NewSubject from "./subjectComponents/newSubject";
@@ -82,6 +83,7 @@ export default function StoryInfoForm({
   const [subjectlist, setSubjectList] = useState(data.subjects);
 
   const [contributors, setContributors] = useState<string[]>([]); // Holds list of contributors
+  const [body, setBody] = useState(""); // State to hold the article body text
 
   const [isCreateSubtopicModalOpen, setIsCreateSubtopicModalOpen] =
     useState(false);
@@ -249,20 +251,25 @@ export default function StoryInfoForm({
   const month = (date?.getMonth() + 1).toString().padStart(2, "0");
   const day = date?.getDate().toString().padStart(2, "0");
 
+  // Div outlining what the left half of the page actually looks like
   return (
     <div className="flex flex-col gap-2">
       <Form
         onSubmit={(e) => {
           e.preventDefault();
           startTransition(async () => {
+            // creates a form component with all of the fields
             try {
               if (dirty) {
                 const formData = new FormData();
+
+                // adds all fields
                 if (storyId) {
                   formData.append("id", storyId);
                 }
                 formData.append("title", title);
                 formData.append("summary", summary);
+                formData.append("body", body);
                 formData.append("imageCaption", caption);
                 formData.append("storyType", storyType);
                 formData.append("category", "ARTICLE");
@@ -272,10 +279,7 @@ export default function StoryInfoForm({
                 formData.append("topics", JSON.stringify(topics));
                 formData.append("subtopics", "[]");
                 formData.append("generalSubjects", "[]");
-
                 formData.append("staffPicks", "false");
-
-                // Add contributors to the formData
                 formData.append("contributions", JSON.stringify(contributors));
 
                 if (image === null) {
@@ -306,6 +310,7 @@ export default function StoryInfoForm({
           });
         }}
       >
+        {/* STORY TITLE FORM INPUT */}
         <FormInput
           title="Story Title"
           required
@@ -317,6 +322,8 @@ export default function StoryInfoForm({
           }}
           disabled={loading}
         />
+
+        {/* SUMMARY INPUT */}
         <FormInput
           title="Summary"
           required
@@ -328,6 +335,11 @@ export default function StoryInfoForm({
           }}
           disabled={loading}
         />
+
+        {/* ARTICLE TEXT BODY INPUT */}
+        <ArticleBody value={body} onChange={setBody} />
+
+        {/* TITLE COLOR INPUT */}
         <label className="my-5 flex flex-col">
           Title Color
           <input
@@ -339,6 +351,8 @@ export default function StoryInfoForm({
             }}
           />
         </label>
+
+        {/* SUMMARY COLOR INPUT */}
         <label className="my-5 flex flex-col ">
           Summary Color
           <input
@@ -350,23 +364,16 @@ export default function StoryInfoForm({
             }}
           />
         </label>
-        {/* Add the NewContributor component here */
-        /* list all separate contributors in a list */}
-        <NewContributor
-          addContributor={addContributor}
-          value={slug}
-          disabled={loading}
-          onChange={(e) => {
-            setDirty(true);
-            setSlug(e.target.value);
-          }}
-        />
+
+        {/* ADDING CONTRIBUTORS FORM */}
+        <NewContributor addContributor={addContributor} />
         <ul className="list-disc pl-5">
           {contributors.map((contributor, index) => (
             <li key={index}>{contributor}</li>
           ))}
         </ul>
 
+        {/* SLUG FORM */}
         <FormInput
           title="Slug"
           required
@@ -378,6 +385,8 @@ export default function StoryInfoForm({
             setSlug(e.target.value);
           }}
         />
+
+        {/* PUBLISH DATE FORM */}
         <FormInput
           title="Publish Date"
           required
@@ -390,6 +399,8 @@ export default function StoryInfoForm({
           }}
           disabled={loading}
         />
+
+        {/* BACKGROUND IMAGE FORM*/}
         <div className="mt-5">
           <h3 className="mb-2">Background Image</h3>
           <label
@@ -453,6 +464,7 @@ export default function StoryInfoForm({
             disabled={loading}
           />
         </div>
+
         <label className="my-5 block">
           Story Type
           <select
@@ -473,6 +485,7 @@ export default function StoryInfoForm({
             <option value="ESSAY">Essay</option>
           </select>
         </label>
+
         <label className="my-5 block">
           Category
           <select
@@ -493,43 +506,7 @@ export default function StoryInfoForm({
             <option value="PODCAST">Podcast</option>
           </select>
         </label>
-        {/* <label className="my-5 block">
-          Select Topic
-          <select
-            className={clsx(
-              `peer w-full rounded-md px-2 py-1 placeholder-transparent outline outline-1
-                outline-gray-200 hover:outline-sciquelTeal focus:outline-2 focus:outline-sciquelTeal
-                focus:ring-0`,
-              "disabled:pointer-events-none disabled:bg-gray-50 disabled:text-gray-300",
-            )}
-            placeholder="Select a story type"
-            value={topics[0]}
-            onChange={(e) => {
-              setDirty(true);
-              setTopics([e.target.value as StoryTopic]);
-            }}
-          >
-            <option value="ASTRONOMY">Astronomy</option>
-            <option value="BIOLOGY">Biology</option>
-            <option value="CHEMICAL_ENGINEERING">Chemical Engineering</option>
-            <option value="CHEMISTRY">Chemistry</option>
-            <option value="COMPUTER_SCIENCE">Computer Science</option>
-            <option value="ENVIRONMENTAL_SCIENCE">Environmental Science</option>
-            <option value="ELECTRICAL_ENGINEERING">
-              Electrical Engineering
-            </option>
-            <option value="GEOLOGY">Geology</option>
-            <option value="MATHEMATICS">Mathematics</option>
-            <option value="MECHANICAL_ENGINEERING">
-              Mechanical Engineering
-            </option>
-            <option value="MEDICINE">Medicine</option>
-            <option value="PHYSICS">Physics</option>
-            <option value="PSYCHOLOGY">Psychology</option>
-            <option value="SOCIOLOGY">Sociology</option>
-            <option value="TECHNOLOGY">Technology</option>
-          </select>
-        </label> */}
+
         <div className="grid w-1/3 grid-cols-1 gap-2">
           <div className="flex flex-row justify-items-center gap-4">
             <label>Select topic</label>
@@ -595,29 +572,7 @@ export default function StoryInfoForm({
             ))}
           </div>
         </div>
-        {/* <label className="my-5 block">
-          Select Subtopic
-          <select
-            className={clsx(
-              `peer w-full rounded-md px-2 py-1 placeholder-transparent outline outline-1
-                outline-gray-200 hover:outline-sciquelTeal focus:outline-2 focus:outline-sciquelTeal
-                focus:ring-0`,
-              "disabled:pointer-events-none disabled:bg-gray-50 disabled:text-gray-300",
-            )}
-            placeholder="Select a story type"
-            value={topics[0]}
-            onChange={(e) => {
-              setDirty(true);
-              setTopics([e.target.value as StoryTopic]);
-            }}
-          >
-            <option value="CARDIOLOGY">Cardiology</option>
-            <option value="CHEMICAL_ENGINEERING">Chemical Engineering</option>
-            <option value="GEOCHEMISTRY">Geochemistry</option>
-            <option value="ONCOLOGY">Oncology</option>
-            <option value="RHEUMATOLOGY">Rheumatology</option>
-          </select>
-        </label> */}
+
         <div className={`my-5 grid max-h-none w-1/3 grid-cols-1 gap-2`}>
           <div className="flex flex-row justify-items-center gap-4">
             <label>Select subtopic</label>
@@ -711,29 +666,7 @@ export default function StoryInfoForm({
             ))}
           </div>
         </div>
-        {/* <label className="my-5 block">
-          Select Subject
-          <select
-            className={clsx(
-              `peer w-full rounded-md px-2 py-1 placeholder-transparent outline outline-1
-                outline-gray-200 hover:outline-sciquelTeal focus:outline-2 focus:outline-sciquelTeal
-                focus:ring-0`,
-              "disabled:pointer-events-none disabled:bg-gray-50 disabled:text-gray-300",
-            )}
-            placeholder="Select a story type"
-            value={topics[0]}
-            onChange={(e) => {
-              setDirty(true);
-              setTopics([e.target.value as StoryTopic]);
-            }}
-          >
-            <option value="ANATOMY">Anatomy</option>
-            <option value="BIOCHEMISTRY">Biochemistry</option>
-            <option value="GEOCHEMISTRY">Geochemistry</option>
-            <option value="GENETICS">Genetics</option>
-            <option value="NUTRITION">Nutrition</option>
-          </select>
-        </label> */}
+
         <div className={`grid w-1/3 grid-cols-1 gap-2`}>
           <div className="flex flex-row justify-items-center gap-4">
             <label>Select subject</label>
