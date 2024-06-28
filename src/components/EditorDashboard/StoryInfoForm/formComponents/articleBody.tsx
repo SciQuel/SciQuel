@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import styles from "./article.module.css";
 
 type Props = {
   value: string;
@@ -8,9 +9,9 @@ type Props = {
 /**
  * ArticleBody Component
  *
- * This component allows users to input a large amount of text for the article body.
+ * This component allows users to input their article on the editor's dashboard.
  *
- * @param {string} value - The current value of the text input.
+ * @param {string} value - The current value (string text) of the users' input.
  * @param {function} onChange - Function to handle the change in text input.
  * @returns The rendered body of text on the website.
  */
@@ -25,10 +26,10 @@ export default function ArticleBody({ value, onChange }: Props) {
         Article Body
         <textarea
           value={value}
-          onChange={handleChange} // Handle change events
+          onChange={handleChange}
           placeholder="Write your article here..."
-          className="custom_textarea mt-1"
-          rows={5} // Set the number of rows for the textarea
+          className={`${styles.custom_textarea} mt-1`}
+          rows={5}
         />
       </label>
     </div>

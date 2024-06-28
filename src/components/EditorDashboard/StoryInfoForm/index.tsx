@@ -23,11 +23,14 @@ import axios from "axios";
 import clsx from "clsx";
 import { useRouter } from "next/navigation";
 import { Fragment, useRef, useState, useTransition } from "react";
-import ArticleBody from "./article/articleBody"; // Importing ArticleBody component
-import NewContributor from "./contributors/confirmNewContributer"; // Importing NewContributor component
+import ArticleBody from "./formComponents/articleBody"; // Importing ArticleBody component
+
+import BackgroundImageForm from "./formComponents/backgroundImageForm"; // Importing BackgroundImageForm component
+import NewContributor from "./formComponents/confirmNewContributer"; // Importing NewContributor component
+
+import NewSubject from "./formComponents/subjectComponents/newSubject";
+import NewSubtopic from "./formComponents/subtopicComponents/newSubtopic";
 import { getData, randomBackgroundColor, setTagsColor } from "./StoryFormFunc";
-import NewSubject from "./subjectComponents/newSubject";
-import NewSubtopic from "./subtopicComponents/newSubtopic";
 import Tags from "./Tags";
 
 interface Props {
@@ -400,71 +403,17 @@ export default function StoryInfoForm({
           disabled={loading}
         />
 
-        {/* BACKGROUND IMAGE FORM*/}
-        <div className="mt-5">
-          <h3 className="mb-2">Background Image</h3>
-          <label
-            className={clsx(
-              "cursor-pointer select-none rounded-md bg-teal-600 px-2 py-1 font-semibold text-white hover:bg-teal-700",
-              loading && "pointer-events-none opacity-50",
-            )}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                fileUploadRef.current?.click();
-              }
-            }}
-            tabIndex={loading ? undefined : 0}
-          >
-            <input
-              type="file"
-              className="hidden"
-              ref={fileUploadRef}
-              onChange={(e) => {
-                setDirty(true);
-                setImage(e.target.files?.[0] ?? null);
-              }}
-              accept="image/jpeg, image/png, image/gif"
-            />
-            Select file to upload
-          </label>
-          <div className="my-5 rounded-md border bg-white p-2">
-            <h3 className="mb-3 text-xl font-semibold">Image Preview</h3>
-            {image && typeof image !== "string" ? (
-              <>
-                <p>Uploaded file: {image.name}</p>
-                <div className="h-96">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={URL.createObjectURL(image)}
-                    className="h-full object-contain"
-                  />
-                </div>
-              </>
-            ) : typeof image === "string" ? (
-              <>
-                <p>Image URL: {image}</p>
-                <div className="h-96">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={image} className="h-full object-contain" />
-                </div>
-              </>
-            ) : (
-              <p className="italic">No image uploaded</p>
-            )}
-          </div>
-          <FormInput
-            title="Image Caption"
-            required
-            indicateRequired
-            value={caption}
-            onChange={(e) => {
-              setDirty(true);
-              setCaption(e.target.value);
-            }}
-            disabled={loading}
-          />
-        </div>
+        {/* BACKGROUND IMAGE FORM */}
+        <BackgroundImageForm
+          image={image}
+          setImage={setImage}
+          caption={caption}
+          setCaption={setCaption}
+          loading={loading}
+          setDirty={setDirty}
+        />
 
+        {/* STORY TYPE INPUT */}
         <label className="my-5 block">
           Story Type
           <select
@@ -486,6 +435,7 @@ export default function StoryInfoForm({
           </select>
         </label>
 
+        {/* CATEGORY DROPDOWN */}
         <label className="my-5 block">
           Category
           <select
@@ -507,6 +457,7 @@ export default function StoryInfoForm({
           </select>
         </label>
 
+        {/* SELECT TOPIC (+) BUTTON */}
         <div className="grid w-1/3 grid-cols-1 gap-2">
           <div className="flex flex-row justify-items-center gap-4">
             <label>Select topic</label>
@@ -573,6 +524,7 @@ export default function StoryInfoForm({
           </div>
         </div>
 
+        {/* SELECT SUBTOPIC (+) BUTTON */}
         <div className={`my-5 grid max-h-none w-1/3 grid-cols-1 gap-2`}>
           <div className="flex flex-row justify-items-center gap-4">
             <label>Select subtopic</label>
@@ -667,6 +619,7 @@ export default function StoryInfoForm({
           </div>
         </div>
 
+        {/* SELECT SUBJECT (+) BUTTON */}
         <div className={`grid w-1/3 grid-cols-1 gap-2`}>
           <div className="flex flex-row justify-items-center gap-4">
             <label>Select subject</label>
@@ -770,6 +723,8 @@ export default function StoryInfoForm({
         </button>
       </Form>
 
+      {/* are these two used for anything? I deleted them 
+        and nothing happened . . . */}
       <NewSubtopic
         isOpen={isCreateSubtopicModalOpen}
         setIsOpen={setIsCreateSubtopicModalOpen}
