@@ -51,7 +51,6 @@ export async function GET(req: NextRequest) {
     sort_by,
     published,
   } = parsedParams.data;
-
   // Can only retrieve unpublished stories if EDITOR
   if (published === false) {
     const session = await getServerSession();
@@ -81,21 +80,21 @@ export async function GET(req: NextRequest) {
               ],
             }
           : {}),
-        staffPick: staff_pick,
+        published,
+        staffPick: staff_pick ? { isNot: null } : undefined,
         ...(topic ? { tags: { has: topic } } : {}),
         storyType: type,
         createdAt: {
           gte: date_from,
           lt: date_to,
         },
-        published,
       },
     };
-
     const stories = await prisma.story.findMany({
       skip: numPagesToSkip * numStoriesPerPage,
       take: numStoriesPerPage,
       include: {
+        staffPick: true,
         storyContributions: {
           select: {
             contributionType: true,
@@ -103,7 +102,7 @@ export async function GET(req: NextRequest) {
           },
         },
       },
-      where: { ...query.where, category: Category.ARTICLE },
+      where: { category: Category.ARTICLE, ...query.where },
       orderBy: {
         updatedAt: "desc",
         ...(sort_by === "newest" ? { updatedAt: "desc" } : {}),
@@ -222,7 +221,6 @@ export async function PUT(request: NextRequest) {
         createdAt: timestamp,
         publishedAt: timestamp,
         updatedAt: timestamp,
-        staffPick: false,
         published: false,
         thumbnailUrl,
         coverCaption: parsedRequest.data.imageCaption,
