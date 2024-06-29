@@ -37,7 +37,7 @@ export default function ArticleList({
             )}/${publishDate.toFormat("dd")}/${article.slug}`;
           })()}
           key={article.title}
-          topic={article.tags[0]}
+          topic={article.tags ? article.tags[0] : "BIOLOGY"}
           title={article.title}
           subtitle={article.summary}
           author={(() => {

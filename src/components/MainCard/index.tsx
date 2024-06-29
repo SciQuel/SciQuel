@@ -53,7 +53,7 @@ export default function MainCard({
             tag={tag}
           />
           <div className="absolute bottom-0 bottom-[18%] z-10 mx-5 my-3 text-left transition-all duration-300 lg:block">
-            <p className="font-sourceSerif4 text-xl font-[350] text-sciquelMuted">
+            <p className="font-sourceSerif4 text-xl font-[350] text-sciquelTeal">
               {author} | {date}
             </p>
           </div>

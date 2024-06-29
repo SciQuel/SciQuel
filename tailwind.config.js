@@ -20,7 +20,7 @@ module.exports = {
       },
       colors: {
         sciquelDarkText: "#333333",
-        sciquelTeal: "#109191",
+        sciquelTeal: "#215860",
         sciquelFooter: "#5C9EAD",
         sciquelHover: "#51726b",
         sciquelHeading: "rgba(52, 78, 65, 1)",
