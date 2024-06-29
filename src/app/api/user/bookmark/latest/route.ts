@@ -1,7 +1,7 @@
 import prisma from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 import { getServerSession } from "next-auth";
-import { NextResponse, type NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 import { z } from "zod";
 
 const requestSchema = z.object({
@@ -61,18 +61,22 @@ export async function GET(req: Request) {
       orderBy: {
         createdAt: "desc",
       },
-      skip: (pageNum-1) * pageSize,
+      skip: (pageNum - 1) * pageSize,
       take: pageSize,
     });
 
     if (bookmarks === null) {
-      return NextResponse.json({ error: "Bookmark not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Bookmark not found" },
+        { status: 404 },
+      );
     }
 
     // calculate how many days ago the bookmark was created
     const bookmarksWithDaysAgo = bookmarks.map((bookmark) => {
       const days = Math.floor(
-        (new Date().getTime() - bookmark.createdAt.getTime()) / (1000 * 60 * 60 * 24),
+        (new Date().getTime() - bookmark.createdAt.getTime()) /
+          (1000 * 60 * 60 * 24),
       );
       return {
         ...bookmark,

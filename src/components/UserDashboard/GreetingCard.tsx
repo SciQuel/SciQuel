@@ -2,7 +2,6 @@
 
 import TopicTag from "@/components/TopicTag";
 import { StoryTopic, type User } from "@prisma/client";
-import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import Avatar from "../Avatar";
 import AvatarEditorButton from "../Avatar/AvatarEditorButton";
@@ -12,8 +11,6 @@ import ProgressBar from "./ProgressBar";
 import StatsButton from "./StatsButton";
 
 export default function GreetingCard({ user }: { user: User }) {
-  const session = useSession();
-
   {
     /*Makes sure that the Progress bar is always 2/3 width*/
   }
