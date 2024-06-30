@@ -40,11 +40,11 @@ export default function SideBar() {
             className="text-white-400 my-1.5 flex transform cursor-pointer items-center  hover:bg-sciquelHover"
             style={{ display: showSideBar ? "block" : "none" }}
           >
-            <Link href="/" className="mx-4 font-medium">
+            <Link href="/stories/read" className="mx-4 font-medium">
               Read Science
             </Link>
           </li>
-          <li
+          {/* <li
             className="text-white-400 my-1.5 flex transform cursor-pointer items-center  hover:bg-sciquelHover"
             style={{ display: showSideBar ? "block" : "none" }}
           >
@@ -69,7 +69,7 @@ export default function SideBar() {
             <Link href="/" className="mx-4 font-medium">
               View Science
             </Link>
-          </li>
+          </li> */}
 
           <hr
             className="mx-3 my-2"
@@ -283,8 +283,8 @@ export default function SideBar() {
             className=" text-white-400 group relative my-1.5 flex transform items-center   hover:bg-sciquelHover"
             style={{ display: showSideBar ? "block" : "none" }}
           >
-            <a className="mx-4 font-medium">More&rarr;</a>
-            <ul className=" absolute bottom-0 left-56 z-50 hidden w-56 bg-sciquelTeal group-hover:block">
+            {/* <a className="mx-4 font-medium">More&rarr;</a> */}
+            {/* <ul className=" absolute bottom-0 left-56 z-50 hidden w-56 bg-sciquelTeal group-hover:block">
               <li
                 className="hover-trigger text-white-400 relative my-1.5 flex transform items-center   hover:bg-sciquelHover"
                 style={{ display: showSideBar ? "block" : "none" }}
@@ -325,7 +325,7 @@ export default function SideBar() {
                   RSS
                 </Link>
               </li>
-            </ul>
+            </ul> */}
           </li>
         </nav>
       </div>

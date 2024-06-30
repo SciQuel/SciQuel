@@ -32,15 +32,15 @@ export default function Footer() {
             </form>
           </div>
           <div className="flex flex-col items-end pt-4 ">
-            <p className="w-full text-center text-lg xs:w-auto xs:text-end xs:text-base">
+            <p className="w-full text-center text-lg font-semibold xs:w-auto xs:text-end xs:text-base">
               Sciquel
             </p>
-            <div className="flex flex-row">
+            {/* <div className="flex flex-row">
               <FooterIcon type="instagram" />
               <FooterIcon type="facebook" />
               <FooterIcon type="youtube" />
               <FooterIcon type="arrow" />
-            </div>
+            </div> */}
             <p>125 Western Ave.</p>
             <p>Allston, MA 02163</p>
           </div>
