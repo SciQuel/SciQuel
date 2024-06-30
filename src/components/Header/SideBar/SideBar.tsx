@@ -313,7 +313,7 @@ export default function SideBar() {
                 className="hover-trigger text-white-400 relative my-1.5 flex transform items-center   hover:bg-sciquelHover"
                 style={{ display: showSideBar ? "block" : "none" }}
               >
-                <Link href="/" className="mx-4 font-medium">
+                <Link href="/leave-feedback" className="mx-4 font-medium">
                   Contact Us
                 </Link>
               </li>
