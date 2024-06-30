@@ -50,6 +50,7 @@ export async function GET(req: NextRequest) {
     date_to,
     sort_by,
     published,
+    category,
   } = parsedParams.data;
   // Can only retrieve unpublished stories if EDITOR
   if (published === false) {
@@ -84,6 +85,7 @@ export async function GET(req: NextRequest) {
         staffPick: staff_pick ? { isNot: null } : undefined,
         ...(topic ? { topics: { has: topic } } : {}),
         storyType: type,
+        category: category,
         createdAt: {
           gte: date_from,
           lt: date_to,

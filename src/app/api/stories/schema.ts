@@ -1,4 +1,9 @@
-import { ContributionType, StoryTopic, StoryType } from "@prisma/client";
+import {
+  Category,
+  ContributionType,
+  StoryTopic,
+  StoryType,
+} from "@prisma/client";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 
@@ -45,6 +50,12 @@ export const getStorySchema = z.object({
     (value) => (value === "false" ? false : true),
     z.boolean().optional().default(true),
   ),
+  category: z
+    .preprocess(
+      (value) => String(z.string().parse(value).toUpperCase()),
+      z.nativeEnum(Category),
+    )
+    .optional(),
 });
 
 export const postStorySchema = z.object({
