@@ -50,11 +50,12 @@ export default function Header() {
             {/* <ProfileButton /> */}
           </div>
         </div>
-        {pathname.split("/")[1] === "stories" ? (
+        {/* {pathname.split("/")[1] === "stories" ? (
           <SeriesSubHeader />
         ) : (
           <MainSubHeader />
-        )}
+        )} */}
+        <MainSubHeader />
       </div>
     </header>
   );
