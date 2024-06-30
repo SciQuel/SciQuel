@@ -22,7 +22,7 @@ module.exports = {
         sciquelDarkText: "#333333",
         sciquelTeal: "#215860",
         sciquelFooter: "#5C9EAD",
-        sciquelHover: "#51726b",
+        sciquelHover: "#256670",
         sciquelHeading: "rgba(52, 78, 65, 1)",
         sciquelMuted: "#878787",
         sciquelCaption: "#565656",
@@ -40,6 +40,9 @@ module.exports = {
       transitionProperty: {
         spacing: "margin, padding",
         position: "top, left, right, bottom",
+      },
+      screens: {
+        xs: "350px",
       },
     },
   },

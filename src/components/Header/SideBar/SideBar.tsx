@@ -30,7 +30,7 @@ export default function SideBar() {
       </button>
 
       <div
-        className="fixed top-0 z-40 h-screen w-56  
+        className="fixed top-0 z-50 h-screen w-56  
         -translate-x-full  transform  bg-sciquelTeal transition-all duration-100 "
         style={{ left: showSideBar ? "14rem" : "0" }}
         ref={menuRef}
