@@ -28,8 +28,9 @@ export default function MainCard({
   return (
     <Link href={href}>
       <div
-        className={`relative z-0 mx-auto h-[50vh] h-[70vh] max-h-[500px] min-h-[300px]
-                  min-w-[300px] cursor-pointer text-center transition-all duration-300 hover:scale-[1.03] lg:h-[70vh]`}
+        className={`relative z-0 mx-auto cursor-pointer text-center transition-all
+                  duration-300 hover:scale-[1.03]
+                   xs:min-w-[300px] md:h-[50vh] md:h-[70vh] lg:h-[70vh] xl:min-h-[300px]`}
       >
         <div
           className={`absolute right-0 top-0 z-10 h-full w-8/12
@@ -43,7 +44,7 @@ export default function MainCard({
             style={{ objectFit: "cover" }}
           />
         </div>
-        <div className="relative flex h-full w-7/12 w-full flex-col justify-end p-5 transition-all duration-300 lg:w-10/12">
+        <div className="relative flex h-fit w-7/12 w-full flex-col justify-end p-5 transition-all duration-300 lg:h-full lg:w-10/12">
           <InnerCard
             title={title}
             subtitle={subtitle}
