@@ -99,8 +99,8 @@ export async function GET(req: NextRequest) {
       where: { ...query.where, category: Category.ARTICLE },
       orderBy: {
         publishedAt: "desc",
-        ...(sort_by === "newest" ? { publishedAt: "desc" } : {}),
-        ...(sort_by === "oldest" ? { publishedAt: "asc" } : {}),
+        // ...(sort_by === "newest" ? { publishedAt: "desc" } : {}),
+        // ...(sort_by === "oldest" ? { publishedAt: "asc" } : {}),
       },
     });
 

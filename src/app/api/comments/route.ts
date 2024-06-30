@@ -1,12 +1,9 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-
-import { PrismaClient } from "@prisma/client";
+import prisma from "@/lib/prisma";
 import { NextResponse, type NextRequest } from "next/server";
 import { createCommentSchema } from "./schema";
-
-const prisma = new PrismaClient();
 
 export async function POST(req: NextRequest) {
   try {
@@ -65,49 +62,21 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// export async function GET(req: NextRequest) {
-//   try {
-//     const url = new URL(req.url);
-//     const storyId = url.searchParams.get("storyId");
-
-//     if (!storyId) {
-//       return new NextResponse(
-//         JSON.stringify({ error: "storyId is required" }),
-//         {
-//           status: 400,
-//           headers: { "Content-Type": "application/json" },
-//         },
-//       );
-//     }
-
-//     const comments = await prisma.comment.findMany({
-//       where: { storyId: storyId },
-//       include: {
-//         replies: true, // Including nested replies in the response
-//       },
-//     });
-
-//     return new NextResponse(JSON.stringify({ comments }), {
-//       status: 200,
-//       headers: { "Content-Type": "application/json" },
-//     });
-//   } catch (error) {
-//     console.error("Error processing request:", error);
-//     return new NextResponse(
-//       JSON.stringify({ error: "Internal Server Error" }),
-//       {
-//         status: 500,
-//         headers: { "Content-Type": "application/json" },
-//       },
-//     );
-//   }
-// }
-
 export async function GET(req: NextRequest) {
   try {
     const url = new URL(req.url);
     const storyId = url.searchParams.get("storyId");
     const userId = url.searchParams.get("userId");
+
+    if (!storyId || !userId) {
+      return new NextResponse(
+        JSON.stringify({ error: "storyId or userId is required" }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
+    }
 
     if (storyId) {
       const comments = await prisma.comment.findMany({
