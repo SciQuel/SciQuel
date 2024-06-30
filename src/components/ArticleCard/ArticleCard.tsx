@@ -40,8 +40,8 @@ export default function ArticleCard({
               "ml-auto w-[175px]": mini && preferHorizontal,
             },
             mini && !preferHorizontal
-              ? "min-h-[270px] min-w-[265px] max-w-xs"
-              : "min-w-[300px]",
+              ? "min-h-[270px] max-w-xs xs:min-w-[265px]"
+              : "xs:min-w-[300px]",
             preferHorizontal ? "flex-row" : "flex-col",
           )}
         >
@@ -101,7 +101,7 @@ export default function ArticleCard({
             </div>
             <div
               className={clsx(
-                "flex flex-row justify-between font-sourceSerif4 font-[350] text-sciquelMuted",
+                "flex flex-row flex-wrap justify-between font-sourceSerif4 font-[350] text-sciquelMuted",
                 mini ? "text-xs" : "text-sm",
               )}
             >
