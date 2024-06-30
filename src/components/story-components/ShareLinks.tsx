@@ -18,6 +18,55 @@ interface Props {
   observe: boolean;
 }
 
+const PrintModeIcon = () => (
+  <div className="flex h-[45px] w-[45px] items-center justify-center rounded-full bg-[#76a89f]">
+    <p className="sr-only">Switch to print mode</p>
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z"
+        stroke="#F8F8FF"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M14 2V8H20"
+        stroke="#F8F8FF"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M16 13H8"
+        stroke="#F8F8FF"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M16 17H8"
+        stroke="#F8F8FF"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M10 9H9H8"
+        stroke="#F8F8FF"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+  </div>
+);
+
 export default function ShareLinks({ storyId, observe }: Props) {
   const [showOptions, setShowOptions] = useState<modalOptions>("none");
 
@@ -209,7 +258,7 @@ export default function ShareLinks({ storyId, observe }: Props) {
 
   return (
     <>
-      <button
+      {/* <button
         type="button"
         onClick={handleBookmark}
         className="pointer-events-auto h-fit w-fit rounded-full px-0 py-0.5 pr-3 xl:mb-2 xl:px-3"
@@ -224,9 +273,9 @@ export default function ShareLinks({ storyId, observe }: Props) {
           width={45}
           height={45}
         />
-        {/* <p className="h-0 w-0 overflow-visible">
+         <p className="h-0 w-0 overflow-visible">
           {isBookmarked ? "un-book" : "book"}
-        </p> */}
+        </p>  
       </button>
       <div
         className={
@@ -238,7 +287,7 @@ export default function ShareLinks({ storyId, observe }: Props) {
           ` xl:left-[100%] xl:top-[calc(100vh_+_6.25rem)] xl:mt-0 xl:h-fit xl:w-fit`
         }
       >
-        {/*  bookmark login modal */}
+          bookmark login modal  
         <div
           ref={popupRef3}
           className={
@@ -261,7 +310,7 @@ export default function ShareLinks({ storyId, observe }: Props) {
             to bookmark this article
           </p>
         </div>
-      </div>
+      </div> */}
 
       <div
         onMouseLeave={() => {
@@ -272,7 +321,7 @@ export default function ShareLinks({ storyId, observe }: Props) {
             setShowOptions("share");
           }
         }}
-        className={`pointer-events-auto absolute left-[4.25rem] flex h-fit w-fit flex-col md:left-[4.25rem] xl:left-[calc(100%_-_4.3rem)]  xl:top-[3.5rem]  xl:items-start `}
+        className={`pointer-events-auto absolute left-[4rem] flex h-fit w-fit flex-col  xl:left-[calc(100%_-_4.3rem)]  xl:top-[3.5rem]  xl:items-start `}
       >
         <button
           type="button"
@@ -294,10 +343,12 @@ export default function ShareLinks({ storyId, observe }: Props) {
             height={45}
           />
         </button>
-        <SocialMediaPopup show={showOptions == "share"} ref={popupRef} />{" "}
+        <div className="ml-[0.25rem]">
+          <SocialMediaPopup show={showOptions == "share"} ref={popupRef} />
+        </div>
       </div>
 
-      <button
+      {/* <button
         type="button"
         onClick={handleBrain}
         className="pointer-events-auto ml-[4.2rem] h-fit w-fit rounded-full px-3 py-0.5   xl:mb-2 xl:ml-0  xl:mt-[3.4rem]"
@@ -310,9 +361,7 @@ export default function ShareLinks({ storyId, observe }: Props) {
           width={45}
           height={45}
         />
-        {/* <p className="h-0 w-0 overflow-visible">
-          {isBrained ? "un-brain" : "Brain"}
-        </p> */}
+        
       </button>
       <div
         className={
@@ -324,7 +373,7 @@ export default function ShareLinks({ storyId, observe }: Props) {
           ` xl:left-[100%] xl:top-[calc(100vh_+_0.5rem)] xl:mt-0 xl:h-fit xl:w-fit`
         }
       >
-        {/* brain  login modal */}
+        brain  login modal 
         <div
           ref={popupRef2}
           className={
@@ -335,7 +384,7 @@ export default function ShareLinks({ storyId, observe }: Props) {
             ` xl:-bottom-5 xl:left-2 xl:before:-left-7 xl:before:top-1/2  xl:before:ml-[0.9rem] xl:before:h-6 xl:before:w-6 xl:before:-translate-y-1/2 xl:before:-rotate-45 `
           }
         >
-          {/**/}
+          
           <p className="w-full text-center text-lg sm:w-max">
             <a
               href="#"
@@ -349,10 +398,11 @@ export default function ShareLinks({ storyId, observe }: Props) {
           </p>
         </div>
       </div>
+       */}
 
       <button
         type="button"
-        className="pointer-events-auto h-fit w-fit rounded-full px-3  py-0.5 xl:mb-2"
+        className="pointer-events-auto h-fit w-fit rounded-full py-0.5  xl:mb-2 xl:px-3"
         onClick={() => {
           if (toggleFunction) {
             window.scrollTo(0, 0);
@@ -360,15 +410,10 @@ export default function ShareLinks({ storyId, observe }: Props) {
           }
         }}
       >
-        <Image
-          src={shareIcon}
-          alt="switch to print-mode"
-          width={45}
-          height={45}
-        />
+        <PrintModeIcon />
       </button>
 
-      <DictionaryButton observe={observe} />
+      {/* <DictionaryButton observe={observe} /> */}
     </>
   );
 }

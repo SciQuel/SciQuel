@@ -44,8 +44,8 @@ export default function StoryFooter({
       ) : (
         <>
           <AuthorCredits storyContributions={storyContributions} />
-          <FromThisSeries />
-          <MoreCard articles1={articles1} articles2={articles2} />
+          {/* <FromThisSeries /> */}
+          {/* <MoreCard articles1={articles1} articles2={articles2} /> */}
         </>
       )}
     </>

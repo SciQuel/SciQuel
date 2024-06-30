@@ -120,28 +120,7 @@ export default function AuthorCredits({ storyContributions }: Props) {
   }
 
   return isPrintMode ? (
-    <div>
-      {buildPrintCredits()}
-      {/* {storyContributions.map((element, index) => (
-        <div key={element.contributor.id} className="my-2">
-          <p className="w-[calc( 100% - 1rem )] mx-2 mb-1 p-0 font-sourceSerif4 text-xl font-semibold md:mx-auto md:w-[768px]">
-            {element.contributionType.slice(0, 1) +
-              element.contributionType.slice(1).toLowerCase()}
-            :
-          </p>
-          <p className="w-[calc( 100% - 1rem )] mx-2 mb-2 p-0 font-sourceSerif4 text-lg md:mx-auto md:w-[768px]">
-            <a
-              className="font-semibold"
-              href={`/contributors/${element.contributor.firstName.toLowerCase()}-${element.contributor.lastName.toLowerCase()}`}
-            >
-              {" "}
-              {element.contributor.firstName} {element.contributor.lastName}{" "}
-            </a>
-            {element.contributor.bio}
-          </p>
-        </div>
-      ))} */}
-    </div>
+    <div>{buildPrintCredits()}</div>
   ) : (
     <div className="mb-8">
       {storyContributions.map((element, index) => (
