@@ -27,6 +27,7 @@ export default function ArticleCard({
   mini = false,
   preferHorizontal = false,
 }: Props) {
+  const headding = "Staff picks";
   return (
     <Link href={href ?? "#"}>
       <div
@@ -101,7 +102,14 @@ export default function ArticleCard({
             <p>By {author}</p>
             <p>{date}</p>
           </div>
+          <div className="group relative w-max">
+            <button>Reason for Picking </button>
+            <span className="pointer-events-none absolute  w-max opacity-0 transition-opacity group-hover:opacity-100">
+              Because I say so.
+            </span>
+          </div>
         </div>
+
         <div
           className={clsx(
             "relative",

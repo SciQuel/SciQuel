@@ -1,83 +1,23 @@
 {
-  "multiplechoice": [
+  "quiz": [
     {
-      "id": 0,
-      "question": "What are microglia?",
-      "answerOptions": [
-        {
-          "answer": "The star-shaped cell that supports communication between neurous"
-        },
-        {
-          "answer": "The smallest type of glial cell that makesup about 10% of all brain cells",
-          "isCorrect": true
-        },
-        {
-          "answer": "A type of neuroglia who speeds up the transmission of information"
-        }
+      "type": "multiplematch",
+      "category": ["Car", "Phone", "Browser"],
+      "choice": [
+        "Iphone",
+        "Google",
+        "Honda",
+        "Toyota",
+        "Samsung",
+        "Safari",
+        "Firefox",
+        "KIA"
       ]
     },
     {
-      "id": 1,
-      "question": "What does HTML stand for?",
-      "answerOptions": [
-        { "answer": "Home Tool Markup Language" },
-        { "answer": "Hyper Text Markup Language", "isCorrect": true },
-        { "answer": "Hyperlinks and Text Markup Language" }
-      ]
-    },
-    {
-      "id": 2,
-      "question": "Chooe the correct HTML element for the largest heading:",
-      "answerOptions": [
-        { "answer": "<h6>" },
-        { "answer": "<h1>", "isCorrect": true },
-        { "answer": "<head>" }
-      ]
-    },
-    {
-      "id": 3,
-      "question": "What is the correct HTML element for inserting a line break?",
-      "answerOptions": [
-        { "answer": "<break>" },
-        { "answer": "<lb>" },
-        { "answer": "<br>", "isCorrect": true }
-      ]
-    }
-  ],
-
-  "matching": [
-    {
-      "id": 4,
-      "question": "Match each word to it's category.",
-      "choices": [{ "choice": "1a" }, { "choice": "2a" }, { "choice": "3a" }],
-      "keys": [{ "key": "a" }, { "key": "b" }, { "key": "c" }],
-      "answers": [{ "answer": "1" }, { "answer": "2" }, { "answer": "3" }]
-    }
-  ],
-
-  "matching": [
-    {
-      "id": 6,
-      "question": "Match each word to it's category.",
-      "choices": [{ "choice": "1a" }, { "choice": "2a" }, { "choice": "3a" }],
-      "answers": [{ "answer": "1" }, { "answer": "2" }, { "answer": "3" }]
-    }
-  ],
-
-  "truefalse": [
-    {
-      "id": 7,
-      "statements:": [
-        {
-          "question": "The national flag of America has 51 stars.",
-          "correct": true
-        },
-        {
-          "question": "The human body consists of 150 bones.",
-          "correct": false
-        },
-        { "question": "Oxygen is required for breathing.", "correct": true }
-      ]
+      "type": "onematch",
+      "category": ["Car", "Phone", "Browser"],
+      "choice": ["Iphone", "Google", "Honda"]
     }
   ]
 }

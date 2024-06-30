@@ -1,3 +1,4 @@
+import { type Quizzes } from "@/app/api/quizzes/route";
 import { type GetStoryResult } from "@/app/api/stories/[year]/[month]/[day]/[slug]/route";
 import { type GetStoriesResult } from "@/app/api/stories/route";
 import Avatar from "@/components/Avatar";
@@ -13,7 +14,6 @@ import {
 } from "@/components/quiz-components/QuizContext";
 import MultipChoice from "@/components/Quiz/MulitpleChoice";
 import MultipMatch from "@/components/Quiz/MultipleMatch";
-import { QuizProvider } from "@/components/Quiz/oldFile/QuizContext";
 import OneMatch from "@/components/Quiz/OneMatch";
 import TrueFalse from "@/components/Quiz/TrueFalse";
 import FromThisSeries from "@/components/story-components/FromThisSeries";
@@ -145,6 +145,14 @@ const fakeQuizData = {
 
 export default async function StoriesPage({ params }: Params) {
   const whatsNewArticles = await getWhatsNewArticles();
+  const quizzes = await getQuiz();
+  // const quziexample = Object.entries(quizzes);
+  // quziexample.forEach(([key, value]) => {
+  //   console.log("key", typeof key, key); // 'one'
+  //   console.log("value", typeof value, value); // 1
+  // });
+
+  // console.log("Type: ", typeof quizzes, quizzes);
   const story = await retrieveStoryContent(params);
   const { file } = await generateMarkdown(story.storyContent[0].content);
   const questionList_MM1: MultipleMatchQuestion[] = [
@@ -494,7 +502,8 @@ export default async function StoriesPage({ params }: Params) {
             {postQuiz}{" "}
           </TestProvider>
         </QuizProvider> */}
-        <Quiz />
+        {/* {quizzes.quizzes.subparts.id} */}
+        <Quiz Quizzes={quizzes} />
       </div>
       <p className="w-[calc( 100% - 1rem )] mx-2 my-5 border-t-2 border-[#616161]  text-sm text-[#616161] md:mx-auto md:w-[720px]">
         Animation provided by Source name 1. Sources provided by Source name 2.
@@ -592,4 +601,20 @@ async function getWhatsNewArticles() {
       updatedAt: new Date(story.updatedAt),
     })),
   );
+}
+
+/// temporary
+async function getQuiz() {
+  const res = await fetch(
+    `${env.NEXT_PUBLIC_SITE_URL}/api/quizzes?storyId=647ad74aa9efff3abe83045a`,
+    {
+      next: { revalidate: 60 },
+    },
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch data");
+  }
+
+  return res.json();
 }
