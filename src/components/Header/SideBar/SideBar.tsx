@@ -80,7 +80,10 @@ export default function SideBar() {
             className="text-white-400 my-1.5 flex transform cursor-pointer items-center  hover:bg-sciquelHover"
             style={{ display: showSideBar ? "block" : "none" }}
           >
-            <Link href="/" className="mx-4 font-medium">
+            <Link
+              href="/stories/list?topic=Astronomy"
+              className="mx-4 font-medium"
+            >
               Astronomy
             </Link>
           </li>
@@ -89,7 +92,10 @@ export default function SideBar() {
             className="text-white-400 my-1.5 flex transform cursor-pointer items-center   hover:bg-sciquelHover"
             style={{ display: showSideBar ? "block" : "none" }}
           >
-            <Link href="/" className="mx-4 font-medium">
+            <Link
+              href="/stories/list?topic=Biology"
+              className="mx-4 font-medium"
+            >
               Biology
             </Link>
           </li>
@@ -97,7 +103,10 @@ export default function SideBar() {
             className="text-white-400 my-1.5 flex transform cursor-pointer items-center   hover:bg-sciquelHover"
             style={{ display: showSideBar ? "block" : "none" }}
           >
-            <Link href="/" className="mx-4 font-medium">
+            <Link
+              href="/stories/list?topic=Chemistry"
+              className="mx-4 font-medium"
+            >
               Chemistry
             </Link>
           </li>
@@ -105,7 +114,10 @@ export default function SideBar() {
             className="text-white-400 my-1.5 flex transform cursor-pointer items-center   hover:bg-sciquelHover"
             style={{ display: showSideBar ? "block" : "none" }}
           >
-            <Link href="/" className="mx-4 font-medium">
+            <Link
+              href="/stories/list?topic=Computer_Science"
+              className="mx-4 font-medium"
+            >
               Computer Science
             </Link>
           </li>
@@ -113,7 +125,10 @@ export default function SideBar() {
             className="text-white-400 my-1.5 flex transform cursor-pointer items-center   hover:bg-sciquelHover"
             style={{ display: showSideBar ? "block" : "none" }}
           >
-            <Link href="/" className="mx-4 font-medium">
+            <Link
+              href="/stories/list?topic=chemical_engineering"
+              className="mx-4 font-medium"
+            >
               Chemical
             </Link>
           </li>
@@ -121,7 +136,10 @@ export default function SideBar() {
             className="text-white-400 my-1.5 flex transform cursor-pointer items-center   hover:bg-sciquelHover"
             style={{ display: showSideBar ? "block" : "none" }}
           >
-            <Link href="/" className="mx-4 font-medium">
+            <Link
+              href="/stories/list?topic=Electrical_Engineering"
+              className="mx-4 font-medium"
+            >
               Electrical
             </Link>
           </li>
@@ -129,7 +147,10 @@ export default function SideBar() {
             className="text-white-400 my-1.5 flex transform cursor-pointer items-center   hover:bg-sciquelHover"
             style={{ display: showSideBar ? "block" : "none" }}
           >
-            <Link href="/" className="mx-4 font-medium">
+            <Link
+              href="/stories/list?topic=Environmental_Science"
+              className="mx-4 font-medium"
+            >
               Environmental Science
             </Link>
           </li>
@@ -137,7 +158,10 @@ export default function SideBar() {
             className="text-white-400 my-1.5 flex transform cursor-pointer items-center   hover:bg-sciquelHover"
             style={{ display: showSideBar ? "block" : "none" }}
           >
-            <Link href="/" className="mx-4 font-medium">
+            <Link
+              href="/stories/list?topic=Geology"
+              className="mx-4 font-medium"
+            >
               Geology
             </Link>
           </li>
@@ -145,7 +169,10 @@ export default function SideBar() {
             className="text-white-400 my-1.5 flex transform cursor-pointer items-center   hover:bg-sciquelHover"
             style={{ display: showSideBar ? "block" : "none" }}
           >
-            <Link href="/" className="mx-4 font-medium">
+            <Link
+              href="/stories/list?topic=Mathematics"
+              className="mx-4 font-medium"
+            >
               Mathematics
             </Link>
           </li>
@@ -153,7 +180,10 @@ export default function SideBar() {
             className="text-white-400 my-1.5 flex transform cursor-pointer items-center   hover:bg-sciquelHover"
             style={{ display: showSideBar ? "block" : "none" }}
           >
-            <Link href="/" className="mx-4 font-medium">
+            <Link
+              href="/stories/list?topic=Mechanical_Engineering"
+              className="mx-4 font-medium"
+            >
               Mechanical Engineering
             </Link>
           </li>
@@ -162,7 +192,10 @@ export default function SideBar() {
             className="text-white-400 my-1.5 flex transform cursor-pointer items-center   hover:bg-sciquelHover"
             style={{ display: showSideBar ? "block" : "none" }}
           >
-            <Link href="/" className="mx-4 font-medium">
+            <Link
+              href="/stories/list?topic=Medicine"
+              className="mx-4 font-medium"
+            >
               Medicine
             </Link>
           </li>
@@ -170,7 +203,10 @@ export default function SideBar() {
             className="text-white-400 my-1.5 flex transform cursor-pointer items-center   hover:bg-sciquelHover"
             style={{ display: showSideBar ? "block" : "none" }}
           >
-            <Link href="/" className="mx-4 font-medium">
+            <Link
+              href="/stories/list?topic=Physics"
+              className="mx-4 font-medium"
+            >
               Physics
             </Link>
           </li>
@@ -178,7 +214,10 @@ export default function SideBar() {
             className="text-white-400 my-1.5 flex transform cursor-pointer items-center   hover:bg-sciquelHover"
             style={{ display: showSideBar ? "block" : "none" }}
           >
-            <Link href="/" className="mx-4 font-medium">
+            <Link
+              href="/stories/list?topic=Psychology"
+              className="mx-4 font-medium"
+            >
               Psychology
             </Link>
           </li>
@@ -186,7 +225,10 @@ export default function SideBar() {
             className="text-white-400 my-1.5 flex transform cursor-pointer items-center   hover:bg-sciquelHover"
             style={{ display: showSideBar ? "block" : "none" }}
           >
-            <Link href="/" className="mx-4 font-medium">
+            <Link
+              href="/stories/list?topic=Sociology"
+              className="mx-4 font-medium"
+            >
               Sociology
             </Link>
           </li>
@@ -194,7 +236,10 @@ export default function SideBar() {
             className="text-white-400 my-1.5 flex transform cursor-pointer items-center   hover:bg-sciquelHover"
             style={{ display: showSideBar ? "block" : "none" }}
           >
-            <Link href="/" className="mx-4 font-medium">
+            <Link
+              href="/stories/list?topic=Technology"
+              className="mx-4 font-medium"
+            >
               Technology
             </Link>
           </li>
@@ -208,7 +253,7 @@ export default function SideBar() {
             className="text-white-400 my-1.5 flex transform cursor-pointer items-center   hover:bg-sciquelHover"
             style={{ display: showSideBar ? "block" : "none" }}
           >
-            <Link href="/" className="mx-4 font-medium">
+            <Link href="/get-involved" className="mx-4 font-medium">
               Get Involved
             </Link>
           </li>
@@ -216,7 +261,7 @@ export default function SideBar() {
             className="text-white-400 my-1.5 flex transform cursor-pointer items-center   hover:bg-sciquelHover"
             style={{ display: showSideBar ? "block" : "none" }}
           >
-            <Link href="/" className="mx-4 font-medium">
+            <Link href="/leave-feedback" className="mx-4 font-medium">
               Leave FeedBack
             </Link>
           </li>
