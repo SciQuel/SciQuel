@@ -42,7 +42,7 @@ export default function ArticleCard({
             mini && !preferHorizontal
               ? "min-h-[270px] max-w-xs xs:min-w-[265px]"
               : "xs:min-w-[300px]",
-            preferHorizontal ? "flex-row" : "flex-col",
+            preferHorizontal ? "flex-col-reverse sm:flex-row" : "flex-col",
           )}
         >
           <div
@@ -53,15 +53,15 @@ export default function ArticleCard({
                   ? "w-full"
                   : "grow  p-3"
                 : preferHorizontal
-                ? "w-2/3 p-3"
+                ? "p-3 sm:w-2/3"
                 : "grow  p-3",
             )}
           >
             {/* Article Card Header */}
             {!mini || !preferHorizontal ? (
-              <div className="flex w-full flex-row">
+              <div className="flex w-full flex-row flex-wrap justify-between">
                 <TopicTag name={topic} />
-                <div className="grow text-right">
+                <div className="">
                   <p
                     className={clsx(
                       "m-0 text-sciquelMuted",
@@ -117,7 +117,7 @@ export default function ArticleCard({
                   ? "hidden"
                   : "h-24"
                 : preferHorizontal
-                ? "w-1/3"
+                ? "h-44 w-full sm:h-full sm:w-1/3"
                 : "h-44",
             )}
           >
