@@ -573,7 +573,7 @@ export default function StoryCredits({ story }: Props) {
                 " | "
               : ""}
           </p>
-          {story.tags.map((item: StoryTopic, index: number) => {
+          {story.topics.map((item: StoryTopic, index: number) => {
             return (
               <p key={`${item}-${index}`} className="lowercase">
                 {item}{" "}
@@ -656,7 +656,7 @@ export default function StoryCredits({ story }: Props) {
                   " |"
                 : ""}
             </p>
-            {story.tags.map((item: StoryTopic, index: number) => {
+            {story.topics.map((item: StoryTopic, index: number) => {
               return <TopicTag name={item} key={`${item}-${index}`} />;
             })}
           </div>

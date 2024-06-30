@@ -82,7 +82,7 @@ export async function GET(req: NextRequest) {
           : {}),
         published,
         staffPick: staff_pick ? { isNot: null } : undefined,
-        ...(topic ? { tags: { has: topic } } : {}),
+        ...(topic ? { topics: { has: topic } } : {}),
         storyType: type,
         createdAt: {
           gte: date_from,
