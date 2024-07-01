@@ -1,7 +1,7 @@
 "use client";
 
 import { type GetStoryResult } from "@/app/api/stories/[year]/[month]/[day]/[slug]/route";
-import { ContributionType, type StoryTopic } from "@prisma/client";
+import { type StoryTopic } from "@prisma/client";
 import { DateTime } from "luxon";
 import Image from "next/image";
 import {
