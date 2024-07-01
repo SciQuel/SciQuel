@@ -20,6 +20,28 @@ interface StoryContribution {
   bio: string | null;
 }
 
+const contributorPrefixMap = {
+  AUTHOR: {
+    prefix: "Authors",
+  },
+  ILLUSTRATOR: {
+    prefix: "Illustrators",
+  },
+  ANIMATOR: {
+    prefix: "Animators",
+  },
+} as {
+  AUTHOR: {
+    prefix: string;
+  };
+  ANIMATOR: {
+    prefix: string;
+  };
+  ILLUSTRATOR: {
+    prefix: string;
+  };
+};
+
 interface Props {
   storyContributions: StoryContribution[];
 }
@@ -27,100 +49,159 @@ interface Props {
 export default function AuthorCredits({ storyContributions }: Props) {
   const isPrintMode = useContext(PrintContext);
 
-  function buildPrintCredits() {
-    const authors: StoryContribution[] = [];
-    const animators: StoryContribution[] = [];
-    const illustrators: StoryContribution[] = [];
+  function buildPrintContributors() {
+    const contributorMap = {
+      AUTHOR: [],
+      ILLUSTRATOR: [],
+      ANIMATOR: [],
+    } as {
+      [key: string]: {
+        name: string;
+        icon: string | null;
+        slug: string;
+        bio: string;
+      }[];
+    };
+
+    const otherMap = {} as {
+      [key: string]: {
+        name: string;
+        icon: string | null;
+        slug: string;
+        otherContributionPrefix: string;
+        bio: string;
+      }[];
+    };
 
     storyContributions.forEach((contributor) => {
       switch (contributor.contributionType) {
-        case "ANIMATOR":
-          animators.push(contributor);
-          break;
-
         case "AUTHOR":
-          authors.push(contributor);
-          break;
+          contributorMap.AUTHOR.push({
+            name: `${contributor.contributor.firstName} ${contributor.contributor.lastName}`,
+            icon: contributor.contributor.avatarUrl,
+            slug: contributor.contributor.contributorSlug,
+            bio: contributor.bio ?? contributor.contributorByline ?? "",
+          });
 
+          break;
         case "ILLUSTRATOR":
-          illustrators.push(contributor);
+          contributorMap.ILLUSTRATOR.push({
+            name: `${contributor.contributor.firstName} ${contributor.contributor.lastName}`,
+            icon: contributor.contributor.avatarUrl,
+            slug: contributor.contributor.contributorSlug,
+            bio: contributor.bio ?? contributor.contributorByline ?? "",
+          });
           break;
-
+        case "ANIMATOR":
+          contributorMap.ANIMATOR.push({
+            name: `${contributor.contributor.firstName} ${contributor.contributor.lastName}`,
+            icon: contributor.contributor.avatarUrl,
+            slug: contributor.contributor.contributorSlug,
+            bio: contributor.bio ?? contributor.contributorByline ?? "",
+          });
+          break;
         default:
-          authors.push(contributor);
+          if (
+            contributor.otherContributorType &&
+            otherMap[contributor.otherContributorType]
+          ) {
+            otherMap[contributor.otherContributorType].push({
+              name: `${contributor.contributor.firstName} ${contributor.contributor.lastName}`,
+              icon: contributor.contributor.avatarUrl,
+              otherContributionPrefix:
+                contributor.otherContributorCredit ?? "by ",
+              slug: contributor.contributor.contributorSlug,
+              bio: contributor.bio ?? contributor.contributorByline ?? "",
+            });
+          } else if (
+            contributor.otherContributorType &&
+            contributor.otherContributorCredit
+          ) {
+            otherMap[contributor.otherContributorType] = [
+              {
+                name: `${contributor.contributor.firstName} ${contributor.contributor.lastName}`,
+                icon: contributor.contributor.avatarUrl,
+                otherContributionPrefix:
+                  contributor.otherContributorCredit ?? "by ",
+                slug: contributor.contributor.contributorSlug,
+                bio: contributor.bio ?? contributor.contributorByline ?? "",
+              },
+            ];
+          }
           break;
       }
     });
 
     return (
       <>
-        {authors.length > 0 ? (
-          <div className="w-[calc( 100% - 1rem )] mx-2 mb-2 p-0 font-sourceSerif4 text-lg md:mx-auto md:w-[768px]">
-            <h1 className="font-bold">Author{authors.length > 1 ? "s" : ""}</h1>
-            {authors.map((element) => (
-              <p key={`footer-credits-${element.contributor.id}`} className="">
-                <a
-                  className="font-semibold"
-                  href={`/profile/${element.contributor.contributorSlug}`}
-                >
-                  {" "}
-                  {element.contributor.firstName} {element.contributor.lastName}{" "}
-                </a>
-                {element.bio ?? element.contributorByline ?? ""}
-              </p>
-            ))}
-          </div>
-        ) : (
-          <></>
-        )}
-        {illustrators.length > 0 ? (
-          <div className="w-[calc( 100% - 1rem )] mx-2 mb-2 p-0 font-sourceSerif4 text-lg md:mx-auto md:w-[768px]">
-            <h1 className="font-bold">
-              Illustrator{illustrators.length > 1 ? "s" : ""}
-            </h1>
-            {illustrators.map((element) => (
-              <p key={`footer-credits-${element.contributor.id}`}>
-                <a
-                  className="font-semibold"
-                  href={`/profile/${element.contributor.contributorSlug}`}
-                >
-                  {" "}
-                  {element.contributor.firstName} {element.contributor.lastName}{" "}
-                </a>
-                {element.bio ?? element.contributorByline ?? ""}
-              </p>
-            ))}
-          </div>
-        ) : (
-          <></>
-        )}
-        {animators.length > 0 ? (
-          <div className="w-[calc( 100% - 1rem )] mx-2 mb-2 p-0 font-sourceSerif4 text-lg md:mx-auto md:w-[768px]">
-            <h1 className="font-bold">
-              Animator{animators.length > 1 ? "s" : ""}
-            </h1>
-            {animators.map((element) => (
-              <p key={`footer-credits-${element.contributor.id}`}>
-                <a
-                  className="font-semibold"
-                  href={`/profile/${element.contributor.contributorSlug}`}
-                >
-                  {" "}
-                  {element.contributor.firstName} {element.contributor.lastName}{" "}
-                </a>
-                {element.bio ?? element.contributorByline ?? ""}
-              </p>
-            ))}
-          </div>
-        ) : (
-          <></>
-        )}
+        {Object.keys(contributorMap).map((contributionType) => {
+          const contributors = contributorMap[contributionType];
+          if (contributors.length > 0) {
+            return (
+              <div
+                key={contributionType}
+                className="w-[calc( 100% - 1rem )] mx-2 mb-2 p-0 font-sourceSerif4 text-lg md:mx-auto md:w-[768px]"
+              >
+                <h1 className="font-bold">
+                  {
+                    contributorPrefixMap[
+                      contributionType as "AUTHOR" | "ILLUSTRATOR" | "ANIMATOR"
+                    ].prefix
+                  }
+                  {contributors.length > 1 ? "s" : ""}
+                </h1>
+                {contributors.map((element) => (
+                  <p key={`footer-credits-${element.slug}`} className="">
+                    <a
+                      className="font-semibold"
+                      href={`/profile/${element.slug}`}
+                    >
+                      {" "}
+                      {element.name}{" "}
+                    </a>
+                    {element.bio}
+                  </p>
+                ))}
+              </div>
+            );
+          }
+          return <></>;
+        })}
+        {Object.keys(otherMap).map((contributionType) => {
+          const contributors = otherMap[contributionType];
+
+          return (
+            <div
+              key={contributionType}
+              className="w-[calc( 100% - 1rem )] mx-2 mb-2 p-0 font-sourceSerif4 text-lg md:mx-auto md:w-[768px]"
+            >
+              <h1 className="font-bold">
+                {contributors[0]
+                  ? contributors[0].otherContributionPrefix
+                  : "Other contributor"}
+                {contributors.length > 1 ? "s" : ""}
+              </h1>
+              {contributors.map((element) => (
+                <p key={`footer-credits-${element.slug}`} className="">
+                  <a
+                    className="font-semibold"
+                    href={`/profile/${element.slug}`}
+                  >
+                    {" "}
+                    {element.name}{" "}
+                  </a>
+                  {element.bio}
+                </p>
+              ))}
+            </div>
+          );
+        })}
       </>
     );
   }
 
   return isPrintMode ? (
-    <div>{buildPrintCredits()}</div>
+    <div>{buildPrintContributors()}</div>
   ) : (
     <div className="mb-8">
       {storyContributions.map((element, index) => (
