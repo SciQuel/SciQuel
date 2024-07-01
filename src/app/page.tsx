@@ -2,13 +2,13 @@
 // import TrendingSection from "@/components/TrendingSection";
 import WhatsNewSection from "@/components/WhatsNewSection";
 import env from "@/lib/env";
-import { type GetStoryResult } from "./api/stories/[year]/[month]/[day]/[slug]/route";
+// import { type GetStoryResult } from "./api/stories/[year]/[month]/[day]/[slug]/route";
 import { type GetStoriesResult } from "./api/stories/route";
 
 export default async function Home() {
   const [whatsNewArticles] = await Promise.all([
     getWhatsNewArticles(),
-    getExampleStory(),
+    // getExampleStory(),
   ]);
 
   return (
@@ -44,24 +44,24 @@ async function getWhatsNewArticles() {
   }));
 }
 
-async function getExampleStory() {
-  const res = await fetch(
-    `${env.NEXT_PUBLIC_SITE_URL}/api/stories/2022/01/11/lights-camera-action`,
-    {
-      next: { revalidate: 60 },
-    },
-  );
+// async function getExampleStory() {
+//   const res = await fetch(
+//     `${env.NEXT_PUBLIC_SITE_URL}/api/stories/2022/01/11/lights-camera-action`,
+//     {
+//       next: { revalidate: 60 },
+//     },
+//   );
 
-  if (!res.ok) {
-    throw new Error("Failed to fetch data");
-  }
+//   if (!res.ok) {
+//     throw new Error("Failed to fetch data");
+//   }
 
-  return res.json().then((value: GetStoryResult) => {
-    return {
-      ...value,
-      createdAt: new Date(value.createdAt),
-      publishedAt: new Date(value.publishedAt),
-      updatedAt: new Date(value.updatedAt),
-    };
-  });
-}
+//   return res.json().then((value: GetStoryResult) => {
+//     return {
+//       ...value,
+//       createdAt: new Date(value.createdAt),
+//       publishedAt: new Date(value.publishedAt),
+//       updatedAt: new Date(value.updatedAt),
+//     };
+//   });
+// }
