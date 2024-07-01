@@ -5,7 +5,7 @@ import { getServerSession } from "next-auth";
 export type QuizHistory = {
   story: {
     title: string;
-    tags: StoryTopic[];
+    topics: StoryTopic[];
   };
   quizType: QuizType;
   score: number;
@@ -39,7 +39,7 @@ export default async function getQuizHistory() {
         story: {
           select: {
             title: true,
-            tags: true,
+            topics: true,
           },
         },
       },
