@@ -48,11 +48,14 @@ export default function Footer() {
       </div>
       <div className="mb-4 flex w-full justify-center">
         <nav className="flex flex-wrap justify-center gap-3">
-          <Link href="/">About</Link>
-          <Link href="/">Team</Link>
-          <Link href="/">Terms & Conditions</Link>
-          <Link href="/">Privacy Policy</Link>
-          <Link href="/">Contact Us</Link>
+          <Link href="/about">About</Link>
+          {/* <Link href="/">Team</Link> */}
+          {/* <Link href="/">Terms & Conditions</Link> */}
+
+          <Link href="/leave-feedback">Contact Us</Link>
+          <Link className="text-center" href="/privacy-and-terms">
+            Privacy Policy and Other Terms
+          </Link>
         </nav>
       </div>
     </div>

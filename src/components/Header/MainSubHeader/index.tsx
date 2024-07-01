@@ -28,7 +28,7 @@ export default function MainSubHeader() {
       </div> */}
 
       <div className="grow cursor-pointer px-4 py-2 hover:bg-sciquelHover">
-        <Link href="/">ABOUT</Link>
+        <Link href="/about">ABOUT</Link>
       </div>
 
       <div className="grow cursor-pointer px-4 py-2 hover:bg-sciquelHover">

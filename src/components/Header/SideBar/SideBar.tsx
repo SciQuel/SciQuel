@@ -269,7 +269,7 @@ export default function SideBar() {
             className="text-white-400 my-1.5 flex transform cursor-pointer items-center   hover:bg-sciquelHover"
             style={{ display: showSideBar ? "block" : "none" }}
           >
-            <Link href="/" className="mx-4 font-medium">
+            <Link href="/about" className="mx-4 font-medium">
               Behind The Science
             </Link>
           </li>
