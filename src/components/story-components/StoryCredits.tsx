@@ -1,7 +1,7 @@
 "use client";
 
 import { type GetStoryResult } from "@/app/api/stories/[year]/[month]/[day]/[slug]/route";
-import { type StoryTopic } from "@prisma/client";
+import { ContributionType, type StoryTopic } from "@prisma/client";
 import { DateTime } from "luxon";
 import Image from "next/image";
 import {
@@ -23,6 +23,28 @@ interface Props {
 interface FontAction {
   type: "window update";
 }
+
+const contributorPrefixMap = {
+  AUTHOR: {
+    prefix: "by ",
+  },
+  ILLUSTRATOR: {
+    prefix: "illustrations by ",
+  },
+  ANIMATOR: {
+    prefix: "Animations by ",
+  },
+} as {
+  AUTHOR: {
+    prefix: string;
+  };
+  ANIMATOR: {
+    prefix: string;
+  };
+  ILLUSTRATOR: {
+    prefix: string;
+  };
+};
 
 export default function StoryCredits({ story }: Props) {
   const isPrintMode = useContext(PrintContext);
@@ -84,456 +106,172 @@ export default function StoryCredits({ story }: Props) {
     dispatchHeaderFont({ type: "window update" });
   }, [headerFont]);
 
-  const buildAuthors = () => {
-    const authors: string[] = [];
+  function buildContributors() {
+    const contributorMap = {
+      AUTHOR: [],
+      ILLUSTRATOR: [],
+      ANIMATOR: [],
+    } as {
+      [key: string]: {
+        name: string;
+        icon: string | null;
+        slug: string;
+      }[];
+    };
 
-    const authorIcons: (string | null)[] = [];
-
-    let illustrators: string[] = [];
-    let illustratorIcons: (string | null)[] = [];
-
-    const animators: string[] = [];
-    const animatorIcons: (string | null)[] = [];
-
+    const otherMap = {} as {
+      [key: string]: {
+        name: string;
+        icon: string | null;
+        slug: string;
+        otherContributionPrefix: string;
+      }[];
+    };
     story.storyContributions.forEach((contributor) => {
       switch (contributor.contributionType) {
         case "AUTHOR":
-          authors.push(
-            `${contributor.contributor.firstName} ${contributor.contributor.lastName}`,
-          );
-          authorIcons.push(contributor.contributor.avatarUrl);
+          contributorMap.AUTHOR.push({
+            name: `${contributor.contributor.firstName} ${contributor.contributor.lastName}`,
+            icon: contributor.contributor.avatarUrl,
+            slug: contributor.contributor.contributorSlug,
+          });
 
           break;
         case "ILLUSTRATOR":
-          illustrators.push(
-            `${contributor.contributor.firstName} ${contributor.contributor.lastName}`,
-          );
-          illustratorIcons.push(contributor.contributor.avatarUrl);
+          contributorMap.ILLUSTRATOR.push({
+            name: `${contributor.contributor.firstName} ${contributor.contributor.lastName}`,
+            icon: contributor.contributor.avatarUrl,
+            slug: contributor.contributor.contributorSlug,
+          });
           break;
         case "ANIMATOR":
-          animators.push(
-            `${contributor.contributor.firstName} ${contributor.contributor.lastName}`,
-          );
-          animatorIcons.push(contributor.contributor.avatarUrl);
+          contributorMap.ANIMATOR.push({
+            name: `${contributor.contributor.firstName} ${contributor.contributor.lastName}`,
+            icon: contributor.contributor.avatarUrl,
+            slug: contributor.contributor.contributorSlug,
+          });
           break;
         default:
-          authors.push(
-            `${contributor.contributor.firstName} ${contributor.contributor.lastName}`,
-          );
-          authorIcons.push(contributor.contributor.avatarUrl);
-          break;
-      }
-    });
-
-    //for testing remove later
-    illustrators = authors.slice(0, 1);
-    illustratorIcons = authorIcons.slice(0, 1);
-
-    return (
-      <div className="mx-0 flex flex-col  ">
-        <div className="flex flex-row">
-          <div className="flex flex-row justify-self-start">
-            {/* author icons */}
-            {authorIcons.map((icon, index) => (
-              <Avatar
-                key={`author-icons-${icon}-${index}`}
-                imageUrl={icon ? icon : undefined}
-                label={authors[index].slice(0, 1)}
-                className="my-1 me-2  "
-                size="md"
-              />
-            ))}
-          </div>
-          <p className="mx-0 self-center justify-self-stretch">
-            {/* authors */}
-            by{" "}
-            {authors.slice(0, -1).map((author) => {
-              if (authors.length > 2) {
-                return (
-                  <>
-                    {" "}
-                    <a
-                      href={`/contributors/${author
-                        .replaceAll(" ", "-")
-                        .toLowerCase()}`}
-                    >
-                      {author}
-                    </a>
-                    ,{" "}
-                  </>
-                );
-              } else {
-                return (
-                  <>
-                    <a
-                      href={`/contributors/${author
-                        .replaceAll(" ", "-")
-                        .toLowerCase()}`}
-                    >
-                      {" "}
-                      {author}{" "}
-                    </a>
-                  </>
-                );
-              }
-            })}{" "}
-            {authors.length > 1 ? " and " : ""}{" "}
-            <a
-              href={`/contributors/${authors
-                .slice(-1)[0]
-                .replaceAll(" ", "-")
-                .toLowerCase()}`}
-            >
-              {authors.slice(-1)[0]}
-            </a>
-          </p>
-        </div>
-        {illustrators.length > 0 ? (
-          <div className="flex flex-row">
-            <div className="flex flex-row justify-self-start">
-              {/* illust icons */}
-              {illustratorIcons.map((icon, index) => (
-                <Avatar
-                  key={`illustrator-icons-${icon}-${index}`}
-                  imageUrl={icon ? icon : undefined}
-                  label={illustrators[index].slice(0, 1)}
-                  className="my-1 me-2  "
-                  size="md"
-                />
-              ))}
-            </div>
-            <p className="mx-0 self-center  justify-self-stretch">
-              {/* illustrators */}
-              illustrations by{" "}
-              {illustrators.slice(0, -1).map((illustrator) => {
-                if (illustrators.length > 2) {
-                  return (
-                    <>
-                      <a
-                        href={`/contributors/${illustrator
-                          .replaceAll(" ", "-")
-                          .toLowerCase()}`}
-                      >
-                        {illustrator}
-                      </a>
-                      ,{" "}
-                    </>
-                  );
-                } else {
-                  return (
-                    <>
-                      <a
-                        href={`/contributors/${illustrator
-                          .replaceAll(" ", "-")
-                          .toLowerCase()}`}
-                      >
-                        {illustrator}
-                      </a>{" "}
-                    </>
-                  );
-                }
-              })}{" "}
-              {illustrators.length > 1 ? "and " : ""}{" "}
-              <a
-                href={`/contributors/${illustrators
-                  .slice(-1)[0]
-                  .replaceAll(" ", "-")
-                  .toLowerCase()}`}
-              >
-                {illustrators.slice(-1)[0]}
-              </a>
-            </p>
-          </div>
-        ) : (
-          <></>
-        )}
-
-        {animators.length > 0 ? (
-          <div className="flex flex-row">
-            <div className="flex flex-row justify-self-start">
-              {/* animator icons */}
-              {animatorIcons.map((icon, index) => (
-                <Avatar
-                  key={`animator-icons-${icon}-${index}`}
-                  imageUrl={icon ? icon : undefined}
-                  label={animators[index].slice(0, 1)}
-                  className="my-1 me-2  "
-                  size="md"
-                />
-              ))}
-            </div>
-            <p className="mx-0 self-center  justify-self-stretch">
-              {/* animators */}
-              Animations by{" "}
-              {animators.slice(0, -1).map((animator) => {
-                if (animators.length > 2) {
-                  return (
-                    <>
-                      <a
-                        href={`/contributors/${animator
-                          .replaceAll(" ", "-")
-                          .toLowerCase()}`}
-                      >
-                        {animator}
-                      </a>
-                      ,{" "}
-                    </>
-                  );
-                } else {
-                  return (
-                    <>
-                      <a
-                        href={`/contributors/${animator
-                          .replaceAll(" ", "-")
-                          .toLowerCase()}`}
-                      >
-                        {animator}
-                      </a>{" "}
-                    </>
-                  );
-                }
-              })}{" "}
-              {animators.length > 1 ? "and " : ""}{" "}
-              <a
-                href={`/contributors/${animators
-                  .slice(-1)[0]
-                  .replaceAll(" ", "-")
-                  .toLowerCase()}`}
-              >
-                {animators.slice(-1)[0]}
-              </a>
-            </p>
-          </div>
-        ) : (
-          <></>
-        )}
-      </div>
-    );
-  };
-
-  const buildPrintAuthors = () => {
-    const authors: string[] = [];
-
-    const authorIcons: (string | null)[] = [];
-
-    const illustrators: string[] = [];
-    const illustratorIcons: (string | null)[] = [];
-
-    const animators: string[] = [];
-    const animatorIcons: (string | null)[] = [];
-
-    story.storyContributions.forEach((contributor) => {
-      switch (contributor.contributionType) {
-        case "AUTHOR":
-          authors.push(
-            `${contributor.contributor.firstName} ${contributor.contributor.lastName}`,
-          );
-          authorIcons.push(contributor.contributor.avatarUrl);
-
-          break;
-        case "ILLUSTRATOR":
-          illustrators.push(
-            `${contributor.contributor.firstName} ${contributor.contributor.lastName}`,
-          );
-          illustratorIcons.push(contributor.contributor.avatarUrl);
-          break;
-        case "ANIMATOR":
-          animators.push(
-            `${contributor.contributor.firstName} ${contributor.contributor.lastName}`,
-          );
-          animatorIcons.push(contributor.contributor.avatarUrl);
-          break;
-        default:
-          authors.push(
-            `${contributor.contributor.firstName} ${contributor.contributor.lastName}`,
-          );
-          authorIcons.push(contributor.contributor.avatarUrl);
+          if (
+            contributor.otherContributorType &&
+            otherMap[contributor.otherContributorType]
+          ) {
+            otherMap[contributor.otherContributorType].push({
+              name: `${contributor.contributor.firstName} ${contributor.contributor.lastName}`,
+              icon: contributor.contributor.avatarUrl,
+              otherContributionPrefix:
+                contributor.otherContributorCredit ?? "by ",
+              slug: contributor.contributor.contributorSlug,
+            });
+          } else if (
+            contributor.otherContributorType &&
+            contributor.otherContributorCredit
+          ) {
+            otherMap[contributor.otherContributorType] = [
+              {
+                name: `${contributor.contributor.firstName} ${contributor.contributor.lastName}`,
+                icon: contributor.contributor.avatarUrl,
+                otherContributionPrefix:
+                  contributor.otherContributorCredit ?? "by ",
+                slug: contributor.contributor.contributorSlug,
+              },
+            ];
+          }
           break;
       }
     });
 
     return (
-      <div>
-        <div className="flex flex-row items-center">
-          {authors.length > 0 ? (
-            <>
-              <div className="flex flex-row justify-self-start">
-                {/* author icons */}
-                {authorIcons.map((icon, index) => (
-                  <Avatar
-                    key={`author-icons-${icon}-${index}`}
-                    imageUrl={icon ? icon : undefined}
-                    label={authors[index].slice(0, 1)}
-                    className="my-1 me-2  "
-                    size="md"
-                  />
-                ))}
-              </div>
+      <div className="flex flex-col">
+        {Object.keys(contributorMap).map((key) =>
+          contributorMap[key].length > 0 ? (
+            <div className="flex flex-row items-center" key={key}>
+              {contributorMap[key].map((icon, index) => (
+                <Avatar
+                  key={`author-icons-${icon.icon}-${index}`}
+                  imageUrl={icon.icon ? icon.icon : undefined}
+                  label={icon.name[index].slice(0, 1)}
+                  className="my-1 me-2  "
+                  size="md"
+                />
+              ))}
               <p>
-                by{" "}
-                {authors.slice(0, -1).map((author) => {
-                  if (authors.length > 2) {
+                {contributorPrefixMap[
+                  key as "AUTHOR" | "ANIMATOR" | "ILLUSTRATOR"
+                ]
+                  ? contributorPrefixMap[
+                      key as "AUTHOR" | "ANIMATOR" | "ILLUSTRATOR"
+                    ].prefix
+                  : "by "}
+                {contributorMap[key].slice(0, -1).map((author) => {
+                  if (contributorMap[key].length > 2) {
                     return (
                       <>
-                        <a
-                          href={`/contributors/${author
-                            .replaceAll(" ", "-")
-                            .toLowerCase()}`}
-                        >
-                          {author}
-                        </a>
-                        ,{" "}
+                        <a href={`/profile/${author.slug}`}>{author.name}</a>,{" "}
                       </>
                     );
                   } else {
                     return (
                       <>
-                        <a
-                          href={`/contributors/${author
-                            .replaceAll(" ", "-")
-                            .toLowerCase()}`}
-                        >
-                          {author}
-                        </a>{" "}
+                        <a href={`/profile/${author.slug}`}>{author.name}</a>{" "}
                       </>
                     );
                   }
                 })}{" "}
-                {authors.length > 1 ? "and " : ""}{" "}
-                <a
-                  href={`/contributors/${authors
-                    .slice(-1)[0]
-                    .replaceAll(" ", "-")
-                    .toLowerCase()}`}
-                >
-                  {authors.slice(-1)[0]}
-                </a>
+                {contributorMap[key].length > 1 ? "and " : ""}{" "}
+                {contributorMap[key].slice(-1).map((finalContributors) => (
+                  <a href={`/profile/${finalContributors.slug}`}>
+                    {finalContributors.name}
+                  </a>
+                ))}
               </p>
-            </>
+            </div>
           ) : (
-            ""
-          )}
-        </div>
-
-        {illustrators.length > 0 ? (
-          <div className="flex flex-row items-center">
-            <div className="flex flex-row justify-self-start">
-              {/* illust icons */}
-              {illustratorIcons.map((icon, index) => (
-                <Avatar
-                  key={`illustrator-icons-${icon}-${index}`}
-                  imageUrl={icon ? icon : undefined}
-                  label={illustrators[index].slice(0, 1)}
-                  className="my-1 me-2  "
-                  size="md"
-                />
-              ))}
-            </div>
+            <></>
+          ),
+        )}
+        {Object.keys(otherMap).map((key) => (
+          <div className="flex flex-row items-center" key={key}>
+            {otherMap[key].map((icon, index) => (
+              <Avatar
+                key={`author-icons-${icon.icon}-${index}`}
+                imageUrl={icon.icon ? icon.icon : undefined}
+                label={icon.name[index].slice(0, 1)}
+                className="my-1 me-2  "
+                size="md"
+              />
+            ))}
             <p>
-              Illustrations by{" "}
-              {illustrators.slice(0, -1).map((illustrator) => {
-                if (illustrators.length > 2) {
+              {otherMap[key][0].otherContributionPrefix
+                ? otherMap[key][0].otherContributionPrefix
+                : "by "}
+              {otherMap[key].slice(0, -1).map((author) => {
+                if (otherMap[key].length > 2) {
                   return (
                     <>
-                      <a
-                        href={`/contributors/${illustrator
-                          .replaceAll(" ", "-")
-                          .toLowerCase()}`}
-                      >
-                        {illustrator}
-                      </a>
-                      ,{" "}
+                      <a href={`/profile/${author.slug}`}>{author.name}</a>,{" "}
                     </>
                   );
                 } else {
                   return (
                     <>
-                      <a
-                        href={`/contributors/${illustrator
-                          .replaceAll(" ", "-")
-                          .toLowerCase()}`}
-                      >
-                        {illustrator}
-                      </a>{" "}
+                      <a href={`/profile/${author.slug}`}>{author.name}</a>{" "}
                     </>
                   );
                 }
               })}{" "}
-              {illustrators.length > 1 ? "and " : ""}{" "}
-              <a
-                href={`/contributors/${illustrators
-                  .slice(-1)[0]
-                  .replaceAll(" ", "-")
-                  .toLowerCase()}`}
-              >
-                {illustrators.slice(-1)[0]}
-              </a>
-            </p>
-          </div>
-        ) : (
-          ""
-        )}
-        {animators.length > 0 ? (
-          <div className="flex flex-row items-center">
-            <div className="flex flex-row justify-self-start">
-              {/* animator icons */}
-              {animatorIcons.map((icon, index) => (
-                <Avatar
-                  key={`animator-icons-${icon}-${index}`}
-                  imageUrl={icon ? icon : undefined}
-                  label={animators[index].slice(0, 1)}
-                  className="my-1 me-2  "
-                  size="md"
-                />
+              {otherMap[key].length > 1 ? "and " : ""}{" "}
+              {otherMap[key].slice(-1).map((finalContributors) => (
+                <a href={`/profile/${finalContributors.slug}`}>
+                  {finalContributors.name}
+                </a>
               ))}
-            </div>
-            <p>
-              Animations by{" "}
-              {animators.slice(0, -1).map((animator) => {
-                if (animators.length > 2) {
-                  return (
-                    <>
-                      <a
-                        href={`/contributors/${animator
-                          .replaceAll(" ", "-")
-                          .toLowerCase()}`}
-                      >
-                        {animator}
-                      </a>
-                      ,{" "}
-                    </>
-                  );
-                } else {
-                  return (
-                    <>
-                      <a
-                        href={`/contributors/${animator
-                          .replaceAll(" ", "-")
-                          .toLowerCase()}`}
-                      >
-                        {animator}
-                      </a>{" "}
-                    </>
-                  );
-                }
-              })}{" "}
-              {animators.length > 1 ? "and " : ""}{" "}
-              <a
-                href={`/contributors/${animators
-                  .slice(-1)[0]
-                  .replaceAll(" ", "-")
-                  .toLowerCase()}`}
-              >
-                {animators.slice(-1)[0]}
-              </a>
             </p>
           </div>
-        ) : (
-          ""
-        )}
+        ))}
       </div>
     );
-  };
+  }
 
   return isPrintMode ? (
     <>
@@ -578,7 +316,7 @@ export default function StoryCredits({ story }: Props) {
             );
           })}
         </div>
-        {buildPrintAuthors()}
+        {buildContributors()}
 
         <p>
           {DateTime.fromJSDate(story.publishedAt).toFormat(
@@ -658,7 +396,7 @@ export default function StoryCredits({ story }: Props) {
             })}
           </div>
 
-          {buildAuthors()}
+          {buildContributors()}
           <p className=" ">
             {DateTime.fromJSDate(story.publishedAt).toFormat(
               "LLLL d',' y',' t ZZZZ",
