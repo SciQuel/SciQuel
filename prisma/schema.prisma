@@ -157,6 +157,7 @@ model User {
   contactUpdates       ContactMessage[]
   firstQuizRecord      Json?
   mostRecentQuizRecord Json?
+  favoriteTopics       StoryTopic[]
 }
 
 model AuthVerification {
