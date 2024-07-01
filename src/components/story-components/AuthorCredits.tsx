@@ -61,7 +61,7 @@ export default function AuthorCredits({ storyContributions }: Props) {
               <p key={`footer-credits-${element.contributor.id}`} className="">
                 <a
                   className="font-semibold"
-                  href={`/contributors/${element.contributor.firstName.toLowerCase()}-${element.contributor.lastName.toLowerCase()}`}
+                  href={`/profile/${element.contributor.contributorSlug}`}
                 >
                   {" "}
                   {element.contributor.firstName} {element.contributor.lastName}{" "}
@@ -82,7 +82,7 @@ export default function AuthorCredits({ storyContributions }: Props) {
               <p key={`footer-credits-${element.contributor.id}`}>
                 <a
                   className="font-semibold"
-                  href={`/contributors/${element.contributor.firstName.toLowerCase()}-${element.contributor.lastName.toLowerCase()}`}
+                  href={`/profile/${element.contributor.contributorSlug}`}
                 >
                   {" "}
                   {element.contributor.firstName} {element.contributor.lastName}{" "}
@@ -103,7 +103,7 @@ export default function AuthorCredits({ storyContributions }: Props) {
               <p key={`footer-credits-${element.contributor.id}`}>
                 <a
                   className="font-semibold"
-                  href={`/contributors/${element.contributor.firstName.toLowerCase()}-${element.contributor.lastName.toLowerCase()}`}
+                  href={`/profile/${element.contributor.contributorSlug}`}
                 >
                   {" "}
                   {element.contributor.firstName} {element.contributor.lastName}{" "}
@@ -139,7 +139,7 @@ export default function AuthorCredits({ storyContributions }: Props) {
             <p className="flex-1 font-sourceSerif4 text-xl">
               <a
                 className="font-alegreyaSansSC text-3xl font-medium text-sciquelTeal"
-                href={`/contributors/${element.contributor.firstName.toLowerCase()}-${element.contributor.lastName.toLowerCase()}`}
+                href={`/profile/${element.contributor.contributorSlug}`}
               >
                 {element.contributor.firstName} {element.contributor.lastName}{" "}
               </a>
