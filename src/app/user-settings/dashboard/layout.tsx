@@ -1,7 +1,9 @@
+import { type ReactNode } from "react";
+
 export default function Layout(props: {
-  greeting: React.ReactNode;
-  quiz_history: React.ReactNode;
-  article_cards: React.ReactNode;
+  greeting: ReactNode;
+  quiz_history: ReactNode;
+  article_cards: ReactNode;
 }) {
   return (
     <div className="relative flex grow flex-col pt-6 md:pl-56">
