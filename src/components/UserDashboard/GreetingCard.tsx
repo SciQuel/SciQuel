@@ -2,7 +2,6 @@
 
 import TopicTag from "@/components/TopicTag";
 import { StoryTopic, type User } from "@prisma/client";
-import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import Avatar from "../Avatar";
 import AvatarEditorButton from "../Avatar/AvatarEditorButton";
@@ -12,8 +11,6 @@ import ProgressBar from "./ProgressBar";
 import StatsButton from "./StatsButton";
 
 export default function GreetingCard({ user }: { user: User }) {
-  const session = useSession();
-
   {
     /*Makes sure that the Progress bar is always 2/3 width*/
   }
@@ -50,7 +47,7 @@ export default function GreetingCard({ user }: { user: User }) {
         <div className="relative flex h-[6.75rem] w-[6.75rem] items-center justify-center rounded-full bg-gradient-to-b from-[#A1C9C1] to-[#58ABF8]">
           <AvatarEditorButton />
           <Avatar
-            imageUrl={session.data?.user.image ?? undefined}
+            imageUrl={user.avatarUrl ?? undefined}
             label={user.firstName[0]}
             size="2xl"
           />

@@ -9,7 +9,7 @@ export default function Layout(props: {
     <div className="relative flex grow flex-col pt-6 md:pl-56 ">
       {props.brained_article_carousel}
       {props.greeting}
-      {props.quiz_history}
+      {/* {props.quiz_history} */}
       {props.article_cards}
     </div>
   );

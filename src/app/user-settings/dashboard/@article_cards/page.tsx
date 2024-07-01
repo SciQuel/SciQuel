@@ -127,19 +127,19 @@ export default function ArticleCards() {
         articles={items}
       />
       {/* Saved Definitions */}
-      <DashboardCard
+      {/* <DashboardCard
         title="Saved Definitions"
         targetType="articles"
         articles={items}
-      />
+      /> */}
       {/* Annotations */}
-      <DashboardCard
+      {/* <DashboardCard
         title="Annotations"
         targetType="annotations"
         articles={items}
-      />
+      /> */}
       {/* Comments */}
-      <DashboardCard title="Comments" targetType="comments" articles={items} />
+      {/* <DashboardCard title="Comments" targetType="comments" articles={items} /> */}
       {/* Bookmarks */}
       <DashboardCard title="Bookmarks" targetType="articles" articles={items} />
     </section>
