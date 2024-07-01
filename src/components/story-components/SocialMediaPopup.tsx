@@ -13,7 +13,6 @@ import ClipboardIcon from "../../../public/assets/images/clipboard.svg";
 import MailIcon from "../../../public/assets/images/email.svg";
 import LinkedinIcon from "../../../public/assets/images/linkedin.svg";
 import facebookIcon from "../../../public/assets/images/story-facebook.png";
-import instagramIcon from "../../../public/assets/images/story-ig.png";
 import shareIcon from "../../../public/assets/images/story-share.png";
 import xIcon from "../../../public/assets/images/xicon.png";
 
@@ -179,7 +178,12 @@ const SocialMediaPopup = forwardRef(
                   type="button"
                   tabIndex={show ? 0 : -1}
                   onClick={() => {
-                    navigator.clipboard.writeText(`sciquel.org${pathname}`);
+                    navigator.clipboard
+                      .writeText(`sciquel.org${pathname}`)
+                      .then()
+                      .catch((err) => {
+                        console.error(err);
+                      });
                     dispatchJustCopied({ type: "show" });
                   }}
                   className={`${
@@ -199,7 +203,12 @@ const SocialMediaPopup = forwardRef(
                   } w-full rounded-lg border p-1 xl:mt-0 xl:w-96`}
                   value={`sciquel.org${pathname}`}
                   onClick={() => {
-                    navigator.clipboard.writeText(`sciquel.org${pathname}`);
+                    navigator.clipboard
+                      .writeText(`sciquel.org${pathname}`)
+                      .then()
+                      .catch((err) => {
+                        console.error(err);
+                      });
                     dispatchJustCopied({ type: "show" });
                   }}
                 />

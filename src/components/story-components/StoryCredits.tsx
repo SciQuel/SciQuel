@@ -10,7 +10,6 @@ import {
   useLayoutEffect,
   useReducer,
   useRef,
-  useState,
 } from "react";
 import Avatar from "../Avatar";
 import TopicTag from "../TopicTag";
@@ -96,9 +95,7 @@ export default function StoryCredits({ story }: Props) {
     const animators: string[] = [];
     const animatorIcons: (string | null)[] = [];
 
-    const largestList = 0;
-
-    story.storyContributions.forEach((contributor, index) => {
+    story.storyContributions.forEach((contributor) => {
       switch (contributor.contributionType) {
         case "AUTHOR":
           authors.push(
@@ -150,7 +147,7 @@ export default function StoryCredits({ story }: Props) {
           <p className="mx-0 self-center justify-self-stretch">
             {/* authors */}
             by{" "}
-            {authors.slice(0, -1).map((author, index) => {
+            {authors.slice(0, -1).map((author) => {
               if (authors.length > 2) {
                 return (
                   <>
@@ -208,7 +205,7 @@ export default function StoryCredits({ story }: Props) {
             <p className="mx-0 self-center  justify-self-stretch">
               {/* illustrators */}
               illustrations by{" "}
-              {illustrators.slice(0, -1).map((illustrator, index) => {
+              {illustrators.slice(0, -1).map((illustrator) => {
                 if (illustrators.length > 2) {
                   return (
                     <>
@@ -268,7 +265,7 @@ export default function StoryCredits({ story }: Props) {
             <p className="mx-0 self-center  justify-self-stretch">
               {/* animators */}
               Animations by{" "}
-              {animators.slice(0, -1).map((animator, index) => {
+              {animators.slice(0, -1).map((animator) => {
                 if (animators.length > 2) {
                   return (
                     <>
@@ -325,7 +322,7 @@ export default function StoryCredits({ story }: Props) {
     const animators: string[] = [];
     const animatorIcons: (string | null)[] = [];
 
-    story.storyContributions.forEach((contributor, index) => {
+    story.storyContributions.forEach((contributor) => {
       switch (contributor.contributionType) {
         case "AUTHOR":
           authors.push(
@@ -374,7 +371,7 @@ export default function StoryCredits({ story }: Props) {
               </div>
               <p>
                 by{" "}
-                {authors.slice(0, -1).map((author, index) => {
+                {authors.slice(0, -1).map((author) => {
                   if (authors.length > 2) {
                     return (
                       <>
@@ -434,7 +431,7 @@ export default function StoryCredits({ story }: Props) {
             </div>
             <p>
               Illustrations by{" "}
-              {illustrators.slice(0, -1).map((illustrator, index) => {
+              {illustrators.slice(0, -1).map((illustrator) => {
                 if (illustrators.length > 2) {
                   return (
                     <>
@@ -492,7 +489,7 @@ export default function StoryCredits({ story }: Props) {
             </div>
             <p>
               Animations by{" "}
-              {animators.slice(0, -1).map((animator, index) => {
+              {animators.slice(0, -1).map((animator) => {
                 if (animators.length > 2) {
                   return (
                     <>

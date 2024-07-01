@@ -1,14 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useRef, useState } from "react";
-import Topic from "../Topic/Topic";
+import { useRef } from "react";
+// import Topic from "../Topic/Topic";
 import useScrollDirection from "../useScrollDirection";
 
 export default function MainSubHeader() {
   const isScrollingUp = useScrollDirection();
   const heightRef = useRef<HTMLDivElement>(null);
-  const [totalTop, setTotalTop] = useState("-50px");
+  // const [totalTop, setTotalTop] = useState("-50px");
   return (
     <div
       ref={heightRef}

@@ -1,11 +1,11 @@
 import { type GetStoryResult } from "@/app/api/stories/[year]/[month]/[day]/[slug]/route";
 import { type GetStoriesResult } from "@/app/api/stories/route";
-import Dictionary from "@/components/story-components/dictionary/Dictionary";
-import { DictionaryProvider } from "@/components/story-components/dictionary/DictionaryContext";
-import DictionarySentence from "@/components/story-components/dictionary/DictionarySentence";
-import DictionaryWord from "@/components/story-components/dictionary/DictionaryWord";
-import TestImages from "@/components/story-components/imgTests";
-import StoryParagraph from "@/components/story-components/markdown/StoryParagraph";
+// import Dictionary from "@/components/story-components/dictionary/Dictionary";
+// import { DictionaryProvider } from "@/components/story-components/dictionary/DictionaryContext";
+// import DictionarySentence from "@/components/story-components/dictionary/DictionarySentence";
+// import DictionaryWord from "@/components/story-components/dictionary/DictionaryWord";
+// import TestImages from "@/components/story-components/imgTests";
+// import StoryParagraph from "@/components/story-components/markdown/StoryParagraph";
 import { PrintModeProvider } from "@/components/story-components/PrintContext";
 import { StoryScrollProvider } from "@/components/story-components/scroll/ScrollProvider";
 import ShareLinks from "@/components/story-components/ShareLinks";
@@ -14,8 +14,8 @@ import StoryFooter from "@/components/story-components/StoryFooter";
 import { tagUser } from "@/lib/cache";
 import env from "@/lib/env";
 import { generateMarkdown } from "@/lib/markdown";
-import { getServerSession } from "next-auth";
-import Image from "next/image";
+// import { getServerSession } from "next-auth";
+// import Image from "next/image";
 import { type ReactNode } from "react";
 
 interface Params {
@@ -129,7 +129,7 @@ export default async function StoriesPage({ params }: Params) {
             <div className="pointer-events-none relative hidden flex-col items-end px-0 xl:flex">
               <div className="w-100 h-[calc(100vh_-_2rem)]" />
               <div className="relative flex h-full w-full flex-1 flex-col items-end gap-0 overflow-visible px-3">
-                <ShareLinks storyId={story.id} observe={true} />
+                <ShareLinks />
 
                 <div className="flex-1 self-stretch" />
               </div>
@@ -199,40 +199,40 @@ export default async function StoriesPage({ params }: Params) {
   );
 }
 
-async function retrieveUserInteractions(storyId: string) {
-  const userSession = await getServerSession();
-  if (userSession?.user.email) {
-    const bookmarked = false;
-    const brained = false;
+// async function retrieveUserInteractions(storyId: string) {
+//   const userSession = await getServerSession();
+//   if (userSession?.user.email) {
+//     const bookmarked = false;
+//     const brained = false;
 
-    const searchParams = new URLSearchParams({
-      story_id: storyId,
-      user_email: userSession.user.email,
-    });
+//     const searchParams = new URLSearchParams({
+//       story_id: storyId,
+//       user_email: userSession.user.email,
+//     });
 
-    console.log("search params are: ", searchParams.toString());
+//     console.log("search params are: ", searchParams.toString());
 
-    const bookmarkUrl = `${
-      env.NEXT_PUBLIC_SITE_URL
-    }/api/user/bookmark?${searchParams.toString()}`;
-    // const bookmarkUrl = `${env.NEXT_PUBLIC_SITE_URL}/api/user/bookmark?story_id=${storyId}&user_email=${userSession.user.email}}`;
-    const brainUrl = `${
-      env.NEXT_PUBLIC_SITE_URL
-    }/api/user/brains?${searchParams.toString()}`;
+//     const bookmarkUrl = `${
+//       env.NEXT_PUBLIC_SITE_URL
+//     }/api/user/bookmark?${searchParams.toString()}`;
+//     // const bookmarkUrl = `${env.NEXT_PUBLIC_SITE_URL}/api/user/bookmark?story_id=${storyId}&user_email=${userSession.user.email}}`;
+//     const brainUrl = `${
+//       env.NEXT_PUBLIC_SITE_URL
+//     }/api/user/brains?${searchParams.toString()}`;
 
-    console.log("bookmark url: ", bookmarkUrl);
-    console.log("brain url: ", brainUrl);
+//     console.log("bookmark url: ", bookmarkUrl);
+//     console.log("brain url: ", brainUrl);
 
-    const bookRes = await fetch(brainUrl, {
-      next: {
-        revalidate: 0,
-      },
-    });
-    console.log("bookres: ", bookRes);
-    const json = await bookRes.json();
-    console.log("bookres error: ", json);
-  }
-}
+//     const bookRes = await fetch(brainUrl, {
+//       next: {
+//         revalidate: 0,
+//       },
+//     });
+//     console.log("bookres: ", bookRes);
+//     const json = await bookRes.json();
+//     console.log("bookres error: ", json);
+//   }
+// }
 
 async function retrieveStoryContent({
   year,

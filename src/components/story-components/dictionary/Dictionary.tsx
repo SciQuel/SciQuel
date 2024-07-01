@@ -1,25 +1,18 @@
 "use client";
 
 import Image from "next/image";
-import {
-  useContext,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import audioIcon from "../../../../public/assets/images/audio.png";
 import ArrowIcon from "../../../../public/assets/images/backArrow.svg";
-import DictionaryIcon from "../../../../public/assets/images/book.svg";
 import BookmarkIcon from "../../../../public/assets/images/bookmark-final.svg";
 import closeButton from "../../../../public/assets/images/close.png";
 import TriangleIcon from "../../../../public/assets/images/triangle.svg";
 import { deepCloneDict, DictionaryContext } from "./DictionaryContext";
 
-async function getBookmark(word: string) {
-  //temp
-  return false;
-}
+// async function getBookmark() {
+//   //temp
+//   return false;
+// }
 
 export default function Dictionary() {
   const fullDictionary = useContext(DictionaryContext);
@@ -68,13 +61,11 @@ export default function Dictionary() {
   useEffect(() => {
     if (fullDictionary?.dictionary) {
       // check if bookmarks need to be grabbed?
-      let copyDict = deepCloneDict(fullDictionary.dictionary);
+      const copyDict = deepCloneDict(fullDictionary.dictionary);
 
-      copyDict.forEach((entry, index) => {
+      copyDict.forEach((entry) => {
         if (entry.bookmarked === undefined) {
-          (async () => {
-            entry.bookmarked = await getBookmark(entry.word);
-          })();
+          entry.bookmarked = false;
         }
       });
 
@@ -116,7 +107,7 @@ export default function Dictionary() {
   function scrollToInstance(index: number) {
     keepOpen.current = 0;
     if (fullDictionary?.word?.instances[index]?.elementRef) {
-      let elementRef = fullDictionary.word.instances[index].elementRef;
+      const elementRef = fullDictionary.word.instances[index].elementRef;
 
       elementRef.scrollIntoView({
         behavior: "instant",
@@ -187,7 +178,7 @@ export default function Dictionary() {
                 type="button"
                 className="h-8 w-9 overflow-hidden"
                 onClick={() => {
-                  let history = fullDictionary.previousWords
+                  const history = fullDictionary.previousWords
                     ? [...fullDictionary.previousWords]
                     : [];
                   if (history.length > 0) {
@@ -220,8 +211,8 @@ export default function Dictionary() {
             {fullDictionary.word ? (
               <button
                 ref={bookmarkRef}
-                onClick={async () => {
-                  let copyDict = deepCloneDict(fullDictionary.dictionary);
+                onClick={() => {
+                  const copyDict = deepCloneDict(fullDictionary.dictionary);
                   if (fullDictionary.word?.id) {
                     if (bookmark) {
                       copyDict.forEach((entry) => {

@@ -10,10 +10,10 @@ import {
 import { PrintContext } from "../PrintContext";
 import {
   getOffset,
-  scale,
+  // scale,
   StoryScrollContext,
-  type DispatchAction,
-  type OnScreenElements,
+  // type DispatchAction,
+  // type OnScreenElements,
 } from "../scroll/ScrollProvider";
 
 interface Props {
@@ -21,10 +21,10 @@ interface Props {
   alt?: string;
 }
 
-interface ReducerArgs {
-  type: "reset" | "update screen" | "set";
-  figureVal: number;
-}
+// interface ReducerArgs {
+//   type: "reset" | "update screen" | "set";
+//   figureVal: number;
+// }
 
 export default function StoryLargeImage({
   src,
@@ -41,11 +41,11 @@ export default function StoryLargeImage({
 
   const overlapReducer = storyScrollInfo
     ? storyScrollInfo.overlapReducer
-    : (state: number, action: DispatchAction) => {
+    : (state: number) => {
         return state;
       };
 
-  const [overflow, overlapDispatch] = useReducer(overlapReducer, 0);
+  const [, overlapDispatch] = useReducer(overlapReducer, 0);
 
   useEffect(() => {
     if (figureRef.current) {
@@ -125,7 +125,7 @@ export default function StoryLargeImage({
     });
   }
 
-  function onscreenScroll(e: Event) {
+  function onscreenScroll() {
     if (figureRef.current) {
       overlapDispatch({ type: "update", elementRef: figureRef });
     }

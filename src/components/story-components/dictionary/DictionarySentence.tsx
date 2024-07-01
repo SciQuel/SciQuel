@@ -8,7 +8,6 @@ import {
   type PropsWithChildren,
 } from "react";
 import { deepCloneDict, DictionaryContext } from "./DictionaryContext";
-import DictionaryWord from "./DictionaryWord";
 
 export default function DictionarySentence({ children }: PropsWithChildren) {
   const fullDictionary = useContext(DictionaryContext);
@@ -35,12 +34,12 @@ export default function DictionarySentence({ children }: PropsWithChildren) {
 
   useEffect(() => {
     // see about adding sentence to instances?
-    let indexList: number[] = [];
+    const indexList: number[] = [];
     // console.log(sentenceRef.current?.textContent);
     if (sentenceRef.current?.textContent && fullDictionary?.dictionary) {
       // see what vocab word(s) we match in our sentence?
 
-      let testSentence = sentenceRef.current.textContent;
+      const testSentence = sentenceRef.current.textContent;
 
       let wordAdded = false;
 
@@ -71,10 +70,10 @@ export default function DictionarySentence({ children }: PropsWithChildren) {
         }
       });
 
-      let spanRef = sentenceRef.current;
+      const spanRef = sentenceRef.current;
       // should have all our instances added to our copyDict?
       fullDictionary.setDictionary((state) => {
-        let copyState = deepCloneDict(state);
+        const copyState = deepCloneDict(state);
         indexList.forEach((item) => {
           copyState[item].instances.push({
             sentence: testSentence,

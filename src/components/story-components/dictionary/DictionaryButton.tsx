@@ -35,7 +35,7 @@ export default function DictionaryButton({ observe }: Props) {
       // console.warn("scroll list updated: ", ScrollList?.inViewElements);
       if (ScrollList && ScrollList.inViewElements.length > 0) {
         let maxOverflow = 0;
-        ScrollList.inViewElements.forEach((item, index) => {
+        ScrollList.inViewElements.forEach((item) => {
           if (item.maxOffset > maxOverflow) {
             maxOverflow = item.maxOffset;
           }
@@ -53,7 +53,7 @@ export default function DictionaryButton({ observe }: Props) {
   //   console.log("scroll list updated! ", ScrollList?.inViewElements);
   // }, [ScrollList]);
 
-  function onScroll(event: Event) {
+  function onScroll() {
     if (buttonRef.current) {
       ScrollList?.setDictButtonTop(
         buttonRef.current.getBoundingClientRect().top,

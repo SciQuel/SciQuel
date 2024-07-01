@@ -3,9 +3,9 @@
 import { type Stories } from "@/app/api/stories/route";
 import { type ContributionType } from "@prisma/client";
 import { useContext } from "react";
-import MoreCard from "../MoreCard";
+// import MoreCard from "../MoreCard";
 import AuthorCredits from "./AuthorCredits";
-import FromThisSeries from "./FromThisSeries";
+// import FromThisSeries from "./FromThisSeries";
 import { PrintContext } from "./PrintContext";
 
 interface Props {
@@ -30,9 +30,9 @@ interface Props {
 
 export default function StoryFooter({
   storyContributions,
-  articles1,
-  articles2,
-}: Props) {
+}: // articles1,
+// articles2,
+Props) {
   const isPrintMode = useContext(PrintContext);
 
   return (

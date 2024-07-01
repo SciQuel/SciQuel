@@ -1,19 +1,19 @@
 "use client";
 
 import Image from "next/image";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import logo from "./logo.png";
 import MainSubHeader from "./MainSubHeader";
-import ProfileButton from "./ProfileButton";
+// import ProfileButton from "./ProfileButton";
 import Search from "./search.svg";
-import SeriesSubHeader from "./SeriesSubHeader";
+// import SeriesSubHeader from "./SeriesSubHeader";
 import SideBar from "./SideBar/SideBar";
 
 export default function Header() {
   const [searchQuery, setSearchQuery] = useState("");
   const router = useRouter();
-  const pathname = usePathname();
+  // const pathname = usePathname();
 
   const onSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

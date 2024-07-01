@@ -30,7 +30,7 @@ export default function ContributorSearch() {
                 setFoundContributors([]);
               }
             })
-            .catch((err) => {
+            .catch(() => {
               setFoundContributors([]);
             });
         }}

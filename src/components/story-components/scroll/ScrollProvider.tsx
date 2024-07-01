@@ -2,12 +2,12 @@
 
 import {
   createContext,
-  Ref,
-  RefObject,
-  useEffect,
+  // useEffect,
   useState,
   type Dispatch,
   type PropsWithChildren,
+  // Ref,
+  type RefObject,
   type SetStateAction,
 } from "react";
 
@@ -100,7 +100,7 @@ export function StoryScrollProvider({ children }: PropsWithChildren) {
       } else {
         setScreenElements((state) => {
           let itemIndex = -1;
-          let newList = [...state];
+          const newList = [...state];
           newList.forEach((item, index) => {
             if (item.elementRef == elementRef.current) {
               itemIndex = index;
@@ -149,7 +149,7 @@ export function StoryScrollProvider({ children }: PropsWithChildren) {
 
       case "set":
         if (action.figureVal) {
-          let isOverlapping = checkOverlap(action.elementRef);
+          const isOverlapping = checkOverlap(action.elementRef);
 
           if (isOverlapping || action.figureVal == 0) {
             updateOverlap(getOffset(action.figureVal), action.elementRef);
@@ -179,15 +179,15 @@ export function StoryScrollProvider({ children }: PropsWithChildren) {
           return state;
         } else if (figureTop > dictTop) {
           // top is overlapping
-          let overlapPercent = (figureTop - dictTop) / dictHeight;
-          let newOverlap = scale(1 - overlapPercent, 0, 1, 0, totalOffset);
+          const overlapPercent = (figureTop - dictTop) / dictHeight;
+          const newOverlap = scale(1 - overlapPercent, 0, 1, 0, totalOffset);
           updateOverlap(newOverlap, action.elementRef);
           return state;
         } else if (figureBottom < dictBottom) {
           // bottom is overlapping
 
-          let overlapPercent = (dictBottom - figureBottom) / dictHeight;
-          let newOverlap = scale(1 - overlapPercent, 0, 1, 0, totalOffset);
+          const overlapPercent = (dictBottom - figureBottom) / dictHeight;
+          const newOverlap = scale(1 - overlapPercent, 0, 1, 0, totalOffset);
           updateOverlap(newOverlap, action.elementRef);
           return state;
         } else {

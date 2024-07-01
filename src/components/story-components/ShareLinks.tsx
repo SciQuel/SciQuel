@@ -1,22 +1,22 @@
 "use client";
 
-import axios from "axios";
-import { signIn, useSession } from "next-auth/react";
+// import axios from "axios";
+// import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useContext, useEffect, useRef, useState } from "react";
-import DictionaryIcon from "../../../public/assets/images/book.svg";
+// import DictionaryIcon from "../../../public/assets/images/book.svg";
 import shareIcon from "../../../public/assets/images/story-share.png";
-import DictionaryButton from "./dictionary/DictionaryButton";
-import { DictionaryContext } from "./dictionary/DictionaryContext";
+// import DictionaryButton from "./dictionary/DictionaryButton";
+// import { DictionaryContext } from "./dictionary/DictionaryContext";
 import { PrintContext, PrintToggleContext } from "./PrintContext";
 import SocialMediaPopup from "./SocialMediaPopup";
 
 type modalOptions = "none" | "brain-login" | "bookmark-login" | "share";
 
-interface Props {
-  storyId: string;
-  observe: boolean;
-}
+// interface Props {
+//   storyId: string;
+//   observe: boolean;
+// }
 
 const PrintModeIcon = () => (
   <div className="flex h-[45px] w-[45px] items-center justify-center rounded-full bg-[#76a89f]">
@@ -67,19 +67,19 @@ const PrintModeIcon = () => (
   </div>
 );
 
-export default function ShareLinks({ storyId, observe }: Props) {
+export default function ShareLinks() {
   const [showOptions, setShowOptions] = useState<modalOptions>("none");
 
-  const [isBrained, setIsBrained] = useState(false);
-  const [isBookmarked, setIsBookmarked] = useState(false);
+  // const [isBrained, setIsBrained] = useState(false);
+  // const [isBookmarked, setIsBookmarked] = useState(false);
 
   const popupRef = useRef<HTMLDivElement>(null);
   const popupRef2 = useRef<HTMLDivElement>(null);
-  const popupRef3 = useRef<HTMLDivElement>(null);
+  // const popupRef3 = useRef<HTMLDivElement>(null);
 
   const isPrintMode = useContext(PrintContext);
   const toggleFunction = useContext(PrintToggleContext);
-  const { data: session, status } = useSession();
+  // const { data: session, status } = useSession();
 
   useEffect(() => {
     document.addEventListener("mousedown", handleClick);
@@ -89,60 +89,60 @@ export default function ShareLinks({ storyId, observe }: Props) {
     };
   }, []);
 
-  useEffect(() => {
-    if (status == "authenticated") {
-      getBookmark();
-      getBrain();
-    }
-  }, [status]);
+  // useEffect(() => {
+  //   if (status == "authenticated") {
+  //     getBookmark();
+  //     getBrain();
+  //   }
+  // }, [status]);
 
-  async function getBookmark() {
-    if (status == "authenticated" && session.user.email) {
-      try {
-        const bookmarkResponse = await axios.get("/api/user/bookmark", {
-          params: {
-            story_id: storyId,
-            user_email: session.user.email,
-          },
-        });
+  // async function getBookmark() {
+  //   if (status == "authenticated" && session.user.email) {
+  //     try {
+  //       const bookmarkResponse = await axios.get("/api/user/bookmark", {
+  //         params: {
+  //           story_id: storyId,
+  //           user_email: session.user.email,
+  //         },
+  //       });
 
-        if (bookmarkResponse.status == 200) {
-          setIsBookmarked(true);
-        }
-      } catch (err) {
-        if (axios.isAxiosError(err) && err.response?.status == 404) {
-          setIsBookmarked(false);
-          //not bookmarked
-        } else {
-          console.log("get bookmark error: ", err);
-        }
-      }
-    }
-  }
+  //       if (bookmarkResponse.status == 200) {
+  //         setIsBookmarked(true);
+  //       }
+  //     } catch (err) {
+  //       if (axios.isAxiosError(err) && err.response?.status == 404) {
+  //         setIsBookmarked(false);
+  //         //not bookmarked
+  //       } else {
+  //         console.log("get bookmark error: ", err);
+  //       }
+  //     }
+  //   }
+  // }
 
-  async function getBrain() {
-    if (status == "authenticated" && session.user.email) {
-      try {
-        const brainResponse = await axios.get("/api/user/brains", {
-          params: {
-            story_id: storyId,
-            user_email: session.user.email,
-          },
-        });
+  // async function getBrain() {
+  //   if (status == "authenticated" && session.user.email) {
+  //     try {
+  //       const brainResponse = await axios.get("/api/user/brains", {
+  //         params: {
+  //           story_id: storyId,
+  //           user_email: session.user.email,
+  //         },
+  //       });
 
-        if (brainResponse.status == 200) {
-          setIsBrained(true);
-        }
-      } catch (err) {
-        if (axios.isAxiosError(err) && err.response?.status == 404) {
-          setIsBrained(false);
-          //not brained
-        } else {
-          console.log("get brain error: ", err);
-        }
-      }
-    }
-  }
+  //       if (brainResponse.status == 200) {
+  //         setIsBrained(true);
+  //       }
+  //     } catch (err) {
+  //       if (axios.isAxiosError(err) && err.response?.status == 404) {
+  //         setIsBrained(false);
+  //         //not brained
+  //       } else {
+  //         console.log("get brain error: ", err);
+  //       }
+  //     }
+  //   }
+  // }
 
   function handleClick(e: MouseEvent) {
     let shouldShut = true;
@@ -160,101 +160,101 @@ export default function ShareLinks({ storyId, observe }: Props) {
     }
   }
 
-  async function handleBrain() {
-    if (status != "authenticated") {
-      setShowOptions("brain-login");
-    } else if (session.user.email) {
-      if (isBrained == false) {
-        try {
-          const response = await axios.post("/api/user/brains", {
-            story_id: storyId,
-            user_email: session.user.email,
-          });
+  // async function handleBrain() {
+  //   if (status != "authenticated") {
+  //     setShowOptions("brain-login");
+  //   } else if (session.user.email) {
+  //     if (isBrained == false) {
+  //       try {
+  //         const response = await axios.post("/api/user/brains", {
+  //           story_id: storyId,
+  //           user_email: session.user.email,
+  //         });
 
-          if (response.status == 200) {
-            setIsBrained(true);
-          }
-        } catch (err) {
-          if (
-            axios.isAxiosError(err) &&
-            err.response?.data.error ==
-              "story_id and user_id combination already exists"
-          ) {
-            setIsBrained(true);
-          }
-        }
-      } else {
-        // already brained, un-brain
-        try {
-          const response = await axios.delete("/api/user/brains", {
-            params: {
-              story_id: storyId,
-              user_email: session.user.email,
-            },
-          });
-          if (response.status == 200) {
-            setIsBrained(false);
-          }
-        } catch (err) {
-          if (
-            axios.isAxiosError(err) &&
-            err.response?.data.error == "No entries found"
-          ) {
-            setIsBrained(false);
-          }
-        }
-      }
-    }
-  }
+  //         if (response.status == 200) {
+  //           setIsBrained(true);
+  //         }
+  //       } catch (err) {
+  //         if (
+  //           axios.isAxiosError(err) &&
+  //           err.response?.data.error ==
+  //             "story_id and user_id combination already exists"
+  //         ) {
+  //           setIsBrained(true);
+  //         }
+  //       }
+  //     } else {
+  //       // already brained, un-brain
+  //       try {
+  //         const response = await axios.delete("/api/user/brains", {
+  //           params: {
+  //             story_id: storyId,
+  //             user_email: session.user.email,
+  //           },
+  //         });
+  //         if (response.status == 200) {
+  //           setIsBrained(false);
+  //         }
+  //       } catch (err) {
+  //         if (
+  //           axios.isAxiosError(err) &&
+  //           err.response?.data.error == "No entries found"
+  //         ) {
+  //           setIsBrained(false);
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
 
-  async function handleBookmark() {
-    if (status != "authenticated") {
-      setShowOptions("bookmark-login");
-    } else if (session.user.email) {
-      console.log(session.user.email);
+  // async function handleBookmark() {
+  //   if (status != "authenticated") {
+  //     setShowOptions("bookmark-login");
+  //   } else if (session.user.email) {
+  //     console.log(session.user.email);
 
-      if (isBookmarked == false) {
-        try {
-          const response = await axios.post("/api/user/bookmark", {
-            story_id: storyId,
-            user_email: session.user.email,
-          });
+  //     if (isBookmarked == false) {
+  //       try {
+  //         const response = await axios.post("/api/user/bookmark", {
+  //           story_id: storyId,
+  //           user_email: session.user.email,
+  //         });
 
-          if (response.status == 200) {
-            setIsBookmarked(true);
-          }
-        } catch (err) {
-          if (
-            axios.isAxiosError(err) &&
-            err.response?.data.error ==
-              "story_id and user_id combination already exists"
-          ) {
-            setIsBookmarked(true);
-          }
-        }
-      } else {
-        //already booked, un-book
-        try {
-          const response = await axios.delete("/api/user/bookmark", {
-            params: {
-              story_id: storyId,
-              user_email: session.user.email,
-            },
-          });
-          if (response.status == 200) {
-            setIsBookmarked(false);
-          }
-        } catch (err) {
-          if (
-            axios.isAxiosError(err) &&
-            err.response?.data.error == "No entries found"
-          ) {
-            setIsBookmarked(false);
-          }
-        }
-      }
-    }
-  }
+  //         if (response.status == 200) {
+  //           setIsBookmarked(true);
+  //         }
+  //       } catch (err) {
+  //         if (
+  //           axios.isAxiosError(err) &&
+  //           err.response?.data.error ==
+  //             "story_id and user_id combination already exists"
+  //         ) {
+  //           setIsBookmarked(true);
+  //         }
+  //       }
+  //     } else {
+  //       //already booked, un-book
+  //       try {
+  //         const response = await axios.delete("/api/user/bookmark", {
+  //           params: {
+  //             story_id: storyId,
+  //             user_email: session.user.email,
+  //           },
+  //         });
+  //         if (response.status == 200) {
+  //           setIsBookmarked(false);
+  //         }
+  //       } catch (err) {
+  //         if (
+  //           axios.isAxiosError(err) &&
+  //           err.response?.data.error == "No entries found"
+  //         ) {
+  //           setIsBookmarked(false);
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
 
   return (
     <>

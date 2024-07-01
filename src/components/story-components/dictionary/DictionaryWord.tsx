@@ -10,7 +10,7 @@ import {
 import {
   DictionaryContext,
   type DictionaryDefinition,
-  type Instances,
+  // type Instances,
 } from "./DictionaryContext";
 
 interface Props {
@@ -22,15 +22,15 @@ interface EntryReference {
   entry: DictionaryDefinition | null;
 }
 
-function getText(node: ChildNode) {
-  if (node.parentNode && node.parentNode.textContent) {
-    return node.parentNode.textContent;
-  } else if (node.textContent) {
-    return node.textContent;
-  } else {
-    return;
-  }
-}
+// function getText(node: ChildNode) {
+//   if (node.parentNode && node.parentNode.textContent) {
+//     return node.parentNode.textContent;
+//   } else if (node.textContent) {
+//     return node.textContent;
+//   } else {
+//     return;
+//   }
+// }
 
 export default function DictionaryWord({
   word,

@@ -1,12 +1,12 @@
-import StaffPicksSection from "@/components/StaffPicksSection";
-import TrendingSection from "@/components/TrendingSection";
+// import StaffPicksSection from "@/components/StaffPicksSection";
+// import TrendingSection from "@/components/TrendingSection";
 import WhatsNewSection from "@/components/WhatsNewSection";
 import env from "@/lib/env";
 import { type GetStoryResult } from "./api/stories/[year]/[month]/[day]/[slug]/route";
 import { type GetStoriesResult } from "./api/stories/route";
 
 export default async function Home() {
-  const [whatsNewArticles, exampleStory] = await Promise.all([
+  const [whatsNewArticles] = await Promise.all([
     getWhatsNewArticles(),
     getExampleStory(),
   ]);

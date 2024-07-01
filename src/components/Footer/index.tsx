@@ -1,5 +1,6 @@
 import Link from "next/link";
-import FooterIcon from "./FooterIcon";
+
+// import FooterIcon from "./FooterIcon";
 
 export default function Footer() {
   return (

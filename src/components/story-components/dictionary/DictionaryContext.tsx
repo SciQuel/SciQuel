@@ -102,7 +102,7 @@ export function DictionaryProvider({
 }
 
 function cloneInstances(instances: Instances[]) {
-  let newInstanceList: Instances[] = [];
+  const newInstanceList: Instances[] = [];
 
   instances.forEach((item) => {
     newInstanceList.push({
@@ -115,7 +115,7 @@ function cloneInstances(instances: Instances[]) {
 }
 
 export function deepCloneDict(dict: DictionaryDefinition[]) {
-  let newDict: DictionaryDefinition[] = [];
+  const newDict: DictionaryDefinition[] = [];
 
   dict.forEach((item) => {
     newDict.push({

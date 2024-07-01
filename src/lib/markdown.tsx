@@ -109,7 +109,6 @@ export async function generateMarkdown(content: string) {
 
         "caption-citation": (props: HTMLProps<HTMLElement>) => {
           if (props.children) {
-            let children = props.children as [];
             return (
               <StoryCaptionCitation>{props.children}</StoryCaptionCitation>
             );
@@ -117,7 +116,7 @@ export async function generateMarkdown(content: string) {
             return <></>;
           }
         },
-        "end-icon": (props: HTMLProps<HTMLElement>) => <StoryEndIcon />,
+        "end-icon": () => <StoryEndIcon />,
       },
     })
     .process(content);

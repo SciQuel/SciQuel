@@ -30,8 +30,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const json = await request.json();
-  const parsed = ContributorCreateSchema.safeParse(json);
+  const parsed = ContributorCreateSchema.safeParse(await request.json());
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error }, { status: 400 });
   }

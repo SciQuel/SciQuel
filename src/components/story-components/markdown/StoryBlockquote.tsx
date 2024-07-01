@@ -10,16 +10,10 @@ import {
 import { DictionaryContext } from "../dictionary/DictionaryContext";
 import { PrintContext } from "../PrintContext";
 import {
-  DispatchAction,
   getOffset,
-  scale,
+  // scale,
   StoryScrollContext,
 } from "../scroll/ScrollProvider";
-
-interface ReducerArgs {
-  type: "reset" | "update" | "set";
-  figureVal: number;
-}
 
 export default function StoryBlockquote({
   children,
@@ -31,11 +25,11 @@ export default function StoryBlockquote({
 
   const overlapFunction = ScrollContext
     ? ScrollContext.overlapReducer
-    : (state: number, action: DispatchAction) => {
+    : (state: number) => {
         return state;
       };
 
-  const [width, widthDispatch] = useReducer(overlapFunction, 0);
+  const [, widthDispatch] = useReducer(overlapFunction, 0);
 
   const resizeObserver = useRef(
     new ResizeObserver((entries) => {
@@ -122,7 +116,7 @@ export default function StoryBlockquote({
     };
   }, [isPrintMode]);
 
-  function onScroll(e: Event) {
+  function onScroll() {
     console.log("in blockquote scroll listener!");
     console.log(ScrollContext?.dictButtonTop);
     console.log(blockquoteRef.current?.getBoundingClientRect());
