@@ -2,9 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { PrismaClient } from "@prisma/client";
-import { getServerSession } from "next-auth";
 import { NextResponse, type NextRequest } from "next/server";
-import { z } from "zod";
 import { checkValidInput } from "../tools/SchemaTool";
 import User from "../tools/User";
 import {
@@ -220,7 +218,7 @@ export async function DELETE(req: NextRequest) {
       select: { subpartId: true, questionType: true },
     });
 
-    if (!quizQuestionCheck) {
+    if (quizQuestionCheck) {
       return new NextResponse(
         JSON.stringify({ error: "Quiz question not found" }),
         {
@@ -273,8 +271,9 @@ export async function PATCH(req: NextRequest) {
     const quizQuestionIdParam = url.searchParams.get("quiz_question_id");
     const user = new User();
     const userId = await user.getUserId();
+    const isEditor = await user.isEditor();
     //only editor allow to use this method
-    if (!user.isEditor() || !userId) {
+    if (!isEditor || userId == null) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 

@@ -1,14 +1,11 @@
 import prisma from "@/lib/prisma";
 import { type QuestionType } from "@prisma/client";
-import { getServerSession } from "next-auth";
-import { type z } from "zod";
 import {
   complexMatchingSubpartSchema,
   directMatchingSubpartSchema,
   multipleChoiceSubpartSchema,
   selectAllSubpartSchema,
   trueFalseSubpartSchema,
-  type modifiedQuizSchema,
 } from "./schema";
 
 interface QuizQuestionI {
@@ -22,6 +19,7 @@ export function createQuizSubpart(data: {
   question_type: QuestionType;
   subpartData: any;
 }) {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const { question_type, subpartData } = data;
   let result: {
     errorMessage: string | null;
@@ -40,7 +38,7 @@ export function createQuizSubpart(data: {
     result = createTrueFalseSubpart(subpartData);
   } else {
     throw new Error(
-      "Unknown type: " + question_type + " in modifiedQuiz function",
+      "Unknown type: " + String(question_type) + " in modifiedQuiz function",
     );
   }
   return result;
@@ -65,7 +63,9 @@ export function getDeleteSuppart({
     return prisma.trueFalseSubpart.delete({ where: { id: subpartId } });
   } else {
     throw new Error(
-      "Unknow type " + questionType + " in getting delete Subpart promise",
+      "Unknow type " +
+        String(questionType) +
+        " in getting delete Subpart promise",
     );
   }
 }
@@ -112,7 +112,9 @@ export function getSubpart(quiz: QuizQuestionI) {
     });
   } else {
     throw new Error(
-      "Unknow type " + quiz.questionType + " in finding Subpart promise",
+      "Unknow type " +
+        String(quiz.questionType) +
+        " in finding Subpart promise",
     );
   }
 }
@@ -131,7 +133,7 @@ function createComplexMatchSubpart(subpartData: any) {
     const correctAnswer = correct_answers.map((numbers) => {
       let str = "";
       numbers.forEach((number) => {
-        str += number + " ";
+        str += String(number) + " ";
       });
       str = str.substring(0, str.length - 1);
       return str;

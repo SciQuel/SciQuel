@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import { QuestionType, type Prisma } from "@prisma/client";
+import { type Prisma, type QuestionType } from "@prisma/client";
 import {
   complexMatchingAnswerSchema,
   directMatchingAnswerSchema,
@@ -27,7 +27,7 @@ interface resultGrade {
  * return score, user response that is converted to string array
  */
 export function grading(params: questinoType) {
-  let { questionType, userAnswer, correctAnswer, maxScore } = params;
+  const { questionType, userAnswer, correctAnswer, maxScore } = params;
   // set default value
   let resultGrade: resultGrade = {
     results: [],
@@ -42,36 +42,31 @@ export function grading(params: questinoType) {
   switch (questionType) {
     case "COMPLEX_MATCHING": {
       //correctAnswer is guarantee to be string array
-      correctAnswer = correctAnswer as string[];
-      resultGrade = complexMatchingGrade(correctAnswer, userAnswer);
+      resultGrade = complexMatchingGrade(correctAnswer as string[], userAnswer);
       break;
     }
     case "DIRECT_MATCHING": {
       //correctAnswer is guarantee to be number array
-      correctAnswer = correctAnswer as number[];
-      resultGrade = directMatchingGrade(correctAnswer, userAnswer);
+      resultGrade = directMatchingGrade(correctAnswer as number[], userAnswer);
       break;
     }
     case "MULTIPLE_CHOICE": {
       //correctAnswer is guarantee to be number
-      correctAnswer = correctAnswer as number;
-      resultGrade = multipleChoiceGrade(correctAnswer, userAnswer);
+      resultGrade = multipleChoiceGrade(correctAnswer as number, userAnswer);
       break;
     }
     case "SELECT_ALL": {
       //correctAnswer is guarantee to be boolean array
-      correctAnswer = correctAnswer as boolean[];
-      resultGrade = selectAllGrade(correctAnswer, userAnswer);
+      resultGrade = selectAllGrade(correctAnswer as boolean[], userAnswer);
       break;
     }
     case "TRUE_FALSE": {
       //correctAnswer is guarantee to be boolean array
-      correctAnswer = correctAnswer as boolean[];
-      resultGrade = trueFalseGrade(correctAnswer, userAnswer);
+      resultGrade = trueFalseGrade(correctAnswer as boolean[], userAnswer);
       break;
     }
     default: {
-      throw new Error("Unknown type " + questionType + " in grading");
+      throw new Error("Unknown type " + String(questionType) + " in grading");
     }
   }
   const {
@@ -92,7 +87,7 @@ export function grading(params: questinoType) {
  * value: boolean
  */
 function convertMapCheck(correctAnswer: string[]) {
-  let map: { [key: string]: boolean } = {};
+  const map: { [key: string]: boolean } = {};
   let countCorrectAnswer = 0;
   correctAnswer.forEach((str, index) => {
     //if this category is not empty
@@ -113,10 +108,10 @@ function complexMatchingGrade(
 ): resultGrade {
   let errorMessage = null;
   let errors: string[] = [];
-  let results: boolean[][] = [];
+  const results: boolean[][] = [];
   let correctCount = 0;
   let total = 1;
-  let userResponseSubpart: string[] = [];
+  const userResponseSubpart: string[] = [];
   //check user answer type
   const userAnswerParse = complexMatchingAnswerSchema.safeParse(userAnswer);
   if (!userAnswerParse.success) {
@@ -129,7 +124,7 @@ function complexMatchingGrade(
     const numbersArray = userAnswerParse.data;
     for (let i = 0; i < numbersArray.length; i++) {
       let curResponse = "";
-      let curResult: boolean[] = [];
+      const curResult: boolean[] = [];
       numbersArray[i].forEach((number) => {
         const isCorrect = map[`${i} ${number}`] === true;
         correctCount += isCorrect ? 1 : 0;
@@ -156,18 +151,17 @@ function directMatchingGrade(
 ): resultGrade {
   let errorMessage = null;
   let errors: string[] = [];
-  let results: boolean[][] = [];
+  const results: boolean[][] = [];
   let correctCount = 0;
   let total = 1;
-  let userResponseSubpart: string[] = [];
+  const userResponseSubpart: string[] = [];
   total = correctAnswer.length;
 
   //check user answer type
   const userAnswerParse = directMatchingAnswerSchema
-    .refine(
-      (numbers) => numbers.length === (correctAnswer as number[]).length,
-      { message: "answer length must be equal to number of categories" },
-    )
+    .refine((numbers) => numbers.length === correctAnswer.length, {
+      message: "answer length must be equal to number of categories",
+    })
     .safeParse(userAnswer);
   if (!userAnswerParse.success) {
     errorMessage = userAnswerParse.error.errors[0].message;
@@ -198,10 +192,10 @@ function multipleChoiceGrade(
 ): resultGrade {
   let errorMessage = null;
   let errors: string[] = [];
-  let results: boolean[][] = [];
+  const results: boolean[][] = [];
   let correctCount = 0;
   let total = 1;
-  let userResponseSubpart: string[] = [];
+  const userResponseSubpart: string[] = [];
 
   total = 1;
   //check user answer type
@@ -235,17 +229,18 @@ function selectAllGrade(
 ): resultGrade {
   let errorMessage = null;
   let errors: string[] = [];
-  let results: boolean[][] = [];
+  const results: boolean[][] = [];
   let correctCount = 0;
   let total = 1;
-  let userResponseSubpart: string[] = [];
+  const userResponseSubpart: string[] = [];
   total = correctAnswer.length;
 
   //check user answer type
   const userAnswerParse = selectAllAnswerSchema
     .refine((ans) => ans.every((number) => number < total), {
       message:
-        "index in answer is out of bound. Index must be less than " + total,
+        "index in answer is out of bound. Index must be less than " +
+        String(total),
     })
     .safeParse(userAnswer);
   if (!userAnswerParse.success) {
@@ -286,10 +281,10 @@ function trueFalseGrade(
 ): resultGrade {
   let errorMessage = null;
   let errors: string[] = [];
-  let results: boolean[][] = [];
+  const results: boolean[][] = [];
   let correctCount = 0;
   let total = 1;
-  let userResponseSubpart: string[] = [];
+  const userResponseSubpart: string[] = [];
   total = correctAnswer.length;
 
   //check user answer type
@@ -325,6 +320,9 @@ export async function insertIfNotExists<
 >(param: { model: Model; where: WhereUniqueInput | null; data: CreateInput }) {
   const { model, where, data } = param;
   // Dynamically get the model delegate
+  /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+  /* eslint-disable @typescript-eslint/no-unsafe-member-access */
+  /* eslint-disable @typescript-eslint/no-unsafe-call */
   const modelDelegate = (prisma as any)[model];
 
   if (!modelDelegate) {
@@ -343,6 +341,9 @@ export async function insertIfNotExists<
       data,
       select: { id: true },
     });
+    /* eslint-enable @typescript-eslint/no-unsafe-assignment */
+    /* eslint-enable @typescript-eslint/no-unsafe-call */
+    /* eslint-enable @typescript-eslint/no-unsafe-member-access */
     return true;
   } else {
     return false;

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { infer as Infer, ZodSchema } from "zod";
+import { type infer as Infer, type ZodSchema } from "zod";
 
 export function checkValidInput<T extends ZodSchema<any>[]>(
   schemas: [...T],
@@ -11,7 +11,7 @@ export function checkValidInput<T extends ZodSchema<any>[]>(
   }
   let error: string | null = null;
   let errors: string[] = [];
-  let parsedData: { [K in keyof T]: Infer<T[K]> } = [] as {
+  const parsedData: { [K in keyof T]: Infer<T[K]> } = [] as {
     [K in keyof T]: Infer<T[K]>;
   };
   for (let i = 0; i < schemas.length; i++) {
