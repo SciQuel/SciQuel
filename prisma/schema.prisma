@@ -24,6 +24,9 @@ enum ContributionType {
   AUTHOR
   ILLUSTRATOR
   ANIMATOR
+  PHOTOGRAPHER
+  VIDEOGRAPHER
+  OTHER
 }
 
 enum StoryTopic {
@@ -67,6 +70,12 @@ enum QuestionType {
   SELECT_ALL
 }
 
+enum UpdateType {
+  CREATE
+  DELETE
+  UPDATE
+}
+
 model Story {
   id        String    @id @default(auto()) @map("_id") @db.ObjectId
   storyType StoryType
@@ -87,29 +96,47 @@ model Story {
 
   published Boolean
 
-  staffPick Boolean
-
   thumbnailUrl String
   coverCaption String @default("")
 
-  createdAt   DateTime
-  publishedAt DateTime
-  updatedAt   DateTime
-  quizzes     Quiz[]
+  createdAt     DateTime
+  publishedAt   DateTime
+  updatedAt     DateTime
+  quizQuestions QuizQuestion[]
+  staffPick       StaffPick?
+  StaffPickRecord StaffPickRecord[]
 }
 
 model StoryContribution {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  user   User   @relation(fields: [userId], references: [id])
-  userId String @db.ObjectId
+  contributor   Contributor? @relation(fields: [contributorId], references: [id])
+  contributorId String?      @db.ObjectId
 
   story   Story  @relation(fields: [storyId], references: [id], onDelete: NoAction)
   storyId String @db.ObjectId
 
-  contributionType ContributionType
+  contributionType       ContributionType
+  otherContributorType   String?
+  otherContributorCredit String?
+  contributorByline      String?
 
   bio String?
+}
+
+model Contributor {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  firstName String
+  lastName  String
+  email     String? @unique
+  avatarUrl String?
+
+  bio String?
+
+  contributorSlug String @unique
+
+  storyContributions StoryContribution[]
 }
 
 model User {
@@ -128,15 +155,15 @@ model User {
 
   verified Boolean @default(false)
 
-  storyContributions StoryContribution[]
-  authVerifications  AuthVerification[]
+  authVerifications AuthVerification[]
 
-  roles   UserRole[] @default([])
-  quizzes Quiz[]
+  roles   UserRole[]   @default([])
+  quizzes QuizRecord[]
 
-  contactUpdates ContactMessage[]
-  firstQuizRecord       Json?
-  mostRecentQuizRecord  Json?
+  contactUpdates       ContactMessage[]
+  firstQuizRecord      Json?
+  mostRecentQuizRecord Json?
+  StaffPickRecord      StaffPickRecord[]
 }
 
 model AuthVerification {
@@ -182,21 +209,30 @@ model Brain {
   @@unique([userId, storyId])
 }
 
-model Quiz {
+model QuizRecord {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  userId  String @db.ObjectId
   storyId String @db.ObjectId
 
-  quizType   QuizType
-  totalScore Int
-  score      Int
-  date       DateTime @default(now())
+  quizType QuizType
 
-  user  User  @relation(fields: [userId], references: [id])
-  story Story @relation(fields: [storyId], references: [id])
+  maxScore           Int
+  score              Int
+  totalQuestion      Int
+  totalCorrectAnswer Int @default(0)
 
-  @@unique([userId, storyId])
+  createAt   DateTime @default(now())
+  lastUpdate DateTime @default(now())
+
+  userId String? @db.ObjectId
+
+  user                 User?    @relation(fields: [userId], references: [id])
+  quizQuestionIdRemain String[] @db.ObjectId
+  grades               Grade[]
+
+  @@index([createAt])
+  @@index([storyId, userId])
+  @@index([userId])
 }
 
 model Bookmark {
@@ -254,38 +290,153 @@ model BlockedUser {
 }
 
 model QuizQuestion {
-  id              String       @id @default(auto()) @map("_id") @db.ObjectId
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
   storyId         String       @db.ObjectId
+  Story           Story        @relation(fields: [storyId], references: [id])
+  subheader       String
   contentCategory String
   questionType    QuestionType
-  questionName    String
-  totalScore      Int
-  subparts        Subpart[]
+  maxScore        Int
+  subpartId       String       @db.ObjectId
+  deleted         Boolean      @default(false)
+
+  @@unique([subpartId])
+  @@index([storyId, deleted])
+  @@index([storyId])
 }
 
-model Subpart {
-  id             String        @id @default(auto()) @map("_id") @db.ObjectId
-  question       String
-  options        String[]
-  correctAnswer  String[]
-  explanation    String
-  QuizQuestion   QuizQuestion? @relation(fields: [quizQuestionId], references: [id])
-  quizQuestionId String?       @db.ObjectId
+model MultipleChoiceSubpart {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  question      String
+  options       String[]
+  correctAnswer Int
+  explanations  String[]
 }
 
-model UserResponse {
-  id               String            @id @default(auto()) @map("_id") @db.ObjectId
-  storyId          String
-  questionType     QuestionType
-  userId           String            @db.ObjectId
-  quizQuestionId   String            @db.ObjectId
-  responseSubparts ResponseSubpart[]
+model TrueFalseSubpart {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  questions     String[]
+  correctAnswer Boolean[]
+  explanations  String[]
 }
 
-model ResponseSubpart {
-  id              String        @id @default(auto()) @map("_id") @db.ObjectId
-  subpartId       String        @db.ObjectId
-  subpartUserAns  String[]
-  UserResponse    UserResponse? @relation(fields: [userResponseId], references: [id])
-  userResponseId  String?       @db.ObjectId
+model DirectMatchingSubpart {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  question      String
+  options       String[]
+  categories    String[]
+  correctAnswer Int[]
+  explanations  String[]
+}
+
+model ComplexMatchingSubpart {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  question      String
+  categories    String[]
+  options       String[]
+  correctAnswer String[]
+  explanations  String[]
+}
+
+model SelectAllSubpart {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  question      String
+  options       String[]
+  correctAnswer Boolean[]
+  explanations  String[]
+}
+
+model UserResponseSubpart {
+  id             String       @id @default(auto()) @map("_id") @db.ObjectId
+  questionType   QuestionType
+  userId         String?      @db.ObjectId
+  quizQuestionId String       @db.ObjectId
+  userAns        String[]
+  grade          Grade?
+
+  @@index([userId, quizQuestionId])
+}
+
+model QuestionAnswerFirstTime {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId         String?  @db.ObjectId
+  quizQuestionId String   @db.ObjectId
+  correct        Boolean
+  createAt       DateTime @default(now())
+
+  @@index([userId, quizQuestionId])
+  @@index([quizQuestionId])
+  @@index([quizQuestionId, correct])
+}
+
+model StoryQuizScoreFirstTime {
+  id                 String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId             String?  @db.ObjectId
+  storyId            String   @db.ObjectId
+  totalCorrectAnswer Int
+  createAt           DateTime @default(now())
+
+  @@index([userId, storyId])
+  @@index([storyId, totalCorrectAnswer])
+  @@index([storyId])
+}
+
+model Grade {
+  id                    String              @id @default(auto()) @map("_id") @db.ObjectId
+  userId                String?             @db.ObjectId
+  userResponseSubpartId String              @db.ObjectId
+  UserResponseSubpart   UserResponseSubpart @relation(fields: [userResponseSubpartId], references: [id])
+  quizQuestionId        String              @db.ObjectId
+  totalScore            Int
+  maxScore              Int
+  quizRecord            QuizRecord?         @relation(fields: [quizRecordId], references: [id])
+  quizRecordId          String?             @db.ObjectId
+
+  @@unique([userResponseSubpartId])
+  @@index([quizRecordId])
+  @@index([userId, quizQuestionId])
+}
+
+model QuizQuestionRecord {
+  id             String                 @id @default(auto()) @map("_id") @db.ObjectId
+  quizQuestionId String                 @db.ObjectId
+  staffId        String                 @db.ObjectId
+  updateType     UpdateType
+  createAt       DateTime               @default(now())
+
+  @@index([quizQuestionId])
+  @@index([createAt])
+}
+
+model StaffPick {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  storyId String @unique @db.ObjectId
+  story   Story  @relation(fields: [storyId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  description String
+
+  @@unique([storyId, id])
+}
+
+model StaffPickRecord {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  storyId String @db.ObjectId
+  story   Story  @relation(fields: [storyId], references: [id])
+
+  staffId String @db.ObjectId
+  staff   User   @relation(fields: [staffId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  updateType UpdateType
+
+  description String?
+
+  @@index([storyId])
+  @@index([staffId])
 }

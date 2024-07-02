@@ -10,7 +10,7 @@ interface Params {
 
 export type GetStoryResult = Story & {
   storyContributions: {
-    user: {
+    contributor: {
       id: string;
       firstName: string;
       lastName: string;
@@ -42,10 +42,11 @@ export async function GET(req: NextRequest, { params }: { params: Params }) {
         id,
       },
       include: {
+        staffPick: true,
         storyContributions: {
           select: {
             contributionType: true,
-            user: {
+            contributor: {
               select: {
                 id: true,
                 firstName: true,
@@ -112,15 +113,15 @@ export async function PATCH(
 
       const storyContributionsPromises: Promise<null | Prisma.StoryContributionCreateManyInput>[] =
         parsedBody.data.contributions.map(async (entry) => {
-          const user = await prisma.user.findUnique({
+          const contributor = await prisma.contributor.findUnique({
             where: { email: entry.email },
           });
-          if (user) {
+          if (contributor) {
             return {
-              userId: user.id,
+              contributorId: contributor.id,
               storyId: id,
               contributionType: entry.contributionType,
-              bio: user.bio !== entry.bio ? entry.bio : undefined,
+              bio: contributor.bio !== entry.bio ? entry.bio : undefined,
             };
           }
           return null;

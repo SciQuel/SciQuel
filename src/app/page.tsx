@@ -14,7 +14,7 @@ export default async function Home() {
   return (
     <>
       {/* Article cards */}
-      <div className="mx-[10%] my-10 flex flex-col gap-12">
+      <div className="mx-[10%] mb-10 mt-2 flex flex-col gap-12">
         <WhatsNewSection articles={whatsNewArticles} />
         <TrendingSection articles={[exampleStory]} />
         <StaffPicksSection articles={whatsNewArticles} />
