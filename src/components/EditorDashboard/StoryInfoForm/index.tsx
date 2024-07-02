@@ -1,5 +1,3 @@
-"use client";
-
 import fsPromises from "fs/promises";
 import path from "path";
 import Form from "@/components/Form";
@@ -23,11 +21,10 @@ import axios from "axios";
 import clsx from "clsx";
 import { useRouter } from "next/navigation";
 import { Fragment, useRef, useState, useTransition } from "react";
-import ArticleBody from "./formComponents/articleBody"; // Importing ArticleBody component
-
-import BackgroundImageForm from "./formComponents/backgroundImageForm"; // Importing BackgroundImageForm component
-import NewContributor from "./formComponents/confirmNewContributer"; // Importing NewContributor component
-
+import ArticleBody from "./formComponents/articleBody";
+import ArticleTitle from "./formComponents/articleTitle";
+import BackgroundImageForm from "./formComponents/backgroundImageForm";
+import NewContributor from "./formComponents/confirmNewContributer";
 import NewSubject from "./formComponents/subjectComponents/newSubject";
 import NewSubtopic from "./formComponents/subtopicComponents/newSubtopic";
 import { getData, randomBackgroundColor, setTagsColor } from "./StoryFormFunc";
@@ -35,29 +32,40 @@ import Tags from "./Tags";
 
 interface Props {
   id?: string;
-  title?: string;
+  title: string;
+  setTitle: (value: string) => void;
   summary?: string;
   image?: string;
   caption?: string;
   date?: Date | null;
+  body: string;
+  setBody: (value: string) => void;
+}
+
+interface Article {
+  article: Props;
 }
 
 export default function StoryInfoForm({
   id: storyId,
   title: initialTitle,
+  setTitle: initialSetTitle,
   summary: initialSummary,
   image: initialImage,
   caption: initialCaption,
   date: initialDate,
+  body: initialBody,
+  setBody: initialSetBody,
 }: Props) {
+  // Creating states
   const fileUploadRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
-  const [title, setTitle] = useState(initialTitle ?? "");
   const [summary, setSummary] = useState(initialSummary ?? "");
   const [image, setImage] = useState<File | string | null>(
     initialImage ?? null,
   );
+
   const [caption, setCaption] = useState(initialCaption ?? "");
   const [date, setDate] = useState<Date | null>(initialDate ?? null);
   const [dirty, setDirty] = useState(false);
@@ -85,8 +93,7 @@ export default function StoryInfoForm({
   const [subtopiclist, setSubtopicList] = useState(data.subtopics);
   const [subjectlist, setSubjectList] = useState(data.subjects);
 
-  const [contributors, setContributors] = useState<string[]>([]); // Holds list of contributors
-  const [body, setBody] = useState(""); // State to hold the article body text
+  const [contributors, setContributors] = useState<string[]>([]);
 
   const [isCreateSubtopicModalOpen, setIsCreateSubtopicModalOpen] =
     useState(false);
@@ -142,7 +149,7 @@ export default function StoryInfoForm({
     });
   };
 
-  //add a subtopic tag
+  // add a subtopic tag
   const addSubtopic = (id: any) => {
     subtopiclist.forEach((item: any) => {
       if (item.id == id) {
@@ -160,7 +167,7 @@ export default function StoryInfoForm({
     });
   };
 
-  //add a subject tag
+  // add a subject tag
   const addSubject = (id: any) => {
     subjectlist.forEach((item: any) => {
       if (item.id == id) {
@@ -178,7 +185,7 @@ export default function StoryInfoForm({
     });
   };
 
-  //remove a topic tag
+  // remove a topic tag
   const removeTopicTag = (id: number) => {
     setTopics(topics.filter((item: any) => item.data.id != id));
     setTopicList(
@@ -196,7 +203,7 @@ export default function StoryInfoForm({
     }
   };
 
-  //remove a subtopic tag
+  // remove a subtopic tag
   const removeSubtopicTag = (id: number) => {
     setSubtopics(subtopics.filter((item: any) => item.id != id));
     setSubtopicList(
@@ -206,7 +213,7 @@ export default function StoryInfoForm({
     );
   };
 
-  //remove a subject tag
+  // remove a subject tag
   const removeSubjectTag = (id: number) => {
     setSubjects(subjects.filter((item: any) => item.id != id));
     setSubjectList(
@@ -293,6 +300,7 @@ export default function StoryInfoForm({
                   const file = new File([image], image.name);
                   formData.append("image", file, file.name);
                 }
+                // wait for story API
                 const story = await axios.put<{ id: string }>(
                   "/api/stories",
                   formData,
@@ -314,16 +322,15 @@ export default function StoryInfoForm({
         }}
       >
         {/* STORY TITLE FORM INPUT */}
-        <FormInput
-          title="Story Title"
-          required
+
+        {/* STORY TITLE FORM INPUT */}
+        <ArticleTitle
+          value={initialTitle}
+          onChange={initialSetTitle}
           indicateRequired
-          value={title}
-          onChange={(e) => {
-            setDirty(true);
-            setTitle(e.target.value);
-          }}
+          required
           disabled={loading}
+          setDirty={setDirty}
         />
 
         {/* SUMMARY INPUT */}
@@ -340,7 +347,11 @@ export default function StoryInfoForm({
         />
 
         {/* ARTICLE TEXT BODY INPUT */}
-        <ArticleBody value={body} onChange={setBody} />
+        <ArticleBody
+          value={initialBody}
+          onChange={initialSetBody}
+          setDirty={setDirty}
+        />
 
         {/* TITLE COLOR INPUT */}
         <label className="my-5 flex flex-col">
@@ -712,7 +723,7 @@ export default function StoryInfoForm({
           type="submit"
           className="my-5 select-none rounded-md bg-teal-600 px-2 py-1 font-semibold text-white disabled:pointer-events-none disabled:opacity-50"
           disabled={
-            title.length === 0 ||
+            // title.length === 0 || /* WHEN UNCOMMENTED CODE BREAKS BECAUSE TITLE IS OUT OF SCOPE??? */
             summary.length === 0 ||
             image === null ||
             caption.length === 0 ||

@@ -1,14 +1,6 @@
-"use client";
+import React from "react";
+import ArticleBody from "./formComponents/articleBody";
 
-import {
-  ChevronUpDownIcon,
-  PlusCircleIcon,
-  PlusIcon,
-  TrashIcon,
-} from "@heroicons/react/20/solid";
-import ArticlePreview from "./articlePreviewComponent/articlePreview";
-
-// Creates article interface, containing everything an article contains to display.
 interface Article {
   id?: string;
   title?: string;
@@ -16,22 +8,32 @@ interface Article {
   image?: string;
   caption?: string;
   date?: Date | null;
+  body: string;
 }
+
 interface Props {
   article: Article;
 }
 
 /**
- * Creates a preview of the article on the right hand side
- * of the editor's dashboard.
  *
- * @param article - input representing the article to be shown.
+ * @param param0
  * @returns
  */
-export default function StoryPreview({ article }: Props) {
+const StoryPreview: React.FC<Props> = ({ article }) => {
   return (
     <div className="flex flex-col gap-2">
-      <ArticlePreview />
+      <div className="mt-4">
+        <div>
+          <h1>Article Title</h1>
+          <p> {article.title}</p>{" "}
+        </div>
+        <h2>Article Body</h2>
+        <p>{article.body}</p>{" "}
+        {/* only the body since we can't type in the preview*/}
+      </div>
     </div>
   );
-}
+};
+
+export default StoryPreview;
