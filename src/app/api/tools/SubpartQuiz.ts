@@ -1,7 +1,5 @@
 import prisma from "@/lib/prisma";
 
-interface subpartQuiz {}
-
 export async function getSubpartQuizAnswear(quizQuestionId: string) {
   const quizQuestion = await prisma.quizQuestion.findUnique({
     where: { id: quizQuestionId },
@@ -47,7 +45,7 @@ export async function getSubpartQuizAnswear(quizQuestionId: string) {
   } else {
     throw new Error(
       "Unknow type " +
-        quizQuestion.questionType +
+        String(quizQuestion.questionType) +
         " in getSubpartQuiz function",
     );
   }

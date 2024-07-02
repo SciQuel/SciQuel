@@ -7,7 +7,7 @@ export const quizTypeSchema = z.nativeEnum(QuizType, {
   required_error: "quiz_type is required in url url query parameters",
   invalid_type_error:
     "Invalid quiz_type.  Valid quiz_type: " +
-    Object.values(QuizType).map((en) => en[0]),
+    String(Object.values(QuizType).map((en) => en[0])),
 });
 export const storyIdSchema = z
   .string({
@@ -123,7 +123,7 @@ export const directMatchingSubpartSchema = z
           invalid_type_error:
             "value in correct_answer must be a nonnegative int number",
         })
-        .int()
+        .int("correct_answers must be an integer number")
         .nonnegative(),
       {
         required_error: "correct_answers is required",
@@ -328,8 +328,8 @@ export const modifiedQuizSchema = z.object({
     .number({
       invalid_type_error: "max_score must be a nonnegative int number",
     })
-    .int()
-    .nonnegative()
+    .int("max_score must be an integer number")
+    .nonnegative("max_score must be non negative number")
     .default(DEFAULT_MAX_POINT),
   subpart: z.any(),
   subheader: z.string({

@@ -1,6 +1,6 @@
 import prisma from "@/lib/prisma";
-import { QuizType } from "@prisma/client";
-import { NextRequest, NextResponse } from "next/server";
+import { type QuizType } from "@prisma/client";
+import { NextResponse, type NextRequest } from "next/server";
 import { checkValidInput } from "../tools/SchemaTool";
 import User from "../tools/User";
 import { storyIdSchema } from "./schema";

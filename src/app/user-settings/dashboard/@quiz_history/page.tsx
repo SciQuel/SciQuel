@@ -1,4 +1,4 @@
-import QuizCard from "@/components/UserSettings/QuizCard";
+// import QuizCard from "@/components/UserSettings/QuizCard";
 import getQuizHistory, { type QuizHistory } from "../../actions/getQuizHistory";
 
 export default async function QuizHistory() {
@@ -6,9 +6,9 @@ export default async function QuizHistory() {
   if (!quizzes) return null;
   return (
     <section className="mt-6 flex min-h-[180px] w-full flex-nowrap gap-4 overflow-auto ">
-      {quizzes?.map((quizItem: QuizHistory, idx) => (
+      {/* {quizzes?.map((quizItem: QuizHistory, idx) => (
         <QuizCard idx={idx} quiz={quizItem} key={idx} />
-      ))}
+      ))} */}
     </section>
   );
 }

@@ -99,10 +99,10 @@ model Story {
   thumbnailUrl String
   coverCaption String @default("")
 
-  createdAt     DateTime
-  publishedAt   DateTime
-  updatedAt     DateTime
-  quizQuestions QuizQuestion[]
+  createdAt       DateTime
+  publishedAt     DateTime
+  updatedAt       DateTime
+  quizQuestions   QuizQuestion[]
   staffPick       StaffPick?
   StaffPickRecord StaffPickRecord[]
 }
@@ -399,11 +399,11 @@ model Grade {
 }
 
 model QuizQuestionRecord {
-  id             String                 @id @default(auto()) @map("_id") @db.ObjectId
-  quizQuestionId String                 @db.ObjectId
-  staffId        String                 @db.ObjectId
+  id             String     @id @default(auto()) @map("_id") @db.ObjectId
+  quizQuestionId String     @db.ObjectId
+  staffId        String     @db.ObjectId
   updateType     UpdateType
-  createAt       DateTime               @default(now())
+  createAt       DateTime   @default(now())
 
   @@index([quizQuestionId])
   @@index([createAt])

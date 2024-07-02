@@ -4,7 +4,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { Prisma, PrismaClient, QuizType } from "@prisma/client";
+import { PrismaClient, type Prisma, type QuizType } from "@prisma/client";
 import { NextResponse, type NextRequest } from "next/server";
 import { checkValidInput } from "../tools/SchemaTool";
 import { getSubpartQuizAnswear } from "../tools/SubpartQuiz";
@@ -12,20 +12,20 @@ import User from "../tools/User";
 import { postSchema, scoreSchema, storyIdSchema } from "./schema";
 import { grading, insertIfNotExists } from "./tools";
 
-interface QuizRecordI {
-  storyId: string;
-  maxScore: number;
-  grades: {
-    userResponseSubpart: {
-      id: string;
-    };
-    maxScore: number;
-    totalScore: number;
-  }[];
-  quizType: QuizType;
-  score: number;
-  createAt: Date;
-}
+// interface QuizRecordI {
+//   storyId: string;
+//   maxScore: number;
+//   grades: {
+//     userResponseSubpart: {
+//       id: string;
+//     };
+//     maxScore: number;
+//     totalScore: number;
+//   }[];
+//   quizType: QuizType;
+//   score: number;
+//   createAt: Date;
+// }
 
 const ROUND_UP_DECIMAL = 1;
 const prisma = new PrismaClient();
@@ -166,7 +166,7 @@ export async function POST(req: NextRequest) {
       resolve(0);
     });
     if (isLastQuestion) {
-      insertIfNotExists<
+      userFirstScorePromise = insertIfNotExists<
         "StoryQuizScoreFirstTime",
         Prisma.StoryQuizScoreFirstTimeWhereInput,
         Prisma.StoryQuizScoreFirstTimeCreateInput

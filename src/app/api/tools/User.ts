@@ -1,6 +1,6 @@
 import prisma from "@/lib/prisma";
 import { type User as UserType } from "@prisma/client";
-import { getServerSession, Session } from "next-auth";
+import { getServerSession, type Session } from "next-auth";
 
 export default class User {
   session: Session | null;
