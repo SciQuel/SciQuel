@@ -77,7 +77,7 @@ export default function StoryInfoForm({
   const [titleColor, setTitleColor] = useState("#000000");
   const [summaryColor, setSummaryColor] = useState("#000000");
 
-  const [slug, setSlug] = useState("");
+  // const [slug, setSlug] = useState(initialSlug ?? "");
 
   const [topicQuery, setTopicQuery] = useState("");
   const [subtopicQuery, setSubtopicQuery] = useState("");
@@ -284,7 +284,7 @@ export default function StoryInfoForm({
                 formData.append("storyType", storyType);
                 formData.append("category", "ARTICLE");
                 formData.append("titleColor", titleColor);
-                formData.append("summaryColor", titleColor);
+                formData.append("summaryColor", summaryColor);
                 formData.append("slug", slug);
                 formData.append("topics", JSON.stringify(topics));
                 formData.append("subtopics", "[]");
@@ -392,7 +392,7 @@ export default function StoryInfoForm({
           title="Slug"
           required
           indicateRequired
-          value={slug}
+          // value={slug}
           disabled={loading}
           onChange={(e) => {
             setDirty(true);
