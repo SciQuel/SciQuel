@@ -77,10 +77,11 @@ const StoryImagePopup = ({
   const imageStyles = {
     transformOrigin: transformOriginValue,
     transform: transformValue,
-   
+    cursor : isMobile ? 'default' : 'cursor-zoom-in',
+    
   };
-  
-  const cursorStyles = isMobile && 'default'
+
+
 
   return (
     
@@ -103,12 +104,12 @@ const StoryImagePopup = ({
           onClick={handlePopUpImageClick}
           onMouseMove={handleImageDrag}
           alt={alt}
-          style={{...imageStyles, cursor: cursorStyles}}
+          style={imageStyles}
         />
        
         </div>
  
-        {!imageClicked && <p className = 'text-center text-wrap mx-5' ref = {captionRef} > {children} </p>}
+        {!imageClicked && <p className = 'text-center text-wrap mx-5 cursor-default' ref = {captionRef} > {children} </p>}
       </div>
 
       <button
