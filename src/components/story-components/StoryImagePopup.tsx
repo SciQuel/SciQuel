@@ -18,15 +18,15 @@ const StoryImagePopup = ({
   alt,
 }: PropsWithChildren<Props>) => {
   const [imageClicked, setImageClicked] = useState(false);
-  const [imagePosition, setImagePosition] = useState<{
+  const [transformOriginPosition, setTransformOriginPosition] = useState<{
     x: number | null;
     y: number | null;
   }>({ x: null, y: null });
   const [dragging, setDragging] = useState(false);
   const [scaleLevel, setScaleLevel] = useState(1);
-
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
+  /* created window event listener to be able to set when viewport is mobile width */
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 768);
@@ -38,10 +38,11 @@ const StoryImagePopup = ({
       window.removeEventListener('resize', handleResize);
     };
   }, []);
+
   //handler for when you click on popup image, clicking once will get rid of caption and focus on image, clicking another will zoom in
   const handlePopUpImageClick = () => {
     if(!isMobile){
-
+      console.log(transformOriginValue)
     
     if (scaleLevel === 3) {
    
@@ -52,7 +53,7 @@ const StoryImagePopup = ({
     if (!imageClicked) {
       setImageClicked(true);
     } else {
-      setScaleLevel(scaleLevel + 2);
+      setScaleLevel(prevScaleLevel  => prevScaleLevel + 2);
     }
   }
   };
@@ -63,25 +64,27 @@ const StoryImagePopup = ({
     const divTarget = e.target as HTMLImageElement;
     const x = e.clientX - divTarget.offsetLeft;
     const y = e.clientY - divTarget.offsetTop;
-    setImagePosition({ x, y });
+    setTransformOriginPosition({ x, y });
   };
 
   //style values
   const transformOriginValue =
-    imagePosition.x !== null
-      ? `${imagePosition.x}px ${imagePosition.y}px`
-      : "center center";
+    transformOriginPosition.x !== null
+      ? `${transformOriginPosition.x}px ${transformOriginPosition.y}px` : 'center center'
+      
 
   const transformValue = imageClicked ? `scale(${scaleLevel})` : "none";
 
   const imageStyles = {
     transformOrigin: transformOriginValue,
     transform: transformValue,
-    cursor : isMobile ? 'default' : 'cursor-zoom-in',
+    cursor : isMobile
+    ? 'default'
+    : scaleLevel === 1
+    ? 'zoom-in'
+    : 'zoom-out'
     
   };
-
-
 
   return (
     
@@ -97,9 +100,7 @@ const StoryImagePopup = ({
             <div className = 'max-w-[95%] w-[700px]  max-h-[700px] '>
         <img
           src={src}
-          className={` w-full block relative mx-auto max-h-[700px] object-contain     ${
-            scaleLevel === 1 ? "hover:cursor-zoom-in" : "hover:cursor-zoom-out"
-          }`}
+          className={` w-full block relative mx-auto max-h-[700px] object-contain`}
           ref={imageRef}
           onClick={handlePopUpImageClick}
           onMouseMove={handleImageDrag}
@@ -109,7 +110,7 @@ const StoryImagePopup = ({
        
         </div>
  
-        {!imageClicked && <p className = 'text-center text-wrap mx-5 cursor-default' ref = {captionRef} > {children} </p>}
+        { <p className = {`text-center text-wrap mx-5 cursor-default ${imageClicked ? 'hidden' : ''}`} ref = {captionRef} > {children} </p>}
       </div>
 
       <button

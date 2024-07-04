@@ -28,7 +28,8 @@ export default function StoryLargeImage({
     console.log('div clicked')
     const divTarget = e.target as HTMLDivElement;
     if (isClicked) {
-      if (imageRef.current && !imageRef.current.contains(divTarget)) {
+
+      if (imageRef.current && !imageRef.current.contains(divTarget) && captionRef.current && !captionRef.current.contains(divTarget)) {
         setIsClicked(false);
       }
     } else {
