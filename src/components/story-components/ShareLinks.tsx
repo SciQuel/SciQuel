@@ -209,10 +209,11 @@ export default function ShareLinks({ storyId, observe }: Props) {
 
   return (
     <>
+      {/* first button */}
       <button
         type="button"
         onClick={handleBookmark}
-        className="pointer-events-auto h-fit w-fit rounded-full px-0 py-0.5 pr-3 xl:mb-2 xl:px-3"
+        className="pointer-events-auto relative h-fit w-fit rounded-full px-0 py-0.5 pr-3 xl:-left-2 xl:top-4 xl:mb-2 xl:px-3"
       >
         <Image
           src={shareIcon}
@@ -228,6 +229,7 @@ export default function ShareLinks({ storyId, observe }: Props) {
           {isBookmarked ? "un-book" : "book"}
         </p> */}
       </button>
+
       <div
         className={
           `${
@@ -274,11 +276,12 @@ export default function ShareLinks({ storyId, observe }: Props) {
         }}
         className={`pointer-events-auto absolute left-[4.25rem] flex h-fit w-fit flex-col md:left-[4.25rem] xl:left-[calc(100%_-_4.3rem)]  xl:top-[3.5rem]  xl:items-start `}
       >
+        {/* second button */}
         <button
           type="button"
           aria-haspopup={true}
           aria-expanded={showOptions == "share"}
-          className="pointer-events-auto h-fit w-fit rounded-full py-0.5 pr-3 xl:ml-0 xl:pr-0"
+          className="pointer-events-auto relative h-fit w-fit rounded-full py-0.5 pr-3 xl:-left-2 xl:top-4 xl:ml-0 xl:pr-0"
           onClick={() => {
             if (showOptions == "share") {
               setShowOptions("none");
@@ -296,11 +299,11 @@ export default function ShareLinks({ storyId, observe }: Props) {
         </button>
         <SocialMediaPopup show={showOptions == "share"} ref={popupRef} />{" "}
       </div>
-
+      {/* third button */}
       <button
         type="button"
         onClick={handleBrain}
-        className="pointer-events-auto ml-[4.2rem] h-fit w-fit rounded-full px-3 py-0.5   xl:mb-2 xl:ml-0  xl:mt-[3.4rem]"
+        className="pointer-events-auto relative ml-[4.2rem] h-fit w-fit rounded-full px-3 py-0.5  xl:-left-2 xl:top-4 xl:mb-2 xl:ml-0  xl:mt-[3.4rem]"
       >
         <Image
           src={shareIcon}
@@ -335,7 +338,6 @@ export default function ShareLinks({ storyId, observe }: Props) {
             ` xl:-bottom-5 xl:left-2 xl:before:-left-7 xl:before:top-1/2  xl:before:ml-[0.9rem] xl:before:h-6 xl:before:w-6 xl:before:-translate-y-1/2 xl:before:-rotate-45 `
           }
         >
-          {/**/}
           <p className="w-full text-center text-lg sm:w-max">
             <a
               href="#"
@@ -349,10 +351,10 @@ export default function ShareLinks({ storyId, observe }: Props) {
           </p>
         </div>
       </div>
-
+      {/* fourth button */}
       <button
         type="button"
-        className="pointer-events-auto h-fit w-fit rounded-full px-3  py-0.5 xl:mb-2"
+        className="pointer-events-auto relative h-fit w-fit rounded-full px-3  py-0.5 xl:-left-2 xl:top-4 xl:mb-2"
         onClick={() => {
           if (toggleFunction) {
             window.scrollTo(0, 0);
@@ -367,7 +369,7 @@ export default function ShareLinks({ storyId, observe }: Props) {
           height={45}
         />
       </button>
-
+      {/* fifth button */}
       <DictionaryButton observe={observe} />
     </>
   );
