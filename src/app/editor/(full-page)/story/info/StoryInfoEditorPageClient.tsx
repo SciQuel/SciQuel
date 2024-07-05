@@ -28,17 +28,19 @@ const StoryInfoEditorClient: React.FC<Props> = ({ story }) => {
   const [body, setBody] = useState(story.body || "");
   const [title, setTitle] = useState(story.title || "");
   // const [summary, setSummary] = useState(story.summary || "");
-  // const [image, setImage] = useState(story.image || null);
+  const [image, setImage] = useState(story.image || null);
   // const [caption, setCaption] = useState(story.caption || "");
   // const [date, setDate] = useState(story.date || null);
   // const [loading, setLoading] = useState(false);
   // const [dirty, setDirty] = useState(false);
 
+  console.log(story.id);
+
   return (
     <div className="mx-32 mt-5 flex flex-col gap-5">
       {/* LEFT HAND SIDE */}
       <div className="flex gap-5">
-        <div className="w-1/2">
+        <div className="w-1/3">
           <h3 className="text-3xl font-semibold text-sciquelTeal">
             Story Info
           </h3>
@@ -53,11 +55,11 @@ const StoryInfoEditorClient: React.FC<Props> = ({ story }) => {
         </div>
 
         {/* RIGHT HAND SIDE */}
-        <div className="w-1/2 bg-gray-100">
+        <div className="w-2/3 bg-white">
           <h3 className="text-3xl font-semibold text-sciquelTeal">
             Story Preview
           </h3>
-          <StoryPreview article={{ title, body }} />{" "}
+          <StoryPreview article={{ title, body }} id={story.id} />{" "}
           {/* article body preview */}
         </div>
       </div>

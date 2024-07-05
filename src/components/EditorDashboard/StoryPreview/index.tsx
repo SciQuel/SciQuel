@@ -2,7 +2,12 @@
 import React from "react";
 import ArticleBody from "./formComponents/articleBody";
 import { title } from "process";
-import StoryPreviewFetch from "./StoryPreviewFetch";
+// import StoryPreviewFetch from "./StoryPreviewFetch";
+import { useEffect } from "react";
+import { useState } from "react";
+import { generateMarkdown } from "@/lib/markdown";
+import { type GetStoryResult } from "@/app/api/stories/id/[id]/route";
+import Image from "next/image";
 
 interface Article {
 // =======
@@ -58,6 +63,7 @@ interface Article {
 // <<<<<<< Updated upstream
 interface Props {
   article: Article;
+  id: string;
 }
 
 /**
@@ -67,10 +73,35 @@ interface Props {
  */
 
 
-const StoryPreview: React.FC<Props> = ({ article }) => {
-  StoryPreviewFetch(article)
+
+const StoryPreview: React.FC<Props> = ({ article, id }) => {
+  
+  // const storyBody = await generateMarkdown(story.storyContent[0].content)
   return (
     <div className="flex flex-col gap-2">
+      <div className="relative">
+         {/* <Image
+          src={typeof image === "string" ? image : ""}
+          className="w-full h-auto object-cover"
+          alt={title}
+          width={1700}
+          height={768}
+        /> */}
+        <div className="absolute bottom-0 left-0 w-full px-12 py-10">
+          <h1
+            className="w-4/5 p-8 font-alegreyaSansSC text-4xl font-bold sm:text-6xl"
+            style={{ color: 'white' }}
+          >
+            {title}
+          </h1>
+          <h2
+            className="w-5/6 p-8 pt-0 font-alegreyaSansSC text-3xl font-semibold"
+            style={{ color: 'white' }}
+          >
+            {'summary'}
+          </h2>
+        </div>
+      </div>
       <div className="mt-4">
         <div>
           <h1>Article Title</h1>
@@ -79,14 +110,82 @@ const StoryPreview: React.FC<Props> = ({ article }) => {
         <h2>Article Body</h2>
         <p>{article.body}</p>{" "}
         {/* only the body since we can't type in the preview*/}
+        <div className="">
+           <ArticleDetail articleId={id} includeContent={true} />
+      </div>
       </div>
     </div>
   );
 };
 
 export default StoryPreview;
-// =======
-// const StoryPreviewFetch({
+
+async function fetchArticleById(id: string, includeContent: boolean = false) {
+  const includeContentParam = includeContent ? "?include_content=true" : "";
+  const response = await fetch(`/api/stories/id/${id}${includeContentParam}`);
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch article: ${response.statusText}`);
+  }
+
+  const article = await response.json();
+  return article;
+}
+
+interface ArticleDetailProps {
+  articleId: string;
+  includeContent?: boolean;
+}
+
+const ArticleDetail: React.FC<ArticleDetailProps> = ({
+  articleId,
+  includeContent = false,
+}) => {
+  const [article, setArticle] = useState<GetStoryResult | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [storyContent, setStoryContent] = useState<JSX.Element | null>(null);
+
+  useEffect(() => {
+    async function loadArticle() {
+      try {
+        const fetchedArticle = await fetchArticleById(articleId, includeContent);
+        setArticle(fetchedArticle);
+
+        if (includeContent && fetchedArticle.storyContent.length > 0) {
+          const { file } = await generateMarkdown(fetchedArticle.storyContent[0].content);
+          setStoryContent(file.result);
+        }
+
+      } catch (err: any) {
+        setError(err.message);
+      }
+    }
+
+    if (articleId) {
+      loadArticle();
+    }
+  }, [articleId, includeContent]);
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
+  if (!article) {
+    return <div>Loading...</div>;
+  }
+
+  
+
+  return (
+    <div>
+      <div>
+        {includeContent && storyContent}
+      </div>
+    </div>
+  );
+};
+
+// async function StoryPreviewFetch({
 //   id: storyId,
 //   title: initialTitle,
 //   summary: initialSummary,
@@ -136,66 +235,7 @@ export default StoryPreview;
 //   const [isCreateSubjectModalOpen, setIsCreateSubjectModalOpen] =
 //     useState(false);
 
-//   async function fetchArticleById(id: string, includeContent: boolean = false) {
-//     const includeContentParam = includeContent ? "?include_content=true" : "";
-//     const response = await fetch(`/api/stories/id/${id}${includeContentParam}`);
-
-//     if (!response.ok) {
-//       throw new Error(`Failed to fetch article: ${response.statusText}`);
-//     }
-
-//     const article = await response.json();
-//     return article;
-//   }
-
-//   interface ArticleDetailProps {
-//     articleId: string;
-//     includeContent?: boolean;
-//   }
-
-//   const ArticleDetail: React.FC<ArticleDetailProps> = ({
-//     articleId,
-//     includeContent = false,
-//   }) => {
-//     const [article, setArticle] = useState<GetStoryResult | null>(null);
-//     const [error, setError] = useState<string | null>(null);
-
-//     useEffect(() => {
-//       async function loadArticle() {
-//         try {
-//           const fetchedArticle = await fetchArticleById(articleId, includeContent);
-//           setArticle(fetchedArticle);
-//         } catch (err: any) {
-//           setError(err.message);
-//         }
-//       }
-
-//       if (articleId) {
-//         loadArticle();
-//       }
-//     }, [articleId, includeContent]);
-
-//     if (error) {
-//       return <div>Error: {error}</div>;
-//     }
-
-//     if (!article) {
-//       return <div>Loading...</div>;
-//     }
-
-    
-
-//     return (
-//       <div>
-//         <div>
-//           {includeContent && 
-//           <div>
-//             {article.storyContent[0].content}
-//           </div>}
-//         </div>
-//       </div>
-//     );
-//   };
+  
 
 //   return (
 //     <div className="flex flex-col gap-2">
@@ -244,6 +284,5 @@ export default StoryPreview;
 
 //     </div>
 //   );
-//   export default StoryPreviewFetch;
+  
 // }
-// >>>>>>> Stashed changes
