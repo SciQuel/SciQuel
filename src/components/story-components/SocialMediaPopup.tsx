@@ -68,11 +68,13 @@ const SocialMediaPopup = forwardRef(
         <div
           className={
             `${
-              show ? "opacity-1" : "max-h-0 max-w-0 opacity-0 sm:-translate-y-2"
+              show
+                ? "opacity-1"
+                : "max-h-10 max-w-0 opacity-0 sm:-translate-y-2"
             }  
-              fixed -left-10 bottom-0 z-[19] h-screen w-screen items-end overflow-hidden bg-neutral-800/75 transition-all` +
+              relative -left-10 bottom-0 z-[19] h-screen w-screen items-end overflow-scroll bg-neutral-800/75 transition-all` +
             ` sm:static sm:top-0 sm:ml-[-4.75rem] sm:mt-2 sm:h-fit sm:w-fit sm:items-start sm:justify-center sm:bg-transparent` +
-            ` xl:-mt-20 xl:ml-8 xl:w-fit xl:px-8`
+            ` xl:h-30 xl:-mt-[50px] xl:ml-8 xl:w-fit xl:px-8`
           }
         >
           {/* This div contains arrow, the side-popout container and clipboard component as well. */}
@@ -83,11 +85,11 @@ const SocialMediaPopup = forwardRef(
                 show
                   ? "translate-y-0"
                   : "max-h-0 translate-y-full opacity-0 sm:-translate-y-0"
-              }  absolute bottom-0 z-[19] flex w-screen flex-col pt-0 transition-transform duration-500 ` +
+              }  relative bottom-0 z-[19] flex w-screen flex-col pt-0 transition-transform duration-500 ` +
               ` sm:relative sm:px-0 md:w-[768px] md:pl-0 md:pr-0 xl:relative xl:h-fit xl:w-fit`
             }
           >
-            <div className="relative z-20 sm:absolute sm:left-20 sm:top-1 sm:z-[2] sm:ml-1 sm:h-6 sm:w-6 sm:rotate-45 sm:rounded-tl sm:border-l-2 sm:border-t-2 sm:border-sciquelCardBorder sm:bg-sciquelCardBg xl:left-[-42px] xl:top-14 xl:ml-[1.3rem] xl:h-7 xl:w-7 xl:rounded-bl xl:rounded-tl-none xl:border-b-2 xl:border-t-0">
+            <div className="relative z-20 sm:absolute sm:left-20 sm:top-1 sm:z-[2] sm:ml-1 sm:h-6 sm:w-6 sm:rotate-45 sm:rounded-tl sm:border-l-2 sm:border-t-2 sm:border-sciquelCardBorder sm:bg-sciquelCardBg xl:left-[-42px] xl:top-8 xl:ml-[1.3rem] xl:h-7 xl:w-7 xl:rounded-bl xl:rounded-tl-none xl:border-b-2 xl:border-t-0">
               {/* this is the arrow, created from a rotated div */}
             </div>
             {/* side-popout + clipboard */}
@@ -96,7 +98,7 @@ const SocialMediaPopup = forwardRef(
             >
               {/* side-popout container with buttons */}
               <div
-                className={`pointer-events-auto relative -left-10 m-0 flex  flex-row border-sciquelCardBorder bg-sciquelCardBg py-1 sm:rounded-b-xl sm:border-b-2 sm:pb-2 md:px-1 xl:top-6 xl:w-max xl:flex-col xl:gap-1 xl:rounded-xl xl:border-2 xl:px-0 xl:pt-2`}
+                className={`pointer-events-auto relative -left-10 m-0 flex  flex-row border-sciquelCardBorder bg-sciquelCardBg py-1 sm:rounded-b-xl sm:border-b-2 sm:pb-2 md:px-1 xl:top-0 xl:w-max xl:flex-col xl:gap-1 xl:rounded-xl xl:border-2 xl:px-0 xl:pt-2`}
               >
                 {/* buttons containers */}
                 <button
@@ -186,7 +188,7 @@ const SocialMediaPopup = forwardRef(
                     : show
                     ? "pointer-events-auto p-4 pb-2 xl:pointer-events-none   xl:w-0 xl:-translate-x-3 xl:p-0 xl:opacity-0"
                     : "w-0 -translate-x-3 p-0 opacity-0"
-                } relative m-0 mt-2 flex flex-row justify-center rounded-t-xl border-x-2 border-t-2 border-sciquelCardBorder bg-sciquelCardBg transition-all lg:h-fit xl:-left-7 xl:top-4 xl:rounded-xl xl:border-2`}
+                } relative m-0 mt-2 flex flex-row justify-center rounded-t-xl border-x-2 border-t-2 border-sciquelCardBorder bg-sciquelCardBg transition-all lg:h-fit xl:-left-7 xl:-top-2 xl:rounded-xl xl:border-2`}
               >
                 {/* floating input for copying link */}
                 <button
