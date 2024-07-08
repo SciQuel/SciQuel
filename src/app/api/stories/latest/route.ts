@@ -43,7 +43,7 @@ export async function GET(req: NextRequest) {
     type,
     date_from,
     date_to,
-    sort_by,
+    // sort_by,
     published,
   } = parsedParams.data;
 

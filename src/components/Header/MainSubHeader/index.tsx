@@ -16,7 +16,6 @@ export default function MainSubHeader() {
       ${isScrollingUp ? "translate-y-16" : "-translate-y-16"}`}
     >
       <div className="grow cursor-pointer px-4 py-2 hover:bg-sciquelHover">
-
         <Link href="/stories/latest">LATEST</Link>
       </div>
 
