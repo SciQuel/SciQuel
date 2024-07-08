@@ -76,7 +76,9 @@ export async function GET(req: NextRequest) {
               ],
             }
           : {}),
-        ...(staff_pick !== undefined ? { staffPick: staff_pick } : {}),
+        ...(staff_pick !== undefined
+          ? { staffPick: { equals: staff_pick } }
+          : {}),
         // staffPick: staff_pick,
         ...(topic ? { tags: { has: topic } } : {}),
         storyType: type,
