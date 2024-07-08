@@ -61,7 +61,9 @@ export async function GET(req: NextRequest) {
   const numPagesToSkip = (page && page - 1) || 0;
   const numStoriesPerPage = page_size || 10; // default page size
 
-  date_to?.setDate(date_to.getDate() + 1);
+  if (date_to) {
+    date_to.setDate(date_to.getDate() + 1);
+  }
 
   try {
     const query: Prisma.StoryFindManyArgs = {
