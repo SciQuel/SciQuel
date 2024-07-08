@@ -4,7 +4,7 @@ import { createCommentSchema } from "../schema";
 
 export async function POST(req: NextRequest) {
   try {
-    const requestBody = await req.json();
+    const requestBody: unknown = await req.json();
     console.log("Request body:", requestBody);
 
     const parsed = createCommentSchema.safeParse(requestBody);
