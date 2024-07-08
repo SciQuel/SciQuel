@@ -38,7 +38,7 @@ export async function GET(req: NextRequest) {
     page,
     page_size,
     keyword,
-    staff_pick,
+    // staff_pick,
     topic,
     type,
     date_from,
@@ -76,10 +76,11 @@ export async function GET(req: NextRequest) {
               ],
             }
           : {}),
-        ...(staff_pick !== undefined
-          ? { staffPick: { equals: staff_pick } }
-          : {}),
+        // ...(staff_pick !== undefined
+        //   ? { staffPick: { equals: staff_pick } }
+        //   : {}),
         // staffPick: staff_pick,
+        // ...(staff_pick && staff_pick === "true" ? { staff_pick: "true" } : {}),
         ...(topic ? { tags: { has: topic } } : {}),
         storyType: type,
         createdAt: {
