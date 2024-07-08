@@ -39,6 +39,7 @@ export default async function StoriesListPage({
           {stories.length > 0 ? (
             <>
               <ArticleList articles={stories} preferHorizontal={true} />
+
               <Pagination total_pages={total_pages} />
             </>
           ) : (

@@ -27,6 +27,7 @@ export type GetStoryResult = Story & {
   }[];
   storyContent: {
     content: string;
+    footer: string | undefined;
   }[];
 };
 
@@ -92,7 +93,7 @@ export async function GET(req: Request, { params }: { params: Params }) {
             ? {
                 take: 1,
                 orderBy: { createdAt: "desc" },
-                select: { content: true },
+                select: { content: true, footer: true },
               }
             : false,
       },

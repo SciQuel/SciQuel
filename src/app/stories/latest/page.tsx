@@ -1,3 +1,4 @@
+
 import { type GetLatestStoriesResult } from "@/app/api/stories/latest/route";
 import ArticleList from "@/components/ArticleList";
 import HomepageSection from "@/components/HomepageSection";
@@ -6,33 +7,30 @@ import env from "@/lib/env";
 
 interface Params {
   topic: string;
+  staff_pick: string;
   page_number: string;
 }
 
-export default async function StoriesLatestPage({
+export default async function StoriesListPage({
   searchParams,
 }: {
   searchParams: Params;
 }) {
-  const { topic, page_number } = searchParams;
+  const { page_number } = searchParams;
   const params = {
-    ...(topic ? { topic } : {}),
     page: page_number || "1",
+    page_size: "9",
   };
 
   const { stories, total_pages } = await getStories(params);
 
-  const headerText = topic
-    ? `${topic.toUpperCase()} | LATEST`
-    : "ALL TOPICS | LATEST";
-
   return (
     <>
       <div className="mx-[10%] my-10 flex flex-col gap-12">
-        <HomepageSection heading={headerText}>
+        <HomepageSection heading={"Latest Stories"}>
           {stories.length > 0 ? (
             <>
-              <ArticleList articles={stories} preferHorizontal={true} />
+              <ArticleList articles={stories} preferHorizontal={false} />
               <Pagination total_pages={total_pages} />
             </>
           ) : (
@@ -58,11 +56,13 @@ async function getStories(params: Record<string, string>) {
     throw new Error("Failed to fetch data");
   }
 
-  const data: GetLatestStoriesResult = await res.json().then();
+  const data: GetStoriesResult = await res.json().then();
 
   data.stories = data.stories.map((story) => ({
     ...story,
+    createdAt: new Date(story.createdAt),
     publishedAt: new Date(story.publishedAt),
+    updatedAt: new Date(story.updatedAt),
   }));
 
   return data;
