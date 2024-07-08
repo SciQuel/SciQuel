@@ -1,14 +1,13 @@
 import prisma from "@/lib/prisma";
 import { NextResponse, type NextRequest } from "next/server";
-import { createReplySchema } from "../schema";
+import { createCommentSchema } from "../schema";
 
 export async function POST(req: NextRequest) {
   try {
-    console.log("Received request:", req);
     const requestBody = await req.json();
     console.log("Request body:", requestBody);
 
-    const parsed = createReplySchema.safeParse(requestBody);
+    const parsed = createCommentSchema.safeParse(requestBody);
     console.log("Validation result:", parsed);
 
     if (!parsed.success) {
@@ -35,7 +34,7 @@ export async function POST(req: NextRequest) {
 
     return new NextResponse(
       JSON.stringify({
-        message: "Comment created successfully",
+        message: "Reply created successfully",
         commentData: createdReply,
       }),
       {
@@ -46,9 +45,11 @@ export async function POST(req: NextRequest) {
       },
     );
   } catch (error) {
+    console.log(error);
+    console.log("Received request:", req.method, req.url);
     console.error("Error processing request:", error);
     return new NextResponse(
-      JSON.stringify({ error: "Internal Server Error" }),
+      JSON.stringify({ error: "Internal Server Error!" }),
       {
         status: 500,
         headers: {

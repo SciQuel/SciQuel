@@ -1,4 +1,3 @@
-
 import { type GetLatestStoriesResult } from "@/app/api/stories/latest/route";
 import ArticleList from "@/components/ArticleList";
 import HomepageSection from "@/components/HomepageSection";
@@ -56,7 +55,7 @@ async function getStories(params: Record<string, string>) {
     throw new Error("Failed to fetch data");
   }
 
-  const data: GetStoriesResult = await res.json().then();
+  const data: GetLatestStoriesResult = await res.json().then();
 
   data.stories = data.stories.map((story) => ({
     ...story,

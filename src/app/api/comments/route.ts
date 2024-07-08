@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
       data: {
         content: commentData.content,
         quote: commentData.quote,
-        // parentCommentId: commentData.parentCommentId,
+        parentCommentId: commentData.parentCommentId,
         userId: commentData.userId,
         storyId: commentData.storyId,
       },
