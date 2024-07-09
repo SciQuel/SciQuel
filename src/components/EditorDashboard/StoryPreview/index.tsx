@@ -1,56 +1,54 @@
 // <<<<<<< Updated upstream
-import React from "react";
-import ArticleBody from "./formComponents/articleBody";
 import { title } from "process";
-// import StoryPreviewFetch from "./StoryPreviewFetch";
-import { useEffect } from "react";
-import { useState } from "react";
-import { generateMarkdown } from "@/lib/markdown";
 import { type GetStoryResult } from "@/app/api/stories/id/[id]/route";
+import { generateMarkdown } from "@/lib/markdown";
 import Image from "next/image";
+// import StoryPreviewFetch from "./StoryPreviewFetch";
+import React, { useEffect, useState } from "react";
+import ArticleBody from "./formComponents/articleBody";
 
 interface Article {
-// =======
+  // =======
 
-// "use client";
+  // "use client";
 
-// import fsPromises from "fs/promises";
-// import path from "path";
-// import Form from "@/components/Form";
-// import FormInput from "@/components/Form/FormInput";
-// import FormSelect from "@/components/Form/FormSelect";
-// import { Popover, Transition } from "@headlessui/react";
-// import {
-//   ChevronUpDownIcon,
-//   PlusCircleIcon,
-//   PlusIcon,
-//   TrashIcon,
-// } from "@heroicons/react/20/solid";
-// import {
-//   type Category,
-//   type GeneralSubject,
-//   type StoryTopic,
-//   type StoryType,
-//   type Subtopic,
-// } from "@prisma/client";
-// import axios from "axios";
-// import clsx from "clsx";
-// import { useRouter } from "next/navigation";
-// import { Fragment, ReactNode, useRef, useState, useTransition } from "react";
-// import NewContributor from "./contributors/confirmNewContributer";
-// import { getData, randomBackgroundColor, setTagsColor } from "./StoryFormFunc";
-// import NewSubject from "./subjectComponents/newSubject";
-// import NewSubtopic from "./subtopicComponents/newSubtopic";
-// import Tags from "./Tags";
-// import Image from "next/image";
-// import ShareLinks from "@/components/story-components/ShareLinks";
-// import TopicTag from "@/components/TopicTag";
-// import { generateMarkdown } from "@/lib/markdown";
-// import { type GetStoryResult } from "@/app/api/stories/id/[id]/route";
-// import { useEffect } from "react";
+  // import fsPromises from "fs/promises";
+  // import path from "path";
+  // import Form from "@/components/Form";
+  // import FormInput from "@/components/Form/FormInput";
+  // import FormSelect from "@/components/Form/FormSelect";
+  // import { Popover, Transition } from "@headlessui/react";
+  // import {
+  //   ChevronUpDownIcon,
+  //   PlusCircleIcon,
+  //   PlusIcon,
+  //   TrashIcon,
+  // } from "@heroicons/react/20/solid";
+  // import {
+  //   type Category,
+  //   type GeneralSubject,
+  //   type StoryTopic,
+  //   type StoryType,
+  //   type Subtopic,
+  // } from "@prisma/client";
+  // import axios from "axios";
+  // import clsx from "clsx";
+  // import { useRouter } from "next/navigation";
+  // import { Fragment, ReactNode, useRef, useState, useTransition } from "react";
+  // import NewContributor from "./contributors/confirmNewContributer";
+  // import { getData, randomBackgroundColor, setTagsColor } from "./StoryFormFunc";
+  // import NewSubject from "./subjectComponents/newSubject";
+  // import NewSubtopic from "./subtopicComponents/newSubtopic";
+  // import Tags from "./Tags";
+  // import Image from "next/image";
+  // import ShareLinks from "@/components/story-components/ShareLinks";
+  // import TopicTag from "@/components/TopicTag";
+  // import { generateMarkdown } from "@/lib/markdown";
+  // import { type GetStoryResult } from "@/app/api/stories/id/[id]/route";
+  // import { useEffect } from "react";
 
-// interface Props {
-// >>>>>>> Stashed changes
+  // interface Props {
+  // >>>>>>> Stashed changes
   id?: string;
   title?: string;
   summary?: string;
@@ -71,16 +69,12 @@ interface Props {
  * @param param0
  * @returns
  */
-
-
-
 const StoryPreview: React.FC<Props> = ({ article, id }) => {
-  
   // const storyBody = await generateMarkdown(story.storyContent[0].content)
   return (
     <div className="flex flex-col gap-2">
       <div className="relative">
-         {/* <Image
+        {/* <Image
           src={typeof image === "string" ? image : ""}
           className="w-full h-auto object-cover"
           alt={title}
@@ -90,15 +84,15 @@ const StoryPreview: React.FC<Props> = ({ article, id }) => {
         <div className="absolute bottom-0 left-0 w-full px-12 py-10">
           <h1
             className="w-4/5 p-8 font-alegreyaSansSC text-4xl font-bold sm:text-6xl"
-            style={{ color: 'white' }}
+            style={{ color: "white" }}
           >
             {title}
           </h1>
           <h2
             className="w-5/6 p-8 pt-0 font-alegreyaSansSC text-3xl font-semibold"
-            style={{ color: 'white' }}
+            style={{ color: "white" }}
           >
-            {'summary'}
+            {"summary"}
           </h2>
         </div>
       </div>
@@ -111,8 +105,8 @@ const StoryPreview: React.FC<Props> = ({ article, id }) => {
         <p>{article.body}</p>{" "}
         {/* only the body since we can't type in the preview*/}
         <div className="">
-           <ArticleDetail articleId={id} includeContent={true} />
-      </div>
+          <ArticleDetail articleId={id} includeContent={true} />
+        </div>
       </div>
     </div>
   );
@@ -148,14 +142,18 @@ const ArticleDetail: React.FC<ArticleDetailProps> = ({
   useEffect(() => {
     async function loadArticle() {
       try {
-        const fetchedArticle = await fetchArticleById(articleId, includeContent);
+        const fetchedArticle = await fetchArticleById(
+          articleId,
+          includeContent,
+        );
         setArticle(fetchedArticle);
 
         if (includeContent && fetchedArticle.storyContent.length > 0) {
-          const { file } = await generateMarkdown(fetchedArticle.storyContent[0].content);
+          const { file } = await generateMarkdown(
+            fetchedArticle.storyContent[0].content,
+          );
           setStoryContent(file.result);
         }
-
       } catch (err: any) {
         setError(err.message);
       }
@@ -174,13 +172,9 @@ const ArticleDetail: React.FC<ArticleDetailProps> = ({
     return <div>Loading...</div>;
   }
 
-  
-
   return (
     <div>
-      <div>
-        {includeContent && storyContent}
-      </div>
+      <div>{includeContent && storyContent}</div>
     </div>
   );
 };
@@ -235,8 +229,6 @@ const ArticleDetail: React.FC<ArticleDetailProps> = ({
 //   const [isCreateSubjectModalOpen, setIsCreateSubjectModalOpen] =
 //     useState(false);
 
-  
-
 //   return (
 //     <div className="flex flex-col gap-2">
 //       <div className="relative">
@@ -275,7 +267,7 @@ const ArticleDetail: React.FC<ArticleDetailProps> = ({
 //             return <TopicTag name={item.name} key={`${item.id}-${index}`} />;
 //           })}
 //         </div>
-        
+
 //       </div>
 
 //       <div className="">
@@ -284,5 +276,5 @@ const ArticleDetail: React.FC<ArticleDetailProps> = ({
 
 //     </div>
 //   );
-  
+
 // }

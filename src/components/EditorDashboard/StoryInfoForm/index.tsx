@@ -22,6 +22,7 @@ import clsx from "clsx";
 import { useRouter } from "next/navigation";
 import { Fragment, useRef, useState, useTransition } from "react";
 import ArticleBody from "./formComponents/articleBody";
+import ArticleContent from "./formComponents/articleContent";
 import ArticleTitle from "./formComponents/articleTitle";
 import BackgroundImageForm from "./formComponents/backgroundImageForm";
 import NewContributor from "./formComponents/confirmNewContributer";
@@ -378,6 +379,8 @@ export default function StoryInfoForm({
             }}
           />
         </label>
+
+        <ArticleContent />
 
         {/* ADDING CONTRIBUTORS FORM */}
         <NewContributor addContributor={addContributor} />
