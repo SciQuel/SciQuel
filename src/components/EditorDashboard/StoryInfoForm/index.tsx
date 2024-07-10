@@ -31,6 +31,11 @@ import NewSubtopic from "./formComponents/subtopicComponents/newSubtopic";
 import { getData, randomBackgroundColor, setTagsColor } from "./StoryFormFunc";
 import Tags from "./Tags";
 
+interface Section {
+  type: string;
+  content: string;
+}
+
 interface Props {
   id?: string;
   title: string;
@@ -41,10 +46,10 @@ interface Props {
   date?: Date | null;
   body: string;
   setBody: (value: string) => void;
-}
-
-interface Article {
-  article: Props;
+  sections: Section[];
+  onSectionChange: (index: number, newContent: string) => void;
+  onAddSection: (type: string) => void;
+  onDeleteSection: (index: number) => void;
 }
 
 export default function StoryInfoForm({
@@ -57,6 +62,10 @@ export default function StoryInfoForm({
   date: initialDate,
   body: initialBody,
   setBody: initialSetBody,
+  sections,
+  onSectionChange,
+  onAddSection,
+  onDeleteSection,
 }: Props) {
   // Creating states
   const fileUploadRef = useRef<HTMLInputElement>(null);
@@ -380,7 +389,13 @@ export default function StoryInfoForm({
           />
         </label>
 
-        <ArticleContent />
+        {/* ARTICLE CONTENT BOXES */}
+        <ArticleContent
+          sections={sections}
+          onSectionChange={onSectionChange}
+          onAddSection={onAddSection}
+          onDeleteSection={onDeleteSection}
+        />
 
         {/* ADDING CONTRIBUTORS FORM */}
         <NewContributor addContributor={addContributor} />

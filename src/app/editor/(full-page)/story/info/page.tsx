@@ -7,11 +7,6 @@ interface SearchParams {
 }
 const prisma = new PrismaClient();
 
-/**
- *
- * @param param0
- * @returns
- */
 export default async function StoryInfoEditorPage({
   searchParams: { id },
 }: {

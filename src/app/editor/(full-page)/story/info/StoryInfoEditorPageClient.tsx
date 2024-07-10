@@ -4,6 +4,11 @@ import StoryInfoForm from "@/components/EditorDashboard/StoryInfoForm";
 import StoryPreview from "@/components/EditorDashboard/StoryPreview";
 import React, { useState } from "react";
 
+interface Section {
+  type: string;
+  content: string;
+}
+
 interface Props {
   story: {
     id?: string;
@@ -16,30 +21,41 @@ interface Props {
   };
 }
 
-/**
- *
- * Client component that renders the StoryInfoForm and its corresponding StoryPreview.
- *
- * @param story – story props containing needed parameters (id, title, body, etc)
- * @returns a rendered component, with the form on the left and preview on the right.
- */
 const StoryInfoEditorClient: React.FC<Props> = ({ story }) => {
-  // states that are passed down to the left and right hand sides
   const [body, setBody] = useState(story.body || "");
   const [title, setTitle] = useState(story.title || "");
-  // const [summary, setSummary] = useState(story.summary || "");
   const [image, setImage] = useState(story.image || null);
-  // const [caption, setCaption] = useState(story.caption || "");
-  // const [date, setDate] = useState(story.date || null);
-  // const [loading, setLoading] = useState(false);
-  // const [dirty, setDirty] = useState(false);
+  const [sections, setSections] = useState<Section[]>([]);
 
-  console.log(story.id);
+  // inserts newContent into the array at idx – basically anytime user inputs
+  const handleSectionChange = (idx: number, newContent: string) => {
+    const updatedSections = [...sections];
+    updatedSections[idx].content = newContent;
+    setSections(updatedSections);
+  };
+
+  // adds a section of {Type (header, text, etc) with no content initially}
+  const handleAddSection = (type: string) => {
+    setSections([...sections, { type, content: "" }]);
+  };
+
+  // copies array into new array except for the section at delIdx
+  const handleDeleteSection = (delIdx: number) => {
+    // will trigger when we press the trash icon
+    const newArray = [];
+    for (let i = 0; i < sections.length; i++) {
+      if (i === delIdx) {
+        continue;
+      }
+      newArray.push(sections[i]);
+    }
+    setSections(newArray);
+  };
 
   return (
     <div className="mx-32 mt-5 flex flex-col gap-5">
-      {/* LEFT HAND SIDE */}
       <div className="flex gap-5">
+        {/* LEFT HAND SIDE */}
         <div className="w-1/3">
           <h3 className="text-3xl font-semibold text-sciquelTeal">
             Story Info
@@ -48,10 +64,14 @@ const StoryInfoEditorClient: React.FC<Props> = ({ story }) => {
             id={story.id}
             title={title}
             setTitle={setTitle}
-            body={body}
+            body={body} // should delete this body stuff
             setBody={setBody}
-          />{" "}
-          {/* article body */}
+            // stuff we need for the article content entry boxes
+            sections={sections}
+            onSectionChange={handleSectionChange}
+            onAddSection={handleAddSection}
+            onDeleteSection={handleDeleteSection}
+          />
         </div>
 
         {/* RIGHT HAND SIDE */}
@@ -59,8 +79,7 @@ const StoryInfoEditorClient: React.FC<Props> = ({ story }) => {
           <h3 className="text-3xl font-semibold text-sciquelTeal">
             Story Preview
           </h3>
-          <StoryPreview article={{ title, body }} id={story.id} />{" "}
-          {/* article body preview */}
+          <StoryPreview article={{ title, body, sections }} id={story.id} />
         </div>
       </div>
     </div>

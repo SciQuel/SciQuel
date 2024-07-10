@@ -1,54 +1,14 @@
-// <<<<<<< Updated upstream
-import { title } from "process";
 import { type GetStoryResult } from "@/app/api/stories/id/[id]/route";
 import { generateMarkdown } from "@/lib/markdown";
 import Image from "next/image";
-// import StoryPreviewFetch from "./StoryPreviewFetch";
 import React, { useEffect, useState } from "react";
-import ArticleBody from "./formComponents/articleBody";
+
+interface Section {
+  type: string;
+  content: string;
+}
 
 interface Article {
-  // =======
-
-  // "use client";
-
-  // import fsPromises from "fs/promises";
-  // import path from "path";
-  // import Form from "@/components/Form";
-  // import FormInput from "@/components/Form/FormInput";
-  // import FormSelect from "@/components/Form/FormSelect";
-  // import { Popover, Transition } from "@headlessui/react";
-  // import {
-  //   ChevronUpDownIcon,
-  //   PlusCircleIcon,
-  //   PlusIcon,
-  //   TrashIcon,
-  // } from "@heroicons/react/20/solid";
-  // import {
-  //   type Category,
-  //   type GeneralSubject,
-  //   type StoryTopic,
-  //   type StoryType,
-  //   type Subtopic,
-  // } from "@prisma/client";
-  // import axios from "axios";
-  // import clsx from "clsx";
-  // import { useRouter } from "next/navigation";
-  // import { Fragment, ReactNode, useRef, useState, useTransition } from "react";
-  // import NewContributor from "./contributors/confirmNewContributer";
-  // import { getData, randomBackgroundColor, setTagsColor } from "./StoryFormFunc";
-  // import NewSubject from "./subjectComponents/newSubject";
-  // import NewSubtopic from "./subtopicComponents/newSubtopic";
-  // import Tags from "./Tags";
-  // import Image from "next/image";
-  // import ShareLinks from "@/components/story-components/ShareLinks";
-  // import TopicTag from "@/components/TopicTag";
-  // import { generateMarkdown } from "@/lib/markdown";
-  // import { type GetStoryResult } from "@/app/api/stories/id/[id]/route";
-  // import { useEffect } from "react";
-
-  // interface Props {
-  // >>>>>>> Stashed changes
   id?: string;
   title?: string;
   summary?: string;
@@ -56,54 +16,82 @@ interface Article {
   caption?: string;
   date?: Date | null;
   body: string;
+  sections?: Section[];
 }
 
-// <<<<<<< Updated upstream
 interface Props {
   article: Article;
   id: string;
 }
 
-/**
- *
- * @param param0
- * @returns
- */
 const StoryPreview: React.FC<Props> = ({ article, id }) => {
-  // const storyBody = await generateMarkdown(story.storyContent[0].content)
   return (
     <div className="flex flex-col gap-2">
+      {/* Display the image  */}
       <div className="relative">
-        {/* <Image
-          src={typeof image === "string" ? image : ""}
-          className="w-full h-auto object-cover"
-          alt={title}
-          width={1700}
-          height={768}
-        /> */}
+        {article.image && (
+          <Image
+            src={article.image}
+            className="h-auto w-full object-cover"
+            alt={article.title || ""}
+            width={1700}
+            height={768}
+          />
+        )}
+
+        {/* display title and summary */}
         <div className="absolute bottom-0 left-0 w-full px-12 py-10">
           <h1
-            className="w-4/5 p-8 font-alegreyaSansSC text-4xl font-bold sm:text-6xl"
+            className="w-4/5 p-8 text-4xl font-bold sm:text-6xl"
             style={{ color: "white" }}
           >
-            {title}
+            {article.title}
           </h1>
           <h2
-            className="w-5/6 p-8 pt-0 font-alegreyaSansSC text-3xl font-semibold"
+            className="w-5/6 p-8 pt-0 text-3xl font-semibold"
             style={{ color: "white" }}
           >
-            {"summary"}
+            {article.summary}
           </h2>
         </div>
       </div>
+
+      {/* Renders the article title at the top of the page */}
       <div className="mt-4">
         <div>
-          <h1>Article Title</h1>
-          <p> {article.title}</p>{" "}
+          <h2 className="text-center text-3xl font-semibold">
+            {article.title}
+          </h2>
         </div>
+
+        {/* This article body stuff was from a previous iteration without
+          the Article Content boxes. We should delete from all affected files to 
+          clean the code up. */}
         <h2>Article Body</h2>
-        <p>{article.body}</p>{" "}
-        {/* only the body since we can't type in the preview*/}
+        <p>{article.body}</p>
+
+        {/* This part renders the boxes updated live */}
+        <div>
+          {article.sections &&
+            article.sections.map((section, index) => (
+              <div key={index} className="mt-4">
+                {(() => {
+                  // if its a header use an h1 tag, otherwise just use a paragraph tag
+                  if (section.type === "Section Header") {
+                    return (
+                      <h1 className="text-lg font-semibold">
+                        {section.content}
+                      </h1>
+                    );
+                  } else {
+                    return <p>{section.content}</p>;
+                  }
+                })()}
+              </div>
+            ))}
+        </div>
+
+        {/* Renders article details? idk what this does */}
         <div className="">
           <ArticleDetail articleId={id} includeContent={true} />
         </div>
@@ -111,8 +99,9 @@ const StoryPreview: React.FC<Props> = ({ article, id }) => {
     </div>
   );
 };
-
 export default StoryPreview;
+
+// API FETCHING BELOW
 
 async function fetchArticleById(id: string, includeContent: boolean = false) {
   const includeContentParam = includeContent ? "?include_content=true" : "";
@@ -178,103 +167,3 @@ const ArticleDetail: React.FC<ArticleDetailProps> = ({
     </div>
   );
 };
-
-// async function StoryPreviewFetch({
-//   id: storyId,
-//   title: initialTitle,
-//   summary: initialSummary,
-//   image: initialImage,
-//   caption: initialCaption,
-//   date: initialDate,
-// }: Props) {
-//   const fileUploadRef = useRef<HTMLInputElement>(null);
-//   const router = useRouter();
-
-//   const [title, setTitle] = useState(initialTitle ?? "");
-//   const [summary, setSummary] = useState(initialSummary ?? "");
-//   const [image, setImage] = useState<File | string | null>(
-//     initialImage ?? null
-//   );
-//   const [caption, setCaption] = useState(initialCaption ?? "");
-//   const [date, setDate] = useState<Date | null>(initialDate ?? null);
-//   const [dirty, setDirty] = useState(false);
-//   const [loading, startTransition] = useTransition();
-
-//   const [storyType, setStoryType] = useState<StoryType>("DIGEST");
-//   const [category, setCategory] = useState<Category>("ARTICLE");
-
-//   const [titleColor, setTitleColor] = useState("#000000");
-//   const [summaryColor, setSummaryColor] = useState("#000000");
-
-//   const [slug, setSlug] = useState("");
-
-//   const [topicQuery, setTopicQuery] = useState("");
-//   const [subtopicQuery, setSubtopicQuery] = useState("");
-//   const [subjectQuery, setSubjectQuery] = useState("");
-
-//   const [topics, setTopics] = useState<StoryTopic[]>([]);
-//   const [subtopics, setSubtopics] = useState<Subtopic[]>([]);
-//   const [subjects, setSubjects] = useState<GeneralSubject[]>([]);
-
-//   const data = getData();
-
-//   const [topiclist, setTopicList] = useState(data.topics);
-//   const [subtopiclist, setSubtopicList] = useState(data.subtopics);
-//   const [subjectlist, setSubjectList] = useState(data.subjects);
-
-//   const [contributors, setContributors] = useState<string[]>([]);
-
-//   const [isCreateSubtopicModalOpen, setIsCreateSubtopicModalOpen] =
-//     useState(false);
-//   const [isCreateSubjectModalOpen, setIsCreateSubjectModalOpen] =
-//     useState(false);
-
-//   return (
-//     <div className="flex flex-col gap-2">
-//       <div className="relative">
-//         <Image
-//           src={typeof image === "string" ? image : ""}
-//           className="w-full h-auto object-cover"
-//           alt={title}
-//           width={1700}
-//           height={768}
-//         />
-//         <div className="absolute bottom-0 left-0 w-full px-12 py-10">
-//           <h1
-//             className="w-4/5 p-8 font-alegreyaSansSC text-4xl font-bold sm:text-6xl"
-//             style={{ color: titleColor }}
-//           >
-//             {title}
-//           </h1>
-//           <h2
-//             className="w-5/6 p-8 pt-0 font-alegreyaSansSC text-3xl font-semibold"
-//             style={{ color: summaryColor }}
-//           >
-//             {summary}
-//           </h2>
-//         </div>
-//       </div>
-//       <div className="relative mx-2 mt-5 flex md:mx-auto md:w-[720px]">
-//         <div className="flex flex-1 flex-row justify-center xl:-left-24 xl:flex-col xl:pt-3">
-//           <ShareLinks />
-//         </div>
-//         <div className="flex">
-//           <p className="mr-2">
-//             {storyType.slice(0, 1) + storyType.slice(1).toLowerCase()} | we
-//             need to add article type |
-//           </p>
-//           {topics.map((item: StoryTopic, index: number) => {
-//             return <TopicTag name={item.name} key={`${item.id}-${index}`} />;
-//           })}
-//         </div>
-
-//       </div>
-
-//       <div className="">
-//           <ArticleDetail articleId={storyId} includeContent={true} />
-//       </div>
-
-//     </div>
-//   );
-
-// }
