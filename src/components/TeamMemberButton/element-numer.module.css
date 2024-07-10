@@ -1,0 +1,9 @@
+.elementNumber {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 14px;
+  font-weight: bold;
+  z-index: 1; 
+}
+

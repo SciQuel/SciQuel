@@ -17,6 +17,8 @@ module.exports = {
         alegreyaSansSC: "var(--font-alegreya-sans-sc)",
         sourceSerif4: "var(--font-source-serif-4)",
         customTest: ["custom-test", "sans-serif"],
+        'nunito': ['Nunito', 'sans-serif'],
+
       },
       colors: {
         sciquelDarkText: "#333333",
