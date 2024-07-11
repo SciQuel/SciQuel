@@ -1,5 +1,6 @@
 import prisma from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
+import { getServerSession } from "next-auth";
 import { NextResponse, type NextRequest } from "next/server";
 import { getSchema, postSchema } from "./schema";
 
@@ -8,7 +9,10 @@ export async function GET(req: Request) {
   const parsedParams = getSchema.safeParse(Object.fromEntries(searchParams));
 
   if (!parsedParams.success) {
-    return NextResponse.json(parsedParams.error, { status: 400 });
+    return NextResponse.json(
+      { error: parsedParams.error.errors[0].message },
+      { status: 400 },
+    );
   }
 
   const { user_id } = parsedParams.data;
@@ -57,14 +61,28 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: NextRequest) {
-  let result;
   try {
-    result = postSchema.safeParse(await req.json());
-    if (!result.success) {
-      return NextResponse.json(result.error, { status: 400 });
+    //get user if exist
+    let user = null;
+    const session = await getServerSession();
+    if (session) {
+      user = await prisma.user.findUnique({
+        where: { email: session?.user.email ?? "noemail" },
+      });
+      if (!user) {
+        return NextResponse.json({ error: "User not found" }, { status: 404 });
+      }
     }
 
-    const { story_id, user_id } = result.data;
+    const result = postSchema.safeParse(await req.json());
+    if (!result.success) {
+      return NextResponse.json(
+        { error: result.error.errors[0].message },
+        { status: 400 },
+      );
+    }
+
+    const { story_id } = result.data;
 
     // validate story_id
     const story = await prisma.story.findUnique({
@@ -76,21 +94,9 @@ export async function POST(req: NextRequest) {
     if (story === null) {
       return NextResponse.json({ error: "Story not found" }, { status: 404 });
     }
-
-    // validate user_id
-    const user = await prisma.user.findUnique({
-      where: {
-        id: user_id,
-      },
-    });
-
-    if (user === null) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
     const res = await prisma.pageView.create({
       data: {
-        userId: user_id,
+        userId: user?.id,
         storyId: story_id,
       },
     });
@@ -104,15 +110,9 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(res, { status: 200 });
   } catch (e) {
-    // req.json() throws an error
-    if (!result) {
-      return NextResponse.json(
-        { error: "Invalid request body" },
-        { status: 400 },
-      );
-    }
-
-    // all other errors
-    return NextResponse.json({ error: e }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 },
+    );
   }
 }
