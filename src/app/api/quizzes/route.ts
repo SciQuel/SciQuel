@@ -13,14 +13,10 @@ import {
 } from "./schema";
 import { createQuizSubpart, getSubpart } from "./tools";
 
-/**
- * Change all safe parse with checkValidInput
- */
+/** Change all safe parse with checkValidInput */
 const prisma = new PrismaClient();
 
-/**
- * Create a new quiz for story
- */
+/** Create a new quiz for story */
 export async function POST(req: NextRequest) {
   try {
     //check valid user
@@ -105,9 +101,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
-/**
- * give a list of quiz questions from story
- */
+/** give a list of quiz questions from story */
 export async function GET(req: NextRequest) {
   try {
     const url = new URL(req.url);

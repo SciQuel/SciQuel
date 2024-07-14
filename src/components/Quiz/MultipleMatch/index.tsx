@@ -1,16 +1,23 @@
 import { useEffect } from "react";
 
 interface Props {
+  categories: string[];
   options: string[];
   show: boolean;
 }
-export default function MultipleMatch({ options, show }: Props) {
-  const sets = options.map((c) => c.split(","));
-  const category = sets[0];
-  const choice = sets[1];
+// function getCurrentResults(node: Node) {
+//   while (node.hasChildNodes) {
+//     console.log("item", node?.getAttribute("option-key"));
+//     node = node.nextSibling;
+//   }
+// }
 
+export default function MultipleMatch({ categories, options, show }: Props) {
   let item: HTMLTextAreaElement;
-
+  let current = 0;
+  var array = [];
+  //console.log(categories);
+  //console.log(options);
   useEffect(() => {
     //dragstart event to initiate mouse dragging
     document.addEventListener(
@@ -49,8 +56,12 @@ export default function MultipleMatch({ options, show }: Props) {
         const target = e.target as HTMLTextAreaElement;
         let tmp = item.innerHTML;
         if (target.getAttribute("data-draggable") == "target") {
-          console.log(target);
+          // console.log("cate", target.parentNode?.getAttribute("category-key"));
+          // console.log("item", item?.getAttribute("option-key"));
           target.parentNode?.insertBefore(item, target);
+          // console.log("nodes", item.parentNode?.);
+          current = target.parentNode?.getAttribute("category-key");
+          // console.log("category", categories[current]);
 
           e.preventDefault();
         } else if (target.getAttribute("data-draggable") == "answer") {
@@ -72,10 +83,18 @@ export default function MultipleMatch({ options, show }: Props) {
       "dragend",
       function () {
         item = null as unknown as HTMLTextAreaElement;
+        const container = document.querySelector("#" + categories[current]);
+        console.log("container", container);
+        container
+          ?.querySelectorAll("div[option-key]")
+          .forEach((elem) =>  ));
+        // console.log("matches", matches);
+        //console.log(elem.getAttribute("option-key")
       },
       false,
     );
   });
+
   return (
     <div style={{ display: show ? "block" : "none" }}>
       <div className="multiple-match-selection mb-[20px] flex flex-col items-start">
@@ -85,18 +104,19 @@ export default function MultipleMatch({ options, show }: Props) {
           </strong>
         </p>
 
-        <div className="multiple-match-drop-area flex w-full flex-row flex-wrap items-start justify-center gap-3 pb-3"></div>
+        {/* <div className="multiple-match-drop-area flex w-full flex-row flex-wrap items-start justify-center gap-3 pb-3"></div> */}
         <div className="grid w-full  grid-cols-3 justify-stretch gap-4 ">
-          {category.map((cat, index) => (
+          {categories.map((cat, index) => (
             <div className="quiz-col  my-3.5 flex h-full  basis-[30%] flex-col gap-4 sm-mm:w-[120px] xsm-qz:w-[110px] xsm-mm:w-[100px]">
               <div className="multiple-match-statement flex  w-full flex-wrap items-center justify-center hyphens-auto break-words rounded-[4px] border border-black bg-white p-3 text-center text-[18px] xsm-qz:inline-block xsm-mm:text-[16px]">
                 {cat}
               </div>
-
-              <div
-                className="multiple-match-slot h-[50px] w-full rounded-[4px] border bg-gray-200 p-3 transition duration-300"
-                data-draggable="target"
-              ></div>
+              <div id={cat} category-key={index} className="contents">
+                <div
+                  className="multiple-match-slot h-[50px] w-full rounded-[4px] border bg-gray-200 p-3 transition duration-300"
+                  data-draggable="target"
+                ></div>
+              </div>
             </div>
           ))}
         </div>
@@ -106,11 +126,12 @@ export default function MultipleMatch({ options, show }: Props) {
 
       <div className="multiple-match-answer-choice-area  w-full place-items-center gap-2 border-t-[1.75px] pt-6 ">
         <div className="grid  w-full grid-cols-3 justify-stretch gap-4">
-          {choice.map((Choice, index) => (
+          {options.map((Choice, index) => (
             <div
               className="multiple-match-answer-choice-holder min-w-100 relative box-border flex  w-full cursor-move items-center justify-end break-words rounded-[4px] border border-black bg-white text-center text-[18px] transition duration-300 ease-in-out "
               draggable="true"
               data-draggable="item"
+              option-key={index}
             >
               <div className="image-holder absolute inset-0 flex h-full w-[35%] max-w-[50px] grow items-center justify-center rounded-bl-[4px] rounded-tl-[4px] bg-[#e6e6fa] px-2 transition duration-300 ease-in-out">
                 <span className="hamburger-menu flex h-4 w-6 flex-col justify-between rounded-[4px] border-none">

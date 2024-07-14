@@ -1,19 +1,19 @@
 "use client";
 
-import { type Quizzes, type resp } from "@/app/api/quizzes/route";
 import env from "@/lib/env";
-import { type Subpart } from "@prisma/client";
+import { type QuizQuestion } from "@prisma/client";
 import axios from "axios";
 import { useState } from "react";
 import MultipChoice from "../Quiz/MulitpleChoice";
 import MultipMatch from "../Quiz/MultipleMatch";
 import OneMatch from "../Quiz/OneMatch";
 import ProgBar from "../Quiz/ProgressBar";
+import SelectAll from "../Quiz/SelectAll";
 import TrueFalse from "../Quiz/TrueFalse";
 import questions from "./questions.json";
 
 interface Props {
-  Quizzes: Quizzes;
+  Quizzes: QuizQuestion;
 }
 export type resps = {
   subpartId: string;
@@ -28,7 +28,6 @@ export type selectInfo = {
 };
 
 export default function Quiz({ Quizzes }: Props) {
-  const mp = "MULTIPLE_CHOICE";
   const barMax = 100;
   const storyId = "";
   const numQues = Quizzes.quizzes.length;
@@ -45,7 +44,7 @@ export default function Quiz({ Quizzes }: Props) {
 
   const [isCorrect, setIsCorrect] = useState([] as boolean[]);
   const [explaination, setExplaination] = useState([] as string[]);
-  const [resp, setResp] = useState([] as resp[]);
+
   {
     /* quiz multiple choice useState  */
   }
@@ -54,11 +53,11 @@ export default function Quiz({ Quizzes }: Props) {
   {
     /*  Previous,Next,submit buttons */
   }
-  const updateUserAns = (userAnsInfo: selectInfo) => {
-    setSelected([(selected[currentQuestion] = userAnsInfo)]);
-    setSelected([...selected]);
-    console.log("userAns: ", selected[currentQuestion]);
-  };
+  // const updateUserAns = (userAnsInfo: selectInfo) => {
+  //   setSelected([(selected[currentQuestion] = userAnsInfo)]);
+  //   setSelected([...selected]);
+  //   console.log("userAns: ", selected[currentQuestion]);
+  // };
 
   const handlePrevious = () => {
     const prevQues = currentQuestion - 1;
@@ -67,41 +66,42 @@ export default function Quiz({ Quizzes }: Props) {
 
   const handleNext = () => {
     const nextQues = currentQuestion + 1;
-    nextQues < questions.quiz.length && setCurrentQuestion(nextQues);
+    nextQues < numQues && setCurrentQuestion(nextQues);
+
     setProg(String(Number(prog) + Number(gap)));
   };
 
-  async function submitAnswer() {
-    try {
-      const response = await axios.post(
-        `${env.NEXT_PUBLIC_SITE_URL}/api/grade`,
-        {
-          storyId: storyId,
-          questionType: selected[currentQuestion].quizType,
-          userId: "647ad6fda9efff3abe83044f",
-          quizQuestionId: selected[currentQuestion].quizID,
-          responseSubparts: selected[currentQuestion].userAns,
-        },
-      );
-      if (response.status == 200) {
-        console.log("res", response);
-        return response;
-      }
-    } catch (err) {
-      console.error(err);
-    }
-    return;
-  }
-  function updateRespon(resps: resp) {
-    resps.gradeSubpart.map(
-      (res) => (
-        setIsCorrect([(isCorrect[currentQuestion] = res.isCorrect)]),
-        setIsCorrect([...isCorrect]),
-        setExplaination([(explaination[currentQuestion] = res.explanation)]),
-        setExplaination([...explaination])
-      ),
-    );
-  }
+  // async function submitAnswer() {
+  //   try {
+  //     const response = await axios.post(
+  //       `${env.NEXT_PUBLIC_SITE_URL}/api/grade`,
+  //       {
+  //         storyId: storyId,
+  //         questionType: selected[currentQuestion].quizType,
+  //         userId: "647ad6fda9efff3abe83044f",
+  //         quizQuestionId: selected[currentQuestion].quizID,
+  //         responseSubparts: selected[currentQuestion].userAns,
+  //       },
+  //     );
+  //     if (response.status == 200) {
+  //       console.log("res", response);
+  //       return response;
+  //     }
+  //   } catch (err) {
+  //     console.error(err);
+  //   }
+  //   return;
+  // }
+  // function updateRespon(resps: resp) {
+  //   resps.gradeSubpart.map(
+  //     (res) => (
+  //       setIsCorrect([(isCorrect[currentQuestion] = res.isCorrect)]),
+  //       setIsCorrect([...isCorrect]),
+  //       setExplaination([(explaination[currentQuestion] = res.explanation)]),
+  //       setExplaination([...explaination])
+  //     ),
+  //   );
+  // }
   const handleSubmit = async () => {
     setAnswered([(answered[currentQuestion] = true)]);
     setAnswered([...answered]);
@@ -109,10 +109,10 @@ export default function Quiz({ Quizzes }: Props) {
     setSubmitButton([...submitButton]);
     setDisabled([(disabled[currentQuestion] = true)]);
     setDisabled([...disabled]);
-    const res = await submitAnswer();
-    const udp = res?.data as resp;
+    // const res = await submitAnswer();
+    // const udp = res?.data as resp;
 
-    updateRespon(udp);
+    // updateRespon(udp);
   };
 
   return (
@@ -130,21 +130,15 @@ export default function Quiz({ Quizzes }: Props) {
               {currentQuestion + 1} of {numQues}
             </p>
           </div>
-          {/* 
+
           {Quizzes.quizzes.map((q, index) => {
-            storyId = q.storyId;
-            switch (q.questionType) {
-              case mp:
+            switch (q.question_type) {
+              case "MULTIPLE_CHOICE":
                 return (
                   <MultipChoice
                     key={index}
-                    question={q.subparts}
+                    question={q.options}
                     show={index === currentQuestion ? true : false}
-                    disable={disabled[currentQuestion]}
-                    updateUserAns={updateUserAns}
-                    isCorrect={isCorrect[currentQuestion]}
-                    exp={explaination[currentQuestion]}
-                    selec={selected[currentQuestion]?.index}
                   />
                 );
 
@@ -152,52 +146,40 @@ export default function Quiz({ Quizzes }: Props) {
                 return (
                   <TrueFalse
                     key={index}
-                    question={q.subparts}
+                    questions={q.questions}
                     show={index === currentQuestion ? true : false}
-                    disable={disabled[currentQuestion]}
-                    updateUserAns={updateUserAns}
-                    isCorrect={isCorrect[currentQuestion]}
-                    exp={explaination[currentQuestion]}
-                    selec={selected[currentQuestion]?.index}
                   />
                 );
 
               case "DIRECT_MATCHING":
                 return (
                   <OneMatch
-                    options={q.subparts}
+                    key={index}
+                    categories={q.categories}
+                    options={q.options}
                     show={index === currentQuestion ? true : false}
                   />
                 );
               case "COMPLEX_MATCHING":
                 return (
                   <MultipMatch
-                    options={q.subparts.options}
+                    key={index}
+                    categories={q.categories}
+                    options={q.options}
                     show={index === currentQuestion ? true : false}
                   />
                 );
+              case "SELECT_ALL":
+                return (
+                  <SelectAll
+                    key={index}
+                    options={q.options}
+                    show={index === currentQuestion ? true : false}
+                  />
+                );
+
               default:
                 return <p>{q.questionType}</p>;
-            }
-          })} */}
-          {questions.quiz.map((q, index) => {
-            switch (q.type) {
-              case "onematch":
-                return (
-                  <OneMatch
-                    options={q.category}
-                    show={index === currentQuestion ? true : false}
-                  />
-                );
-              case "multiplematch":
-                return (
-                  <MultipMatch
-                    options={q.category}
-                    show={index === currentQuestion ? true : false}
-                  />
-                );
-              default:
-                return <p>hello</p>;
             }
           })}
         </div>
@@ -237,7 +219,7 @@ export default function Quiz({ Quizzes }: Props) {
           className="border-dark flex w-[15%] rounded-lg border bg-white py-2 text-black "
           type="button"
           onClick={
-            submitButton[currentQuestion] === true ? handleNext : handleNext
+            submitButton[currentQuestion] === true ? handleNext : handleSubmit
           }
         >
           <div className="m-auto flex">

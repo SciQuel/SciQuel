@@ -1,63 +1,62 @@
-import { type Subpart } from "@prisma/client";
 import { useEffect, useState } from "react";
 
 interface Props {
-  question: Subpart[];
+  questions: string[];
   show: boolean;
-  disable: boolean;
-  updateUserAns: Function;
-  isCorrect: boolean;
-  exp: string;
-  selec: string;
+  // disable: boolean;
+  // updateUserAns: Function;
+  // isCorrect: boolean;
+  // exp: string;
+  // selec: string;
 }
 export type resp = {
   subpartId: string;
   subpartUserAns: string[];
 };
 export default function TrueFalse({
-  question,
+  questions,
   show,
-  disable,
-  updateUserAns,
-  isCorrect,
-  exp,
-  selec,
-}: Props) {
+}: // disable,
+// updateUserAns,
+// isCorrect,
+// exp,
+// selec,
+Props) {
   const [qsid, setQsid] = useState("" as string);
   const [qzid, setQzid] = useState("" as string | null);
   const [userAns, setUserAns] = useState([] as resp[]);
   const [numIndex, setNumIndex] = useState([] as string[]);
-  useEffect(() => {
-    const userAnsInfo = {
-      index: numIndex,
-      quizType: "TRUE_FALSE",
-      questionID: qsid,
-      quizID: qzid,
-      userAns: userAns,
-    };
-    updateUserAns(userAnsInfo);
-  }, [userAns]);
-  const handler = (
-    ans: string,
-    idx: number,
-    t: string,
-    id: string,
-    qid: string | null,
-  ) => {
-    // console.log("ans ", t);
-    setNumIndex([(numIndex[idx] = t)]);
-    setNumIndex([...numIndex]);
-    // console.log("numIndex ", numIndex);
-    // setUserAns([(userAns[idx] = ans)]);
-    // setUserAns([...userAns]);
-    // console.log("userAns ", userAns);
-    const tmp = { subpartId: id, subpartUserAns: [ans] };
-    setUserAns([(userAns[idx] = tmp)]);
-    setUserAns([...userAns]);
-    setQsid(id);
-    setQzid(qid);
-  };
-  console.log("isCorrect ", isCorrect, "exp ", exp, "selec ", selec);
+  // useEffect(() => {
+  //   const userAnsInfo = {
+  //     index: numIndex,
+  //     quizType: "TRUE_FALSE",
+  //     questionID: qsid,
+  //     quizID: qzid,
+  //     userAns: userAns,
+  //   };
+  //   updateUserAns(userAnsInfo);
+  // }, [userAns]);
+  // const handler = (
+  //   ans: string,
+  //   idx: number,
+  //   t: string,
+  //   id: string,
+  //   qid: string | null,
+  // ) => {
+  //   // console.log("ans ", t);
+  //   setNumIndex([(numIndex[idx] = t)]);
+  //   setNumIndex([...numIndex]);
+  //   // console.log("numIndex ", numIndex);
+  //   // setUserAns([(userAns[idx] = ans)]);
+  //   // setUserAns([...userAns]);
+  //   // console.log("userAns ", userAns);
+  //   const tmp = { subpartId: id, subpartUserAns: [ans] };
+  //   setUserAns([(userAns[idx] = tmp)]);
+  //   setUserAns([...userAns]);
+  //   setQsid(id);
+  //   setQzid(qid);
+  // };
+  // console.log("isCorrect ", isCorrect, "exp ", exp, "selec ", selec);
   return (
     <div style={{ display: show ? "block" : "none" }}>
       <div className="true-false-selection mb-3 flex flex-col items-start gap-3 text-black">
@@ -78,104 +77,102 @@ export default function TrueFalse({
 
         {/* Map of true false questions */}
 
-        {question?.map((statement, index) =>
-          statement.options.map((state, _) => (
-            <div className="true-false-container flex h-full w-full flex-row items-center justify-center gap-6">
-              <div className="true-false-statement flex aspect-[8/1] basis-[80%] flex-row items-center justify-between gap-5 rounded-md border border-black p-5 text-base font-medium md-qz:p-0">
-                <p>{state}</p>
-              </div>
-              <button
-                key={index + "T"}
-                className="select-box-true flex aspect-[1/1] basis-[10%] cursor-pointer items-center justify-between rounded-md bg-gray-200 bg-[length:65%] bg-center bg-no-repeat transition duration-300 hover:bg-gray-300 "
-                onClick={() =>
-                  handler(
-                    "True",
-                    index,
-                    index + "T",
-                    statement.id,
-                    statement.quizQuestionId,
-                  )
-                }
-                disabled={disable}
-                style={{
-                  pointerEvents: disable ? "none" : "auto",
-
-                  backgroundColor:
-                    index + "T" == selec && isCorrect === true
-                      ? "#A3C9A8"
-                      : index + "T" == selec && isCorrect === false
-                      ? "#E79595"
-                      : "rgb(229 231 235)",
-                }}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={2}
-                  stroke="currentColor"
-                  className="h-auto w-auto"
-                  style={{
-                    color: "#5F8E79",
-                    display: index + "T" === numIndex[index] ? "block" : "none",
-                  }}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="m4.5 12.75 6 6 9-13.5"
-                  />
-                </svg>
-              </button>
-
-              <button
-                key={index + "F"}
-                className="select-box-false flex aspect-[1/1] basis-[10%] cursor-pointer items-center justify-between rounded-md bg-gray-200 bg-[length:65%] bg-center bg-no-repeat transition duration-300 hover:bg-gray-300"
-                onClick={() =>
-                  handler(
-                    "False",
-                    index,
-                    index + "F",
-                    statement.id,
-                    statement.quizQuestionId,
-                  )
-                }
-                disabled={disable}
-                style={{
-                  pointerEvents: disable ? "none" : "auto",
-                  backgroundColor:
-                    index + "F" === selec && isCorrect === true
-                      ? "#A3C9A8"
-                      : index + "F" === selec && isCorrect === false
-                      ? "#E79595"
-                      : "rgb(229 231 235)",
-                }}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={2}
-                  stroke="currentColor"
-                  className="h-auto w-auto"
-                  style={{
-                    color: "#5F8E79",
-                    display: index + "F" === numIndex[index] ? "block" : "none",
-                  }}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="m4.5 12.75 6 6 9-13.5"
-                  />
-                </svg>
-              </button>
+        {questions?.map((statement, index) => (
+          <div className="true-false-container flex h-full w-full flex-row items-center justify-center gap-6">
+            <div className="true-false-statement flex aspect-[8/1] basis-[80%] flex-row items-center justify-between gap-5 rounded-md border border-black p-5 text-base font-medium md-qz:p-0">
+              <p>{statement}</p>
             </div>
-          )),
-        )}
+            <button
+              key={index + "T"}
+              className="select-box-true flex aspect-[1/1] basis-[10%] cursor-pointer items-center justify-between rounded-md bg-gray-200 bg-[length:65%] bg-center bg-no-repeat transition duration-300 hover:bg-gray-300 "
+              // onClick={() =>
+              //   handler(
+              //     "True",
+              //     index,
+              //     index + "T",
+              //     statement.id,
+              //     statement.quizQuestionId,
+              //   )
+              // }
+              // disabled={disable}
+              // style={{
+              //   pointerEvents: disable ? "none" : "auto",
+
+              //   backgroundColor:
+              //     index + "T" == selec && isCorrect === true
+              //       ? "#A3C9A8"
+              //       : index + "T" == selec && isCorrect === false
+              //       ? "#E79595"
+              //       : "rgb(229 231 235)",
+              // }}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={2}
+                stroke="currentColor"
+                className="h-auto w-auto"
+                // style={{
+                //   color: "#5F8E79",
+                //   display: index + "T" === numIndex[index] ? "block" : "none",
+                // }}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="m4.5 12.75 6 6 9-13.5"
+                />
+              </svg>
+            </button>
+
+            <button
+              key={index + "F"}
+              className="select-box-false flex aspect-[1/1] basis-[10%] cursor-pointer items-center justify-between rounded-md bg-gray-200 bg-[length:65%] bg-center bg-no-repeat transition duration-300 hover:bg-gray-300"
+              // onClick={() =>
+              //   handler(
+              //     "False",
+              //     index,
+              //     index + "F",
+              //     statement.id,
+              //     statement.quizQuestionId,
+              //   )
+              // }
+              // disabled={disable}
+              // style={{
+              //   pointerEvents: disable ? "none" : "auto",
+              //   backgroundColor:
+              //     index + "F" === selec && isCorrect === true
+              //       ? "#A3C9A8"
+              //       : index + "F" === selec && isCorrect === false
+              //       ? "#E79595"
+              //       : "rgb(229 231 235)",
+              // }}
+            >
+              {/* <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={2}
+                stroke="currentColor"
+                className="h-auto w-auto"
+                style={{
+                  color: "#5F8E79",
+                  display: index + "F" === numIndex[index] ? "block" : "none",
+                }}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="m4.5 12.75 6 6 9-13.5"
+                />
+              </svg> */}
+            </button>
+          </div>
+        ))}
       </div>
       <div className="col my-2 text-center">
-        {isCorrect === true ? (
+        {/* {isCorrect === true ? (
           <div className="modal-content border-light w-full border">
             <div
               className="modal-body"
@@ -210,7 +207,7 @@ export default function TrueFalse({
               </p>
             </div>
           </div>
-        ) : null}
+        ) : null} */}
       </div>
     </div>
   );

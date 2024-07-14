@@ -1,15 +1,12 @@
-import { type Subpart } from "@prisma/client";
+
 import { useEffect, useState } from "react";
 
 interface Props {
+  categories: string[];
   options: string[];
   show: boolean;
 }
-export default function OneMatch({ options, show }: Props) {
-  const sets = options.map((c) => c.split(","));
-  const category = sets[0];
-  const choice = sets[1];
-  const [userAns, setUserAns] = useState(choice);
+export default function OneMatch({ categories, options, show }: Props) {
   // console.log("ans ", userAns);
   let item: HTMLTextAreaElement;
   useEffect(() => {
@@ -87,7 +84,7 @@ export default function OneMatch({ options, show }: Props) {
           Match each word in the word bank to its category.
         </strong>
       </p>
-      {category.map((cat, index) => (
+      {categories.map((cat, index) => (
         <div className="quiz-row my-3.5 flex w-full flex-row">
           <div
             className={`one-match-answer-option min-w-100 flex w-[40%] flex-wrap items-center justify-center rounded-[4px] border border-black bg-white p-3`}
@@ -115,7 +112,7 @@ export default function OneMatch({ options, show }: Props) {
                 className="match-text align-self-center w-full justify-self-center overflow-hidden hyphens-auto p-3"
                 data-draggable="answer"
               >
-                {choice[index]}
+                {options[index]}
               </div>
             </div>
           </div>

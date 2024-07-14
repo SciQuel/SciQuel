@@ -1,61 +1,20 @@
 import { useEffect, useState } from "react";
 
 interface Props {
-  question: string[];
-
+  options: string[];
   show: boolean;
-  // disable: boolean;
-
-  // updateUserAns: Function;
-  // isCorrect: boolean;
-  // exp: string;
-  // selec: string;
 }
-export type resps = {
-  subpartId: string;
-  subpartUserAns: string[];
-};
-export default function MultipleChoice({
-  question,
+export default function SelectAll({
+  options,
 
   show,
-}: // disable,
-
-// updateUserAns,
-// isCorrect,
-// exp,
-// selec,
-Props) {
+}: Props) {
   const [quest, setQuest] = useState("" as string);
   const [qsid, setQsid] = useState("" as string);
   const [qzid, setQzid] = useState("" as string | null);
-  const [userAns, setUserAns] = useState([] as resps[]);
+
   const [index, setIndex] = useState(0);
 
-  // useEffect(() => {
-  //   const userAnsInfo = {
-  //     index: index,
-  //     quizType: "MULTIPLE_CHOICE",
-  //     questionID: qsid,
-  //     quizID: qzid,
-  //     userAns: userAns,
-  //   };
-  //   updateUserAns(userAnsInfo);
-  // }, [userAns]);
-  // const handler = (
-  //   e: HTMLElement,
-  //   index: number,
-  //   id: string,
-  //   qid: string | null,
-  // ) => {
-  //   setIndex(index);
-  //   const tmp = { subpartId: id, subpartUserAns: [e.innerHTML] };
-  //   setUserAns([tmp]);
-  //   setQsid(id);
-  //   setQzid(qid);
-  // };
-  // console.log("question id ", quest.correctAnswer);
-  // console.log("isCorrect ", isCorrect, "exp ", exp, "selec ", selec);
   return (
     <div>
       <div className=" text-black" style={{ display: show ? "block" : "none" }}>
@@ -66,7 +25,7 @@ Props) {
         </p>
         <div className="flex flex-col ">
           {/* Map all choices and change base on the correctness of the choice*/}
-          {question.map((choice, index) => (
+          {options.map((choice, index) => (
             // choice.map((op, index) => (
             <button
               key={index}
