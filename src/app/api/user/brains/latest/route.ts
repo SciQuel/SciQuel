@@ -66,10 +66,7 @@ export async function GET(req: Request) {
     });
 
     if (brains === null) {
-      return NextResponse.json(
-        { error: "Brain not found" },
-        { status: 404 },
-      );
+      return NextResponse.json({ error: "Brain not found" }, { status: 404 });
     }
 
     // calculate how many days ago the brain was created
