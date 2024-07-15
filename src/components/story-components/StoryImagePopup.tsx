@@ -42,7 +42,6 @@ const StoryImagePopup = ({
   //handler for when you click on popup image, clicking once will get rid of caption and focus on image, clicking another will zoom in
   const handlePopUpImageClick = () => {
     if(!isMobile){
-      console.log(transformOriginValue)
     
     if (scaleLevel === 3) {
    
@@ -75,6 +74,7 @@ const StoryImagePopup = ({
 
   const transformValue = imageClicked ? `scale(${scaleLevel})` : "none";
 
+    // transdform origin for zoom and look feature, if mobile device, cursor will be default, if it it will either show zoom in or zoom out
   const imageStyles = {
     transformOrigin: transformOriginValue,
     transform: transformValue,
@@ -94,13 +94,14 @@ const StoryImagePopup = ({
     >
 
         {/* container for content inside popup */}
-      <div className=" max-w-[100%] flex flex-wrap items-center justify-center gap-4 z-0">
+      <div className="  flex flex-wrap justify-center items-center  z-0 border-solid">
 
+          
             {/* image container */}
-            <div className = 'max-w-[95%] w-[700px]  max-h-[700px] '>
+            <div className = '  max-w-[95%] w-[700px]  max-h-[700px] '>
         <img
           src={src}
-          className={` w-full block relative mx-auto max-h-[700px] object-contain`}
+          className={` w-full ml-auto block relative  max-h-[700px] object-contain border border-solid border-sciquelHover`}
           ref={imageRef}
           onClick={handlePopUpImageClick}
           onMouseMove={handleImageDrag}
@@ -110,7 +111,8 @@ const StoryImagePopup = ({
        
         </div>
  
-        { <p className = {`text-center text-wrap mx-5 cursor-default ${imageClicked ? 'hidden' : ''}`} ref = {captionRef} > {children} </p>}
+        {/* caption - hide the caption when the image is clicked*/}
+        { <p className = {` w-[30%] text-center text-wrap cursor-default ${imageClicked ? 'hidden' : ''}`} ref = {captionRef} > {children} </p>}
       </div>
 
       <button
