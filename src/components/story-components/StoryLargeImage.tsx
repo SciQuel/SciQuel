@@ -1,5 +1,4 @@
-//TODO : Do Types, adjust image without messing up aspect ratio
-//new to next.js, is it fine if i use client rendering instead to be able to access hooks and interactivity
+
 "use client";
 
 import { MouseEvent, useRef, useState, type PropsWithChildren } from "react";
@@ -19,10 +18,17 @@ export default function StoryLargeImage({
   const imageRef = useRef<HTMLImageElement>(null);
   const captionRef = useRef<HTMLParagraphElement>(null);
 
+
+  /*Handling click on the popup div and the image div where image is on article page . If the div is clicked
+  when the popup is up, it checks if it outisde the image, if it is it closes the popup, otherwise it will use handleImageClick defined
+  in other file. When the popup is not already up, 
+  it will only open the popup
+*/
   const handleClick = (e: MouseEvent<HTMLDivElement>) => {
+    console.log('div clicked')
     const divTarget = e.target as HTMLDivElement;
     if (isClicked) {
-      console.log(e.target);
+
       if (imageRef.current && !imageRef.current.contains(divTarget) && captionRef.current && !captionRef.current.contains(divTarget)) {
         setIsClicked(false);
       }
