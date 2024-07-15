@@ -213,7 +213,7 @@ export default function ShareLinks({ storyId, observe }: Props) {
       <button
         type="button"
         onClick={handleBookmark}
-        className="pointer-events-auto relative h-fit w-fit rounded-full px-0 py-0.5 pr-3 xl:-left-2 xl:top-4 xl:mb-2 xl:px-3"
+        className="pointer-events-auto relative h-fit w-fit rounded-full px-0 py-0.5 pr-3 xl:-left-2 xl:top-4 xl:mb-2 xl:px-3" //py-0.5 xl:top-4 xl:mb-2
       >
         <Image
           src={shareIcon}
@@ -281,7 +281,7 @@ export default function ShareLinks({ storyId, observe }: Props) {
           type="button"
           aria-haspopup={true}
           aria-expanded={showOptions == "share"}
-          className="pointer-events-auto relative h-fit w-fit rounded-full py-0.5 pr-3 xl:-left-2 xl:top-4 xl:ml-0 xl:pr-0"
+          className="pointer-events-auto relative h-fit w-fit rounded-full py-0.5 pr-3 xl:-left-2 xl:top-4 xl:ml-0 xl:pr-0" //py-0.5 xl:top-4
           onClick={() => {
             if (showOptions == "share") {
               setShowOptions("none");
@@ -303,7 +303,7 @@ export default function ShareLinks({ storyId, observe }: Props) {
       <button
         type="button"
         onClick={handleBrain}
-        className="pointer-events-auto relative ml-[4.2rem] h-fit w-fit rounded-full px-3 py-0.5  xl:-left-2 xl:top-4 xl:mb-2 xl:ml-0  xl:mt-[3.4rem]"
+        className="pointer-events-auto relative ml-[4.2rem] h-fit w-fit rounded-full px-3 py-0.5 xl:-left-2 xl:top-4 xl:mb-2 xl:ml-0 xl:mt-[3.4rem]" //py-0.5 xl:top-4 xl:mb-2 xl:mt-[3.4rem]
       >
         <Image
           src={shareIcon}
@@ -354,7 +354,7 @@ export default function ShareLinks({ storyId, observe }: Props) {
       {/* fourth button */}
       <button
         type="button"
-        className="pointer-events-auto relative h-fit w-fit rounded-full px-3  py-0.5 xl:-left-2 xl:top-4 xl:mb-2"
+        className="pointer-events-auto relative h-fit w-fit rounded-full px-3  py-0.5 xl:-left-2 xl:top-4 xl:mb-2" //py-0.5 xl:top, mb
         onClick={() => {
           if (toggleFunction) {
             window.scrollTo(0, 0);

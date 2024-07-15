@@ -70,11 +70,11 @@ const SocialMediaPopup = forwardRef(
             `${
               show
                 ? "opacity-1"
-                : "max-h-10 max-w-0 opacity-0 sm:-translate-y-2"
+                : "max-h-20 max-w-0 opacity-0 sm:-translate-y-2"
             }  
               relative -left-10 bottom-0 z-[19] h-screen w-screen items-end overflow-scroll bg-neutral-800/75 transition-all` +
             ` sm:static sm:top-0 sm:ml-[-4.75rem] sm:mt-2 sm:h-fit sm:w-fit sm:items-start sm:justify-center sm:bg-transparent` +
-            ` xl:h-30 xl:-mt-[50px] xl:ml-8 xl:w-fit xl:px-8`
+            `  xl:-mt-[50px] xl:ml-8 xl:h-full xl:w-fit xl:px-8`
           }
         >
           {/* This div contains arrow, the side-popout container and clipboard component as well. */}
@@ -85,8 +85,8 @@ const SocialMediaPopup = forwardRef(
                 show
                   ? "translate-y-0"
                   : "max-h-0 translate-y-full opacity-0 sm:-translate-y-0"
-              }  relative bottom-0 z-[19] flex w-screen flex-col pt-0 transition-transform duration-500 ` +
-              ` sm:relative sm:px-0 md:w-[768px] md:pl-0 md:pr-0 xl:relative xl:h-fit xl:w-fit`
+              }  relative bottom-0 z-[19] flex h-screen w-screen flex-col pt-0 transition-transform duration-500 ` +
+              `  sm:relative sm:px-0 md:w-[768px] md:pl-0 md:pr-0 xl:h-full xl:w-fit`
             }
           >
             <div className="relative z-20 sm:absolute sm:left-20 sm:top-1 sm:z-[2] sm:ml-1 sm:h-6 sm:w-6 sm:rotate-45 sm:rounded-tl sm:border-l-2 sm:border-t-2 sm:border-sciquelCardBorder sm:bg-sciquelCardBg xl:left-[-42px] xl:top-8 xl:ml-[1.3rem] xl:h-7 xl:w-7 xl:rounded-bl xl:rounded-tl-none xl:border-b-2 xl:border-t-0">
@@ -94,13 +94,14 @@ const SocialMediaPopup = forwardRef(
             </div>
             {/* side-popout + clipboard */}
             <div
-              className={`relative flex w-full flex-col-reverse sm:p-2 xl:left-8 xl:flex-row xl:px-0 xl:py-2`}
+              className={`relative flex h-full w-full flex-col-reverse sm:p-2 xl:left-8 xl:flex-row xl:px-0 xl:py-2`}
             >
               {/* side-popout container with buttons */}
               <div
-                className={`pointer-events-auto relative -left-10 m-0 flex  flex-row border-sciquelCardBorder bg-sciquelCardBg py-1 sm:rounded-b-xl sm:border-b-2 sm:pb-2 md:px-1 xl:top-0 xl:w-max xl:flex-col xl:gap-1 xl:rounded-xl xl:border-2 xl:px-0 xl:pt-2`}
+                className={`pointer-events-auto relative -left-10 m-0 flex flex-row border-sciquelCardBorder bg-sciquelCardBg py-1 sm:rounded-b-xl sm:border-b-2 sm:pb-2 md:px-1 xl:top-0 xl:h-fit xl:w-max xl:flex-col xl:rounded-xl xl:border-2 xl:px-0 xl:py-2`}
               >
                 {/* buttons containers */}
+                {/* first button */}
                 <button
                   type="button"
                   aria-haspopup={true}
@@ -118,7 +119,7 @@ const SocialMediaPopup = forwardRef(
                       setShowFull(true);
                     }
                   }}
-                  className={`relative z-30 h-fit w-fit rounded-full px-3 py-1`}
+                  className={`relative z-30 h-fit w-fit rounded-full px-3 py-0.5 xl:top-0 xl:mb-2`} //same as the vertical values set in column 1 button 1
                 >
                   <Image
                     src={shareIcon}
@@ -127,8 +128,9 @@ const SocialMediaPopup = forwardRef(
                     height={45}
                   />
                 </button>
+                {/* second button */}
                 <a
-                  className={` h-fit w-fit rounded-full px-3 py-1`}
+                  className={`relative h-fit w-fit rounded-full px-3 py-0.5 xl:top-0 xl:mb-2`} //py xl:top same
                   tabIndex={show ? 0 : -1}
                   target="_blank"
                   href={`https://www.facebook.com/sharer/sharer.php?u=sciquel.org${pathname}`}
@@ -140,10 +142,11 @@ const SocialMediaPopup = forwardRef(
                     height={45}
                   />
                 </a>
+                {/* third button */}
                 <a
                   tabIndex={show ? 0 : -1}
                   href={`mailto:?subject=Check Out This Article&body=sciquel.org${pathname}`}
-                  className={` h-fit w-fit rounded-full px-3 py-1 transition ease-linear`}
+                  className={`relative h-fit w-fit rounded-full px-3 py-0.5 transition ease-linear xl:top-0 xl:mb-2 `} // py, xl:top. xl:mb, mt
                   target="_blank"
                 >
                   <Image
@@ -153,10 +156,11 @@ const SocialMediaPopup = forwardRef(
                     height={45}
                   />
                 </a>
+                {/* fourth button */}
                 <a
                   tabIndex={show ? 0 : -1}
                   href={`https://www.linkedin.com/sharing/share-offsite/?url=sciquel.org${pathname}`}
-                  className={` h-fit w-fit rounded-full px-3 py-1 transition ease-linear`}
+                  className={`relative h-fit w-fit rounded-full px-3 py-0.5 transition ease-linear xl:top-0 xl:mb-2`} //py, xl:top,mb
                   target="_blank"
                 >
                   <Image
@@ -166,10 +170,11 @@ const SocialMediaPopup = forwardRef(
                     height={45}
                   />
                 </a>
+                {/* fifth button */}
                 <a
                   tabIndex={show ? 0 : -1}
                   href={`https://twitter.com/intent/tweet?text=sciquel.org${pathname}`}
-                  className={` h-fit w-fit rounded-full px-3 py-1 transition ease-linear`}
+                  className={`relative h-fit w-fit rounded-full px-3 py-0.5 transition ease-linear xl:top-0 xl:mb-0.5`} //-
                   target="_blank"
                 >
                   <Image
@@ -186,7 +191,7 @@ const SocialMediaPopup = forwardRef(
                   showFull
                     ? " pointer-events-auto p-4 pb-2 xl:mx-3 xl:mt-2  xl:p-3"
                     : show
-                    ? "pointer-events-auto p-4 pb-2 xl:pointer-events-none   xl:w-0 xl:-translate-x-3 xl:p-0 xl:opacity-0"
+                    ? "pointer-events-auto p-4 pb-2 xl:pointer-events-none xl:w-0 xl:-translate-x-3 xl:p-0 xl:opacity-0"
                     : "w-0 -translate-x-3 p-0 opacity-0"
                 } relative m-0 mt-2 flex flex-row justify-center rounded-t-xl border-x-2 border-t-2 border-sciquelCardBorder bg-sciquelCardBg transition-all lg:h-fit xl:-left-7 xl:-top-2 xl:rounded-xl xl:border-2`}
               >
