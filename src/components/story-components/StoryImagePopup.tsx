@@ -106,7 +106,7 @@ const StoryImagePopup = ({
           onClick={handlePopUpImageClick}
           onMouseMove={handleImageDrag}
           alt={alt}
-          style={{...imageStyles, cursor: cursorStyles}}
+          style={imageStyles}
         />
        
         </div>
