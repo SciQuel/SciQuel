@@ -57,7 +57,7 @@ export default function StoryLargeImage({
               alt={alt}
               onClick={handleClick}
             />
-            <figcaption className="table-caption w-full caption-bottom px-8 lg:px-0 cursor-default">
+            <figcaption className="table-caption w-full caption-bottom px-8 lg:px-0">
               {children}
             </figcaption>
           </figure>
