@@ -14,6 +14,7 @@ interface Article {
   summary?: string;
   image?: string;
   caption?: string;
+  slug?: string;
   date?: Date | null;
   body: string;
   sections?: Section[];
@@ -29,41 +30,35 @@ const StoryPreview: React.FC<Props> = ({ article, id }) => {
     <div className="flex flex-col gap-2">
       {/* Display the image  */}
       <div className="relative">
-        {article.image && (
-          <Image
-            src={article.image}
-            className="h-auto w-full object-cover"
-            alt={article.title || ""}
-            width={1700}
-            height={768}
-          />
-        )}
+  {article.image && (
+    <Image
+      src={"/assets/images/bobtail.png"}//article.thumbnailURL}
+      className="absolute inset-0 h-full w-full object-cover"
+      alt={article.title || ""}
+      width={1700}
+      height={768}
+    />
+  )}
 
-        {/* display title and summary */}
-        <div className="absolute bottom-0 left-0 w-full px-12 py-10">
-          <h1
-            className="w-4/5 p-8 text-4xl font-bold sm:text-6xl"
-            style={{ color: "white" }}
-          >
-            {article.title}
-          </h1>
-          <h2
-            className="w-5/6 p-8 pt-0 text-3xl font-semibold"
-            style={{ color: "white" }}
-          >
-            {article.summary}
-          </h2>
-        </div>
-      </div>
+  {/* display title and summary */}
+  <div className="relative z-10 flex h-full flex-col justify-end px-12 pb-24 pt-10">
+    <h1
+      className="w-4/5 p-8 font-alegreyaSansSC text-6xl font-bold sm:text-8xl"
+      style={{ color: "black" }}
+    >
+      {article.title}
+    </h1>
+    <h2
+      className="w-5/6 p-8 pt-0 font-alegreyaSansSC text-4xl font-semibold"
+      style={{ color: "black" }}
+    >
+      {article.summary}
+    </h2>
+  </div>
+</div>
 
-      {/* Renders the article title at the top of the page */}
       <div className="mt-4">
-        <div>
-          <h2 className="text-center text-3xl font-semibold">
-            {article.title}
-          </h2>
-        </div>
-
+        
         {/* This article body stuff was from a previous iteration without
           the Article Content boxes. We should delete from all affected files to 
           clean the code up. */}
@@ -91,9 +86,9 @@ const StoryPreview: React.FC<Props> = ({ article, id }) => {
             ))}
         </div>
 
-        {/* Renders article details? idk what this does */}
+        {/* Displays story content using fetched article */}
         <div className="">
-          <ArticleDetail articleId={id} includeContent={true} />
+          {/* <ArticleDetail articleId={id} includeContent={true} /> */}
         </div>
       </div>
     </div>
@@ -103,67 +98,67 @@ export default StoryPreview;
 
 // API FETCHING BELOW
 
-async function fetchArticleById(id: string, includeContent: boolean = false) {
-  const includeContentParam = includeContent ? "?include_content=true" : "";
-  const response = await fetch(`/api/stories/id/${id}${includeContentParam}`);
+// async function fetchArticleById(id: string, includeContent: boolean = false) {
+//   const includeContentParam = includeContent ? "?include_content=true" : "";
+//   const response = await fetch(`/api/stories/id/${id}${includeContentParam}`);
 
-  if (!response.ok) {
-    throw new Error(`Failed to fetch article: ${response.statusText}`);
-  }
+//   if (!response.ok) {
+//     throw new Error(`Failed to fetch article: ${response.statusText}`);
+//   }
 
-  const article = await response.json();
-  return article;
-}
+//   const article = await response.json();
+//   return article;
+// }
 
-interface ArticleDetailProps {
-  articleId: string;
-  includeContent?: boolean;
-}
+// interface ArticleDetailProps {
+//   articleId: string;
+//   includeContent?: boolean;
+// }
 
-const ArticleDetail: React.FC<ArticleDetailProps> = ({
-  articleId,
-  includeContent = false,
-}) => {
-  const [article, setArticle] = useState<GetStoryResult | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [storyContent, setStoryContent] = useState<JSX.Element | null>(null);
+// const ArticleDetail: React.FC<ArticleDetailProps> = ({
+//   articleId,
+//   includeContent = false,
+// }) => {
+//   const [article, setArticle] = useState<GetStoryResult | null>(null);
+//   const [error, setError] = useState<string | null>(null);
+//   const [storyContent, setStoryContent] = useState<JSX.Element | null>(null);
 
-  useEffect(() => {
-    async function loadArticle() {
-      try {
-        const fetchedArticle = await fetchArticleById(
-          articleId,
-          includeContent,
-        );
-        setArticle(fetchedArticle);
+//   useEffect(() => {
+//     async function loadArticle() {
+//       try {
+//         const fetchedArticle = await fetchArticleById(
+//           articleId,
+//           includeContent,
+//         );
+//         setArticle(fetchedArticle);
 
-        if (includeContent && fetchedArticle.storyContent.length > 0) {
-          const { file } = await generateMarkdown(
-            fetchedArticle.storyContent[0].content,
-          );
-          setStoryContent(file.result);
-        }
-      } catch (err: any) {
-        setError(err.message);
-      }
-    }
+//         if (includeContent && fetchedArticle.storyContent.length > 0) {
+//           const { file } = await generateMarkdown(
+//             fetchedArticle.storyContent[0].content,
+//           );
+//           setStoryContent(file.result);
+//         }
+//       } catch (err: any) {
+//         setError(err.message);
+//       }
+//     }
 
-    if (articleId) {
-      loadArticle();
-    }
-  }, [articleId, includeContent]);
+//     if (articleId) {
+//       loadArticle();
+//     }
+//   }, [articleId, includeContent]);
 
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
+//   if (error) {
+//     return <div>Error: {error}</div>;
+//   }
 
-  if (!article) {
-    return <div>Loading...</div>;
-  }
+//   if (!article) {
+//     return <div>Loading...</div>;
+//   }
 
-  return (
-    <div>
-      <div>{includeContent && storyContent}</div>
-    </div>
-  );
-};
+//   return (
+//     <div>
+//       <div>{includeContent && storyContent}</div>
+//     </div>
+//   );
+// };

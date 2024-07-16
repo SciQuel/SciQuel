@@ -24,12 +24,19 @@ import { Fragment, useRef, useState, useTransition } from "react";
 import ArticleBody from "./formComponents/articleBody";
 import ArticleContent from "./formComponents/articleContent";
 import ArticleTitle from "./formComponents/articleTitle";
+import ArticleSummary from "./formComponents/articleSummary";
+import ArticleSlug from "./formComponents/articleSlug";
+import ArticleDate from "./formComponents/articleDate";
 import BackgroundImageForm from "./formComponents/backgroundImageForm";
 import NewContributor from "./formComponents/confirmNewContributer";
 import NewSubject from "./formComponents/subjectComponents/newSubject";
 import NewSubtopic from "./formComponents/subtopicComponents/newSubtopic";
 import { getData, randomBackgroundColor, setTagsColor } from "./StoryFormFunc";
+import { DateTime } from "luxon";
 import Tags from "./Tags";
+import MarkdownEditor from "@/components/MarkdownEditor";
+import MarkDownEditorStoryInfo from "@/components/EditorDashboard/MarkdownEditorStoryInfo";
+import MarkdownEditorStoryInfo from "@/components/EditorDashboard/MarkdownEditorStoryInfo";
 
 interface Section {
   type: string;
@@ -41,9 +48,14 @@ interface Props {
   title: string;
   setTitle: (value: string) => void;
   summary?: string;
+  setSummary: (value: string) => void;
   image?: string;
+  setImage: (value: string) => void;
   caption?: string;
+  slug?: string;
+  setSlug: (value: string) => void;
   date?: Date | null;
+  setDate: (value: Date) => void;
   body: string;
   setBody: (value: string) => void;
   sections: Section[];
@@ -57,9 +69,14 @@ export default function StoryInfoForm({
   title: initialTitle,
   setTitle: initialSetTitle,
   summary: initialSummary,
+  setSummary: initialSetSummary,
   image: initialImage,
+  setImage: initialSetImage,
   caption: initialCaption,
+  slug: initialSlug,
+  setSlug: initialSetSlug,
   date: initialDate,
+  setDate: initialSetDate,
   body: initialBody,
   setBody: initialSetBody,
   sections,
@@ -77,7 +94,7 @@ export default function StoryInfoForm({
   );
 
   const [caption, setCaption] = useState(initialCaption ?? "");
-  const [date, setDate] = useState<Date | null>(initialDate ?? null);
+  // const [date, setDate] = useState<Date | null>(initialDate ?? null);
   const [dirty, setDirty] = useState(false);
   const [loading, startTransition] = useTransition();
 
@@ -267,9 +284,11 @@ export default function StoryInfoForm({
   };
 
   //format date
-  const year = date?.getFullYear();
-  const month = (date?.getMonth() + 1).toString().padStart(2, "0");
-  const day = date?.getDate().toString().padStart(2, "0");
+  // const year = date?.getFullYear();
+  // const month = (date?.getMonth() + 1).toString().padStart(2, "0");
+  // const day = date?.getDate().toString().padStart(2, "0");
+
+  // console.log(date);
 
   // Div outlining what the left half of the page actually looks like
   return (
@@ -344,16 +363,13 @@ export default function StoryInfoForm({
         />
 
         {/* SUMMARY INPUT */}
-        <FormInput
-          title="Summary"
+        <ArticleSummary
+          value={initialSummary}
+          onChange={initialSetSummary}
           required
           indicateRequired
-          value={summary}
-          onChange={(e) => {
-            setDirty(true);
-            setSummary(e.target.value);
-          }}
           disabled={loading}
+          setDirty={setDirty}
         />
 
         {/* ARTICLE TEXT BODY INPUT */}
@@ -362,6 +378,8 @@ export default function StoryInfoForm({
           onChange={initialSetBody}
           setDirty={setDirty}
         />
+
+        <MarkdownEditorStoryInfo initialValue="initialBody" id={storyId}></MarkdownEditorStoryInfo>
 
         {/* TITLE COLOR INPUT */}
         <label className="my-5 flex flex-col">
@@ -406,20 +424,27 @@ export default function StoryInfoForm({
         </ul>
 
         {/* SLUG FORM */}
-        <FormInput
-          title="Slug"
+
+        <ArticleSlug
+          value={initialSlug}
+          onChange={initialSetSlug}
           required
           indicateRequired
-          // value={slug}
           disabled={loading}
-          onChange={(e) => {
-            setDirty(true);
-            setSlug(e.target.value);
-          }}
+          setDirty={setDirty}
+        />
+
+        <ArticleDate
+          value={initialDate}
+          onChange={initialSetDate}
+          required
+          indicateRequired
+          disabled={loading}
+          setDirty={setDirty}
         />
 
         {/* PUBLISH DATE FORM */}
-        <FormInput
+        {/* <FormInput
           title="Publish Date"
           required
           indicateRequired
@@ -430,12 +455,12 @@ export default function StoryInfoForm({
             setDate(e.target.value);
           }}
           disabled={loading}
-        />
+        /> */}
 
         {/* BACKGROUND IMAGE FORM */}
         <BackgroundImageForm
-          image={image}
-          setImage={setImage}
+          image={initialImage}
+          setImage={initialSetImage}
           caption={caption}
           setCaption={setCaption}
           loading={loading}
@@ -741,9 +766,9 @@ export default function StoryInfoForm({
           type="submit"
           className="my-5 select-none rounded-md bg-teal-600 px-2 py-1 font-semibold text-white disabled:pointer-events-none disabled:opacity-50"
           disabled={
-            // title.length === 0 || /* WHEN UNCOMMENTED CODE BREAKS BECAUSE TITLE IS OUT OF SCOPE??? */
+            initialTitle.length === 0 || /* WHEN UNCOMMENTED CODE BREAKS BECAUSE TITLE IS OUT OF SCOPE??? */
             summary.length === 0 ||
-            image === null ||
+            initialImage === null ||
             caption.length === 0 ||
             loading
           }

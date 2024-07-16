@@ -2,7 +2,10 @@
 
 import StoryInfoForm from "@/components/EditorDashboard/StoryInfoForm";
 import StoryPreview from "@/components/EditorDashboard/StoryPreview";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+
+import { type GetStoryResult } from "@/app/api/stories/id/[id]/route";
+import { generateMarkdown } from "@/lib/markdown";
 
 interface Section {
   type: string;
@@ -16,15 +19,19 @@ interface Props {
     summary?: string;
     image?: string;
     caption?: string;
+    slug?: string;
     date?: Date | null;
     body?: string;
   };
 }
 
 const StoryInfoEditorClient: React.FC<Props> = ({ story }) => {
-  const [body, setBody] = useState(story.body || "");
+  const [body, setBody] = useState(<ArticleDetail articleId={story.id} includeContent={true}></ArticleDetail> || "");
   const [title, setTitle] = useState(story.title || "");
+  const [summary, setSummary] = useState(story.summary || "");
   const [image, setImage] = useState(story.image || null);
+  const [slug, setSlug] = useState(story.slug || null);
+  const [date, setDate] = useState<Date | null>(story.date ?? null);
   const [sections, setSections] = useState<Section[]>([]);
 
   // inserts newContent into the array at idx – basically anytime user inputs
@@ -52,6 +59,8 @@ const StoryInfoEditorClient: React.FC<Props> = ({ story }) => {
     setSections(newArray);
   };
 
+  console.log(story);
+
   return (
     <div className="mx-32 mt-5 flex flex-col gap-5">
       <div className="flex gap-5">
@@ -64,6 +73,14 @@ const StoryInfoEditorClient: React.FC<Props> = ({ story }) => {
             id={story.id}
             title={title}
             setTitle={setTitle}
+            summary={summary}
+            setSummary={setSummary}
+            image={image}
+            setImage={setImage}
+            slug={slug}
+            setSlug={setSlug}
+            date={date}
+            setDate={setDate}
             body={body} // should delete this body stuff
             setBody={setBody}
             // stuff we need for the article content entry boxes
@@ -79,7 +96,7 @@ const StoryInfoEditorClient: React.FC<Props> = ({ story }) => {
           <h3 className="text-3xl font-semibold text-sciquelTeal">
             Story Preview
           </h3>
-          <StoryPreview article={{ title, body, sections }} id={story.id} />
+          <StoryPreview article={{ title, summary, body, image, slug, date, sections }} id={story.id} />
         </div>
       </div>
     </div>
@@ -87,3 +104,67 @@ const StoryInfoEditorClient: React.FC<Props> = ({ story }) => {
 };
 
 export default StoryInfoEditorClient;
+
+//API fetch below
+async function fetchArticleById(id: string, includeContent: boolean = false) {
+  const includeContentParam = includeContent ? "?include_content=true" : "";
+  const response = await fetch(`/api/stories/id/${id}${includeContentParam}`);
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch article: ${response.statusText}`);
+  }
+
+  const article = await response.json();
+  return article;
+}
+
+interface ArticleDetailProps {
+  articleId: string;
+  includeContent?: boolean;
+}
+
+const ArticleDetail: React.FC<ArticleDetailProps> = ({
+  articleId,
+  includeContent = false,
+}) => {
+  const [article, setArticle] = useState<GetStoryResult | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [storyContent, setStoryContent] = useState<JSX.Element | null>(null);
+
+  useEffect(() => {
+    async function loadArticle() {
+      try {
+        const fetchedArticle = await fetchArticleById(
+          articleId,
+          includeContent,
+        );
+        setArticle(fetchedArticle);
+
+        if (includeContent && fetchedArticle.storyContent.length > 0) {
+          const { file } = await generateMarkdown(
+            fetchedArticle.storyContent[0].content,
+          );
+          setStoryContent(file.result);
+        }
+      } catch (err: any) {
+        setError(err.message);
+      }
+    }
+
+    if (articleId) {
+      loadArticle();
+    }
+  }, [articleId, includeContent]);
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
+  if (!article) {
+    return <div>Loading...</div>;
+  }
+
+  return (
+    storyContent
+  );
+};

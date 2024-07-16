@@ -7,7 +7,7 @@ interface Props {
   title: string;
   required?: boolean;
   indicateRequired?: boolean;
-  type?: "text" | "password" | "email";
+  type?: "text" | "password" | "email" | "date";
   value?: HTMLProps<HTMLInputElement>["value"];
   minLength?: number;
   maxLength?: number;

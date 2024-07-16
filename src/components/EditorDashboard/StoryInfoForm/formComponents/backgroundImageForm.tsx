@@ -1,10 +1,11 @@
 import FormInput from "@/components/Form/FormInput"; // Adjust the import path as needed
 import clsx from "clsx";
+import { image } from "d3";
 import React, { useRef } from "react";
 
 type Props = {
-  image: File | string | null;
-  setImage: (image: File | string | null) => void;
+  image: string;
+  setImage: (image: string) => void;
   caption: string;
   setCaption: (caption: string) => void;
   loading: boolean;
@@ -87,5 +88,7 @@ const BackgroundImageForm: React.FC<Props> = ({
     </div>
   );
 };
+
+console.log(image)
 
 export default BackgroundImageForm;
