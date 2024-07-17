@@ -34,6 +34,7 @@ const inter = Inter({ subsets: ["latin"] });
 interface Props {
   initialValue?: string;
   id: string;
+  style: {height: string};
 }
 
 export default function MarkdownEditor({ initialValue, id }: Props) {

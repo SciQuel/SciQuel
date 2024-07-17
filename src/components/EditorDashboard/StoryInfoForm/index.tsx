@@ -35,7 +35,7 @@ import { getData, randomBackgroundColor, setTagsColor } from "./StoryFormFunc";
 import { DateTime } from "luxon";
 import Tags from "./Tags";
 import MarkdownEditor from "@/components/MarkdownEditor";
-import MarkDownEditorStoryInfo from "@/components/EditorDashboard/MarkdownEditorStoryInfo";
+
 import MarkdownEditorStoryInfo from "@/components/EditorDashboard/MarkdownEditorStoryInfo";
 
 interface Section {
@@ -378,8 +378,14 @@ export default function StoryInfoForm({
           onChange={initialSetBody}
           setDirty={setDirty}
         />
-
-        <MarkdownEditorStoryInfo initialValue="initialBody" id={storyId}></MarkdownEditorStoryInfo>
+        <div className="h-[250px]">
+          <MarkdownEditorStoryInfo 
+            initialValue="" 
+            id={"64bed0cd8f2ca25b95e6c340"}>
+            style={{ height: '100%' }}
+          </MarkdownEditorStoryInfo>
+        </div>
+        
 
         {/* TITLE COLOR INPUT */}
         <label className="my-5 flex flex-col">
