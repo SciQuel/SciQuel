@@ -1,12 +1,27 @@
 import { z } from "zod";
 
+const DEFAULT_LIMIT = 10;
+
 export const getSchema = z.object({
-  user_id: z
-    .string({
-      required_error: "user_id is required",
-      invalid_type_error: "user_id must be a ObjectId",
+  distinct: z
+    .boolean({
+      invalid_type_error: "distince must be a boolean",
     })
-    .regex(/^[0-9a-f]{24}$/, { message: "user_id must be a valid ObjectId" }),
+    .default(false),
+  page: z
+    .number({
+      invalid_type_error: "page must be a non-negative int number",
+    })
+    .int("page must be a int number")
+    .nonnegative("page must be a non-negative number")
+    .default(0),
+  limit: z
+    .number({
+      invalid_type_error: "limit must be a non-negative int number",
+    })
+    .int("limit must be a int number")
+    .nonnegative("limit must be a non-negative number")
+    .default(DEFAULT_LIMIT),
 });
 
 export const postSchema = z.object({

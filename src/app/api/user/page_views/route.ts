@@ -5,55 +5,66 @@ import { NextResponse, type NextRequest } from "next/server";
 import { getSchema, postSchema } from "./schema";
 
 export async function GET(req: Request) {
-  const { searchParams } = new URL(req.url);
-  const parsedParams = getSchema.safeParse(Object.fromEntries(searchParams));
-
-  if (!parsedParams.success) {
-    return NextResponse.json(
-      { error: parsedParams.error.errors[0].message },
-      { status: 400 },
-    );
-  }
-
-  const { user_id } = parsedParams.data;
-
   try {
-    const result = await prisma.pageView.groupBy({
-      by: ["storyId"],
-      _count: {
-        storyId: true,
-      },
+    // check if user is logged in
+    const session = await getServerSession();
+    const user = await prisma.user.findUnique({
+      where: { email: session?.user.email ?? "noemail" },
+    });
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+    const url = new URL(req.url);
+    const queryUrl = Object.fromEntries(url.searchParams);
+    const parsedResult = getSchema.safeParse({
+      page: queryUrl.page ? Number(queryUrl.page) : undefined,
+      limit: queryUrl.limit ? Number(queryUrl.limit) : undefined,
+      distinct: queryUrl.distinct ? Boolean(queryUrl.distinct) : undefined,
+    });
+    if (!parsedResult.success) {
+      return NextResponse.json(
+        {
+          error: parsedResult.error.errors[0].message,
+          errors: parsedResult.error.errors.map((err) => err.message),
+        },
+        { status: 404 },
+      );
+    }
+    const { page, limit, distinct } = parsedResult.data;
+    const result = await prisma.pageView.findMany({
       orderBy: {
-        _count: {
-          storyId: "desc",
-        },
+        createdAt: "desc",
       },
-      take: 10,
+      select: {
+        storyId: true,
+        createdAt: true,
+      },
+      skip: page * limit,
+      take: limit,
+      distinct: distinct ? ["storyId"] : undefined,
       where: {
-        userId: user_id,
+        userId: user.id,
       },
     });
-
-    const storyIds = result.map((item) => item.storyId);
-
-    const stories = await prisma.story.findMany({
+    const countPageViews = await prisma.pageView.count({
       where: {
-        id: {
-          in: storyIds,
-        },
+        userId: user.id,
       },
+      distinct: distinct ? ["storyId"] : undefined,
     });
-
-    const sortedStories = storyIds.map((id) =>
-      stories.find((story) => story.id === id),
-    );
-
-    return NextResponse.json(sortedStories);
+    return NextResponse.json({
+      total: countPageViews,
+      stories_history: result.map(({ storyId, createdAt }) => ({
+        story_id: storyId,
+        read_date: createdAt,
+      })),
+    });
   } catch (e) {
     if (e instanceof Prisma.PrismaClientValidationError) {
       console.log(e.message);
       return NextResponse.json({ error: "Bad Request" }, { status: 400 });
     }
+    console.log(e);
 
     // all other errors
     return NextResponse.json({ error: e }, { status: 500 });
