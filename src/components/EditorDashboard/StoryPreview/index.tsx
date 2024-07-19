@@ -1,7 +1,7 @@
 import { type GetStoryResult } from "@/app/api/stories/id/[id]/route";
 import { generateMarkdown } from "@/lib/markdown";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import React from "react";
 
 interface Section {
   type: string;
@@ -15,50 +15,56 @@ interface Article {
   image?: string;
   caption?: string;
   slug?: string;
-  date?: Date | null;
+  date?: Date;
   body: string;
   sections?: Section[];
 }
 
 interface Props {
   article: Article;
+  formattedDate: string;
   id: string;
 }
 
-const StoryPreview: React.FC<Props> = ({ article, id }) => {
+const StoryPreview: React.FC<Props> = ({ article, formattedDate, id }) => {
   return (
     <div className="flex flex-col gap-2">
       {/* Display the image  */}
       <div className="relative">
-  {article.image && (
-    <Image
-      src={"/assets/images/bobtail.png"}//article.thumbnailURL}
-      className="absolute inset-0 h-full w-full object-cover"
-      alt={article.title || ""}
-      width={1700}
-      height={768}
-    />
-  )}
+        {article.image && (
+          <Image
+            src={"/assets/images/bobtail.png"} //article.thumbnailURL}
+            className="absolute inset-0 h-full w-full object-cover"
+            alt={article.title || ""}
+            width={1700}
+            height={768}
+          />
+        )}
 
-  {/* display title and summary */}
-  <div className="relative z-10 flex h-full flex-col justify-end px-12 pb-24 pt-10">
-    <h1
-      className="w-4/5 p-8 font-alegreyaSansSC text-6xl font-bold sm:text-8xl"
-      style={{ color: "black" }}
-    >
-      {article.title}
-    </h1>
-    <h2
-      className="w-5/6 p-8 pt-0 font-alegreyaSansSC text-4xl font-semibold"
-      style={{ color: "black" }}
-    >
-      {article.summary}
-    </h2>
-  </div>
-</div>
+        {/* Display article title, summary and date here */}
+        <div className="relative z-10 flex h-full flex-col justify-end px-12 pb-24 pt-10">
+          <h1 // title is here
+            className="w-4/5 p-8 font-alegreyaSansSC text-6xl font-bold sm:text-8xl"
+            style={{ color: "black" }}
+          >
+            {article.title}
+          </h1>
+          <h2 // summary is here
+            className="w-5/6 p-8 pt-0 font-alegreyaSansSC text-4xl font-semibold"
+            style={{ color: "black" }}
+          >
+            {article.summary}
+          </h2>
+          <h3 // formatted date is here
+            className="w-5/6 p-8 pt-0 font-alegreyaSansSC text-4xl font-semibold"
+            style={{ color: "black" }}
+          >
+            {formattedDate}
+          </h3>
+        </div>
+      </div>
 
       <div className="mt-4">
-        
         {/* This article body stuff was from a previous iteration without
           the Article Content boxes. We should delete from all affected files to 
           clean the code up. */}
@@ -94,71 +100,5 @@ const StoryPreview: React.FC<Props> = ({ article, id }) => {
     </div>
   );
 };
+
 export default StoryPreview;
-
-// API FETCHING BELOW
-
-// async function fetchArticleById(id: string, includeContent: boolean = false) {
-//   const includeContentParam = includeContent ? "?include_content=true" : "";
-//   const response = await fetch(`/api/stories/id/${id}${includeContentParam}`);
-
-//   if (!response.ok) {
-//     throw new Error(`Failed to fetch article: ${response.statusText}`);
-//   }
-
-//   const article = await response.json();
-//   return article;
-// }
-
-// interface ArticleDetailProps {
-//   articleId: string;
-//   includeContent?: boolean;
-// }
-
-// const ArticleDetail: React.FC<ArticleDetailProps> = ({
-//   articleId,
-//   includeContent = false,
-// }) => {
-//   const [article, setArticle] = useState<GetStoryResult | null>(null);
-//   const [error, setError] = useState<string | null>(null);
-//   const [storyContent, setStoryContent] = useState<JSX.Element | null>(null);
-
-//   useEffect(() => {
-//     async function loadArticle() {
-//       try {
-//         const fetchedArticle = await fetchArticleById(
-//           articleId,
-//           includeContent,
-//         );
-//         setArticle(fetchedArticle);
-
-//         if (includeContent && fetchedArticle.storyContent.length > 0) {
-//           const { file } = await generateMarkdown(
-//             fetchedArticle.storyContent[0].content,
-//           );
-//           setStoryContent(file.result);
-//         }
-//       } catch (err: any) {
-//         setError(err.message);
-//       }
-//     }
-
-//     if (articleId) {
-//       loadArticle();
-//     }
-//   }, [articleId, includeContent]);
-
-//   if (error) {
-//     return <div>Error: {error}</div>;
-//   }
-
-//   if (!article) {
-//     return <div>Loading...</div>;
-//   }
-
-//   return (
-//     <div>
-//       <div>{includeContent && storyContent}</div>
-//     </div>
-//   );
-// };

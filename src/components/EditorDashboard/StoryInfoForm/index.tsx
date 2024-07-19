@@ -1,8 +1,10 @@
 import fsPromises from "fs/promises";
 import path from "path";
+import MarkdownEditorStoryInfo from "@/components/EditorDashboard/MarkdownEditorStoryInfo";
 import Form from "@/components/Form";
 import FormInput from "@/components/Form/FormInput";
 import FormSelect from "@/components/Form/FormSelect";
+import MarkdownEditor from "@/components/MarkdownEditor";
 import { Popover, Transition } from "@headlessui/react";
 import {
   ChevronUpDownIcon,
@@ -19,24 +21,21 @@ import {
 } from "@prisma/client";
 import axios from "axios";
 import clsx from "clsx";
+import { DateTime } from "luxon";
 import { useRouter } from "next/navigation";
 import { Fragment, useRef, useState, useTransition } from "react";
 import ArticleBody from "./formComponents/articleBody";
 import ArticleContent from "./formComponents/articleContent";
-import ArticleTitle from "./formComponents/articleTitle";
-import ArticleSummary from "./formComponents/articleSummary";
-import ArticleSlug from "./formComponents/articleSlug";
 import ArticleDate from "./formComponents/articleDate";
+import ArticleSlug from "./formComponents/articleSlug";
+import ArticleSummary from "./formComponents/articleSummary";
+import ArticleTitle from "./formComponents/articleTitle";
 import BackgroundImageForm from "./formComponents/backgroundImageForm";
 import NewContributor from "./formComponents/confirmNewContributer";
 import NewSubject from "./formComponents/subjectComponents/newSubject";
 import NewSubtopic from "./formComponents/subtopicComponents/newSubtopic";
 import { getData, randomBackgroundColor, setTagsColor } from "./StoryFormFunc";
-import { DateTime } from "luxon";
 import Tags from "./Tags";
-import MarkdownEditor from "@/components/MarkdownEditor";
-
-import MarkdownEditorStoryInfo from "@/components/EditorDashboard/MarkdownEditorStoryInfo";
 
 interface Section {
   type: string;
@@ -283,13 +282,6 @@ export default function StoryInfoForm({
     setContributors([...contributors, contributor]);
   };
 
-  //format date
-  // const year = date?.getFullYear();
-  // const month = (date?.getMonth() + 1).toString().padStart(2, "0");
-  // const day = date?.getDate().toString().padStart(2, "0");
-
-  // console.log(date);
-
   // Div outlining what the left half of the page actually looks like
   return (
     <div className="flex flex-col gap-2">
@@ -351,8 +343,6 @@ export default function StoryInfoForm({
         }}
       >
         {/* STORY TITLE FORM INPUT */}
-
-        {/* STORY TITLE FORM INPUT */}
         <ArticleTitle
           value={initialTitle}
           onChange={initialSetTitle}
@@ -372,20 +362,32 @@ export default function StoryInfoForm({
           setDirty={setDirty}
         />
 
+        {/* PUBLISH DATE FORM */}
+        <ArticleDate
+          value={initialDate}
+          onChange={initialSetDate}
+          required
+          indicateRequired
+          disabled={loading}
+          setDirty={setDirty}
+        />
+
         {/* ARTICLE TEXT BODY INPUT */}
         <ArticleBody
           value={initialBody}
           onChange={initialSetBody}
           setDirty={setDirty}
         />
+
+        {/* MARKDOWN EDITOR */}
         <div className="h-[250px]">
-          <MarkdownEditorStoryInfo 
-            initialValue="" 
-            id={"64bed0cd8f2ca25b95e6c340"}>
-            style={{ height: '100%' }}
+          <MarkdownEditorStoryInfo
+            initialValue=""
+            id={"64bed0cd8f2ca25b95e6c340"}
+          >
+            style={{ height: "100%" }}
           </MarkdownEditorStoryInfo>
         </div>
-        
 
         {/* TITLE COLOR INPUT */}
         <label className="my-5 flex flex-col">
@@ -430,7 +432,6 @@ export default function StoryInfoForm({
         </ul>
 
         {/* SLUG FORM */}
-
         <ArticleSlug
           value={initialSlug}
           onChange={initialSetSlug}
@@ -439,29 +440,6 @@ export default function StoryInfoForm({
           disabled={loading}
           setDirty={setDirty}
         />
-
-        <ArticleDate
-          value={initialDate}
-          onChange={initialSetDate}
-          required
-          indicateRequired
-          disabled={loading}
-          setDirty={setDirty}
-        />
-
-        {/* PUBLISH DATE FORM */}
-        {/* <FormInput
-          title="Publish Date"
-          required
-          indicateRequired
-          type="date"
-          value={year + "-" + month + "-" + day}
-          onChange={(e) => {
-            setDirty(true);
-            setDate(e.target.value);
-          }}
-          disabled={loading}
-        /> */}
 
         {/* BACKGROUND IMAGE FORM */}
         <BackgroundImageForm
@@ -772,7 +750,8 @@ export default function StoryInfoForm({
           type="submit"
           className="my-5 select-none rounded-md bg-teal-600 px-2 py-1 font-semibold text-white disabled:pointer-events-none disabled:opacity-50"
           disabled={
-            initialTitle.length === 0 || /* WHEN UNCOMMENTED CODE BREAKS BECAUSE TITLE IS OUT OF SCOPE??? */
+            initialTitle.length ===
+              0 /* WHEN UNCOMMENTED CODE BREAKS BECAUSE TITLE IS OUT OF SCOPE??? */ ||
             summary.length === 0 ||
             initialImage === null ||
             caption.length === 0 ||

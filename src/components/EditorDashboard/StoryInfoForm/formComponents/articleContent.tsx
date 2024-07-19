@@ -7,6 +7,7 @@ interface Section {
 
 interface ArticleContentProps {
   sections: Section[];
+  // calls the functions that we defined in the parent function StoryInfoEditorPageClient
   onSectionChange: (index: number, newContent: string) => void;
   onAddSection: (type: string) => void;
   onDeleteSection: (index: number) => void;

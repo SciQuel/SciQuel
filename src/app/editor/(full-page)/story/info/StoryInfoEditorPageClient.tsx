@@ -1,11 +1,10 @@
 "use client";
 
+import { type GetStoryResult } from "@/app/api/stories/id/[id]/route";
 import StoryInfoForm from "@/components/EditorDashboard/StoryInfoForm";
 import StoryPreview from "@/components/EditorDashboard/StoryPreview";
-import React, { useState, useEffect } from "react";
-
-import { type GetStoryResult } from "@/app/api/stories/id/[id]/route";
 import { generateMarkdown } from "@/lib/markdown";
+import React, { useEffect, useState } from "react";
 
 interface Section {
   type: string;
@@ -20,19 +19,29 @@ interface Props {
     image?: string;
     caption?: string;
     slug?: string;
-    date?: Date | null;
+    date?: Date;
     body?: string;
   };
 }
 
 const StoryInfoEditorClient: React.FC<Props> = ({ story }) => {
-  const [body, setBody] = useState(<ArticleDetail articleId={story.id} includeContent={true}></ArticleDetail> || "");
+  const [body, setBody] = useState(
+    (
+      <ArticleDetail articleId={story.id} includeContent={true}></ArticleDetail>
+    ) || "",
+  );
   const [title, setTitle] = useState(story.title || "");
   const [summary, setSummary] = useState(story.summary || "");
   const [image, setImage] = useState(story.image || null);
   const [slug, setSlug] = useState(story.slug || null);
   const [date, setDate] = useState<Date | null>(story.date ?? null);
   const [sections, setSections] = useState<Section[]>([]);
+
+  const formatPreviewDate = (date: Date | null) => {
+    if (!date) return "";
+    const options = { year: "numeric", month: "long", day: "numeric" } as const;
+    return date.toLocaleDateString(undefined, options);
+  };
 
   // inserts newContent into the array at idx – basically anytime user inputs
   const handleSectionChange = (idx: number, newContent: string) => {
@@ -58,8 +67,6 @@ const StoryInfoEditorClient: React.FC<Props> = ({ story }) => {
     }
     setSections(newArray);
   };
-
-  console.log(story);
 
   return (
     <div className="mx-32 mt-5 flex flex-col gap-5">
@@ -96,7 +103,11 @@ const StoryInfoEditorClient: React.FC<Props> = ({ story }) => {
           <h3 className="text-3xl font-semibold text-sciquelTeal">
             Story Preview
           </h3>
-          <StoryPreview article={{ title, summary, body, image, slug, date, sections }} id={story.id} />
+          <StoryPreview
+            article={{ title, summary, body, image, slug, date, sections }}
+            formattedDate={formatPreviewDate(date)}
+            id={story.id}
+          />
         </div>
       </div>
     </div>
@@ -164,7 +175,5 @@ const ArticleDetail: React.FC<ArticleDetailProps> = ({
     return <div>Loading...</div>;
   }
 
-  return (
-    storyContent
-  );
+  return storyContent;
 };
