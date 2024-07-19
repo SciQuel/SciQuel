@@ -4,7 +4,7 @@ import { type GetStoryResult } from "@/app/api/stories/id/[id]/route";
 import StoryInfoForm from "@/components/EditorDashboard/StoryInfoForm";
 import StoryPreview from "@/components/EditorDashboard/StoryPreview";
 import { generateMarkdown } from "@/lib/markdown";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 interface Section {
   type: string;
@@ -25,8 +25,10 @@ interface Props {
 }
 
 const StoryInfoEditorClient: React.FC<Props> = ({ story }) => {
+  // sets the initial body by fetching the article through its ID
   const [body, setBody] = useState(
     (
+      // TO DO: get it to actually load instead of showing as "[object Object]"
       <ArticleDetail articleId={story.id} includeContent={true}></ArticleDetail>
     ) || "",
   );
@@ -37,10 +39,13 @@ const StoryInfoEditorClient: React.FC<Props> = ({ story }) => {
   const [date, setDate] = useState<Date | null>(story.date ?? null);
   const [sections, setSections] = useState<Section[]>([]);
 
-  const formatPreviewDate = (date: Date | null) => {
+  // formats the input string and gets is as MM/DD/YYYY for display
+  const formatPreviewDate = (date: Date | null): string => {
     if (!date) return "";
-    const options = { year: "numeric", month: "long", day: "numeric" } as const;
-    return date.toLocaleDateString(undefined, options);
+    const year = date.getFullYear();
+    const month = date.toLocaleString("default", { month: "long" });
+    const day = date.getDate();
+    return `${month} ${day}, ${year}`;
   };
 
   // inserts newContent into the array at idx – basically anytime user inputs
@@ -68,38 +73,113 @@ const StoryInfoEditorClient: React.FC<Props> = ({ story }) => {
     setSections(newArray);
   };
 
+  // for the divider we only need one width (going with left) to dynamically update
+  const [leftWidth, setLeftWidth] = useState(40); // 40% as default
+  const [isDragging, setIsDragging] = useState(false); // T/f if user is currently dragging
+  const containerRef = useRef<HTMLDivElement>(null); // ref for the container
+
+  // handles boolean logic for clicking the dividor
+  const handleDividorClick = (click: React.MouseEvent) => {
+    click.preventDefault();
+    setIsDragging(true);
+  };
+  const handleDividorUnclick = () => {
+    setIsDragging(false);
+  };
+  const handleDividorMove = (e: MouseEvent) => {
+    if (isDragging && containerRef.current) {
+      const containerRect = containerRef.current.getBoundingClientRect();
+      const newLeftWidth =
+        ((e.clientX - containerRect.left) / containerRect.width) * 100;
+      if (newLeftWidth > 10 && newLeftWidth < 90) {
+        setLeftWidth(newLeftWidth); // make sure we are within bounds
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (isDragging) {
+      document.addEventListener("mousemove", handleDividorMove);
+      document.addEventListener("mouseup", handleDividorUnclick);
+    } else {
+      document.removeEventListener("mousemove", handleDividorMove);
+      document.removeEventListener("mouseup", handleDividorUnclick);
+    }
+    return () => {
+      document.removeEventListener("mousemove", handleDividorMove);
+      document.removeEventListener("mouseup", handleDividorUnclick);
+    };
+  }, [isDragging]);
+
   return (
-    <div className="mx-32 mt-5 flex flex-col gap-5">
-      <div className="flex gap-5">
+    <div
+      className="mx-32 mt-5 flex flex-col gap-5"
+      ref={containerRef}
+      style={{ height: "100vh", overflow: "hidden" }}
+    >
+      <div className="flex gap-5" style={{ height: "100%", width: "100%" }}>
         {/* LEFT HAND SIDE */}
-        <div className="w-1/3">
-          <h3 className="text-3xl font-semibold text-sciquelTeal">
-            Story Info
-          </h3>
-          <StoryInfoForm
-            id={story.id}
-            title={title}
-            setTitle={setTitle}
-            summary={summary}
-            setSummary={setSummary}
-            image={image}
-            setImage={setImage}
-            slug={slug}
-            setSlug={setSlug}
-            date={date}
-            setDate={setDate}
-            body={body} // should delete this body stuff
-            setBody={setBody}
-            // stuff we need for the article content entry boxes
-            sections={sections}
-            onSectionChange={handleSectionChange}
-            onAddSection={handleAddSection}
-            onDeleteSection={handleDeleteSection}
-          />
+        <div
+          style={{
+            width: `${leftWidth}%`,
+            overflow: "hidden",
+            position: "relative",
+            display: "flex",
+            flexDirection: "column",
+            height: "100%",
+            paddingRight: "50px",
+          }}
+        >
+          <div style={{ flexGrow: 1, overflowY: "auto" }}>
+            <h3 className="text-3xl font-semibold text-sciquelTeal">
+              Story Info
+            </h3>
+            <StoryInfoForm
+              id={story.id}
+              title={title}
+              setTitle={setTitle}
+              summary={summary}
+              setSummary={setSummary}
+              image={image}
+              setImage={setImage}
+              slug={slug}
+              setSlug={setSlug}
+              date={date}
+              setDate={setDate}
+              body={body} // should delete this body stuff
+              setBody={setBody}
+              sections={sections}
+              onSectionChange={handleSectionChange}
+              onAddSection={handleAddSection}
+              onDeleteSection={handleDeleteSection}
+            />
+          </div>
+
+          {/* DIVIDER */}
+          <div
+            onMouseDown={handleDividorClick}
+            style={{
+              width: "10px",
+              cursor: "col-resize",
+              backgroundColor: "teal",
+              position: "absolute",
+              top: 0,
+              right: 0,
+              bottom: 0,
+              zIndex: 10,
+            }}
+          ></div>
         </div>
 
         {/* RIGHT HAND SIDE */}
-        <div className="w-2/3 bg-white">
+        <div
+          style={{
+            width: `${100 - leftWidth}%`,
+            overflowY: "auto",
+            height: "100%",
+          }}
+          className="bg-white"
+        >
           <h3 className="text-3xl font-semibold text-sciquelTeal">
             Story Preview
           </h3>

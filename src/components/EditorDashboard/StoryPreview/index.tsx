@@ -17,6 +17,7 @@ interface Article {
   slug?: string;
   date?: Date;
   body: string;
+  markdown: string; // might need to change? 
   sections?: Section[];
 }
 
@@ -63,6 +64,9 @@ const StoryPreview: React.FC<Props> = ({ article, formattedDate, id }) => {
           </h3>
         </div>
       </div>
+
+      {/* MARKDOWN EDITOR should be here */}
+
 
       <div className="mt-4">
         {/* This article body stuff was from a previous iteration without
