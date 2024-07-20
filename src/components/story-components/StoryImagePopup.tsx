@@ -1,6 +1,6 @@
 import { MouseEvent, PropsWithChildren, RefObject, useState, useEffect } from "react";
 /*TODO I am trying to get image to be in the direct center when there is enough space on the right for the caption,
-i need to find a way to determine when to move it and how to move it. I tried Make the caption when the space
+i need to find a way to determine when to move it and how to move it. I tried Make the caption absolute when the space
 to the right of the caption is greater than the caption width.. 
 
 */
