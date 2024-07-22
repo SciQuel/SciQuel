@@ -1,9 +1,14 @@
-import { MouseEvent, PropsWithChildren, RefObject, useState, useEffect } from "react";
-/*TODO I am trying to get image to be in the direct center when there is enough space on the right for the caption,
-i need to find a way to determine when to move it and how to move it. I tried Make the caption absolute when the space
-to the right of the caption is greater than the caption width.. 
+import {
+  MouseEvent,
+  PropsWithChildren,
+  RefObject,
+  useState,
+  useEffect,
+  useRef,
+  useLayoutEffect,
+  useCallback,
+} from "react";
 
-*/
 interface Props {
   src: string;
   handleClick: (e: MouseEvent<HTMLDivElement>) => void;
@@ -26,29 +31,29 @@ const StoryImagePopup = ({
   const [scaleLevel, setScaleLevel] = useState(1);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [imageDimensions, setImageDimensions] = useState<{ width: number; height: number } | null>(null);
+  const [isImageReady, setIsImageReady] = useState(false);
+  const [shouldImageCenter, setShouldImageCenter] = useState(false);
+  const invisibleDivRef = useRef<HTMLDivElement> (null) // this ref is for the placeholder element in the div that will only display when image needs to be centered
 
-  //popup sometimes renders with image that is not sized right since use effect hook that controls sizing runs after render, have state that will determine when size is calculated
-  const[isImageReady, setIsImageReady] = useState(false)
-
+  /* need to resize images while keeping aspect ratio
+     going to make max height 750px and max width 700px
+     we want to get natural image height and natural image width
+     the aspect ratio would be width/height
+     if image is more than 750px tall or wider than 700px resize down
+     if image is 500 or less each try to resize up
+     if resizing would not maintain aspect ratio without going over maxes, keep default */
  
- /* need to resize images while keeping aspect ratio 
-going ot make max height 750px and max width 700px 
- we want to get natural image height and natural image width
-the aspect ratio would be width/height
-if image is more than 750px tall or wider than 700px  resize down 
-if image is 500 or less each try to resize up 
- if resizing would not maintain aspect raitio without going over maxes, keep default
-*/
-  // Resize constraints
-  const MAX_WIDTH =  isMobile ? 550 : 700;
-  const MAX_HEIGHT =  isMobile? 550 : 700;
-  const MIN_SIZE = 500;
 
-  useEffect(() => {
+  // Function to resize the image while maintaining the aspect ratio
+  const resizeImage = useCallback(() => {
+    const MAX_WIDTH = isMobile ? 550 : 700;
+    const MAX_HEIGHT = isMobile ? 550 : 700;
+    const MIN_SIZE = 500;
+  
     if (imageRef.current) {
       const img = imageRef.current;
+      console.log(img.clientHeight, img.clientWidth)
       const { naturalWidth: width, naturalHeight: height } = img;
-      console.log(width, height);
       let newWidth = width;
       let newHeight = height;
 
@@ -70,7 +75,7 @@ if image is 500 or less each try to resize up
         newHeight = height * resizeRatio;
       }
 
-      // make sure it fits within the max constraints
+      // Make sure it fits within the max constraints
       if (newWidth > MAX_WIDTH) {
         newWidth = MAX_WIDTH;
         newHeight = (height / width) * newWidth;
@@ -81,22 +86,70 @@ if image is 500 or less each try to resize up
       }
 
       setImageDimensions({ width: newWidth, height: newHeight });
-      setIsImageReady(true)
+      setIsImageReady(true);
     }
-  }, [imageRef]);
+  },[isMobile]);
 
+  // Function to calculate if the image should be centered
+  const calculateItemShouldCenter = useCallback(() => {
+    const imageRect = imageRef.current?.getBoundingClientRect();
+    const spaceToRight = window.innerWidth - (imageRect?.right ?? 0);
+    console.log(shouldImageCenter)
+    if(!shouldImageCenter){
 
-  useEffect(() => {
+    
+    if (spaceToRight > (imageRef.current?.height ?? 0) / 2) {
+      setShouldImageCenter(true);
+    
+    } 
+  }if(shouldImageCenter){
+    
+    /* if the div has a small width, it means that the image is nearing the left viewport, and the invis div should dissapear to fix layout
+    if the space to the right of image if small, do the same
+*/      const invisibleDivWidth = invisibleDivRef.current?.clientWidth ?? 0;
 
+    if(invisibleDivWidth  <=5 ||  spaceToRight <= 100){
+      setShouldImageCenter(false)
+    }
+  }
+  }, [shouldImageCenter]);
+  
+  
+
+  // Use layout effect to handle resizing and centering calculations before the browser paints
+  useLayoutEffect(() => {
     const handleResize = () => {
-       setIsMobile(window.innerWidth <= 768);
+      resizeImage()
+      setIsMobile(window.innerWidth <= 768);
+      calculateItemShouldCenter();
     };
-    window.addEventListener('resize', handleResize);
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, []);
 
+    window.addEventListener('resize', handleResize);
+
+    if (imageRef.current) {
+      imageRef.current.addEventListener('load', () => {
+        resizeImage();
+        calculateItemShouldCenter();
+      });
+    }
+
+    // Initial calls to have correct layout on mount
+    resizeImage();
+    // calculateItemShouldCenter();
+
+    // Cleanup function to remove event listeners
+    return () => {
+      window.removeEventListener('resize', handleResize)
+      if (imageRef.current) {
+        imageRef.current.removeEventListener('load', () => {
+          resizeImage();
+          // calculateItemShouldCenter();
+        });
+      }
+    };
+  }, [imageRef, isMobile, shouldImageCenter]);
+
+  // Handle image click to toggle zoom levels
   const handlePopUpImageClick = () => {
     if (!isMobile) {
       if (scaleLevel === 3) {
@@ -111,23 +164,25 @@ if image is 500 or less each try to resize up
     }
   };
 
+  // Handle image drag to update transform origin
   const handleImageDrag = (e: MouseEvent<HTMLImageElement>) => {
-    !dragging && setDragging(true);
+    if (!dragging) setDragging(true);
     const divTarget = e.target as HTMLImageElement;
     const x = e.clientX - divTarget.offsetLeft;
     const y = e.clientY - divTarget.offsetTop;
     setTransformOriginPosition({ x, y });
   };
 
-  //logic to retrieve trnasform styles 
+  // Logic to retrieve transform styles
   const transformOriginValue = transformOriginPosition.x !== null ? `${transformOriginPosition.x}px ${transformOriginPosition.y}px` : 'center center';
   const transformValue = imageClicked ? `scale(${scaleLevel})` : "none";
 
-  //css styles that control the cursor for image, and the scale origin and value
+  // CSS styles that control the cursor for image, and the scale origin and value
   const imageStyles = {
     transformOrigin: transformOriginValue,
     transform: transformValue,
     cursor: isMobile ? 'default' : scaleLevel === 1 ? 'zoom-in' : 'zoom-out',
+    display: isImageReady ? 'block' : 'none'
   };
 
   return (
@@ -135,9 +190,11 @@ if image is 500 or less each try to resize up
       className={`fixed left-1/2 top-1/2 z-50 flex h-screen w-screen -translate-x-1/2 -translate-y-1/2 transform flex-col justify-center border border-solid border-slate-800 bg-white hover:cursor-pointer`}
       onClick={handleClick}
     >
-      <div className="    mx-auto flex flex-wrap items-center justify-center gap-4 xl:gap-16 z-0 border-solid">
-        {/* image container */}
-        <div className= {`max-h-[750px]  ${isMobile && 'mx-5'} `}>
+      <div className={` ${shouldImageCenter ? 'justify-between' : 'justify-center'}  w-full ml-auto flex flex-wrap items-center xl:gap-16 z-0 border-solid`}>
+        {/* Invisible item that will help format the image to look centered completely */}
+        <div className={` ${!shouldImageCenter ? 'hidden': 'block'}   w-[200px] h-[100px] flex-grow basis-0`} ref = {invisibleDivRef}> </div>
+        {/* Image container */}
+        <div className={`max-h-[750px] ${isMobile && 'mx-5'} ${isImageReady ? 'block' : 'hidden'}`}>
           <img
             src={src}
             className="w-full block relative"
@@ -148,7 +205,7 @@ if image is 500 or less each try to resize up
             style={{ width: imageDimensions?.width, height: imageDimensions?.height, ...imageStyles }}
           />
         </div>
-        <p className={`  md:w-[20%]  xl:absolute xl:right-0 xl:top-1/2  text-center text-wrap cursor-default ${imageClicked ? 'hidden' : ''}`} ref={captionRef}>
+        <p className={` flex-grow basis-0  md:w-[20%] min-w-[200px] mr-6 text-center text-wrap cursor-default ${imageClicked ? 'invisible' : ''}`} ref={captionRef}>
           {children}
         </p>
       </div>
