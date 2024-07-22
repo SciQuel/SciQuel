@@ -8,8 +8,21 @@ export default function TestPage() {
   const [storyId, setStoryId] = useState("647ad74aa9efff3abe83045a");
   const [textConsole, setTextConsole] = useState("");
   function getPageViewByUserId() {
-    console.log("fetching view page by user id");
     axios.get("/api/user/page_views").then((data) => consoleOut(data.data));
+  }
+  function getPageByStoryId() {
+    axios
+      .get("/api/stories/page_views", { params: { story_id: storyId } })
+      .then((data) => consoleOut(data.data));
+  }
+  function getCalculateAvg() {
+    axios
+      .post("/api/stories/page_views", {
+        start_date: new Date("2023-12-05T08:00:00.000+00:00").toISOString(),
+        end_date: new Date().toISOString(),
+        topic: "ASTRONOMY",
+      })
+      .then((data) => consoleOut(data.data));
   }
   function consoleOut(obj: any) {
     setTextConsole(JSON.stringify(obj || "", undefined, 2));
@@ -33,8 +46,9 @@ export default function TestPage() {
         </div>
       </label>
       <button>Post page view</button>
-      <button>Get page view by story id</button>
+      <button onClick={getPageByStoryId}>Get page view by story id</button>
       <button onClick={getPageViewByUserId}>Get page view by user id</button>
+      <button onClick={getCalculateAvg}>Get calculate AVG</button>
     </div>
   );
 }
