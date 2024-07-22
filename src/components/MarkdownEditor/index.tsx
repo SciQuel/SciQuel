@@ -120,7 +120,7 @@ export default function MarkdownEditor({ initialValue, id }: Props) {
   }, [value, id]);
 
   return (
-    <div className="flex h-full grow flex-row">
+    <div className="flex h-full min-h-screen grow flex-row">
       <div className={clsx("flex w-1/2 flex-col border-r", inter.className)}>
         <Toolbar
           editor={editor}

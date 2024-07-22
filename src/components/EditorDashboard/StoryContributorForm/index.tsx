@@ -9,8 +9,8 @@ import FormUserCombobox, {
 } from "@/components/Form/FormUserCombobox";
 import {
   type ContributionType,
+  type Contributor,
   type StoryContribution,
-  type User,
 } from "@prisma/client";
 import axios from "axios";
 import clsx from "clsx";
@@ -20,18 +20,18 @@ import { type z } from "zod";
 
 interface Props {
   contributors?: (StoryContribution & {
-    user: {
+    contributor: {
       firstName: string;
       lastName: string;
-      email: string;
-      bio: string;
+      email?: string;
+      bio?: string;
     };
   })[];
   authorDirectory: {
-    firstName: User["firstName"];
-    lastName: User["lastName"];
-    email: User["email"];
-    bio: User["bio"];
+    firstName: Contributor["firstName"];
+    lastName: Contributor["lastName"];
+    email: Contributor["email"];
+    bio: Contributor["bio"];
   }[];
   id: string;
 }
@@ -39,7 +39,7 @@ interface Props {
 type State = {
   contributionType: ContributionType;
   author: ComboboxValue;
-  bio: string;
+  bio: string | null | undefined;
 }[];
 
 type Action =
@@ -110,16 +110,16 @@ export default function StoryContributorForm({
     [authorDirectory],
   );
 
-  const [state, dispatch] = useReducer(
+  const [state, dispatch] = useReducer<(state: State, action: Action) => State>(
     reducer,
     contributors.map((contributor) => ({
       contributionType: contributor.contributionType,
       author: {
-        text: `${contributor.user.firstName} ${contributor.user.lastName} <${contributor.user.email}>`,
-        name: `${contributor.user.firstName} ${contributor.user.lastName}`,
-        email: contributor.user.email,
+        text: `${contributor.contributor.firstName} ${contributor.contributor.lastName} <${contributor.contributor.email}>`,
+        name: `${contributor.contributor.firstName} ${contributor.contributor.lastName}`,
+        email: contributor.contributor.email,
       },
-      bio: contributor.user.bio,
+      bio: contributor.contributor.bio,
     })),
   );
   const [dirty, setDirty] = useState(false);
@@ -169,13 +169,13 @@ export default function StoryContributorForm({
                       index,
                       contributionType: e.target.value as ContributionType,
                       author: row.author,
-                      bio: row.bio,
+                      bio: row.bio ?? "",
                     },
                   });
                 }}
               />
               <FormUserCombobox
-                title="User"
+                title="Contributor"
                 required
                 indicateRequired
                 value={row.author}
@@ -188,7 +188,7 @@ export default function StoryContributorForm({
                       index,
                       contributionType: row.contributionType,
                       author: data,
-                      bio: row.bio,
+                      bio: row.bio ?? "",
                     },
                   });
                 }}
@@ -213,7 +213,7 @@ export default function StoryContributorForm({
               title="Author's Bio (only applies to this story)"
               required
               indicateRequired
-              value={row.bio}
+              value={row.bio ?? ""}
               disabled={loading}
               onChange={(e) => {
                 setDirty(true);

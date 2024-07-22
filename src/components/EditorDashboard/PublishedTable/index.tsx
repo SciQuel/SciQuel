@@ -46,14 +46,14 @@ export default function PublishedTable() {
             </tr>
           </thead>
           <tbody className="border-gray-300 [&>tr:not(:last-child)]:border-b">
-            {data?.stories.map((story) => (
+            {data?.stories?.map((story) => (
               <tr className="[&>td]:px-3 [&>td]:py-3">
                 <td>{story.title}</td>
                 <td>N/A</td>
                 <td>{`${story.storyType[0]}${story.storyType
                   .slice(1)
                   .toLowerCase()}`}</td>
-                <td>{story.tags.join(" ").toLowerCase()}</td>
+                <td>{story.topics.join(" ").toLowerCase()}</td>
                 <td>
                   {DateTime.fromISO(
                     story.publishedAt as unknown as string,
@@ -84,13 +84,14 @@ export default function PublishedTable() {
                 </td>
               </tr>
             )}
-            {(!data || data.stories.length === 0) && !isLoading && (
-              <tr>
-                <td colSpan={7} className="py-3 text-center italic">
-                  No data
-                </td>
-              </tr>
-            )}
+            {(!data || !data.stories || data.stories.length === 0) &&
+              !isLoading && (
+                <tr>
+                  <td colSpan={7} className="py-3 text-center italic">
+                    No data
+                  </td>
+                </tr>
+              )}
           </tbody>
         </table>
       </div>

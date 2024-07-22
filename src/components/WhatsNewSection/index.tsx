@@ -25,15 +25,19 @@ export default function WhatsNewSection({ articles }: Props) {
               const author = headlineArticle.storyContributions.find(
                 (value) => value.contributionType === "AUTHOR",
               );
-              return author
-                ? `${author.user.firstName} ${author.user.lastName}`
+              return author?.contributor
+                ? `${author.contributor.firstName} ${author.contributor.lastName}`
                 : "";
             })()}
             date={DateTime.fromJSDate(
               headlineArticle.publishedAt,
             ).toLocaleString(DateTime.DATE_FULL)}
             mediaType={headlineArticle.storyType}
-            tag={headlineArticle.tags[0]}
+            tag={
+              headlineArticle.topics && headlineArticle.topics[0]
+                ? headlineArticle.topics[0]
+                : "BIOLOGY"
+            }
             href={(() => {
               const publishDate = DateTime.fromJSDate(
                 headlineArticle.publishedAt,
@@ -46,7 +50,7 @@ export default function WhatsNewSection({ articles }: Props) {
         )}
       </div>
       {readMoreArticles && <ArticleList articles={readMoreArticles} />}
-      <NavigateLink text="Read all recent" route="/stories/list" />
+      <NavigateLink text="Read all recent" route="/stories/read" />
     </HomepageSection>
   );
 }

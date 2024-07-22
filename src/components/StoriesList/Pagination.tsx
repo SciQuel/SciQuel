@@ -18,7 +18,7 @@ export default function Pagination({ total_pages }: Props) {
 
   return (
     <>
-      <ul className="inline-flex justify-center gap-4 align-middle text-lg text-sciquelMuted">
+      <ul className="inline-flex flex-wrap justify-center gap-4 align-middle text-lg text-sciquelMuted">
         <li>Page</li>
         {pageList}
       </ul>
@@ -38,8 +38,9 @@ function createPageList(
 
   if (curr_page !== 1) {
     pageList.push(
-      <li>
+      <li className="w-fit">
         <a
+          className="break-words"
           href={`${usePathname()}?${new URLSearchParams({
             ...params,
             page: String(curr_page - 1),
