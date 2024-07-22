@@ -281,7 +281,7 @@ export default function StoryInfoForm({
   const addContributor = (contributor: string) => {
     setContributors([...contributors, contributor]);
   };
-
+  console.log(typeof(initialBody), storyId);
   // Div outlining what the left half of the page actually looks like
   return (
     <div className="flex flex-col gap-2">
@@ -373,21 +373,27 @@ export default function StoryInfoForm({
         />
 
         {/* ARTICLE TEXT BODY INPUT */}
-        <ArticleBody
+        {/* <ArticleBody
           value={initialBody}
           onChange={initialSetBody}
           setDirty={setDirty}
-        />
+        /> */}
 
         {/* MARKDOWN EDITOR */}
+        
         <div className="h-[250px]">
-          <MarkdownEditorStoryInfo
-            initialValue=""
-            id={"64bed0cd8f2ca25b95e6c340"}
-          >
-            style={{ height: "100%" }}
-          </MarkdownEditorStoryInfo>
+          Article Body
+          <MarkdownEditorStoryInfo 
+            initialValue={initialBody}
+            id={storyId} 
+            style={{
+              height: "100%"
+            }}>
+              
+          </MarkdownEditorStoryInfo>        
         </div>
+
+        
 
         {/* TITLE COLOR INPUT */}
         <label className="my-5 flex flex-col">

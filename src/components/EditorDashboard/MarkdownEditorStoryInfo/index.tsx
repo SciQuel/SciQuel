@@ -24,6 +24,7 @@ import italic from "./Toolbar/actions/italic";
 import link from "./Toolbar/actions/link";
 import quote from "./Toolbar/actions/quote";
 
+
 const Editor = dynamic(
   () => import("@monaco-editor/react").then((module) => module.Editor),
   { ssr: false },
@@ -47,6 +48,10 @@ export default function MarkdownEditor({ initialValue, id }: Props) {
   );
   const [stats, setStats] = useState<Record<string, number>>({});
   const [loading, startTransition] = useTransition();
+
+useEffect(() => {
+  setValue(initialValue ?? "");
+}, [initialValue]);
 
   useEffect(() => {
     void generateMarkdown(value).then(({ file, wordStats }) => {
