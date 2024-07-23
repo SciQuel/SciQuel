@@ -1,8 +1,6 @@
 import { z } from "zod";
 import { zfd, type json } from "zod-form-data";
 
-// TODO: change alternativeSpellings and exampleSentence type
-// to avoid 'any' warning
 export const postDefinitionSchema = zfd.formData({
   word: zfd.text(),
   definition: zfd.text(),
@@ -18,4 +16,13 @@ export const postDefinitionSchema = zfd.formData({
   wordAudio: zfd.file(),
   definitionAudio: zfd.file(),
   usageAudio: zfd.file(),
+});
+
+export const getDefinitionSchema = z.object({
+  storyId: z
+    .string({
+      required_error: "story_id is required",
+      invalid_type_error: "story_id must be a ObjectId",
+    })
+    .regex(/^[0-9a-f]{24}$/, { message: "story_id must be a valid ObjectId" }),
 });

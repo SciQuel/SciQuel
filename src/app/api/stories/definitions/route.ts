@@ -1,7 +1,14 @@
 import prisma from "@/lib/prisma";
 import { Storage } from "@google-cloud/storage";
-import { NextResponse } from "next/server";
-import { postDefinitionSchema } from "./schema";
+import { type DictionaryDefinition } from "@prisma/client";
+import { NextResponse, type NextRequest } from "next/server";
+import { getDefinitionSchema, postDefinitionSchema } from "./schema";
+
+export type DictionaryDefinitions = DictionaryDefinition[];
+
+export type GetDefinitionsResult = {
+  dictionaryDefinitions: DictionaryDefinitions;
+};
 
 const storage = new Storage({
   projectId: process.env.GCS_PROJECT ?? "",
@@ -54,6 +61,31 @@ export async function POST(req: NextResponse) {
   } catch (error) {
     return NextResponse.json(
       { error: "Database operation failed" },
+      { status: 500 },
+    );
+  }
+}
+
+export async function GET(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
+  const parsedParams = getDefinitionSchema.safeParse(
+    Object.fromEntries(searchParams),
+  );
+  if (!parsedParams.success) {
+    return NextResponse.json(parsedParams.error, { status: 400 });
+  }
+
+  const { storyId } = parsedParams.data;
+
+  try {
+    const dictionaryDefinitions = await prisma.dictionaryDefinition.findMany({
+      where: { storyId: storyId },
+    });
+    return NextResponse.json({ dictionaryDefinitions }, { status: 200 });
+  } catch (error) {
+    console.error("Failed to fetch dictionary definitions for story", error);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
       { status: 500 },
     );
   }
