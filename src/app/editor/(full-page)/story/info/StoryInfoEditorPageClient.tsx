@@ -1,6 +1,7 @@
 "use client";
 
 import StoryInfoForm from "@/components/EditorDashboard/StoryInfoForm";
+import Trivia from "@/components/EditorDashboard/StoryInfoForm/formComponents/Trivia";
 import StoryPreview from "@/components/EditorDashboard/StoryPreview";
 import React, { useState } from "react";
 
@@ -72,6 +73,7 @@ const StoryInfoEditorClient: React.FC<Props> = ({ story }) => {
             onAddSection={handleAddSection}
             onDeleteSection={handleDeleteSection}
           />
+          <Trivia />
         </div>
 
         {/* RIGHT HAND SIDE */}
@@ -79,7 +81,8 @@ const StoryInfoEditorClient: React.FC<Props> = ({ story }) => {
           <h3 className="text-3xl font-semibold text-sciquelTeal">
             Story Preview
           </h3>
-          <StoryPreview article={{ title, body, sections }} id={story.id} />
+          {/* <StoryPreview article={{ title, body, sections }} id={story.id} /> (this is commentted
+          to help test trivia section*/}
         </div>
       </div>
     </div>
