@@ -24,6 +24,8 @@ interface Props {
     body?: string;
     storyType?: string;
     topics?: string[];
+    titleColor: string;
+    summaryColor: string;
   };
 }
 
@@ -37,6 +39,8 @@ const StoryInfoEditorClient: React.FC<Props> = ({ story }) => {
   const [date, setDate] = useState<Date | null>(story.date ?? null);
   const [storyType, setStoryType] = useState(story.storyType || null);
   const [topics, setTopics] = useState(story.topics || null);
+  const [titleColor, setTitleColor] = useState(story.titleColor || null);
+  const [summaryColor, setSummaryColor] = useState(story.summaryColor || "");
   const [sections, setSections] = useState<Section[]>([]);
 
   console.log(story)
@@ -64,7 +68,9 @@ useEffect(() => {
           setImage(fetchedArticle.thumbnailUrl);
           setStoryType(fetchedArticle.storyType);
           setTopics(fetchedArticle.topics);
-          console.log(fetchedArticle.storyContributions)
+          setTitleColor(fetchedArticle.titleColor);
+          setSummaryColor(fetchedArticle.summaryColor);
+          console.log(fetchedArticle.summaryColor);
           // setImage(fetchedArticle.thumbnailURL);
         }
       } catch (err: any) {
@@ -76,7 +82,7 @@ useEffect(() => {
   loadArticle();
 }, [story.id]);
 
-console.log(topics);
+console.log();
 
   // inserts newContent into the array at idx – basically anytime user inputs
   const handleSectionChange = (idx: number, newContent: string) => {
@@ -186,6 +192,10 @@ console.log(topics);
               setStoryType={setStoryType}
               topics={topics}
               setTopics={setTopics}
+              titleColor={titleColor}
+              setTitleColor={setTitleColor}
+              summaryColor={summaryColor}
+              setSummaryColor={setSummaryColor}
             />
           </div>
 
@@ -218,7 +228,7 @@ console.log(topics);
             Story Preview
           </h3>
           <StoryPreview
-            article={{ title, summary, body, image, slug, date, sections, storyType, topics }}
+            article={{ title, summary, body, image, slug, date, sections, storyType, topics, titleColor, summaryColor }}
             formattedDate={formatPreviewDate(date)}
             id={story.id}
           />

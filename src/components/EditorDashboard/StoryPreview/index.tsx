@@ -1,7 +1,7 @@
 import { type GetStoryResult } from "@/app/api/stories/id/[id]/route";
 import { generateMarkdown } from "@/lib/markdown";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { ReactNode, useState } from "react";
 import { useEffect, ReactElement } from "react";
 import { StoryTopic } from "@prisma/client";
 import TopicTag from "@/components/TopicTag";
@@ -23,7 +23,9 @@ interface Article {
   markdown: string; // might need to change? 
   sections?: Section[];
   storyType?: string;
-  topics?: string[];
+  topics?: StoryTopic[];
+  titleColor?: string;
+  summaryColor?: string;
 }
 
 interface Props {
@@ -63,13 +65,13 @@ const StoryPreview: React.FC<Props> = ({ article, formattedDate, id }) => {
         <div className="relative z-10 flex h-full flex-col justify-end px-12 pb-24 pt-10">
           <h1 // title is here
             className="w-4/5 p-8 font-alegreyaSansSC text-6xl font-bold sm:text-8xl"
-            style={{ color: "black" }}
+            style={{ color: article.titleColor }}
           >
             {article.title}
           </h1>
           <h2 // summary is here
             className="w-5/6 p-8 pt-0 font-alegreyaSansSC text-4xl font-semibold"
-            style={{ color: "black" }}
+            style={{ color: article.summaryColor }}
           >
             {article.summary}
           </h2>
@@ -111,7 +113,9 @@ const StoryPreview: React.FC<Props> = ({ article, formattedDate, id }) => {
         {/* This article body stuff was from a previous iteration without
           the Article Content boxes. We should delete from all affected files to 
           clean the code up. */}
-        <div>{markdownContent}</div>
+        <div className="mx-2 mt-2 flex flex-col items-center gap-5 md:mx-auto">
+          {markdownContent as ReactNode}
+        </div>
 
         {/* This part renders the boxes updated live */}
         <div>

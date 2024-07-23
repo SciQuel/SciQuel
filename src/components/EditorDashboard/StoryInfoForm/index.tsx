@@ -37,6 +37,8 @@ import NewSubtopic from "./formComponents/subtopicComponents/newSubtopic";
 import { getData, randomBackgroundColor, setTagsColor } from "./StoryFormFunc";
 import Tags from "./Tags";
 import { date } from "zod";
+import ArticleTitleColor from "./formComponents/articleTitleColor";
+import ArticleSummaryColor from "./formComponents/articleSummaryColor";
 
 interface Section {
   type: string;
@@ -58,6 +60,10 @@ interface Props {
   setDate: (value: Date) => void;
   body: string;
   setBody: (value: string) => void;
+  titleColor?: string;
+  setTitleColor: (value: string) => void;
+  summaryColor?: string
+  setSummaryColor: (value: string) => void;
   sections: Section[];
   onSectionChange: (index: number, newContent: string) => void;
   onAddSection: (type: string) => void;
@@ -79,6 +85,10 @@ export default function StoryInfoForm({
   setDate: initialSetDate,
   body: initialBody,
   setBody: initialSetBody,
+  titleColor: initialTitleColor,
+  setTitleColor: initialSetTitleColor,
+  summaryColor: initialSummaryColor,
+  setSummaryColor: initialSetSummaryColor,
   sections,
   onSectionChange,
   onAddSection,
@@ -101,8 +111,8 @@ export default function StoryInfoForm({
   const [storyType, setStoryType] = useState<StoryType>("DIGEST");
   const [category, setCategory] = useState<Category>("ARTICLE");
 
-  const [titleColor, setTitleColor] = useState("#000000");
-  const [summaryColor, setSummaryColor] = useState("#000000");
+  const [titleColor, setTitleColor] = useState(initialTitleColor ?? "");
+  const [summaryColor, setSummaryColor] = useState(initialSummaryColor ?? "");
 
   // const [slug, setSlug] = useState(initialSlug ?? "");
 
@@ -394,10 +404,23 @@ export default function StoryInfoForm({
           </MarkdownEditorStoryInfo>        
         </div>
 
+        <ArticleTitleColor 
+        value={initialTitleColor} 
+        onChange={initialSetTitleColor}
+        setDirty={setDirty}
+                  // value={initialSetTitleColor}
+        ></ArticleTitleColor>
+
+        <ArticleSummaryColor
+        value={initialSummaryColor}
+        onChange={initialSetSummaryColor}
+        setDirty={setDirty}
+        ></ArticleSummaryColor>
+
         
 
         {/* TITLE COLOR INPUT */}
-        <label className="my-5 flex flex-col">
+        {/* <label className="my-5 flex flex-col">
           Title Color
           <input
             value={titleColor}
@@ -407,10 +430,10 @@ export default function StoryInfoForm({
               setTitleColor(e.target.value);
             }}
           />
-        </label>
+        </label> */}
 
         {/* SUMMARY COLOR INPUT */}
-        <label className="my-5 flex flex-col ">
+        {/* <label className="my-5 flex flex-col ">
           Summary Color
           <input
             value={summaryColor}
@@ -420,7 +443,7 @@ export default function StoryInfoForm({
               setSummaryColor(e.target.value);
             }}
           />
-        </label>
+        </label> */}
 
         {/* ARTICLE CONTENT BOXES */}
         <ArticleContent
