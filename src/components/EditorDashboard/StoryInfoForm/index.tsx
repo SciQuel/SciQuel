@@ -36,6 +36,7 @@ import NewSubject from "./formComponents/subjectComponents/newSubject";
 import NewSubtopic from "./formComponents/subtopicComponents/newSubtopic";
 import { getData, randomBackgroundColor, setTagsColor } from "./StoryFormFunc";
 import Tags from "./Tags";
+import { date } from "zod";
 
 interface Section {
   type: string;
@@ -281,7 +282,7 @@ export default function StoryInfoForm({
   const addContributor = (contributor: string) => {
     setContributors([...contributors, contributor]);
   };
-  console.log(typeof(initialBody), storyId);
+
   // Div outlining what the left half of the page actually looks like
   return (
     <div className="flex flex-col gap-2">

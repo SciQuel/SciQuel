@@ -1,7 +1,10 @@
 import { type GetStoryResult } from "@/app/api/stories/id/[id]/route";
 import { generateMarkdown } from "@/lib/markdown";
 import Image from "next/image";
-import React from "react";
+import React, { useState } from "react";
+import { useEffect, ReactElement } from "react";
+import { StoryTopic } from "@prisma/client";
+import TopicTag from "@/components/TopicTag";
 
 interface Section {
   type: string;
@@ -19,6 +22,8 @@ interface Article {
   body: string;
   markdown: string; // might need to change? 
   sections?: Section[];
+  storyType?: string;
+  topics?: string[];
 }
 
 interface Props {
@@ -28,13 +33,25 @@ interface Props {
 }
 
 const StoryPreview: React.FC<Props> = ({ article, formattedDate, id }) => {
+
+  const [markdownContent, setMarkdownContent] = useState<ReactElement | null>(null);
+
+  useEffect(() => {
+    const processMarkdown = async () => {
+      const result = await generateMarkdown(article.body);
+      setMarkdownContent(result.file.result);
+    };
+
+    processMarkdown();
+  }, [article.body]);
+
   return (
     <div className="flex flex-col gap-2">
       {/* Display the image  */}
       <div className="relative">
         {article.image && (
           <Image
-            src={"/assets/images/bobtail.png"} //article.thumbnailURL}
+            src={article.image}
             className="absolute inset-0 h-full w-full object-cover"
             alt={article.title || ""}
             width={1700}
@@ -65,15 +82,36 @@ const StoryPreview: React.FC<Props> = ({ article, formattedDate, id }) => {
         </div>
       </div>
 
-      {/* MARKDOWN EDITOR should be here */}
+      <div className="flex flex-row">
+        <p className="mr-2">
+          {article.storyType.slice(0, 1) +
+          article.storyType.slice(1).toLowerCase()}{" "}
+          | we need to add article type |
+        </p>{" "}
+        {article.topics.map((item: StoryTopic, index: number) => {
+        return <TopicTag name={item} key={`${item}-${index}`} />;
+        })}
+      </div>
+
+      {/* <div>
+            {story.storyContributions.map((element, index) => {
+              return (
+                <p key={`contributor-header-${index}`}>
+                  {element.contributionType == "AUTHOR"
+                    ? `by ${element.contributor.firstName} ${element.contributor.lastName}`
+                    : `${element.contributionType} by ${element.contributor.firstName} ${element.contributor.lastName}`}
+                </p>
+              );
+            })}
+          </div> */}
+
 
 
       <div className="mt-4">
         {/* This article body stuff was from a previous iteration without
           the Article Content boxes. We should delete from all affected files to 
           clean the code up. */}
-        <h2>Article Body</h2>
-        <p>{article.body}</p>
+        <div>{markdownContent}</div>
 
         {/* This part renders the boxes updated live */}
         <div>

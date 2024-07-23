@@ -5,6 +5,7 @@ import StoryInfoForm from "@/components/EditorDashboard/StoryInfoForm";
 import StoryPreview from "@/components/EditorDashboard/StoryPreview";
 import { generateMarkdown } from "@/lib/markdown";
 import React, { useEffect, useRef, useState } from "react";
+import { StringLiteral } from "typescript";
 
 interface Section {
   type: string;
@@ -21,6 +22,8 @@ interface Props {
     slug?: string;
     date?: Date;
     body?: string;
+    storyType?: string;
+    topics?: string[];
   };
 }
 
@@ -32,7 +35,11 @@ const StoryInfoEditorClient: React.FC<Props> = ({ story }) => {
   const [image, setImage] = useState(story.image || null);
   const [slug, setSlug] = useState(story.slug || null);
   const [date, setDate] = useState<Date | null>(story.date ?? null);
+  const [storyType, setStoryType] = useState(story.storyType || null);
+  const [topics, setTopics] = useState(story.topics || null);
   const [sections, setSections] = useState<Section[]>([]);
+
+  console.log(story)
 
   // formats the input string and gets is as MM/DD/YYYY for display
   const formatPreviewDate = (date: Date | null): string => {
@@ -51,6 +58,14 @@ useEffect(() => {
         const fetchedArticle = await fetchArticleById(story.id, true);
         if (fetchedArticle.storyContent.length > 0) {
           setBody(fetchedArticle.storyContent[0].content);
+          // console.log(fetchedArticle.publishedAt);
+          // setDate(fetchedArticle.publishedAt);
+          console.log(fetchedArticle.thumbnailUrl);
+          setImage(fetchedArticle.thumbnailUrl);
+          setStoryType(fetchedArticle.storyType);
+          setTopics(fetchedArticle.topics);
+          console.log(fetchedArticle.storyContributions)
+          // setImage(fetchedArticle.thumbnailURL);
         }
       } catch (err: any) {
         console.error("Failed to fetch article:", err.message);
@@ -60,6 +75,8 @@ useEffect(() => {
 
   loadArticle();
 }, [story.id]);
+
+console.log(topics);
 
   // inserts newContent into the array at idx – basically anytime user inputs
   const handleSectionChange = (idx: number, newContent: string) => {
@@ -165,6 +182,10 @@ useEffect(() => {
               onSectionChange={handleSectionChange}
               onAddSection={handleAddSection}
               onDeleteSection={handleDeleteSection}
+              storyType={storyType}
+              setStoryType={setStoryType}
+              topics={topics}
+              setTopics={setTopics}
             />
           </div>
 
@@ -197,7 +218,7 @@ useEffect(() => {
             Story Preview
           </h3>
           <StoryPreview
-            article={{ title, summary, body, image, slug, date, sections }}
+            article={{ title, summary, body, image, slug, date, sections, storyType, topics }}
             formattedDate={formatPreviewDate(date)}
             id={story.id}
           />
@@ -221,219 +242,3 @@ async function fetchArticleById(id: string, includeContent: boolean = false) {
   const article = await response.json();
   return article;
 }
-
-// import { type GetStoryResult } from "@/app/api/stories/id/[id]/route";
-// import StoryInfoForm from "@/components/EditorDashboard/StoryInfoForm";
-// import StoryPreview from "@/components/EditorDashboard/StoryPreview";
-// import { generateMarkdown } from "@/lib/markdown";
-// import React, { useEffect, useRef, useState } from "react";
-
-// // Define Section and Props interfaces
-// interface Section {
-//   type: string;
-//   content: string;
-// }
-
-// interface Props {
-//   story: {
-//     id?: string;
-//     title?: string;
-//     summary?: string;
-//     image?: string;
-//     caption?: string;
-//     slug?: string;
-//     date?: Date;
-//     body?: string;
-//   };
-// }
-
-// const StoryInfoEditorClient: React.FC<Props> = ({ story }) => {
-//   // State initialization
-//   const [body, setBody] = useState<string>("");
-//   const [title, setTitle] = useState(story.title || "");
-//   const [summary, setSummary] = useState(story.summary || "");
-//   const [image, setImage] = useState(story.image || null);
-//   const [slug, setSlug] = useState(story.slug || null);
-//   const [date, setDate] = useState<Date | null>(story.date ?? null);
-//   const [sections, setSections] = useState<Section[]>([]);
-
-//   // formats the input string and gets is as MM/DD/YYYY for display
-//   const formatPreviewDate = (date: Date | null): string => {
-//     if (!date) return "";
-//     const year = date.getFullYear();
-//     const month = date.toLocaleString("default", { month: "long" });
-//     const day = date.getDate();
-//     return `${month} ${day}, ${year}`;
-//   };
-
-//   // fetch article and set body content
-//   useEffect(() => {
-//     async function loadArticle() {
-//       if (story.id) {
-//         try {
-//           const fetchedArticle = await fetchArticleById(story.id, true);
-//           if (fetchedArticle.storyContent.length > 0) {
-//             setBody(fetchedArticle.storyContent[0].content);
-//           }
-//         } catch (err: any) {
-//           console.error("Failed to fetch article:", err.message);
-//         }
-//       }
-//     }
-
-//     loadArticle();
-//   }, [story.id]);
-
-//   // Handling section changes
-//   const handleSectionChange = (idx: number, newContent: string) => {
-//     const updatedSections = [...sections];
-//     updatedSections[idx].content = newContent;
-//     setSections(updatedSections);
-//   };
-
-//   // Adding and deleting sections
-//   const handleAddSection = (type: string) => {
-//     setSections([...sections, { type, content: "" }]);
-//   };
-
-//   const handleDeleteSection = (delIdx: number) => {
-//     setSections(sections.filter((_, index) => index !== delIdx));
-//   };
-
-//   // Divider logic
-//   const [leftWidth, setLeftWidth] = useState(40);
-//   const [isDragging, setIsDragging] = useState(false);
-//   const containerRef = useRef<HTMLDivElement>(null);
-
-//   const handleDividorClick = (click: React.MouseEvent) => {
-//     click.preventDefault();
-//     setIsDragging(true);
-//   };
-
-//   const handleDividorUnclick = () => {
-//     setIsDragging(false);
-//   };
-
-//   const handleDividorMove = (e: MouseEvent) => {
-//     if (isDragging && containerRef.current) {
-//       const containerRect = containerRef.current.getBoundingClientRect();
-//       const newLeftWidth =
-//         ((e.clientX - containerRect.left) / containerRect.width) * 100;
-//       if (newLeftWidth > 10 && newLeftWidth < 90) {
-//         setLeftWidth(newLeftWidth);
-//       }
-//     }
-//   };
-
-//   useEffect(() => {
-//     if (isDragging) {
-//       document.addEventListener("mousemove", handleDividorMove);
-//       document.addEventListener("mouseup", handleDividorUnclick);
-//     } else {
-//       document.removeEventListener("mousemove", handleDividorMove);
-//       document.removeEventListener("mouseup", handleDividorUnclick);
-//     }
-//     return () => {
-//       document.removeEventListener("mousemove", handleDividorMove);
-//       document.removeEventListener("mouseup", handleDividorUnclick);
-//     };
-//   }, [isDragging]);
-
-//   return (
-//     <div
-//       className="mx-32 mt-5 flex flex-col gap-5"
-//       ref={containerRef}
-//       style={{ height: "100vh", overflow: "hidden" }}
-//     >
-//       <div className="flex gap-5" style={{ height: "100%", width: "100%" }}>
-//         {/* LEFT HAND SIDE */}
-//         <div
-//           style={{
-//             width: `${leftWidth}%`,
-//             overflow: "hidden",
-//             position: "relative",
-//             display: "flex",
-//             flexDirection: "column",
-//             height: "100%",
-//             paddingRight: "50px",
-//           }}
-//         >
-//           <div style={{ flexGrow: 1, overflowY: "auto" }}>
-//             <h3 className="text-3xl font-semibold text-sciquelTeal">
-//               Story Info
-//             </h3>
-//             <StoryInfoForm
-//               id={story.id}
-//               title={title}
-//               setTitle={setTitle}
-//               summary={summary}
-//               setSummary={setSummary}
-//               image={image}
-//               setImage={setImage}
-//               slug={slug}
-//               setSlug={setSlug}
-//               date={date}
-//               setDate={setDate}
-//               body={body}
-//               setBody={setBody}
-//               sections={sections}
-//               onSectionChange={handleSectionChange}
-//               onAddSection={handleAddSection}
-//               onDeleteSection={handleDeleteSection}
-//             />
-//           </div>
-
-//           {/* DIVIDER */}
-//           <div
-//             onMouseDown={handleDividorClick}
-//             style={{
-//               width: "10px",
-//               cursor: "col-resize",
-//               backgroundColor: "teal",
-//               position: "absolute",
-//               top: 0,
-//               right: 0,
-//               bottom: 0,
-//               zIndex: 10,
-//             }}
-//           ></div>
-//         </div>
-
-//         {/* RIGHT HAND SIDE */}
-//         <div
-//           style={{
-//             width: `${100 - leftWidth}%`,
-//             overflowY: "auto",
-//             height: "100%",
-//           }}
-//           className="bg-white"
-//         >
-//           <h3 className="text-3xl font-semibold text-sciquelTeal">
-//             Story Preview
-//           </h3>
-//           <StoryPreview
-//             article={{ title, summary, image, slug, date, sections }}
-//             storyContent={generateMarkdown(body)}
-//             formattedDate={formatPreviewDate(date)}
-//             id={story.id}
-//           />
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default StoryInfoEditorClient;
-
-// // API fetch function
-// async function fetchArticleById(id: string, includeContent: boolean = false) {
-//   const includeContentParam = includeContent ? "?include_content=true" : "";
-//   const response = await fetch(`/api/stories/id/${id}${includeContentParam}`);
-
-//   if (!response.ok) {
-//     throw new Error(`Failed to fetch article: ${response.statusText}`);
-//   }
-
-//   const article = await response.json();
-//   return article;
-// }
