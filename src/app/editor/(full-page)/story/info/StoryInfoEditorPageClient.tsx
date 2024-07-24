@@ -43,46 +43,50 @@ const StoryInfoEditorClient: React.FC<Props> = ({ story }) => {
   const [summaryColor, setSummaryColor] = useState(story.summaryColor || "");
   const [sections, setSections] = useState<Section[]>([]);
 
-  console.log(story)
+  console.log(story);
 
-  // formats the input string and gets is as MM/DD/YYYY for display
+  // formats the input string and gets is as MM/DD/YYYY and HR:MM AM/PM for display
   const formatPreviewDate = (date: Date | null): string => {
     if (!date) return "";
     const year = date.getFullYear();
     const month = date.toLocaleString("default", { month: "long" });
     const day = date.getDate();
-    return `${month} ${day}, ${year}`;
+    const hours = date.getHours();
+    const minutes = date.getMinutes().toString().padStart(2, "0");
+    const ampm = hours >= 12 ? "PM" : "AM";
+    const formattedHours = hours % 12 || 12;
+    return `${month} ${day}, ${year} ${formattedHours}:${minutes} ${ampm}`;
   };
 
-// fetch article and set body content
-useEffect(() => {
-  async function loadArticle() {
-    if (story.id) {
-      try {
-        const fetchedArticle = await fetchArticleById(story.id, true);
-        if (fetchedArticle.storyContent.length > 0) {
-          setBody(fetchedArticle.storyContent[0].content);
-          // console.log(fetchedArticle.publishedAt);
-          // setDate(fetchedArticle.publishedAt);
-          console.log(fetchedArticle.thumbnailUrl);
-          setImage(fetchedArticle.thumbnailUrl);
-          setStoryType(fetchedArticle.storyType);
-          setTopics(fetchedArticle.topics);
-          setTitleColor(fetchedArticle.titleColor);
-          setSummaryColor(fetchedArticle.summaryColor);
-          console.log(fetchedArticle.summaryColor);
-          // setImage(fetchedArticle.thumbnailURL);
+  // fetch article and set body content
+  useEffect(() => {
+    async function loadArticle() {
+      if (story.id) {
+        try {
+          const fetchedArticle = await fetchArticleById(story.id, true);
+          if (fetchedArticle.storyContent.length > 0) {
+            setBody(fetchedArticle.storyContent[0].content);
+            // console.log(fetchedArticle.publishedAt);
+            // setDate(fetchedArticle.publishedAt);
+            console.log(fetchedArticle.thumbnailUrl);
+            setImage(fetchedArticle.thumbnailUrl);
+            setStoryType(fetchedArticle.storyType);
+            setTopics(fetchedArticle.topics);
+            setTitleColor(fetchedArticle.titleColor);
+            setSummaryColor(fetchedArticle.summaryColor);
+            console.log(fetchedArticle.summaryColor);
+            // setImage(fetchedArticle.thumbnailURL);
+          }
+        } catch (err: any) {
+          console.error("Failed to fetch article:", err.message);
         }
-      } catch (err: any) {
-        console.error("Failed to fetch article:", err.message);
       }
     }
-  }
 
-  loadArticle();
-}, [story.id]);
+    loadArticle();
+  }, [story.id]);
 
-console.log();
+  console.log();
 
   // inserts newContent into the array at idx – basically anytime user inputs
   const handleSectionChange = (idx: number, newContent: string) => {
@@ -163,7 +167,7 @@ console.log();
             display: "flex",
             flexDirection: "column",
             height: "100%",
-            paddingRight: "50px",
+            paddingRight: "10px",
           }}
         >
           <div style={{ flexGrow: 1, overflowY: "auto" }}>
@@ -228,7 +232,19 @@ console.log();
             Story Preview
           </h3>
           <StoryPreview
-            article={{ title, summary, body, image, slug, date, sections, storyType, topics, titleColor, summaryColor }}
+            article={{
+              title,
+              summary,
+              body,
+              image,
+              slug,
+              date,
+              sections,
+              storyType,
+              topics,
+              titleColor,
+              summaryColor,
+            }}
             formattedDate={formatPreviewDate(date)}
             id={story.id}
           />

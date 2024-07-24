@@ -1,10 +1,9 @@
 import { type GetStoryResult } from "@/app/api/stories/id/[id]/route";
-import { generateMarkdown } from "@/lib/markdown";
-import Image from "next/image";
-import React, { ReactNode, useState } from "react";
-import { useEffect, ReactElement } from "react";
-import { StoryTopic } from "@prisma/client";
 import TopicTag from "@/components/TopicTag";
+import { generateMarkdown } from "@/lib/markdown";
+import { StoryTopic } from "@prisma/client";
+import Image from "next/image";
+import React, { ReactElement, ReactNode, useEffect, useState } from "react";
 
 interface Section {
   type: string;
@@ -20,7 +19,7 @@ interface Article {
   slug?: string;
   date?: Date;
   body: string;
-  markdown: string; // might need to change? 
+  markdown: string; // might need to change?
   sections?: Section[];
   storyType?: string;
   topics?: StoryTopic[];
@@ -35,8 +34,9 @@ interface Props {
 }
 
 const StoryPreview: React.FC<Props> = ({ article, formattedDate, id }) => {
-
-  const [markdownContent, setMarkdownContent] = useState<ReactElement | null>(null);
+  const [markdownContent, setMarkdownContent] = useState<ReactElement | null>(
+    null,
+  );
 
   useEffect(() => {
     const processMarkdown = async () => {
@@ -84,14 +84,15 @@ const StoryPreview: React.FC<Props> = ({ article, formattedDate, id }) => {
         </div>
       </div>
 
+      {/* Essay/Digest | article type | topic tag */}
       <div className="flex flex-row">
         <p className="mr-2">
           {article.storyType.slice(0, 1) +
-          article.storyType.slice(1).toLowerCase()}{" "}
+            article.storyType.slice(1).toLowerCase()}{" "}
           | we need to add article type |
         </p>{" "}
         {article.topics.map((item: StoryTopic, index: number) => {
-        return <TopicTag name={item} key={`${item}-${index}`} />;
+          return <TopicTag name={item} key={`${item}-${index}`} />;
         })}
       </div>
 
@@ -107,12 +108,8 @@ const StoryPreview: React.FC<Props> = ({ article, formattedDate, id }) => {
             })}
           </div> */}
 
-
-
       <div className="mt-4">
-        {/* This article body stuff was from a previous iteration without
-          the Article Content boxes. We should delete from all affected files to 
-          clean the code up. */}
+        {/* Article body is markdown text */}
         <div className="mx-2 mt-2 flex flex-col items-center gap-5 md:mx-auto">
           {markdownContent as ReactNode}
         </div>
