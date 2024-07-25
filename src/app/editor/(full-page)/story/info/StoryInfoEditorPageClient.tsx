@@ -74,6 +74,8 @@ const StoryInfoEditorClient: React.FC<Props> = ({ story }) => {
             setTopics(fetchedArticle.topics);
             setTitleColor(fetchedArticle.titleColor);
             setSummaryColor(fetchedArticle.summaryColor);
+            // setDate(fetchedArticle.publishedAt);
+            console.log(typeof(fetchedArticle.publishedAt));
             console.log(fetchedArticle.summaryColor);
             // setImage(fetchedArticle.thumbnailURL);
           }
@@ -153,7 +155,7 @@ const StoryInfoEditorClient: React.FC<Props> = ({ story }) => {
 
   return (
     <div
-      className="mx-32 mt-5 flex flex-col gap-5"
+      className="mx-12 mt-5 flex flex-col gap-5"
       ref={containerRef}
       style={{ height: "100vh", overflow: "hidden" }}
     >

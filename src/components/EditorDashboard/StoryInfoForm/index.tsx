@@ -396,6 +396,7 @@ export default function StoryInfoForm({
           Article Body
           <MarkdownEditorStoryInfo 
             initialValue={initialBody}
+            onChange={initialSetBody}
             id={storyId} 
             style={{
               height: "100%"

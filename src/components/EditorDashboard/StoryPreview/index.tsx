@@ -38,6 +38,8 @@ const StoryPreview: React.FC<Props> = ({ article, formattedDate, id }) => {
     null,
   );
 
+  console.log(article.body);
+
   useEffect(() => {
     const processMarkdown = async () => {
       const result = await generateMarkdown(article.body);
