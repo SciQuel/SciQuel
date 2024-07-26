@@ -19,7 +19,7 @@ interface Article {
   slug?: string;
   date?: Date;
   body: string;
-  markdown: string; // might need to change?
+  markdown: string;
   sections?: Section[];
   storyType?: string;
   topics?: StoryTopic[];
@@ -37,8 +37,6 @@ const StoryPreview: React.FC<Props> = ({ article, formattedDate, id }) => {
   const [markdownContent, setMarkdownContent] = useState<ReactElement | null>(
     null,
   );
-
-  console.log(article.body);
 
   useEffect(() => {
     const processMarkdown = async () => {
@@ -77,12 +75,6 @@ const StoryPreview: React.FC<Props> = ({ article, formattedDate, id }) => {
           >
             {article.summary}
           </h2>
-          <h3 // formatted date is here
-            className="w-5/6 p-8 pt-0 font-alegreyaSansSC text-4xl font-semibold"
-            style={{ color: "black" }}
-          >
-            {formattedDate}
-          </h3>
         </div>
       </div>
 
@@ -96,6 +88,13 @@ const StoryPreview: React.FC<Props> = ({ article, formattedDate, id }) => {
         {article.topics.map((item: StoryTopic, index: number) => {
           return <TopicTag name={item} key={`${item}-${index}`} />;
         })}
+      </div>
+
+      {/* Adds contributors here  */}
+
+      {/* Date stuff */}
+      <div className="flex flex-row">
+        <p className="mr-2">{formattedDate}</p>
       </div>
 
       {/* <div>

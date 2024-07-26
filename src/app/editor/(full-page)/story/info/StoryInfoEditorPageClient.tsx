@@ -55,7 +55,7 @@ const StoryInfoEditorClient: React.FC<Props> = ({ story }) => {
     const minutes = date.getMinutes().toString().padStart(2, "0");
     const ampm = hours >= 12 ? "PM" : "AM";
     const formattedHours = hours % 12 || 12;
-    return `${month} ${day}, ${year} ${formattedHours}:${minutes} ${ampm}`;
+    return `${month} ${day}, ${year}, ${formattedHours}:${minutes} ${ampm}`;
   };
 
   // fetch article and set body content
@@ -75,7 +75,7 @@ const StoryInfoEditorClient: React.FC<Props> = ({ story }) => {
             setTitleColor(fetchedArticle.titleColor);
             setSummaryColor(fetchedArticle.summaryColor);
             // setDate(fetchedArticle.publishedAt);
-            console.log(typeof(fetchedArticle.publishedAt));
+            console.log(typeof fetchedArticle.publishedAt);
             console.log(fetchedArticle.summaryColor);
             // setImage(fetchedArticle.thumbnailURL);
           }
@@ -169,7 +169,7 @@ const StoryInfoEditorClient: React.FC<Props> = ({ story }) => {
             display: "flex",
             flexDirection: "column",
             height: "100%",
-            paddingRight: "10px",
+            paddingRight: "15px",
           }}
         >
           <div style={{ flexGrow: 1, overflowY: "auto" }}>
