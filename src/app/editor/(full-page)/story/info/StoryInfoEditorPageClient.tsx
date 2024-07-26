@@ -64,19 +64,19 @@ const StoryInfoEditorClient: React.FC<Props> = ({ story }) => {
   };
 
   // to do: figure out what the API has for contributors -- modify this function if needed
-  const formatContributors = (contributors: string[]): string => {
-    var contributorsDisplay: string[] = []; // formatted string to display in preview
-    if (!contributors) return "";
+  const formatContributors = (contributors: string[]): React.ReactNode[] => {
+    const formattedContributors: React.ReactNode[] = [];
 
-    // loop thru contributors and format the strings
+    // loop thru contributors and format the string adding line breaks
     for (let i = 0; i < contributors.length; i++) {
-      contributorsDisplay.push("by ");
-      contributorsDisplay.push(contributors[i]);
-
-      // this may be unsafe but this adds html to the string
-      contributorsDisplay.push("<br>");
+      formattedContributors.push(
+        <React.Fragment key={i}>
+          <span>by {contributors[i]}</span>
+          <br />
+        </React.Fragment>,
+      );
     }
-    return contributorsDisplay.join("");
+    return formattedContributors;
   };
 
   // Function to add a new contributor to the list

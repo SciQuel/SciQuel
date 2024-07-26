@@ -31,7 +31,7 @@ interface Props {
   article: Article;
   formattedDate: string;
   id: string;
-  contributors: string; // formatted string "by contributor 1 \n by contributor 2 . . ."
+  contributors: React.ReactNode[]; // formatted string "by contributor 1 \n by contributor 2 . . ."
 }
 
 const StoryPreview: React.FC<Props> = ({
@@ -53,7 +53,6 @@ const StoryPreview: React.FC<Props> = ({
     processMarkdown();
   }, [article.body]);
 
-  console.log("THESE ARE THE CONTRIBUTORS:", contributors);
   return (
     <div className="flex flex-col gap-2">
       {/* Display the image  */}
@@ -97,8 +96,8 @@ const StoryPreview: React.FC<Props> = ({
         })}
       </div>
 
-      {/* Adding formatted contributors using an HTML string */}
-      <div dangerouslySetInnerHTML={{ __html: contributors }} />
+      {/* Adding formatted contributors */}
+      <div>{contributors}</div>
 
       {/* Adding formatted dates (need to add time zone / fetching?) */}
       <div className="flex flex-row">
