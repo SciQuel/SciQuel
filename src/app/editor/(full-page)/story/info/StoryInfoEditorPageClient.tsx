@@ -162,20 +162,15 @@ const StoryInfoEditorClient: React.FC<Props> = ({ story }) => {
       <div className="flex gap-5" style={{ height: "100%", width: "100%" }}>
         {/* LEFT HAND SIDE */}
         <div
-          style={{
-            width: `${leftWidth}%`,
-            overflow: "hidden",
-            position: "relative",
-            display: "flex",
-            flexDirection: "column",
-            height: "100%",
-            paddingRight: "15px",
-          }}
+          className="relative flex h-full flex-col overflow-hidden pr-4"
+          style={{ width: `${leftWidth}%` }}
         >
-          <div style={{ flexGrow: 1, overflowY: "auto" }}>
-            <h3 className="text-3xl font-semibold text-sciquelTeal">
-              Story Info
-            </h3>
+          <div className="flex-grow overflow-y-auto">
+            <div className="flex items-center justify-center py-5">
+              <h3 className="text-3xl font-semibold text-sciquelTeal">
+                Article Builder
+              </h3>
+            </div>
             <StoryInfoForm
               id={story.id}
               title={title}
@@ -208,31 +203,15 @@ const StoryInfoEditorClient: React.FC<Props> = ({ story }) => {
           {/* DIVIDER */}
           <div
             onMouseDown={handleDividorClick}
-            style={{
-              width: "10px",
-              cursor: "col-resize",
-              backgroundColor: "teal",
-              position: "absolute",
-              top: 0,
-              right: 0,
-              bottom: 0,
-              zIndex: 10,
-            }}
+            className="absolute bottom-0 right-0 top-0 z-10 w-2 cursor-col-resize bg-sciquelTeal"
           ></div>
         </div>
 
         {/* RIGHT HAND SIDE */}
         <div
-          style={{
-            width: `${100 - leftWidth}%`,
-            overflowY: "auto",
-            height: "100%",
-          }}
-          className="bg-white"
+          className="h-full overflow-y-auto bg-white"
+          style={{ width: `${100 - leftWidth}%` }}
         >
-          <h3 className="text-3xl font-semibold text-sciquelTeal">
-            Story Preview
-          </h3>
           <StoryPreview
             article={{
               title,
