@@ -31,9 +31,15 @@ interface Props {
   article: Article;
   formattedDate: string;
   id: string;
+  contributors: string; // formatted string "by contributor 1 \n by contributor 2 . . ."
 }
 
-const StoryPreview: React.FC<Props> = ({ article, formattedDate, id }) => {
+const StoryPreview: React.FC<Props> = ({
+  article,
+  formattedDate,
+  id,
+  contributors,
+}) => {
   const [markdownContent, setMarkdownContent] = useState<ReactElement | null>(
     null,
   );
@@ -47,6 +53,7 @@ const StoryPreview: React.FC<Props> = ({ article, formattedDate, id }) => {
     processMarkdown();
   }, [article.body]);
 
+  console.log("THESE ARE THE CONTRIBUTORS:", contributors);
   return (
     <div className="flex flex-col gap-2">
       {/* Display the image  */}
@@ -90,24 +97,13 @@ const StoryPreview: React.FC<Props> = ({ article, formattedDate, id }) => {
         })}
       </div>
 
-      {/* Adds contributors here  */}
+      {/* Adding formatted contributors using an HTML string */}
+      <div dangerouslySetInnerHTML={{ __html: contributors }} />
 
-      {/* Date stuff */}
+      {/* Adding formatted dates (need to add time zone / fetching?) */}
       <div className="flex flex-row">
         <p className="mr-2">{formattedDate}</p>
       </div>
-
-      {/* <div>
-            {story.storyContributions.map((element, index) => {
-              return (
-                <p key={`contributor-header-${index}`}>
-                  {element.contributionType == "AUTHOR"
-                    ? `by ${element.contributor.firstName} ${element.contributor.lastName}`
-                    : `${element.contributionType} by ${element.contributor.firstName} ${element.contributor.lastName}`}
-                </p>
-              );
-            })}
-          </div> */}
 
       <div className="mt-4">
         {/* Article body is markdown text */}

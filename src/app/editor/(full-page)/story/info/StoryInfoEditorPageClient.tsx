@@ -26,6 +26,7 @@ interface Props {
     topics?: string[];
     titleColor: string;
     summaryColor: string;
+    contributors?: string[];
   };
 }
 
@@ -41,6 +42,10 @@ const StoryInfoEditorClient: React.FC<Props> = ({ story }) => {
   const [topics, setTopics] = useState(story.topics || null);
   const [titleColor, setTitleColor] = useState(story.titleColor || null);
   const [summaryColor, setSummaryColor] = useState(story.summaryColor || "");
+  const [contributors, setContributors] = useState<string[]>(
+    story.contributors || [],
+  );
+
   const [sections, setSections] = useState<Section[]>([]);
 
   console.log(story);
@@ -55,7 +60,31 @@ const StoryInfoEditorClient: React.FC<Props> = ({ story }) => {
     const minutes = date.getMinutes().toString().padStart(2, "0");
     const ampm = hours >= 12 ? "PM" : "AM";
     const formattedHours = hours % 12 || 12;
-    return `${month} ${day}, ${year}, ${formattedHours}:${minutes} ${ampm}`;
+    return `${month} ${day}, ${year}, ${formattedHours}:${minutes} ${ampm} |`;
+  };
+
+  // to do: figure out what the API has for contributors -- modify this function if needed
+  const formatContributors = (contributors: string[]): string => {
+    var contributorsDisplay: string[] = []; // formatted string to display in preview
+    if (!contributors) return "";
+
+    // loop thru contributors and format the strings
+    for (let i = 0; i < contributors.length; i++) {
+      contributorsDisplay.push("by ");
+      contributorsDisplay.push(contributors[i]);
+
+      // this may be unsafe but this adds html to the string
+      contributorsDisplay.push("<br>");
+    }
+    return contributorsDisplay.join("");
+  };
+
+  // Function to add a new contributor to the list
+  const addContributor = (contributor: string) => {
+    setContributors((prevContributors) => {
+      const newContributors = [...prevContributors, contributor];
+      return newContributors;
+    });
   };
 
   // fetch article and set body content
@@ -197,6 +226,8 @@ const StoryInfoEditorClient: React.FC<Props> = ({ story }) => {
               setTitleColor={setTitleColor}
               summaryColor={summaryColor}
               setSummaryColor={setSummaryColor}
+              contributors={contributors}
+              addContributor={addContributor}
             />
           </div>
 
@@ -227,6 +258,7 @@ const StoryInfoEditorClient: React.FC<Props> = ({ story }) => {
               summaryColor,
             }}
             formattedDate={formatPreviewDate(date)}
+            contributors={formatContributors(contributors)}
             id={story.id}
           />
         </div>

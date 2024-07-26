@@ -1,18 +1,9 @@
 import React, { useState } from "react";
 
 type Props = {
-  // function to add a new contributor field
   addContributor: (contributor: string) => void;
 };
 
-/**
- * NewContributor Component
- *
- * This component allows users to add a new contributor to the list by typing the name and pressing Enter.
- *
- * @param {function} addContributor - Function to add a new contributor to the list.
- * @returns The rendered component as a JSX eleent.
- */
 export default function NewContributor({ addContributor }: Props) {
   const [newContributor, setNewContributor] = useState("");
 
@@ -20,11 +11,15 @@ export default function NewContributor({ addContributor }: Props) {
     if (e.key === "Enter" && newContributor.trim() !== "") {
       e.preventDefault();
       addContributor(newContributor);
+      console.log("New contributor added:", newContributor);
       setNewContributor(""); // clear field after hitting enter
     }
   };
 
-  // creates the contributor component
+  // maybe add a deleteContributor function !!
+
+  // tried to make this work with FormInput but was having trouble with the fields
+  // didn't want to change FormInput so left it like this
   return (
     <div className="my-5 flex flex-col">
       <label className="flex flex-col">
@@ -32,10 +27,10 @@ export default function NewContributor({ addContributor }: Props) {
         <input
           type="text"
           value={newContributor}
-          onChange={(e) => setNewContributor(e.target.value)} // update with input value
+          onChange={(e) => setNewContributor(e.target.value)}
           onKeyPress={handleKeyPress}
-          placeholder="Contributer Name"
-          className="custom_input mt-1" // css styling
+          placeholder="Contributor Name"
+          className="custom_input mt-1"
         />
       </label>
     </div>

@@ -24,21 +24,21 @@ import clsx from "clsx";
 import { DateTime } from "luxon";
 import { useRouter } from "next/navigation";
 import { Fragment, useRef, useState, useTransition } from "react";
+import { date } from "zod";
 import ArticleBody from "./formComponents/articleBody";
 import ArticleContent from "./formComponents/articleContent";
 import ArticleDate from "./formComponents/articleDate";
 import ArticleSlug from "./formComponents/articleSlug";
 import ArticleSummary from "./formComponents/articleSummary";
+import ArticleSummaryColor from "./formComponents/articleSummaryColor";
 import ArticleTitle from "./formComponents/articleTitle";
+import ArticleTitleColor from "./formComponents/articleTitleColor";
 import BackgroundImageForm from "./formComponents/backgroundImageForm";
 import NewContributor from "./formComponents/confirmNewContributer";
 import NewSubject from "./formComponents/subjectComponents/newSubject";
 import NewSubtopic from "./formComponents/subtopicComponents/newSubtopic";
 import { getData, randomBackgroundColor, setTagsColor } from "./StoryFormFunc";
 import Tags from "./Tags";
-import { date } from "zod";
-import ArticleTitleColor from "./formComponents/articleTitleColor";
-import ArticleSummaryColor from "./formComponents/articleSummaryColor";
 
 interface Section {
   type: string;
@@ -62,12 +62,14 @@ interface Props {
   setBody: (value: string) => void;
   titleColor?: string;
   setTitleColor: (value: string) => void;
-  summaryColor?: string
+  summaryColor?: string;
   setSummaryColor: (value: string) => void;
   sections: Section[];
   onSectionChange: (index: number, newContent: string) => void;
   onAddSection: (type: string) => void;
   onDeleteSection: (index: number) => void;
+  contributors: string[];
+  addContributor: (contributor: string) => void;
 }
 
 export default function StoryInfoForm({
@@ -93,6 +95,8 @@ export default function StoryInfoForm({
   onSectionChange,
   onAddSection,
   onDeleteSection,
+  contributors = [],
+  addContributor,
 }: Props) {
   // Creating states
   const fileUploadRef = useRef<HTMLInputElement>(null);
@@ -129,8 +133,6 @@ export default function StoryInfoForm({
   const [topiclist, setTopicList] = useState(data.topics);
   const [subtopiclist, setSubtopicList] = useState(data.subtopics);
   const [subjectlist, setSubjectList] = useState(data.subjects);
-
-  const [contributors, setContributors] = useState<string[]>([]);
 
   const [isCreateSubtopicModalOpen, setIsCreateSubtopicModalOpen] =
     useState(false);
@@ -288,11 +290,6 @@ export default function StoryInfoForm({
     setSubjects((subjects) => [...subjects, newSubject]);
   };
 
-  // Function to add a new contributor to the list
-  const addContributor = (contributor: string) => {
-    setContributors([...contributors, contributor]);
-  };
-
   // Div outlining what the left half of the page actually looks like
   return (
     <div className="flex flex-col gap-2">
@@ -384,67 +381,30 @@ export default function StoryInfoForm({
         />
 
         {/* ARTICLE TEXT BODY INPUT */}
-        {/* <ArticleBody
-          value={initialBody}
-          onChange={initialSetBody}
-          setDirty={setDirty}
-        /> */}
-
         {/* MARKDOWN EDITOR */}
-        
         <div className="h-[250px]">
           Article Body
-          <MarkdownEditorStoryInfo 
+          <MarkdownEditorStoryInfo
             initialValue={initialBody}
-            onChange={initialSetBody}
-            id={storyId} 
+            id={storyId}
             style={{
-              height: "100%"
-            }}>
-              
-          </MarkdownEditorStoryInfo>        
+              height: "100%",
+            }}
+          ></MarkdownEditorStoryInfo>
         </div>
 
-        <ArticleTitleColor 
-        value={initialTitleColor} 
-        onChange={initialSetTitleColor}
-        setDirty={setDirty}
-                  // value={initialSetTitleColor}
+        <ArticleTitleColor
+          value={initialTitleColor}
+          onChange={initialSetTitleColor}
+          setDirty={setDirty}
+          // value={initialSetTitleColor}
         ></ArticleTitleColor>
 
         <ArticleSummaryColor
-        value={initialSummaryColor}
-        onChange={initialSetSummaryColor}
-        setDirty={setDirty}
+          value={initialSummaryColor}
+          onChange={initialSetSummaryColor}
+          setDirty={setDirty}
         ></ArticleSummaryColor>
-
-        
-
-        {/* TITLE COLOR INPUT */}
-        {/* <label className="my-5 flex flex-col">
-          Title Color
-          <input
-            value={titleColor}
-            type="color"
-            onChange={(e) => {
-              setDirty(true);
-              setTitleColor(e.target.value);
-            }}
-          />
-        </label> */}
-
-        {/* SUMMARY COLOR INPUT */}
-        {/* <label className="my-5 flex flex-col ">
-          Summary Color
-          <input
-            value={summaryColor}
-            type="color"
-            onChange={(e) => {
-              setDirty(true);
-              setSummaryColor(e.target.value);
-            }}
-          />
-        </label> */}
 
         {/* ARTICLE CONTENT BOXES */}
         <ArticleContent
