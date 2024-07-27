@@ -1,10 +1,11 @@
-import StoryInfoForm from "@/components/EditorDashboard/StoryInfoForm";
-import prisma from "@/lib/prisma";
+import { PrismaClient } from "@prisma/client";
 import { redirect } from "next/navigation";
+import StoryInfoEditorClient from "./StoryInfoEditorPageClient";
 
 interface SearchParams {
   id?: string;
 }
+const prisma = new PrismaClient();
 
 export default async function StoryInfoEditorPage({
   searchParams: { id },
@@ -12,19 +13,11 @@ export default async function StoryInfoEditorPage({
   searchParams: SearchParams;
 }) {
   const story = id ? await prisma.story.findUnique({ where: { id } }) : null;
+
   if (id && !story) {
+    // if story is not found redirect user back
     return redirect("/editor/dashboard");
   }
-  return (
-    <div className="mx-32 mt-5 flex flex-col gap-5">
-      <h3 className="text-3xl font-semibold text-sciquelTeal">Story Info</h3>
-      <StoryInfoForm
-        title={story?.title}
-        summary={story?.summary}
-        image={story?.thumbnailUrl}
-        id={story?.id}
-        caption={story?.coverCaption}
-      />
-    </div>
-  );
+
+  return <StoryInfoEditorClient story={story || {}} />;
 }

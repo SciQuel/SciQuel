@@ -1,10 +1,10 @@
-"use client";
-
 import fsPromises from "fs/promises";
 import path from "path";
+import MarkdownEditorStoryInfo from "@/components/EditorDashboard/MarkdownEditorStoryInfo";
 import Form from "@/components/Form";
 import FormInput from "@/components/Form/FormInput";
 import FormSelect from "@/components/Form/FormSelect";
+import MarkdownEditor from "@/components/MarkdownEditor";
 import { Popover, Transition } from "@headlessui/react";
 import {
   ChevronUpDownIcon,
@@ -21,47 +21,104 @@ import {
 } from "@prisma/client";
 import axios from "axios";
 import clsx from "clsx";
+import { DateTime } from "luxon";
 import { useRouter } from "next/navigation";
 import { Fragment, useRef, useState, useTransition } from "react";
+import { date } from "zod";
+import ArticleBody from "./formComponents/articleBody";
+import ArticleContent from "./formComponents/articleContent";
+import ArticleDate from "./formComponents/articleDate";
+import ArticleSlug from "./formComponents/articleSlug";
+import ArticleSummary from "./formComponents/articleSummary";
+import ArticleSummaryColor from "./formComponents/articleSummaryColor";
+import ArticleTitle from "./formComponents/articleTitle";
+import ArticleTitleColor from "./formComponents/articleTitleColor";
+import BackgroundImageForm from "./formComponents/backgroundImageForm";
+import NewContributor from "./formComponents/confirmNewContributer";
+import NewSubject from "./formComponents/subjectComponents/newSubject";
+import NewSubtopic from "./formComponents/subtopicComponents/newSubtopic";
 import { getData, randomBackgroundColor, setTagsColor } from "./StoryFormFunc";
-import NewSubject from "./subjectComponents/newSubject";
-import NewSubtopic from "./subtopicComponents/newSubtopic";
 import Tags from "./Tags";
+
+interface Section {
+  type: string;
+  content: string;
+}
 
 interface Props {
   id?: string;
-  title?: string;
+  title: string;
+  setTitle: (value: string) => void;
   summary?: string;
+  setSummary: (value: string) => void;
   image?: string;
+  setImage: (value: string) => void;
   caption?: string;
+  slug?: string;
+  setSlug: (value: string) => void;
+  date?: Date | null;
+  setDate: (value: Date) => void;
+  body: string;
+  setBody: (value: string) => void;
+  titleColor?: string;
+  setTitleColor: (value: string) => void;
+  summaryColor?: string;
+  setSummaryColor: (value: string) => void;
+  sections: Section[];
+  onSectionChange: (index: number, newContent: string) => void;
+  onAddSection: (type: string) => void;
+  onDeleteSection: (index: number) => void;
+  contributors: string[];
+  addContributor: (contributor: string) => void;
 }
 
 export default function StoryInfoForm({
   id: storyId,
   title: initialTitle,
+  setTitle: initialSetTitle,
   summary: initialSummary,
+  setSummary: initialSetSummary,
   image: initialImage,
+  setImage: initialSetImage,
   caption: initialCaption,
+  slug: initialSlug,
+  setSlug: initialSetSlug,
+  date: initialDate,
+  setDate: initialSetDate,
+  body: initialBody,
+  setBody: initialSetBody,
+  titleColor: initialTitleColor,
+  setTitleColor: initialSetTitleColor,
+  summaryColor: initialSummaryColor,
+  setSummaryColor: initialSetSummaryColor,
+  sections,
+  onSectionChange,
+  onAddSection,
+  onDeleteSection,
+  contributors = [],
+  addContributor,
 }: Props) {
+  // Creating states
   const fileUploadRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
-  const [title, setTitle] = useState(initialTitle ?? "");
   const [summary, setSummary] = useState(initialSummary ?? "");
   const [image, setImage] = useState<File | string | null>(
     initialImage ?? null,
   );
+
   const [caption, setCaption] = useState(initialCaption ?? "");
+  // const [date, setDate] = useState<Date | null>(initialDate ?? null);
   const [dirty, setDirty] = useState(false);
   const [loading, startTransition] = useTransition();
 
   const [storyType, setStoryType] = useState<StoryType>("DIGEST");
   const [category, setCategory] = useState<Category>("ARTICLE");
 
-  const [titleColor, setTitleColor] = useState("#000000");
-  const [summaryColor, setSummaryColor] = useState("#000000");
+  const [titleColor, setTitleColor] = useState(initialTitleColor ?? "");
+  const [summaryColor, setSummaryColor] = useState(initialSummaryColor ?? "");
 
-  const [slug, setSlug] = useState("");
+  // const [slug, setSlug] = useState(initialSlug ?? "");
 
   const [topicQuery, setTopicQuery] = useState("");
   const [subtopicQuery, setSubtopicQuery] = useState("");
@@ -131,7 +188,7 @@ export default function StoryInfoForm({
     });
   };
 
-  //add a subtopic tag
+  // add a subtopic tag
   const addSubtopic = (id: any) => {
     subtopiclist.forEach((item: any) => {
       if (item.id == id) {
@@ -149,7 +206,7 @@ export default function StoryInfoForm({
     });
   };
 
-  //add a subject tag
+  // add a subject tag
   const addSubject = (id: any) => {
     subjectlist.forEach((item: any) => {
       if (item.id == id) {
@@ -167,7 +224,7 @@ export default function StoryInfoForm({
     });
   };
 
-  //remove a topic tag
+  // remove a topic tag
   const removeTopicTag = (id: number) => {
     setTopics(topics.filter((item: any) => item.data.id != id));
     setTopicList(
@@ -185,7 +242,7 @@ export default function StoryInfoForm({
     }
   };
 
-  //remove a subtopic tag
+  // remove a subtopic tag
   const removeSubtopicTag = (id: number) => {
     setSubtopics(subtopics.filter((item: any) => item.id != id));
     setSubtopicList(
@@ -195,7 +252,7 @@ export default function StoryInfoForm({
     );
   };
 
-  //remove a subject tag
+  // remove a subject tag
   const removeSubjectTag = (id: number) => {
     setSubjects(subjects.filter((item: any) => item.id != id));
     setSubjectList(
@@ -233,33 +290,36 @@ export default function StoryInfoForm({
     setSubjects((subjects) => [...subjects, newSubject]);
   };
 
+  // Div outlining what the left half of the page actually looks like
   return (
     <div className="flex flex-col gap-2">
       <Form
         onSubmit={(e) => {
           e.preventDefault();
           startTransition(async () => {
+            // creates a form component with all of the fields
             try {
               if (dirty) {
                 const formData = new FormData();
+
+                // adds all fields
                 if (storyId) {
                   formData.append("id", storyId);
                 }
                 formData.append("title", title);
                 formData.append("summary", summary);
+                formData.append("body", body);
                 formData.append("imageCaption", caption);
                 formData.append("storyType", storyType);
                 formData.append("category", "ARTICLE");
                 formData.append("titleColor", titleColor);
-                formData.append("summaryColor", titleColor);
+                formData.append("summaryColor", summaryColor);
                 formData.append("slug", slug);
                 formData.append("topics", JSON.stringify(topics));
                 formData.append("subtopics", "[]");
                 formData.append("generalSubjects", "[]");
-
                 formData.append("staffPicks", "false");
-
-                formData.append("contributions", "[]");
+                formData.append("contributions", JSON.stringify(contributors));
 
                 if (image === null) {
                   return;
@@ -269,6 +329,7 @@ export default function StoryInfoForm({
                   const file = new File([image], image.name);
                   formData.append("image", file, file.name);
                 }
+                // wait for story API
                 const story = await axios.put<{ id: string }>(
                   "/api/stories",
                   formData,
@@ -289,124 +350,99 @@ export default function StoryInfoForm({
           });
         }}
       >
-        <FormInput
-          title="Story Title"
+        {/* STORY TITLE FORM INPUT */}
+        <ArticleTitle
+          value={initialTitle}
+          onChange={initialSetTitle}
+          indicateRequired
+          required
+          disabled={loading}
+          setDirty={setDirty}
+        />
+
+        {/* SUMMARY INPUT */}
+        <ArticleSummary
+          value={initialSummary}
+          onChange={initialSetSummary}
           required
           indicateRequired
-          value={title}
-          onChange={(e) => {
-            setDirty(true);
-            setTitle(e.target.value);
-          }}
           disabled={loading}
+          setDirty={setDirty}
         />
-        <FormInput
-          title="Summary"
+
+        {/* PUBLISH DATE FORM */}
+        <ArticleDate
+          value={initialDate}
+          onChange={initialSetDate}
           required
           indicateRequired
-          value={summary}
-          onChange={(e) => {
-            setDirty(true);
-            setSummary(e.target.value);
-          }}
           disabled={loading}
+          setDirty={setDirty}
         />
-        <label className="my-5 flex flex-col">
-          Title Color
-          <input
-            value={titleColor}
-            type="color"
-            onChange={(e) => {
-              setDirty(true);
-              setTitleColor(e.target.value);
+
+        {/* ARTICLE TEXT BODY INPUT */}
+        {/* MARKDOWN EDITOR */}
+        <div className="h-[250px]">
+          Article Body
+          <MarkdownEditorStoryInfo
+            initialValue={initialBody}
+            id={storyId}
+            style={{
+              height: "100%",
             }}
-          />
-        </label>
-        <label className="my-5 flex flex-col ">
-          Summary Color
-          <input
-            value={summaryColor}
-            type="color"
-            onChange={(e) => {
-              setDirty(true);
-              setSummaryColor(e.target.value);
-            }}
-          />
-        </label>
-        <FormInput
-          title="Slug"
-          required
-          indicateRequired
-          value={slug}
-          disabled={loading}
-          onChange={(e) => {
-            setDirty(true);
-            setSlug(e.target.value);
-          }}
-        />
-        <div className="mt-5">
-          <h3 className="mb-2">Background Image</h3>
-          <label
-            className={clsx(
-              "cursor-pointer select-none rounded-md bg-teal-600 px-2 py-1 font-semibold text-white hover:bg-teal-700",
-              loading && "pointer-events-none opacity-50",
-            )}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                fileUploadRef.current?.click();
-              }
-            }}
-            tabIndex={loading ? undefined : 0}
-          >
-            <input
-              type="file"
-              className="hidden"
-              ref={fileUploadRef}
-              onChange={(e) => {
-                setDirty(true);
-                setImage(e.target.files?.[0] ?? null);
-              }}
-              accept="image/jpeg, image/png, image/gif"
-            />
-            Select file to upload
-          </label>
-          <div className="my-5 rounded-md border bg-white p-2">
-            <h3 className="mb-3 text-xl font-semibold">Image Preview</h3>
-            {image && typeof image !== "string" ? (
-              <>
-                <p>Uploaded file: {image.name}</p>
-                <div className="h-96">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={URL.createObjectURL(image)}
-                    className="h-full object-contain"
-                  />
-                </div>
-              </>
-            ) : typeof image === "string" ? (
-              <>
-                <p>Image URL: {image}</p>
-                <div className="h-96">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={image} className="h-full object-contain" />
-                </div>
-              </>
-            ) : (
-              <p className="italic">No image uploaded</p>
-            )}
-          </div>
-          <FormInput
-            title="Image Caption"
-            required
-            indicateRequired
-            value={caption}
-            onChange={(e) => {
-              setDirty(true);
-              setCaption(e.target.value);
-            }}
-            disabled={loading}
-          />
+          ></MarkdownEditorStoryInfo>
         </div>
+
+        <ArticleTitleColor
+          value={initialTitleColor}
+          onChange={initialSetTitleColor}
+          setDirty={setDirty}
+          // value={initialSetTitleColor}
+        ></ArticleTitleColor>
+
+        <ArticleSummaryColor
+          value={initialSummaryColor}
+          onChange={initialSetSummaryColor}
+          setDirty={setDirty}
+        ></ArticleSummaryColor>
+
+        {/* ARTICLE CONTENT BOXES */}
+        <ArticleContent
+          sections={sections}
+          onSectionChange={onSectionChange}
+          onAddSection={onAddSection}
+          onDeleteSection={onDeleteSection}
+        />
+
+        {/* ADDING CONTRIBUTORS FORM */}
+        <NewContributor addContributor={addContributor} />
+        <ul className="list-disc pl-5">
+          {contributors.map((contributor, index) => (
+            <li key={index}>{contributor}</li>
+          ))}
+        </ul>
+
+        {/* SLUG FORM */}
+        <ArticleSlug
+          value={initialSlug}
+          onChange={initialSetSlug}
+          required
+          indicateRequired
+          disabled={loading}
+          setDirty={setDirty}
+        />
+
+        {/* BACKGROUND IMAGE FORM */}
+        <BackgroundImageForm
+          image={initialImage}
+          setImage={initialSetImage}
+          caption={caption}
+          setCaption={setCaption}
+          loading={loading}
+          setDirty={setDirty}
+        />
+
+        {/* STORY TYPE INPUT */}
         <label className="my-5 block">
           Story Type
           <select
@@ -427,6 +463,8 @@ export default function StoryInfoForm({
             <option value="ESSAY">Essay</option>
           </select>
         </label>
+
+        {/* CATEGORY DROPDOWN */}
         <label className="my-5 block">
           Category
           <select
@@ -447,44 +485,8 @@ export default function StoryInfoForm({
             <option value="PODCAST">Podcast</option>
           </select>
         </label>
-        {/* <label className="my-5 block">
-          Select Topic
-          <select
-            className={clsx(
-              `peer w-full rounded-md px-2 py-1 placeholder-transparent outline outline-1
-                outline-gray-200 hover:outline-sciquelTeal focus:outline-2 focus:outline-sciquelTeal
-                focus:ring-0`,
-              "disabled:pointer-events-none disabled:bg-gray-50 disabled:text-gray-300",
-            )}
-            placeholder="Select a story type"
-            value={topics[0]}
-            onChange={(e) => {
-              setDirty(true);
-              setTopics([e.target.value as StoryTopic]);
-            }}
-          >
-            <option value="ASTRONOMY">Astronomy</option>
-            <option value="BIOLOGY">Biology</option>
-            <option value="CHEMICAL_ENGINEERING">Chemical Engineering</option>
-            <option value="CHEMISTRY">Chemistry</option>
-            <option value="COMPUTER_SCIENCE">Computer Science</option>
-            <option value="ENVIRONMENTAL_SCIENCE">Environmental Science</option>
-            <option value="ELECTRICAL_ENGINEERING">
-              Electrical Engineering
-            </option>
-            <option value="GEOLOGY">Geology</option>
-            <option value="MATHEMATICS">Mathematics</option>
-            <option value="MECHANICAL_ENGINEERING">
-              Mechanical Engineering
-            </option>
-            <option value="MEDICINE">Medicine</option>
-            <option value="PHYSICS">Physics</option>
-            <option value="PSYCHOLOGY">Psychology</option>
-            <option value="SOCIOLOGY">Sociology</option>
-            <option value="TECHNOLOGY">Technology</option>
-          </select>
-        </label> */}
 
+        {/* SELECT TOPIC (+) BUTTON */}
         <div className="grid w-1/3 grid-cols-1 gap-2">
           <div className="flex flex-row justify-items-center gap-4">
             <label>Select topic</label>
@@ -551,35 +553,8 @@ export default function StoryInfoForm({
           </div>
         </div>
 
-        {/* <label className="my-5 block">
-          Select Subtopic
-          <select
-            className={clsx(
-              `peer w-full rounded-md px-2 py-1 placeholder-transparent outline outline-1
-                outline-gray-200 hover:outline-sciquelTeal focus:outline-2 focus:outline-sciquelTeal
-                focus:ring-0`,
-              "disabled:pointer-events-none disabled:bg-gray-50 disabled:text-gray-300",
-            )}
-            placeholder="Select a story type"
-            value={topics[0]}
-            onChange={(e) => {
-              setDirty(true);
-              setTopics([e.target.value as StoryTopic]);
-            }}
-          >
-            <option value="CARDIOLOGY">Cardiology</option>
-            <option value="CHEMICAL_ENGINEERING">Chemical Engineering</option>
-            <option value="GEOCHEMISTRY">Geochemistry</option>
-            <option value="ONCOLOGY">Oncology</option>
-            <option value="RHEUMATOLOGY">Rheumatology</option>
-          </select>
-        </label> */}
-
-        <div
-          className={`my-5 grid max-h-none w-1/3 grid-cols-1 gap-2 ${
-            topics.length == 0 ? "hidden" : "visible"
-          }`}
-        >
+        {/* SELECT SUBTOPIC (+) BUTTON */}
+        <div className={`my-5 grid max-h-none w-1/3 grid-cols-1 gap-2`}>
           <div className="flex flex-row justify-items-center gap-4">
             <label>Select subtopic</label>
             <Popover className="relative">
@@ -673,37 +648,11 @@ export default function StoryInfoForm({
           </div>
         </div>
 
-        {/* <label className="my-5 block">
-          Select Subject
-          <select
-            className={clsx(
-              `peer w-full rounded-md px-2 py-1 placeholder-transparent outline outline-1
-                outline-gray-200 hover:outline-sciquelTeal focus:outline-2 focus:outline-sciquelTeal
-                focus:ring-0`,
-              "disabled:pointer-events-none disabled:bg-gray-50 disabled:text-gray-300",
-            )}
-            placeholder="Select a story type"
-            value={topics[0]}
-            onChange={(e) => {
-              setDirty(true);
-              setTopics([e.target.value as StoryTopic]);
-            }}
-          >
-            <option value="ANATOMY">Anatomy</option>
-            <option value="BIOCHEMISTRY">Biochemistry</option>
-            <option value="GEOCHEMISTRY">Geochemistry</option>
-            <option value="GENETICS">Genetics</option>
-            <option value="NUTRITION">Nutrition</option>
-          </select>
-        </label> */}
-
-        <div
-          className={`grid w-1/3 grid-cols-1 gap-2 ${
-            topics.length == 0 ? "hidden" : "visible"
-          }`}
-        >
+        {/* SELECT SUBJECT (+) BUTTON */}
+        <div className={`grid w-1/3 grid-cols-1 gap-2`}>
           <div className="flex flex-row justify-items-center gap-4">
             <label>Select subject</label>
+
             <Popover className="relative">
               <Popover.Button>
                 <PlusCircleIcon
@@ -788,14 +737,14 @@ export default function StoryInfoForm({
             ))}
           </div>
         </div>
-
         <button
           type="submit"
           className="my-5 select-none rounded-md bg-teal-600 px-2 py-1 font-semibold text-white disabled:pointer-events-none disabled:opacity-50"
           disabled={
-            title.length === 0 ||
+            initialTitle.length ===
+              0 /* WHEN UNCOMMENTED CODE BREAKS BECAUSE TITLE IS OUT OF SCOPE??? */ ||
             summary.length === 0 ||
-            image === null ||
+            initialImage === null ||
             caption.length === 0 ||
             loading
           }
@@ -804,6 +753,8 @@ export default function StoryInfoForm({
         </button>
       </Form>
 
+      {/* are these two used for anything? I deleted them 
+        and nothing happened . . . */}
       <NewSubtopic
         isOpen={isCreateSubtopicModalOpen}
         setIsOpen={setIsCreateSubtopicModalOpen}
