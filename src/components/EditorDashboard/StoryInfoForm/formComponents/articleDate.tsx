@@ -2,8 +2,8 @@ import FormInput from "@/components/Form/FormInput";
 import React, { useEffect, useState } from "react";
 
 type Props = {
-  value: Date | null;
-  onChange: (value: Date | null) => void;
+  value: string | null;
+  onChange: (value: string | null) => void;
   required?: boolean;
   indicateRequired?: boolean;
   disabled?: boolean;
@@ -18,20 +18,60 @@ const ArticleDate = ({
   disabled = false,
   setDirty,
 }: Props) => {
-  // preprocesses date object into YY/MM/DD into a string
-  const formatDate = (date: Date | null): string => {
+  // preprocesses date object into YYYY-MM-DD string
+  const formatDate = (date: string | null): string => {
     if (!date) return "";
-    const year = date.getFullYear().toString().padStart(4, "0");
-    const month = (date.getMonth() + 1).toString().padStart(2, "0");
-    const day = date.getDate().toString().padStart(2, "0");
+    const dateObj = new Date(date);
+    if (isNaN(dateObj.getTime())) return "";
+
+    console.log(dateObj)
+
+    const year = dateObj.getFullYear().toString();
+    const month = (dateObj.getMonth() + 1).toString().padStart(2, "0");
+    const day = dateObj.getDate().toString().padStart(2, "0");
     return `${year}-${month}-${day}`;
+  };
+
+  const getHours = (date: string | null): string => {
+    if (!date) return "";
+    const dateObj = new Date(date);
+    if (isNaN(dateObj.getTime())) return "";
+
+    const hour = dateObj.getHours();
+    const formattedHour = hour % 12 || 12;
+    return formattedHour.toString().padStart(2, "0");
+  };
+
+  const getMinutes = (date: string | null): string => {
+    if (!date) return "";
+    const dateObj = new Date(date);
+    if (isNaN(dateObj.getTime())) return "";
+
+    const minutes = dateObj.getMinutes();
+    return minutes.toString().padStart(2, "0");
+  };
+
+  const getAMPM = (date: string | null): string => {
+    if (!date) return "";
+    const dateObj = new Date(date);
+    if (isNaN(dateObj.getTime())) return "";
+
+    const hour = dateObj.getHours();
+    return hour < 12 ? "AM" : "PM";
   };
 
   // initializing our default states for the date and time states
   const [dateValue, setDateValue] = useState<string>(formatDate(value));
-  const [hours, setHours] = useState<string>("12");
-  const [minutes, setMinutes] = useState<string>("00");
-  const [ampm, setAmpm] = useState<string>("");
+  const [hours, setHours] = useState<string>(getHours(value));
+  const [minutes, setMinutes] = useState<string>(getMinutes(value));
+  const [ampm, setAmpm] = useState<string>(getAMPM(value));
+
+  useEffect(() => {
+    setDateValue(formatDate(value));
+    setHours(getHours(value));
+    setMinutes(getMinutes(value));
+    setAmpm(getAMPM(value));
+  }, [value]);
 
   // calls onChange to update the date object with the given inputs
   const updateDate = (
@@ -51,7 +91,7 @@ const ArticleDate = ({
     // checking if input is valid
     if (year && month && day && hrs >= 0 && hrs <= 23 && m >= 0 && m <= 59) {
       const date = new Date(year, month - 1, day, hrs, m);
-      onChange(date);
+      onChange(date.toISOString());
     } else {
       onChange(null);
     }
@@ -94,6 +134,7 @@ const ArticleDate = ({
       }
     }
   };
+
   // handles am/pm changes
   const handleAmpmChange = (newAmpm: string) => {
     setDirty(true);
@@ -105,7 +146,7 @@ const ArticleDate = ({
     // This returns the Publish Date form and the time forms (HRS/mins) in one line
     <div className="flex items-center space-x-4">
       <FormInput
-        title="Publish Date"
+        title="Publish Date (EDT)"
         required={required}
         indicateRequired={indicateRequired}
         type="date"
@@ -117,7 +158,7 @@ const ArticleDate = ({
       {/* Hours form */}
       <div className="flex items-center space-x-2">
         <FormInput
-          title="Time: Hours "
+          title="Hours "
           required={required}
           indicateRequired={indicateRequired}
           type="text"
