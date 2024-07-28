@@ -1,5 +1,6 @@
 import { type GetStoryResult } from "@/app/api/stories/id/[id]/route";
 import TopicTag from "@/components/TopicTag";
+import ShareLinks from "@/components/story-components/ShareLinks";
 import { generateMarkdown } from "@/lib/markdown";
 import { StoryTopic } from "@prisma/client";
 import Image from "next/image";
@@ -54,7 +55,7 @@ const StoryPreview: React.FC<Props> = ({
   }, [article.body]);
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col">
       {/* Display the image  */}
       <div className="relative">
         {article.image && (
@@ -84,6 +85,8 @@ const StoryPreview: React.FC<Props> = ({
         </div>
       </div>
 
+      <div className="relative mx-2 mt-5 flex w-screen flex-col md:mx-auto md:w-[720px]">
+
       {/* Essay/Digest | article type | topic tag */}
       <div className="flex flex-row">
         <p className="mr-2">
@@ -103,7 +106,7 @@ const StoryPreview: React.FC<Props> = ({
       <div className="flex flex-row">
         <p className="mr-2">{formattedDate}</p>
       </div>
-
+      </div>
       <div className="mt-4">
         {/* Article body is markdown text */}
         <div className="mx-2 mt-2 flex flex-col items-center gap-5 md:mx-auto">

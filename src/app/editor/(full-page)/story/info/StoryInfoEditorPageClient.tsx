@@ -51,16 +51,21 @@ const StoryInfoEditorClient: React.FC<Props> = ({ story }) => {
   console.log(story);
 
   // formats the input string and gets is as MM/DD/YYYY and HR:MM AM/PM for display
-  const formatPreviewDate = (date: Date | null): string => {
+  const formatPreviewDate = (date: string): string => {
     if (!date) return "";
-    const year = date.getFullYear();
-    const month = date.toLocaleString("default", { month: "long" });
-    const day = date.getDate();
-    const hours = date.getHours();
-    const minutes = date.getMinutes().toString().padStart(2, "0");
-    const ampm = hours >= 12 ? "PM" : "AM";
-    const formattedHours = hours % 12 || 12;
-    return `${month} ${day}, ${year}, ${formattedHours}:${minutes} ${ampm} |`;
+    const dateObj = new Date(date);
+    if (isNaN(dateObj.getTime())) return ""; // invalid date check
+
+    console.log(dateObj)
+
+    const year = dateObj.getFullYear().toString();
+    const month = (dateObj.getMonth() + 1).toString().padStart(2, "0");
+    const day = dateObj.getDate().toString().padStart(2, "0");
+    const hour = dateObj.getHours();
+    const formattedHour = hour % 12 || 12;
+    const minutes = dateObj.getMinutes();
+    const AMPM = (hour < 12 ? "AM" : "PM");
+    return `${month}-${day}-${year} ${formattedHour}:${minutes} ${AMPM} EDT`;
   };
 
   // to do: figure out what the API has for contributors -- modify this function if needed
@@ -103,7 +108,7 @@ const StoryInfoEditorClient: React.FC<Props> = ({ story }) => {
             setTopics(fetchedArticle.topics);
             setTitleColor(fetchedArticle.titleColor);
             setSummaryColor(fetchedArticle.summaryColor);
-            // setDate(fetchedArticle.publishedAt);
+            setDate(fetchedArticle.publishedAt);
             console.log(typeof fetchedArticle.publishedAt);
             console.log(fetchedArticle.summaryColor);
             // setImage(fetchedArticle.thumbnailURL);
