@@ -12,7 +12,18 @@ export default async function StoryInfoEditorPage({
 }: {
   searchParams: SearchParams;
 }) {
-  const story = id ? await prisma.story.findUnique({ where: { id } }) : null;
+  const story = id
+    ? await prisma.story.findUnique({
+        where: { id },
+        include: {
+          storyContributions: {
+            include: {
+              contributor: true,
+            },
+          },
+        },
+      })
+    : null;
 
   if (id && !story) {
     // if story is not found redirect user back
