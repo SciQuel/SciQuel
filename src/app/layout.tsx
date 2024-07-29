@@ -55,10 +55,10 @@ export default async function RootLayout({
           >
             Skip to main content
           </a>
-          <div className="min-h-screen">
+          <div>
             <Header></Header>
 
-            <main className="pt-10" id="main">
+            <main className="pt-10 min-h-screen" id="main">
               {children}
             </main>
           </div>

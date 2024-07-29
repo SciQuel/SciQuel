@@ -4,13 +4,22 @@ export default function Layout(props: {
   article_cards: React.ReactNode;
   quiz_summary: React.ReactNode;
   brained_article_carousel: React.ReactNode;
+  top_flex: React.ReactNode;
+  bottom_flex: React.ReactNode;
 }) {
+  // const smallerViewHeight: React.CSSProperties = {
+  //   height: '.75vh'
+  // }
+
   return (
-    <div className="relative flex grow flex-col pt-6 md:pl-56 ">
-      {props.brained_article_carousel}
-      {props.greeting}
+    <div className="relative flex grow flex-col pt-6 max-h-screen">
+      {props.top_flex}
+      {/* {props.bottom_flex} */}
+      {/* {props.test} */}
+      {/* {props.brained_article_carousel} */}
+      {/* {props.greeting} */}
       {/* {props.quiz_history} */}
-      {props.article_cards}
+      {/* {props.article_cards} */}
     </div>
   );
 }

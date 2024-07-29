@@ -23,7 +23,7 @@ export default async function Home() {
   );
 }
 
-async function getWhatsNewArticles() {
+export async function getWhatsNewArticles() {
   const res = await fetch(`${env.NEXT_PUBLIC_SITE_URL}/api/stories`, {
     next: { revalidate: 60 },
   });
