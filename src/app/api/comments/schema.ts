@@ -3,7 +3,7 @@ import { z } from "zod";
 export const createCommentSchema = z.object({
   content: z.string(),
   quote: z.string().optional(),
-  parentCommentId: z.string(),
+  parentCommentId: z.string().optional(),
   userId: z.string(),
   storyId: z.string(),
 });

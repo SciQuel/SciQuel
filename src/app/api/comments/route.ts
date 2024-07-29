@@ -68,7 +68,7 @@ export async function GET(req: NextRequest) {
     const storyId = url.searchParams.get("storyId");
     const userId = url.searchParams.get("userId");
 
-    if (!storyId || !userId) {
+    if (!storyId && !userId) {
       return new NextResponse(
         JSON.stringify({ error: "storyId or userId is required" }),
         {
