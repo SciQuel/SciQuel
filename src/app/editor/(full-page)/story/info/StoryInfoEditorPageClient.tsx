@@ -36,6 +36,7 @@ const StoryInfoEditorClient: React.FC<Props> = ({ story }) => {
   const [title, setTitle] = useState(story.title || "");
   const [summary, setSummary] = useState(story.summary || "");
   const [image, setImage] = useState(story.image || null);
+  const [caption, setCaption] = useState(story.caption || "");
   const [slug, setSlug] = useState(story.slug || null);
   const [date, setDate] = useState<Date | null>(story.date ?? null);
   const [storyType, setStoryType] = useState(story.storyType || null);
@@ -56,15 +57,13 @@ const StoryInfoEditorClient: React.FC<Props> = ({ story }) => {
     const dateObj = new Date(date);
     if (isNaN(dateObj.getTime())) return ""; // invalid date check
 
-    console.log(dateObj)
-
     const year = dateObj.getFullYear().toString();
     const month = (dateObj.getMonth() + 1).toString().padStart(2, "0");
     const day = dateObj.getDate().toString().padStart(2, "0");
     const hour = dateObj.getHours();
     const formattedHour = hour % 12 || 12;
     const minutes = dateObj.getMinutes();
-    const AMPM = (hour < 12 ? "AM" : "PM");
+    const AMPM = hour < 12 ? "AM" : "PM";
     return `${month}-${day}-${year} ${formattedHour}:${minutes} ${AMPM} EDT`;
   };
 
@@ -100,18 +99,16 @@ const StoryInfoEditorClient: React.FC<Props> = ({ story }) => {
           const fetchedArticle = await fetchArticleById(story.id, true);
           if (fetchedArticle.storyContent.length > 0) {
             setBody(fetchedArticle.storyContent[0].content);
-            // console.log(fetchedArticle.publishedAt);
-            // setDate(fetchedArticle.publishedAt);
-            console.log(fetchedArticle.thumbnailUrl);
             setImage(fetchedArticle.thumbnailUrl);
             setStoryType(fetchedArticle.storyType);
             setTopics(fetchedArticle.topics);
+            console.log(fetchedArticle.topics);
             setTitleColor(fetchedArticle.titleColor);
             setSummaryColor(fetchedArticle.summaryColor);
             setDate(fetchedArticle.publishedAt);
-            console.log(typeof fetchedArticle.publishedAt);
-            console.log(fetchedArticle.summaryColor);
-            // setImage(fetchedArticle.thumbnailURL);
+            setCaption(fetchedArticle.coverCaption);
+            // console.log(fetchedArticle.storyContributions);
+            // setContributors(fetchedArticle.storyContributions);
           }
         } catch (err: any) {
           console.error("Failed to fetch article:", err.message);
@@ -213,6 +210,8 @@ const StoryInfoEditorClient: React.FC<Props> = ({ story }) => {
               setSummary={setSummary}
               image={image}
               setImage={setImage}
+              caption={caption}
+              setCaption={setCaption}
               slug={slug}
               setSlug={setSlug}
               date={date}
@@ -275,7 +274,7 @@ const StoryInfoEditorClient: React.FC<Props> = ({ story }) => {
 export default StoryInfoEditorClient;
 
 // //API fetch below
-async function fetchArticleById(id: string, includeContent: boolean = false) {
+async function fetchArticleById(id: string, includeContent = false) {
   const includeContentParam = includeContent ? "?include_content=true" : "";
   const response = await fetch(`/api/stories/id/${id}${includeContentParam}`);
 

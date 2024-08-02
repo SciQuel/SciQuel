@@ -167,7 +167,7 @@ model Story {
   publishedAt DateTime?
   updatedAt   DateTime
 
-  staffPick Boolean
+  staffPick Boolean?
 
   thumbnailUrl String
   coverCaption String @default("")

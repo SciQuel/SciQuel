@@ -1,10 +1,15 @@
 import { type GetStoryResult } from "@/app/api/stories/id/[id]/route";
-import TopicTag from "@/components/TopicTag";
 import ShareLinks from "@/components/story-components/ShareLinks";
+import TopicTag from "@/components/TopicTag";
 import { generateMarkdown } from "@/lib/markdown";
-import { StoryTopic } from "@prisma/client";
+import { type StoryTopic } from "@prisma/client";
 import Image from "next/image";
-import React, { ReactElement, ReactNode, useEffect, useState } from "react";
+import React, {
+  useEffect,
+  useState,
+  type ReactElement,
+  type ReactNode,
+} from "react";
 
 interface Section {
   type: string;
@@ -86,26 +91,25 @@ const StoryPreview: React.FC<Props> = ({
       </div>
 
       <div className="relative mx-2 mt-5 flex w-screen flex-col md:mx-auto md:w-[720px]">
+        {/* Essay/Digest | article type | topic tag */}
+        <div className="flex flex-row">
+          <p className="mr-2">
+            {article.storyType.slice(0, 1) +
+              article.storyType.slice(1).toLowerCase()}{" "}
+            | we need to add article type |
+          </p>{" "}
+          {article.topics.map((item: StoryTopic, index: number) => {
+            return <TopicTag name={item} key={`${item}-${index}`} />;
+          })}
+        </div>
 
-      {/* Essay/Digest | article type | topic tag */}
-      <div className="flex flex-row">
-        <p className="mr-2">
-          {article.storyType.slice(0, 1) +
-            article.storyType.slice(1).toLowerCase()}{" "}
-          | we need to add article type |
-        </p>{" "}
-        {article.topics.map((item: StoryTopic, index: number) => {
-          return <TopicTag name={item} key={`${item}-${index}`} />;
-        })}
-      </div>
+        {/* Adding formatted contributors */}
+        <div>{contributors}</div>
 
-      {/* Adding formatted contributors */}
-      <div>{contributors}</div>
-
-      {/* Adding formatted dates (need to add time zone / fetching?) */}
-      <div className="flex flex-row">
-        <p className="mr-2">{formattedDate}</p>
-      </div>
+        {/* Adding formatted dates (need to add time zone / fetching?) */}
+        <div className="flex flex-row">
+          <p className="mr-2">{formattedDate}</p>
+        </div>
       </div>
       <div className="mt-4">
         {/* Article body is markdown text */}

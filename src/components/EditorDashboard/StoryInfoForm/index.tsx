@@ -19,6 +19,7 @@ import {
   type StoryType,
   type Subtopic,
 } from "@prisma/client";
+import { Value } from "@prisma/client/runtime";
 import axios from "axios";
 import clsx from "clsx";
 import { DateTime } from "luxon";
@@ -33,6 +34,7 @@ import ArticleSummary from "./formComponents/articleSummary";
 import ArticleSummaryColor from "./formComponents/articleSummaryColor";
 import ArticleTitle from "./formComponents/articleTitle";
 import ArticleTitleColor from "./formComponents/articleTitleColor";
+import ArticleType from "./formComponents/articleType";
 import BackgroundImageForm from "./formComponents/backgroundImageForm";
 import NewContributor from "./formComponents/confirmNewContributer";
 import NewSubject from "./formComponents/subjectComponents/newSubject";
@@ -54,6 +56,7 @@ interface Props {
   image?: string;
   setImage: (value: string) => void;
   caption?: string;
+  setCaption: (value: string) => void;
   slug?: string;
   setSlug: (value: string) => void;
   date?: Date | null;
@@ -64,6 +67,10 @@ interface Props {
   setTitleColor: (value: string) => void;
   summaryColor?: string;
   setSummaryColor: (value: string) => void;
+  topics: StoryTopic;
+  setTopics: (value: StoryTopic) => void;
+  storyType: string;
+  setStoryType: (value: string) => void;
   sections: Section[];
   onSectionChange: (index: number, newContent: string) => void;
   onAddSection: (type: string) => void;
@@ -81,6 +88,7 @@ export default function StoryInfoForm({
   image: initialImage,
   setImage: initialSetImage,
   caption: initialCaption,
+  setCaption: initialSetCaption,
   slug: initialSlug,
   setSlug: initialSetSlug,
   date: initialDate,
@@ -91,6 +99,10 @@ export default function StoryInfoForm({
   setTitleColor: initialSetTitleColor,
   summaryColor: initialSummaryColor,
   setSummaryColor: initialSetSummaryColor,
+  topics: initialTopics,
+  setTopics: initialSetTopics,
+  storyType: initialStoryType,
+  setStoryType: initialSetStoryType,
   sections,
   onSectionChange,
   onAddSection,
@@ -177,7 +189,7 @@ export default function StoryInfoForm({
           // if the topic is already checked, uncheck and remove it from the list of topic
           removeTopicTag(id);
         } else {
-          setTopics((topics) => [...topics, item]);
+          setTopics((initialTop) => [...topics, item]);
           setTopicList(
             topiclist.map((item: any) =>
               item.data.id == id ? { ...item, checked: true } : item,
@@ -289,6 +301,8 @@ export default function StoryInfoForm({
     setSubjectList((subjectlist: any) => [...subjectlist, newSubject]);
     setSubjects((subjects) => [...subjects, newSubject]);
   };
+
+  console.log(typeof initialTopics[0]);
 
   // Div outlining what the left half of the page actually looks like
   return (
@@ -437,33 +451,18 @@ export default function StoryInfoForm({
         <BackgroundImageForm
           image={initialImage}
           setImage={initialSetImage}
-          caption={caption}
-          setCaption={setCaption}
+          caption={initialCaption}
+          setCaption={initialSetCaption}
           loading={loading}
           setDirty={setDirty}
         />
 
         {/* STORY TYPE INPUT */}
-        <label className="my-5 block">
-          Story Type
-          <select
-            className={clsx(
-              `peer w-full rounded-md px-2 py-1 placeholder-transparent outline outline-1
-                outline-gray-200 hover:outline-sciquelTeal focus:outline-2 focus:outline-sciquelTeal
-                focus:ring-0`,
-              "disabled:pointer-events-none disabled:bg-gray-50 disabled:text-gray-300",
-            )}
-            placeholder="Select a story type"
-            value={storyType}
-            onChange={(e) => {
-              setDirty(true);
-              setStoryType(e.target.value as StoryType);
-            }}
-          >
-            <option value="DIGEST">Digest</option>
-            <option value="ESSAY">Essay</option>
-          </select>
-        </label>
+        <ArticleType
+          value={initialStoryType}
+          onChange={initialSetStoryType}
+          setDirty={setDirty}
+        ></ArticleType>
 
         {/* CATEGORY DROPDOWN */}
         <label className="my-5 block">
