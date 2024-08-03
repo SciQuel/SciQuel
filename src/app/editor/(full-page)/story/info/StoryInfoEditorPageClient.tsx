@@ -4,6 +4,11 @@ import { type GetStoryResult } from "@/app/api/stories/id/[id]/route";
 import StoryInfoForm from "@/components/EditorDashboard/StoryInfoForm";
 import StoryPreview from "@/components/EditorDashboard/StoryPreview";
 import { generateMarkdown } from "@/lib/markdown";
+import {
+  ContributionType,
+  type Contributor,
+  type StoryContribution,
+} from "@prisma/client";
 import React, { useEffect, useRef, useState } from "react";
 import { StringLiteral } from "typescript";
 
@@ -12,7 +17,12 @@ interface Section {
   content: string;
 }
 
+export type Contribution = StoryContribution & {
+  contributor: Contributor;
+};
+
 interface Props {
+  contributions: Contribution[];
   story: {
     id?: string;
     title?: string;
@@ -30,7 +40,7 @@ interface Props {
   };
 }
 
-const StoryInfoEditorClient: React.FC<Props> = ({ story }) => {
+const StoryInfoEditorClient: React.FC<Props> = ({ story, contributions }) => {
   // sets the initial body by fetching the article through its ID
   const [body, setBody] = useState<string>("");
   const [title, setTitle] = useState(story.title || "");
@@ -43,9 +53,8 @@ const StoryInfoEditorClient: React.FC<Props> = ({ story }) => {
   const [topics, setTopics] = useState(story.topics || null);
   const [titleColor, setTitleColor] = useState(story.titleColor || null);
   const [summaryColor, setSummaryColor] = useState(story.summaryColor || "");
-  const [contributors, setContributors] = useState<string[]>(
-    story.contributors || [],
-  );
+  const [contributors, setContributors] =
+    useState<Contribution[]>(contributions);
 
   const [sections, setSections] = useState<Section[]>([]);
 
@@ -84,12 +93,12 @@ const StoryInfoEditorClient: React.FC<Props> = ({ story }) => {
   };
 
   // Function to add a new contributor to the list
-  const addContributor = (contributor: string) => {
-    setContributors((prevContributors) => {
-      const newContributors = [...prevContributors, contributor];
-      return newContributors;
-    });
-  };
+  // const addContributor = (contributor: string) => {
+  //   setContributors((prevContributors) => {
+  //     const newContributors = [...prevContributors, contributor];
+  //     return newContributors;
+  //   });
+  // };
 
   // fetch article and set body content
   useEffect(() => {
@@ -231,7 +240,7 @@ const StoryInfoEditorClient: React.FC<Props> = ({ story }) => {
               summaryColor={summaryColor}
               setSummaryColor={setSummaryColor}
               contributors={contributors}
-              addContributor={addContributor}
+              setContributors={setContributors}
             />
           </div>
 
@@ -262,7 +271,7 @@ const StoryInfoEditorClient: React.FC<Props> = ({ story }) => {
               summaryColor,
             }}
             formattedDate={formatPreviewDate(date)}
-            contributors={formatContributors(contributors)}
+            contributors={contributors}
             id={story.id}
           />
         </div>

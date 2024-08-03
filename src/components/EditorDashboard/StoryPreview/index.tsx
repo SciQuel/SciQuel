@@ -1,9 +1,18 @@
 import { type GetStoryResult } from "@/app/api/stories/id/[id]/route";
+import { type Contribution } from "@/app/editor/(full-page)/story/info/StoryInfoEditorPageClient";
 import ShareLinks from "@/components/story-components/ShareLinks";
+import TopicTag from "@/components/TopicTag";
 import TopicTag from "@/components/TopicTag";
 import { generateMarkdown } from "@/lib/markdown";
 import { type StoryTopic } from "@prisma/client";
+import { type StoryTopic } from "@prisma/client";
 import Image from "next/image";
+import React, {
+  useEffect,
+  useState,
+  type ReactElement,
+  type ReactNode,
+} from "react";
 import React, {
   useEffect,
   useState,
@@ -37,7 +46,7 @@ interface Props {
   article: Article;
   formattedDate: string;
   id: string;
-  contributors: React.ReactNode[]; // formatted string "by contributor 1 \n by contributor 2 . . ."
+  contributors: Contribution[]; // formatted string "by contributor 1 \n by contributor 2 . . ."
 }
 
 const StoryPreview: React.FC<Props> = ({
@@ -102,10 +111,25 @@ const StoryPreview: React.FC<Props> = ({
             return <TopicTag name={item} key={`${item}-${index}`} />;
           })}
         </div>
+        {/* Essay/Digest | article type | topic tag */}
+        <div className="flex flex-row">
+          <p className="mr-2">
+            {article.storyType.slice(0, 1) +
+              article.storyType.slice(1).toLowerCase()}{" "}
+            | we need to add article type |
+          </p>{" "}
+          {article.topics.map((item: StoryTopic, index: number) => {
+            return <TopicTag name={item} key={`${item}-${index}`} />;
+          })}
+        </div>
 
         {/* Adding formatted contributors */}
-        <div>{contributors}</div>
+        {/* <div>{contributors}</div> */}
 
+        {/* Adding formatted dates (need to add time zone / fetching?) */}
+        <div className="flex flex-row">
+          <p className="mr-2">{formattedDate}</p>
+        </div>
         {/* Adding formatted dates (need to add time zone / fetching?) */}
         <div className="flex flex-row">
           <p className="mr-2">{formattedDate}</p>

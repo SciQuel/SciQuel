@@ -1,5 +1,6 @@
 import fsPromises from "fs/promises";
 import path from "path";
+import { type Contribution } from "@/app/editor/(full-page)/story/info/StoryInfoEditorPageClient";
 import MarkdownEditorStoryInfo from "@/components/EditorDashboard/MarkdownEditorStoryInfo";
 import Form from "@/components/Form";
 import FormInput from "@/components/Form/FormInput";
@@ -24,7 +25,14 @@ import axios from "axios";
 import clsx from "clsx";
 import { DateTime } from "luxon";
 import { useRouter } from "next/navigation";
-import { Fragment, useRef, useState, useTransition } from "react";
+import {
+  Fragment,
+  useRef,
+  useState,
+  useTransition,
+  type Dispatch,
+  type SetStateAction,
+} from "react";
 import { date } from "zod";
 import ArticleBody from "./formComponents/articleBody";
 import ArticleContent from "./formComponents/articleContent";
@@ -37,6 +45,7 @@ import ArticleTitleColor from "./formComponents/articleTitleColor";
 import ArticleType from "./formComponents/articleType";
 import BackgroundImageForm from "./formComponents/backgroundImageForm";
 import NewContributor from "./formComponents/confirmNewContributer";
+import ContributorSearch from "./formComponents/ContributorSearch/ContributorSearch";
 import NewSubject from "./formComponents/subjectComponents/newSubject";
 import NewSubtopic from "./formComponents/subtopicComponents/newSubtopic";
 import { getData, randomBackgroundColor, setTagsColor } from "./StoryFormFunc";
@@ -75,8 +84,8 @@ interface Props {
   onSectionChange: (index: number, newContent: string) => void;
   onAddSection: (type: string) => void;
   onDeleteSection: (index: number) => void;
-  contributors: string[];
-  addContributor: (contributor: string) => void;
+  contributors: Contribution[];
+  setContributors: Dispatch<SetStateAction<Contribution[]>>;
 }
 
 export default function StoryInfoForm({
@@ -108,7 +117,7 @@ export default function StoryInfoForm({
   onAddSection,
   onDeleteSection,
   contributors = [],
-  addContributor,
+  setContributors,
 }: Props) {
   // Creating states
   const fileUploadRef = useRef<HTMLInputElement>(null);
@@ -307,6 +316,11 @@ export default function StoryInfoForm({
   // Div outlining what the left half of the page actually looks like
   return (
     <div className="flex flex-col gap-2">
+      <ContributorSearch
+        contributions={contributors}
+        setContributions={setContributors}
+        storyId={storyId ?? ""}
+      />
       <Form
         onSubmit={(e) => {
           e.preventDefault();
@@ -430,12 +444,12 @@ export default function StoryInfoForm({
         />
 
         {/* ADDING CONTRIBUTORS FORM */}
-        <NewContributor addContributor={addContributor} />
+        {/* <NewContributor addContributor={addContributor} />
         <ul className="list-disc pl-5">
           {contributors.map((contributor, index) => (
             <li key={index}>{contributor}</li>
           ))}
-        </ul>
+        </ul> */}
 
         {/* SLUG FORM */}
         <ArticleSlug

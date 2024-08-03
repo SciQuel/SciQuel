@@ -1,3 +1,5 @@
+import { getCurrentContributions } from "@/components/EditorDashboard/StoryInfoForm/formComponents/ContributorSearch/actions";
+import prisma from "@/lib/prisma";
 import { PrismaClient } from "@prisma/client";
 import { redirect } from "next/navigation";
 import StoryInfoEditorClient from "./StoryInfoEditorPageClient";
@@ -5,7 +7,6 @@ import StoryInfoEditorClient from "./StoryInfoEditorPageClient";
 interface SearchParams {
   id?: string;
 }
-const prisma = new PrismaClient();
 
 export default async function StoryInfoEditorPage({
   searchParams: { id },
@@ -25,10 +26,17 @@ export default async function StoryInfoEditorPage({
       })
     : null;
 
-  if (id && !story) {
+  if ((id && !story) || !id) {
     // if story is not found redirect user back
     return redirect("/editor/dashboard");
   }
 
-  return <StoryInfoEditorClient story={story || {}} />;
+  const contributions = await getCurrentContributions(id);
+
+  return (
+    <StoryInfoEditorClient
+      contributions={contributions ?? []}
+      story={story || {}}
+    />
+  );
 }

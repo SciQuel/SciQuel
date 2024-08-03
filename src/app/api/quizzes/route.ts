@@ -1,11 +1,10 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+import prisma from "@/lib/prisma";
 import { PrismaClient } from "@prisma/client";
 import { NextResponse, type NextRequest } from "next/server";
 import { createQuizSchema } from "./schema";
-
-const prisma = new PrismaClient();
 
 export async function POST(req: NextRequest) {
   try {
@@ -68,15 +67,18 @@ export async function GET(req: NextRequest) {
     const storyId = url.searchParams.get("storyId");
 
     if (!storyId) {
-      return new NextResponse(JSON.stringify({ error: "storyId is required" }), {
-        status: 400,
-        headers: { "Content-Type": "application/json" },
-      });
+      return new NextResponse(
+        JSON.stringify({ error: "storyId is required" }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
     }
 
     const quizzes = await prisma.quizQuestion.findMany({
       where: { storyId: storyId },
-      include:{
+      include: {
         subparts: true,
       },
     });
@@ -87,9 +89,12 @@ export async function GET(req: NextRequest) {
     });
   } catch (error) {
     console.error("Error processing request:", error);
-    return new NextResponse(JSON.stringify({ error: "Internal Server Error" }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
+    return new NextResponse(
+      JSON.stringify({ error: "Internal Server Error" }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      },
+    );
   }
 }
