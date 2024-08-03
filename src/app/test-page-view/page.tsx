@@ -10,6 +10,11 @@ export default function TestPage() {
   function getPageViewByUserId() {
     axios.get("/api/user/page_views").then((data) => consoleOut(data.data));
   }
+  function getPageViewByUserIdDistinct() {
+    axios
+      .get("/api/user/page_views", { params: { distinct: true } })
+      .then((data) => consoleOut(data.data));
+  }
   function getPageByStoryId() {
     axios
       .get("/api/stories/page_views", { params: { story_id: storyId } })
@@ -21,6 +26,13 @@ export default function TestPage() {
         start_date: new Date("2023-12-05T08:00:00.000+00:00").toISOString(),
         end_date: new Date().toISOString(),
         topic: "ASTRONOMY",
+      })
+      .then((data) => consoleOut(data.data));
+  }
+  function postPageView() {
+    axios
+      .post("/api/user/page_views", {
+        story_id: storyId,
       })
       .then((data) => consoleOut(data.data));
   }
@@ -48,7 +60,11 @@ export default function TestPage() {
       <button>Post page view</button>
       <button onClick={getPageByStoryId}>Get page view by story id</button>
       <button onClick={getPageViewByUserId}>Get page view by user id</button>
+      <button onClick={getPageViewByUserIdDistinct}>
+        Get page view by user id distinct
+      </button>
       <button onClick={getCalculateAvg}>Get calculate AVG</button>
+      <button onClick={postPageView}>Post user reading history</button>
     </div>
   );
 }
