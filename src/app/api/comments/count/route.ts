@@ -34,15 +34,6 @@ export async function GET(req: NextRequest) {
 
     const userCommentIds = userComments.map((comment) => comment.id);
 
-    const replies = await prisma.comment.findMany({
-      where: {
-        parentCommentId: {
-          in: userCommentIds,
-        },
-        // read: false,
-      },
-    });
-
     //get total number of unread replies to the user's comments
     const totalReplies = await prisma.comment.findMany({
       where: {
