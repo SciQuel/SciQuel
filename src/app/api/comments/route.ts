@@ -5,6 +5,7 @@ import prisma from "@/lib/prisma";
 import { NextResponse, type NextRequest } from "next/server";
 import { createCommentSchema } from "./schema";
 
+//to create a comment
 export async function POST(req: NextRequest) {
   try {
     console.log("Received request:", req);
@@ -62,6 +63,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
+//to fetch comments by storyId or userId
 export async function GET(req: NextRequest) {
   try {
     const url = new URL(req.url);

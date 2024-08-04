@@ -99,12 +99,11 @@ model Story {
   thumbnailUrl String
   coverCaption String @default("")
 
-
-  createdAt   DateTime
-  publishedAt DateTime
-  updatedAt   DateTime
-  quizzes     Quiz[]
-  comments    Comment[]
+  createdAt       DateTime
+  publishedAt     DateTime
+  updatedAt       DateTime
+  quizzes         Quiz[]
+  comments        Comment[]
   staffPick       StaffPick?
   StaffPickRecord StaffPickRecord[]
 }
@@ -167,8 +166,8 @@ model User {
   firstQuizRecord      Json?
   mostRecentQuizRecord Json?
 
-  commentLikes CommentLike[]
-  StaffPickRecord      StaffPickRecord[]
+  commentLikes    CommentLike[]
+  StaffPickRecord StaffPickRecord[]
 }
 
 model AuthVerification {
@@ -322,7 +321,6 @@ model ResponseSubpart {
   userResponseId String?       @db.ObjectId
 }
 
-
 model Comment {
   id              String    @id @default(auto()) @map("_id") @db.ObjectId
   content         String
@@ -341,6 +339,7 @@ model Comment {
   storyId String @db.ObjectId
 
   likes CommentLike[]
+  read  Boolean       @default(false)
 }
 
 model CommentLike {
@@ -353,6 +352,7 @@ model CommentLike {
 
   @@unique([commentId, userId])
 }
+
 model StaffPick {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
