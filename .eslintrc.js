@@ -32,10 +32,11 @@ const config = {
     "prettier/prettier": [
       "error",
       {
-        "endOfLine": "auto"
-      }
-    ]    
-    
+        endOfLine: "auto",
+      },
+    ],
+    "jsdoc/require-description-complete-sentence": "off",
+    "next/no-img-element": "off",
   },
 };
 

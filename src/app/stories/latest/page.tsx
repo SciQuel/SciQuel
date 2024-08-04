@@ -1,4 +1,4 @@
-import { type GetStoriesResult } from "@/app/api/stories/route";
+import { type GetLatestStoriesResult } from "@/app/api/stories/latest/route";
 import ArticleList from "@/components/ArticleList";
 import HomepageSection from "@/components/HomepageSection";
 import Pagination from "@/components/StoriesList/Pagination";
@@ -30,7 +30,6 @@ export default async function StoriesListPage({
           {stories.length > 0 ? (
             <>
               <ArticleList articles={stories} preferHorizontal={false} />
-
               <Pagination total_pages={total_pages} />
             </>
           ) : (
@@ -46,7 +45,7 @@ export default async function StoriesListPage({
 
 async function getStories(params: Record<string, string>) {
   const searchParams = new URLSearchParams(params);
-  const route = `/stories?${searchParams.toString()}`;
+  const route = `/stories/latest/?${searchParams.toString()}`;
 
   const res = await fetch(`${env.NEXT_PUBLIC_SITE_URL}/api${route}`, {
     next: { revalidate: 60 },
@@ -56,7 +55,7 @@ async function getStories(params: Record<string, string>) {
     throw new Error("Failed to fetch data");
   }
 
-  const data: GetStoriesResult = await res.json().then();
+  const data: GetLatestStoriesResult = await res.json().then();
 
   data.stories = data.stories.map((story) => ({
     ...story,
