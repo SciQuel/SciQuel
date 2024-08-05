@@ -30,10 +30,10 @@ const StoryImagePopup = ({
   const [dragging, setDragging] = useState(false);
   const [scaleLevel, setScaleLevel] = useState(1);
   const [isSmallScreen, setisSmallScreen] = useState(window.innerWidth <= 768);
-  const[isMobile, setIsMobile] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
   const [imageDimensions, setImageDimensions] = useState<{ width: number; height: number } | null>(null);
   const [isImageReady, setIsImageReady] = useState(false);
-  const [shouldImageCenter, setShouldImageCenter] = useState(false);
+  
   const invisibleDivRef = useRef<HTMLDivElement>(null) // this ref is for the placeholder element in the div that will only display when image needs to be centered
 
   /* need to resize images while keeping aspect ratio
@@ -46,14 +46,15 @@ const StoryImagePopup = ({
 
 
   // Function to resize the image while maintaining the aspect ratio
-  const resizeImage = useCallback(() => {
-    const MAX_WIDTH = isSmallScreen ? 500 : 700;
-    const MAX_HEIGHT = isSmallScreen ? 500 : 700;
+  const resizeImage = () => {
+    console.log('image resizing running')
+    const MAX_WIDTH = isSmallScreen ? 550: 700; 
+    const MAX_HEIGHT = isSmallScreen ? 550 : 700; 
+
     const MIN_SIZE = 500;
 
     if (imageRef.current) {
       const img = imageRef.current;
-      console.log(img.clientHeight, img.clientWidth)
       const { naturalWidth: width, naturalHeight: height } = img;
       let newWidth = width;
       let newHeight = height;
@@ -85,66 +86,77 @@ const StoryImagePopup = ({
         newHeight = MAX_HEIGHT;
         newWidth = (width / height) * newHeight;
       }
-
+      console.log(window.innerWidth)
+      console.log('screen', isSmallScreen)
       setImageDimensions({ width: newWidth, height: newHeight });
       setIsImageReady(true);
     }
-  }, [isSmallScreen]);
+  };
 
   // Function to calculate if the image should be centered
-  const calculateItemShouldCenter = useCallback(() => {
-    const imageRect = imageRef.current?.getBoundingClientRect();
-    const spaceToRight = window.innerWidth - (imageRect?.right ?? 0);
-    console.log(shouldImageCenter)
-    if (!shouldImageCenter) {
+//   const calculateItemShouldCenter = () => {
+//     console.log(shouldImageCenter)
+//     const imageRect = imageRef.current?.getBoundingClientRect();
+
+//     const spaceToRight = window.innerWidth - (imageRect?.right ?? 0);
+
+//     /*if the image is not completely centered, check the space on the right, if the space is taller than half the image hight, put image
+//     directly in center
+//     */
+//     if (!shouldImageCenter) {
+
+//           if (spaceToRight > (imageRef.current?.height ?? 0) / 2) {
+//         setShouldImageCenter(true);
+
+//       }
+//     } if (shouldImageCenter) {
+
+//     /* if the div has a small width, it means that the image is nearing the left viewport, and the invis div should dissapear to fix layout
+//     if the space to the right of image if small, do the same
+// */      const invisibleDivWidth = invisibleDivRef.current?.clientWidth ?? 0;
+
+//       if (invisibleDivWidth <= 5 || spaceToRight <= 100) {
+//         setShouldImageCenter(false)
+
+//       }
+//     }
+//   };
 
 
-      if (spaceToRight > (imageRef.current?.height ?? 0) / 2) {
-        setShouldImageCenter(true);
+  useLayoutEffect(() => {
+    resizeImage()
+  }, [isSmallScreen])
 
-      }
-    } if (shouldImageCenter) {
+  useEffect(() => {
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+    setIsMobile(isMobile)
+  }, [])
 
-    /* if the div has a small width, it means that the image is nearing the left viewport, and the invis div should dissapear to fix layout
-    if the space to the right of image if small, do the same
-*/      const invisibleDivWidth = invisibleDivRef.current?.clientWidth ?? 0;
+  const handleResize = () => {
 
-      if (invisibleDivWidth <= 5 || spaceToRight <= 100) {
-        setShouldImageCenter(false)
-      }
-    }
-  }, [shouldImageCenter]);
+    setisSmallScreen(window.innerWidth <= 768);
 
-useEffect(()=>{
- const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
-  setIsMobile(isMobile)
-},[])
 
+    // calculateItemShouldCenter();
+  };
+
+  const handleImageLoad = () => {
+    resizeImage()
+    // calculateItemShouldCenter()
+  }
   // Use layout effect to handle resizing and centering calculations before the browser paints
   useLayoutEffect(() => {
-    
-    const handleResize = () => {
-      resizeImage()
-      setisSmallScreen(window.innerWidth <= 768);
-      calculateItemShouldCenter();
-    };
-
-    const handleImageLoad = ()=>{
-      resizeImage()
-      calculateItemShouldCenter()
-    }
-
     window.addEventListener('resize', handleResize);
 
     if (imageRef.current) {
-      imageRef.current.addEventListener('load', () => {
-        handleImageLoad()
-      });
+      imageRef.current.addEventListener('load', handleImageLoad)
+
     }
 
     // Initial calls to have correct layout on mount
     if (imageRef.current && imageRef.current.complete) {
-      handleImageLoad(); // Ensure image is already loaded
+      handleImageLoad();
+    
     }
 
     // calculateItemShouldCenter();
@@ -153,13 +165,11 @@ useEffect(()=>{
     return () => {
       window.removeEventListener('resize', handleResize)
       if (imageRef.current) {
-        imageRef.current.removeEventListener('load', () => {
-          resizeImage();
-          // calculateItemShouldCenter();
-        });
+        imageRef.current.removeEventListener('load', handleImageLoad)
+
       }
     };
-  }, [imageRef, isSmallScreen, shouldImageCenter, isImageReady]);
+  }, [imageRef]);
 
   // Handle image click to toggle zoom levels
   const handlePopUpImageClick = () => {
@@ -193,7 +203,7 @@ useEffect(()=>{
   const imageStyles = {
     transformOrigin: transformOriginValue,
     transform: transformValue,
-    cursor: isSmallScreen ? 'default' : scaleLevel === 1 ? 'zoom-in' : 'zoom-out',
+    cursor: isMobile ? 'default' : scaleLevel === 1 ? 'zoom-in' : 'zoom-out',
     display: isImageReady ? 'block' : 'none'
   };
 
@@ -202,23 +212,24 @@ useEffect(()=>{
       className={`fixed left-1/2 top-1/2 z-50 flex h-screen w-screen -translate-x-1/2 -translate-y-1/2 transform flex-col justify-center border border-solid border-slate-800 bg-white hover:cursor-pointer`}
       onClick={handleClick}
     >
-      <div className={` ${shouldImageCenter ? 'justify-between' : 'justify-center'}  max-h-[100%] w-full ml-auto flex flex-wrap items-center xl:gap-16 z-0 border-solid`}>
+      {/* container for content */}
+      <div className=' flex-col sm:flex-col  lg:flex-row   max-h-[100%] w-full ml-auto flex items-center   z-0 border-solid'>
         {/* Invisible item that will help format the image to look centered completely */}
-        <div className={` ${!shouldImageCenter ? 'hidden' : 'block'}   w-[200px] h-[100px] flex-grow basis-0`} ref={invisibleDivRef}> </div>
-        {/* Image container */}
-        <div className={`max-h-[750px] ${isSmallScreen && 'mx-5'} ${isImageReady ? 'block' : 'hidden'}`}>
+        <div className = ' w-[10px] h-[100px] flex-grow hidden lg:block lg:mx-5'> </div>
+     
           <img
             src={src}
-            className={`w-full h-auto relative max-h-full `}
+            className={`w-full h-full relative max-w-[95%] md:max-w-[100%] max-h-[500px]  md:max-h-[700px] `}
             ref={imageRef}
             onClick={handlePopUpImageClick}
             onMouseMove={handleImageDrag}
             alt={alt}
             style={{ width: imageDimensions?.width, height: imageDimensions?.height, ...imageStyles }}
           />
-        </div>
-        <p className={` flex-grow basis-0  md:w-[20%] min-w-[200px] mr-6 text-center text-wrap cursor-default ${imageClicked ? 'invisible' : ''}`} ref={captionRef}>
+        
+        <p className={`  w-full min-w-min max-w-[100%] flex-grow basis-0 px-auto break-words  lg:mx-5  text-center  cursor-default h-auto ${imageClicked ? 'invisible' : ''}`} ref={captionRef}>
           {children}
+          
         </p>
       </div>
       <button aria-label="close popup" className="absolute right-0 top-0 mr-5 mt-1 text-3xl">
