@@ -123,7 +123,7 @@ const StoryImagePopup = ({
 //   };
 
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     resizeImage()
   }, [isSmallScreen])
 
@@ -215,21 +215,21 @@ const StoryImagePopup = ({
       {/* container for content */}
       <div className=' flex-col sm:flex-col  lg:flex-row   max-h-[100%] w-full ml-auto flex items-center   z-0 border-solid'>
         {/* Invisible item that will help format the image to look centered completely */}
-        <div className = ' w-[10px] h-[100px] flex-grow hidden lg:block lg:mx-5'> </div>
-     
+        <div className = ' w-[10px] h-[100px]  flex-grow hidden lg:block lg:mx-5'> </div>
+        {/* Image container */}
+     <div className=" max-w-[95%]">
           <img
             src={src}
-            className={`w-full h-full relative max-w-[95%] md:max-w-[100%] max-h-[500px]  md:max-h-[700px] `}
+            className={`w-full h-full relative]`}
             ref={imageRef}
             onClick={handlePopUpImageClick}
             onMouseMove={handleImageDrag}
             alt={alt}
             style={{ width: imageDimensions?.width, height: imageDimensions?.height, ...imageStyles }}
           />
-        
-        <p className={`  w-full min-w-min max-w-[100%] flex-grow basis-0 px-auto break-words  lg:mx-5  text-center  cursor-default h-auto ${imageClicked ? 'invisible' : ''}`} ref={captionRef}>
+        </div>
+        <p className={` w-auto min-w-[300px]  flex-grow basis-0 px-auto break-words  lg:mx-5  text-center  cursor-default h-auto ${imageClicked ? 'invisible' : ''}`} ref={captionRef}>
           {children}
-          
         </p>
       </div>
       <button aria-label="close popup" className="absolute right-0 top-0 mr-5 mt-1 text-3xl">
