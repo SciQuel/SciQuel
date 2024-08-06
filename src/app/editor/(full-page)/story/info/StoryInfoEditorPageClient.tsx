@@ -1,7 +1,7 @@
 "use client";
 
 import StoryInfoForm from "@/components/EditorDashboard/StoryInfoForm";
-import Trivia from "@/components/EditorDashboard/StoryInfoForm/formComponents/Trivia";
+import Trivia from "@/components/EditorDashboard/StoryInfoForm/formComponents/TriviaComponents/Trivia";
 import StoryPreview from "@/components/EditorDashboard/StoryPreview";
 import React, { useState } from "react";
 
