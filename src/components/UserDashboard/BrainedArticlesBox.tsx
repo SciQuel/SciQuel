@@ -1,9 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import { type Stories } from "@/app/api/stories/route";
-import { Story } from "@prisma/client";
-import { getWhatsNewArticles } from "@/app/page";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import axios from "axios";
@@ -11,9 +8,11 @@ import { TopicColor } from "../TopicTag";
 
 export default function BrainedArticleBox() {
 
-  const session = useSession();
+  // 📝: this box is supposed to showcase your most recent "brained article". this code is 100% complete.
+
+  const session = useSession(); // N.B.: opens a session, used to access user info
   const user_email = session.data?.user.email;
-  const URL = `http://localhost:3000/api/user/brains/latest?user_email=${user_email}`; 
+  const URL = `http://localhost:3000/api/user/brains/latest?user_email=${user_email}`;
 
   const [returnVal, setReturnVal] = useState(<p>Loading...</p>);
 
@@ -22,33 +21,30 @@ export default function BrainedArticleBox() {
     const response = axios
       .get(URL)
       .then(response => {
-        // console.log(`response rn... `, response.data)
-
-        if (response.data.length == 0) {
+        if (response.data.length == 0) { // N.B.: a.k.a. if (!response) essentially
           setReturnVal(<p className="italic">You don't have any Brained Articles!</p>)
-        } else {
-          
-          const bookmarkedDate = new Date(response.data[0].createdAt);
-          const options: Intl.DateTimeFormatOptions = { year: "numeric", month: "long", day: "numeric" };
-          const formattedBookmarkedDate = bookmarkedDate.toLocaleDateString("en-US", options);
 
-          storyURL = `http://localhost:3000/api/stories/id/${response.data[0].storyId}`;
+        } else {
+          // N.B.: the first api call returns an arr of the date/etc. when a brained article was created. also the story id of the article.
+          //       but the actual info of the stories needs to be a separate api call
+
+          const brainedDate = new Date(response.data[0].createdAt); // N.B.: we do need the date it was brained which is returned in the first arr
+          const options: Intl.DateTimeFormatOptions = { year: "numeric", month: "long", day: "numeric" };
+          const formattedBrainedDate = brainedDate.toLocaleDateString("en-US", options);
+
+          storyURL = `http://localhost:3000/api/stories/id/${response.data[0].storyId}`; // N.B.: create 2nd api call, this time for story-specific info
 
           const x = axios
             .get(storyURL)
             .then(response => {
-              // console.log(`curr data: `, response.data)
-              const tagColor = TopicColor(response.data.tags[0]);
+              const tagColor = TopicColor(response.data.tags[0]); // N.B.: calls function that matches tagColor as a string to its hex code
 
-              const authorName = (() => {
+              const authorName = (() => { // N.B.: traverses storyContributions arr and returns the first "AUTHOR"'s full name in arr
                 let contributors = response.data.storyContributions;
-                // console.log(`contributors: `, contributors);
                 let count = 0;
                 let authorFound = false;
 
                 while ((count < contributors.length) && (!authorFound)) {
-                  // console.log(`contributors[${count}]`, contributors[count]);
-
                   if (contributors[count].contributionType == "AUTHOR") {
                     authorFound = true;
                   } else {
@@ -60,9 +56,9 @@ export default function BrainedArticleBox() {
 
               });
 
-              let temp = (
+              let temp = ( // N.B.: now creating the html of the box...
                 <div className="flex items-center">
-                  <Image
+                  <Image 
                     src={response.data.thumbnailUrl}
                     fill={false}
                     width={`${50}`}
@@ -77,7 +73,7 @@ export default function BrainedArticleBox() {
                     <div className="flex flex-col mx-3">
                       <h2 className="text-sm font-semibold">{response.data.title}</h2>
                       <p className="text-xs mt-1 text-[#696969]">By {authorName()}</p>
-                      <p className="text-[.6rem] mt-1 text-[#9E9E9E]">Saved {formattedBookmarkedDate}</p>
+                      <p className="text-[.6rem] mt-1 text-[#9E9E9E]">Saved {formattedBrainedDate}</p>
                     </div>
 
                     <div style={{'--customColor': tagColor} as React.CSSProperties }>
@@ -87,7 +83,7 @@ export default function BrainedArticleBox() {
                 </div>
               )
         
-              setReturnVal(temp);
+              setReturnVal(temp); // N.B.: ... and setting the state variable to the new html code so it'll actually dynamically update!
         
             });
         }

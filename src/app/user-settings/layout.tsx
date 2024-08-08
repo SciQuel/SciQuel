@@ -8,14 +8,14 @@ export default function Layout(props: { children: React.ReactNode }) {
   const { data: session } = useSession();
   if (!session) {
     return (
-      <div className="min-h-screen bg-[#F8F8FF] px-8 dark:bg-black">
+      <div className="min-h-screen bg-white px-8 dark:bg-black">
         <p>You need to sign in to view this page</p>
       </div>
     );
   }
   return (
     <section>
-      <div className="bg-[#F8F8FF] dark:bg-sciquelDarkText dark:text-white min-h-screen flex">
+      <div className="bg-white dark:bg-sciquelDarkText dark:text-white min-h-screen flex">
         <Sidebar/>
         {props.children}
       </div>

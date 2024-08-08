@@ -7,9 +7,8 @@ export default function Layout(props: {
   top_flex: React.ReactNode;
   bottom_flex: React.ReactNode;
 }) {
-  // const smallerViewHeight: React.CSSProperties = {
-  //   height: '.75vh'
-  // }
+  // 📝: this takes props and displays them on the dashboard's body (a.k.a. everything that's not the header, footer, or sidebar).
+  //     lots of stuff is commented out and feel free to delete those,, they're artifacts from the previous iteration of the `user-dashboard`.
 
   return (
     <div className="relative flex grow flex-col pt-6 max-h-screen">

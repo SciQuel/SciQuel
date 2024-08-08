@@ -13,7 +13,7 @@ function SidebarItem(props: {
   margin?: boolean;
 }) {
   const active = props.path === props.href;
-  console.log(`props.children: ${props.children?.toString()}`)
+  // console.log(`props.children: ${props.children?.toString()}`)
   return (
     <div className="">
       <Link
@@ -35,6 +35,11 @@ function SidebarItem(props: {
 }
 
 export default function Sidebar() {
+
+  // 📝: this is the code for the sidebar! a couple of things to note: this huge, commented-out portion of this code was an attempt to make the
+  //     sidebar collapsible (as according to the figma). it's a v low priority task, but if edward ever wants to re-implement it, you can 
+  //     reference this. also, bug the design team abt giving you a proper `svg` for the setting item...
+
   const path: string = usePathname();
   const temp = path.split("/");
   const title = temp[temp.length - 1]
@@ -302,21 +307,11 @@ export default function Sidebar() {
       <div className="pt-1.5 gap-4 gap-y-8 text-center text-xl dark:text-white md:flex-col md:gap-y-2 md:text-left z-10 pt-6 md:sticky md:w-56 
                 h-screen bg-[#EDF4F4] px-5">
 
-        {/* {side} */}
-
-        {/* <div className="pt-3 font-semibold flex flex-row-reverse"
-          onClick={(() => {setXPressed(!xPressed)})}>
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M14 2L2 13.7098" stroke="#1A6768" stroke-width="3" stroke-linecap="round"/>
-          <path d="M14 13.71L2.00006 2.00007" stroke="#1A6768" stroke-width="3" stroke-linecap="round"/>
-          </svg>
-
-        </div> */}
-
         <div className="flex flex-col justify-between text-[#1A6768] text-xl h-4/5">
           <div>
             <SidebarItem href="/user-settings/dashboard" path={path}>
               <div className="flex flex-row items-center my-3">
+                {/* N.B.: bc i didn't know this, it might be helpful-- these svg codes are directly copied from figma! just right click and select 'copy as svg'*/}
                 <svg className="mr-2" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M20.2038 12.9367C20.727 12.9367 21.1552 13.3615 21.1133 13.8831C20.965 15.7278 20.3851 17.5082 19.4212 19.0561C18.2932 20.8675 16.6899 22.2793 14.8141 23.113C12.9383 23.9467 10.8743 24.1648 8.88295 23.7398C6.89163 23.3148 5.06249 22.2657 3.62683 20.7253C2.19116 19.1848 1.21347 17.2222 0.817367 15.0855C0.421268 12.9489 0.62456 10.7342 1.40154 8.72148C2.17851 6.70879 3.49427 4.98852 5.18243 3.7782C6.60726 2.75668 8.24335 2.13715 9.93981 1.96872C10.4605 1.91703 10.8857 2.34603 10.8857 2.86926V11.9893C10.8857 12.5125 11.3098 12.9367 11.833 12.9367H20.2038Z" fill="#1A6768"/>
                   <path d="M12.5966 1.71009C12.5966 1.18687 13.0215 0.758564 13.5429 0.802578C14.6415 0.895327 15.721 1.14923 16.7433 1.55703C18.058 2.08144 19.2525 2.85008 20.2587 3.81907C21.2649 4.78805 22.0631 5.9384 22.6076 7.20444C23.0265 8.1782 23.289 9.20573 23.3878 10.2518C23.4371 10.7727 23.0083 11.1978 22.4851 11.1978L13.544 11.1978C13.0208 11.1978 12.5966 10.7736 12.5966 10.2504L12.5966 1.71009Z" fill="#1A6768"/>

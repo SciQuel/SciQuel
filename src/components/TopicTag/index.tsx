@@ -34,3 +34,7 @@ export default function TopicTag({ name }: Props) {
     </span>
   );
 }
+
+export function TopicColor(name: string) {
+  return topicTagColors[name as StoryTopic];
+}
