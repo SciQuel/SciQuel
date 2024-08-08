@@ -30,9 +30,12 @@ export default function TestPage() {
       .then((data) => consoleOut(data.data));
   }
   function postPageView() {
+    const date = new Date();
+    const timeZone = Math.floor((date.getTimezoneOffset() / 60) * -1);
     axios
       .post("/api/user/page_views", {
         story_id: storyId,
+        time_zone: timeZone,
       })
       .then((data) => consoleOut(data.data));
   }
@@ -57,7 +60,7 @@ export default function TestPage() {
           <pre>{textConsole}</pre>
         </div>
       </label>
-      <button>Post page view</button>
+      <button onClick={postPageView}>Post page view</button>
       <button onClick={getPageByStoryId}>Get page view by story id</button>
       <button onClick={getPageViewByUserId}>Get page view by user id</button>
       <button onClick={getPageViewByUserIdDistinct}>

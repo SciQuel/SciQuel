@@ -31,4 +31,12 @@ export const postSchema = z.object({
       invalid_type_error: "story_id must be a ObjectId",
     })
     .regex(/^[0-9a-f]{24}$/, { message: "story_id must be a valid ObjectId" }),
+  time_zone: z
+    .number({
+      invalid_type_error: "time_zone must be an int number",
+      required_error: "time_zone is required in the body",
+    })
+    .int("limit must be a int number")
+    .gte(-12, "minimum of time_zone is -12")
+    .lte(14, "maximum of time_zone is 14"),
 });
