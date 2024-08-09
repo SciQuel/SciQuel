@@ -160,6 +160,8 @@ model User {
   roles   UserRole[] @default([])
   quizzes Quiz[]
 
+  favoriteTopics StoryTopic[]
+
   contactUpdates       ContactMessage[]
   firstQuizRecord      Json?
   mostRecentQuizRecord Json?

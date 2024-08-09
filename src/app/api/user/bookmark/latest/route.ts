@@ -39,7 +39,7 @@ export async function GET(req: Request) {
 
   const session = await getServerSession();
   if (session?.user.email !== user_email) {
-    console.log('session', session);
+    console.log("session", session);
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
