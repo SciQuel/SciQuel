@@ -7,15 +7,22 @@ module.exports = {
   ],
   theme: {
     extend: {
+      keyframes: {
+        shrink: {
+          "0%": { width: "100%" },
+          "100%": { width: "0%" },
+        },
+      },
       fontFamily: {
         alegreyaSansSC: "var(--font-alegreya-sans-sc)",
         sourceSerif4: "var(--font-source-serif-4)",
+        customTest: ["custom-test", "sans-serif"],
       },
       colors: {
         sciquelDarkText: "#333333",
-        sciquelTeal: "#109191",
-        sciquelFooter: "#5C9EAD",
-        sciquelHover: "#51726b",
+        sciquelTeal: "#194b52",
+        sciquelFooter: "#255363",
+        sciquelHover: "#256670",
         sciquelHeading: "rgba(52, 78, 65, 1)",
         sciquelMuted: "#878787",
         sciquelCaption: "#565656",
@@ -34,8 +41,13 @@ module.exports = {
         spacing: "margin, padding",
         position: "top, left, right, bottom",
       },
+      screens: {
+        xs: "350px",
+      },
     },
   },
-  plugins: [require("@tailwindcss/container-queries"), require("tailwindcss-touch")()],
-  darkMode: "class",
+  plugins: [
+    require("@tailwindcss/container-queries"),
+    require("tailwindcss-touch")(),
+  ],
 };

@@ -37,7 +37,7 @@ export default function BrainedArticleBox() {
           const x = axios
             .get(storyURL)
             .then(response => {
-              const tagColor = TopicColor(response.data.tags[0]); // N.B.: calls function that matches tagColor as a string to its hex code
+              const tagColor = TopicColor(response.data.topics[0]); // N.B.: calls function that matches tagColor as a string to its hex code
 
               const authorName = (() => { // N.B.: traverses storyContributions arr and returns the first "AUTHOR"'s full name in arr
                 let contributors = response.data.storyContributions;
@@ -77,7 +77,7 @@ export default function BrainedArticleBox() {
                     </div>
 
                     <div style={{'--customColor': tagColor} as React.CSSProperties }>
-                      <p className='bg-[var(--customColor)] text-[.6rem] mx-3 rounded-full py-.5 px-1.5 text-white'>{response.data.tags[0]}</p>
+                      <p className='bg-[var(--customColor)] text-[.6rem] mx-3 rounded-full py-.5 px-1.5 text-white'>{response.data.topics[0]}</p>
                     </div>
                   </div>
                 </div>

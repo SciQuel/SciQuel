@@ -76,7 +76,7 @@ export default function QuizCard({
   const {
     quizType,
     date,
-    story: { title, tags },
+    story: { title, topics },
   } = quiz;
 
   const quizTypeMap = {
@@ -99,7 +99,7 @@ export default function QuizCard({
           {quizTypeMap[quizType]}
         </div>
         <div className="my-2 flex">
-          <TopicTag name={tags[0]} />
+          <TopicTag name={topics[0]} />
         </div>
         <div className="text-xs font-thin text-gray-400">
           {date?.toLocaleDateString("en-us", {

@@ -23,6 +23,7 @@ export default function BookmarksBox() {
     const response = axios
       .get(URL)
       .then(response => {
+        console.log(`bookmarks response: `, response)
         if (response.data.length == 0) { // N.B.: if (!response)
           setReturnVal(<p className="italic">You don't have any Bookmarks!</p>)
         } else {
@@ -36,7 +37,7 @@ export default function BookmarksBox() {
             .get(storyURL1)
             .then(response => {
 
-              const tagColor1 = TopicColor(response.data.tags[0]); // N.B.: matches tag string to hex code
+              const tagColor1 = TopicColor(response.data.topics[0]); // N.B.: matches tag string to hex code
 
               const authorName1 = (() => { // N.B.: traverses arr of storyContributions and return first person listed as an "AUTHOR"'s full name
                 let contributors = response.data.storyContributions;
@@ -75,7 +76,7 @@ export default function BookmarksBox() {
                     </div>
 
                     <p style={{'--customColor': tagColor1} as React.CSSProperties}
-                      className="text-[.6rem] mx-3 bg-[var(--customColor)] rounded-full py-.5 px-1.5 text-white">{response.data.tags[0]}</p> 
+                      className="text-[.6rem] mx-3 bg-[var(--customColor)] rounded-full py-.5 px-1.5 text-white">{response.data.topics[0]}</p> 
                     </div>
                   </div>
 
@@ -86,7 +87,7 @@ export default function BookmarksBox() {
             const b = axios
               .get(storyURL2)
               .then(response => {
-                const tagColor2 = TopicColor(response.data.tags[0]);
+                const tagColor2 = TopicColor(response.data.topics[0]);
                 
                 const authorName2 = (() => {
                   let contributors = response.data.storyContributions;
@@ -125,7 +126,7 @@ export default function BookmarksBox() {
                       </div>
 
                       <p style={{'--customColor': tagColor2} as React.CSSProperties}
-                        className="text-[.6rem] mx-3 bg-[var(--customColor)] rounded-full py-.5 px-1.5 text-white">{response.data.tags[0]}</p> 
+                        className="text-[.6rem] mx-3 bg-[var(--customColor)] rounded-full py-.5 px-1.5 text-white">{response.data.topics[0]}</p> 
                       </div>
                     </div>
 
@@ -136,7 +137,7 @@ export default function BookmarksBox() {
                 const c = axios
                   .get(storyURL3)
                   .then(response => {
-                    const tagColor3 = TopicColor(response.data.tags[0]);
+                    const tagColor3 = TopicColor(response.data.topics[0]);
                     
                     const authorName3 = (() => {
                       let contributors = response.data.storyContributions;
@@ -175,7 +176,7 @@ export default function BookmarksBox() {
                           </div>
 
                           <p style={{'--customColor': tagColor3} as React.CSSProperties}
-                            className="text-[.6rem] mx-3 bg-[var(--customColor)] rounded-full py-.5 px-1.5 text-white">{response.data.tags[0]}</p> 
+                            className="text-[.6rem] mx-3 bg-[var(--customColor)] rounded-full py-.5 px-1.5 text-white">{response.data.topics[0]}</p> 
                           </div>
                         </div>
 
