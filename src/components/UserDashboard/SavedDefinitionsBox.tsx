@@ -34,66 +34,70 @@ export default function SavedDefinitionsBox() {
   let headlineArticle: Story;
 
   useEffect(() => {
-    whatsNewArticles.then((data) => {
-      headlineArticle = (data as Stories)?.[0]; // N.B.: uses the first article in the arr of Stories
+    whatsNewArticles
+      .then((data) => {
+        headlineArticle = (data as Stories)?.[0]; // N.B.: uses the first article in the arr of Stories
 
-      const temp = (
-        <div>
-          <div className="flex items-center">
-            <Image
-              src={headlineArticle.thumbnailUrl}
-              fill={false}
-              width={`${30}`}
-              height={`${25}`}
-              alt="thumbnail of article"
-              className="mx-3 aspect-square h-9 w-9 rounded-md"
-              style={{ position: "relative" }}
-            />
+        const temp = (
+          <div>
+            <div className="flex items-center">
+              <Image
+                src={headlineArticle.thumbnailUrl}
+                fill={false}
+                width={`${30}`}
+                height={`${25}`}
+                alt="thumbnail of article"
+                className="mx-3 aspect-square h-9 w-9 rounded-md"
+                style={{ position: "relative" }}
+              />
 
-            {/* FIXME: all of this should be based off the API call */}
-            <div className="ml-3 flex flex-col">
-              <h2 className="text-sm font-semibold">Wavelength</h2>
-              <p className="mt-1 text-xs text-[#696969]">
-                noun. A property of light that, among other things, dictates the
-                color of a beam of light.
-              </p>
-              <p className="mt-1 text-[.6rem]">
-                <span className="font-semibold">Article:</span> Lights, Camera,
-                Action!
-              </p>
+              {/* FIXME: all of this should be based off the API call */}
+              <div className="ml-3 flex flex-col">
+                <h2 className="text-sm font-semibold">Wavelength</h2>
+                <p className="mt-1 text-xs text-[#696969]">
+                  noun. A property of light that, among other things, dictates
+                  the color of a beam of light.
+                </p>
+                <p className="mt-1 text-[.6rem]">
+                  <span className="font-semibold">Article:</span> Lights,
+                  Camera, Action!
+                </p>
+              </div>
+            </div>
+
+            <hr className="solid my-2 border-[#D6D6D6]"></hr>
+
+            <div className="flex items-center">
+              <Image
+                src={headlineArticle.thumbnailUrl}
+                fill={false}
+                width={`${30}`}
+                height={`${25}`}
+                alt="thumbnail of article"
+                className="mx-3 aspect-square h-9 w-9 rounded-md"
+                style={{ position: "relative" }}
+              />
+
+              <div className="ml-3 flex flex-col">
+                <h2 className="mt-1 text-sm font-semibold">Wavelength</h2>
+                <p className="mt-1 text-xs text-[#696969]">
+                  noun. A property of light that, among other things, dictates
+                  the color of a beam of light.
+                </p>
+                <p className="mt-1 text-[.6rem]">
+                  <span className="font-semibold">Article:</span> Lights,
+                  Camera, Action!
+                </p>
+              </div>
             </div>
           </div>
+        );
 
-          <hr className="solid my-2 border-[#D6D6D6]"></hr>
-
-          <div className="flex items-center">
-            <Image
-              src={headlineArticle.thumbnailUrl}
-              fill={false}
-              width={`${30}`}
-              height={`${25}`}
-              alt="thumbnail of article"
-              className="mx-3 aspect-square h-9 w-9 rounded-md"
-              style={{ position: "relative" }}
-            />
-
-            <div className="ml-3 flex flex-col">
-              <h2 className="mt-1 text-sm font-semibold">Wavelength</h2>
-              <p className="mt-1 text-xs text-[#696969]">
-                noun. A property of light that, among other things, dictates the
-                color of a beam of light.
-              </p>
-              <p className="mt-1 text-[.6rem]">
-                <span className="font-semibold">Article:</span> Lights, Camera,
-                Action!
-              </p>
-            </div>
-          </div>
-        </div>
-      );
-
-      setReturnVal(temp);
-    });
+        setReturnVal(temp);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
   });
 
   return (

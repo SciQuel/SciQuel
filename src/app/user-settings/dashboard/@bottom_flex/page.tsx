@@ -1,13 +1,13 @@
-import SavedDefinitionsBox from "@/components/UserDashboard/SavedDefinitionsBox";
-import NotesBox from "@/components/UserDashboard/NotesBox";
 import BookmarksBox from "@/components/UserDashboard/BookmarksBox";
+import NotesBox from "@/components/UserDashboard/NotesBox";
+import SavedDefinitionsBox from "@/components/UserDashboard/SavedDefinitionsBox";
 
-export default async function BottomFlex() {
+export default function BottomFlex() {
   return (
     <div className="flex">
-      <SavedDefinitionsBox/>
-      <NotesBox/>
-      <BookmarksBox/>
+      <SavedDefinitionsBox />
+      <NotesBox />
+      <BookmarksBox />
     </div>
-  )
+  );
 }

@@ -11,7 +11,7 @@ export default function Layout(props: {
   //     lots of stuff is commented out and feel free to delete those,, they're artifacts from the previous iteration of the `user-dashboard`.
 
   return (
-    <div className="relative flex grow flex-col pt-6 max-h-screen">
+    <div className="max-h-screen grow flex-col pt-6">
       {props.top_flex}
       {/* {props.bottom_flex} */}
       {/* {props.test} */}

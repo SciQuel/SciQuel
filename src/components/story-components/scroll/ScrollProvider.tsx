@@ -67,8 +67,8 @@ export function StoryScrollProvider({ children }: PropsWithChildren) {
   const [screenElements, setScreenElements] = useState<OnScreenElements[]>([]);
 
   function resetOverlap(figureRef: RefObject<HTMLElement>) {
-    setScreenElements((state) => {
-      let newArray = state;
+    setScreenElements((state: OnScreenElements[]) => {
+      let newArray: OnScreenElements[] = state;
       state.forEach((item, index) => {
         console.log(
           "reset?: ",
@@ -98,7 +98,7 @@ export function StoryScrollProvider({ children }: PropsWithChildren) {
           },
         ]);
       } else {
-        setScreenElements((state) => {
+        setScreenElements((state: OnScreenElements[]) => {
           let itemIndex = -1;
           const newList = [...state];
           newList.forEach((item, index) => {

@@ -2,6 +2,7 @@
 
 import Sidebar from "@/components/UserSettings/Sidebar";
 import { useSession } from "next-auth/react";
+
 // import { useEffect, useState } from "react";
 
 export default function Layout(props: { children: React.ReactNode }) {
@@ -15,8 +16,8 @@ export default function Layout(props: { children: React.ReactNode }) {
   }
   return (
     <section>
-      <div className="bg-white dark:bg-sciquelDarkText dark:text-white min-h-screen flex">
-        <Sidebar/>
+      <div className="flex min-h-screen bg-white dark:bg-sciquelDarkText dark:text-white">
+        <Sidebar />
         {props.children}
       </div>
     </section>
