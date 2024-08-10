@@ -348,3 +348,9 @@ model StaffPickRecord {
   @@index([storyId])
   @@index([staffId])
 }
+
+model NewsletterSubscription {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  email    String @unique
+  createdAt       DateTime @default(now())
+}
