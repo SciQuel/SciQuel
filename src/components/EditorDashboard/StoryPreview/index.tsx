@@ -2,17 +2,9 @@ import { type GetStoryResult } from "@/app/api/stories/id/[id]/route";
 import { type Contribution } from "@/app/editor/(full-page)/story/info/StoryInfoEditorPageClient";
 import ShareLinks from "@/components/story-components/ShareLinks";
 import TopicTag from "@/components/TopicTag";
-import TopicTag from "@/components/TopicTag";
 import { generateMarkdown } from "@/lib/markdown";
 import { type StoryTopic } from "@prisma/client";
-import { type StoryTopic } from "@prisma/client";
 import Image from "next/image";
-import React, {
-  useEffect,
-  useState,
-  type ReactElement,
-  type ReactNode,
-} from "react";
 import React, {
   useEffect,
   useState,

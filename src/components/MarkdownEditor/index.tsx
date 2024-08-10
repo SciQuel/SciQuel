@@ -34,9 +34,14 @@ const inter = Inter({ subsets: ["latin"] });
 interface Props {
   initialValue?: string;
   id: string;
+  onMarkdownChange: (value: string) => void;
 }
 
-export default function MarkdownEditor({ initialValue, id }: Props) {
+export default function MarkdownEditor({
+  initialValue,
+  id,
+  onMarkdownChange,
+}: Props) {
   const router = useRouter();
   const [dirty, setDirty] = useState(false);
   const [value, setValue] = useState(initialValue ?? "");
@@ -48,11 +53,17 @@ export default function MarkdownEditor({ initialValue, id }: Props) {
   const [loading, startTransition] = useTransition();
 
   useEffect(() => {
+    setValue(initialValue ?? "");
+  }, [initialValue]);
+
+  useEffect(() => {
     void generateMarkdown(value).then(({ file, wordStats }) => {
       setStats(wordStats);
       setRenderedContent(file.result);
     });
-  }, [value]);
+    console.log("Markdown value:", value);
+    onMarkdownChange(value); // Notify parent component of markdown changes
+  }, [value, onMarkdownChange]);
 
   const handleEditorMount = useCallback(
     (editor: editor.IStandaloneCodeEditor) => {
@@ -121,7 +132,7 @@ export default function MarkdownEditor({ initialValue, id }: Props) {
 
   return (
     <div className="flex h-full grow flex-row">
-      <div className={clsx("flex w-1/2 flex-col border-r", inter.className)}>
+      <div className={clsx("flex w-full flex-col border-r", inter.className)}>
         <Toolbar
           editor={editor}
           onSubmit={handleEditorSubmit}

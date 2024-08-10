@@ -3,6 +3,7 @@
 import { type GetStoryResult } from "@/app/api/stories/id/[id]/route";
 import StoryInfoForm from "@/components/EditorDashboard/StoryInfoForm";
 import StoryPreview from "@/components/EditorDashboard/StoryPreview";
+import parseMarkdownToSections from "@/components/MarkdownEditor/parseMarkdown";
 import { generateMarkdown } from "@/lib/markdown";
 import {
   ContributionType,
@@ -56,10 +57,6 @@ const StoryInfoEditorClient: React.FC<Props> = ({ story, contributions }) => {
   const [contributors, setContributors] =
     useState<Contribution[]>(contributions);
 
-  const [sections, setSections] = useState<Section[]>([]);
-
-  console.log(story);
-
   // formats the input string and gets is as MM/DD/YYYY and HR:MM AM/PM for display
   const formatPreviewDate = (date: string): string => {
     if (!date) return "";
@@ -99,6 +96,11 @@ const StoryInfoEditorClient: React.FC<Props> = ({ story, contributions }) => {
   //     return newContributors;
   //   });
   // };
+  const [sections, setSections] = useState<Section[]>([]);
+
+  useEffect(() => {
+    console.log("Sections state updated:", sections);
+  }, [sections]);
 
   // fetch article and set body content
   useEffect(() => {
@@ -107,17 +109,19 @@ const StoryInfoEditorClient: React.FC<Props> = ({ story, contributions }) => {
         try {
           const fetchedArticle = await fetchArticleById(story.id, true);
           if (fetchedArticle.storyContent.length > 0) {
-            setBody(fetchedArticle.storyContent[0].content);
+            const storyContent = fetchedArticle.storyContent[0].content;
+            console.log("Fetched article content:", storyContent); // Debug log
+            setBody(storyContent);
             setImage(fetchedArticle.thumbnailUrl);
             setStoryType(fetchedArticle.storyType);
             setTopics(fetchedArticle.topics);
-            console.log(fetchedArticle.topics);
             setTitleColor(fetchedArticle.titleColor);
             setSummaryColor(fetchedArticle.summaryColor);
             setDate(fetchedArticle.publishedAt);
             setCaption(fetchedArticle.coverCaption);
-            // console.log(fetchedArticle.storyContributions);
-            // setContributors(fetchedArticle.storyContributions);
+            const initialSections = parseMarkdownToSections(storyContent);
+            console.log("Loaded sections:", initialSections); // Debug log
+            setSections(initialSections);
           }
         } catch (err: any) {
           console.error("Failed to fetch article:", err.message);
@@ -128,7 +132,12 @@ const StoryInfoEditorClient: React.FC<Props> = ({ story, contributions }) => {
     loadArticle();
   }, [story.id]);
 
-  console.log();
+  const handleMarkdownChange = (newMarkdown: string) => {
+    setBody(newMarkdown);
+    const parsedSections = parseMarkdownToSections(newMarkdown);
+    console.log("Parsed sections:", parsedSections);
+    setSections(parsedSections);
+  };
 
   // inserts newContent into the array at idx – basically anytime user inputs
   const handleSectionChange = (idx: number, newContent: string) => {
