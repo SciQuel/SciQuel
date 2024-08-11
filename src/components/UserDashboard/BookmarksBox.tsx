@@ -1,5 +1,6 @@
 "use client";
 
+import { type GetStoryResult } from "@/app/api/stories/id/[id]/route";
 import { type GetLatestBookmarkRes } from "@/app/api/user/bookmark/latest/route";
 import { type Brain, type Story, type StoryContribution } from "@prisma/client";
 import axios, {
@@ -88,82 +89,85 @@ export default function BookmarksBox() {
               bookmarks[2][`storyId`]
             }`;
 
+            let article1 = <></>;
             // N.B.: a, b, c are the individual calls for each of the 3 articles' info
             axios
               .get(storyURL1)
               .then((response: AxiosResponse) => {
-                const r1: secondResponseType = {
-                  data: response.data,
-                  headers: response.headers,
-                  request: response.request,
-                  status: response.status,
-                  statusText: response.statusText,
-                };
+                // const r1: secondResponseType = {
+                //   data: response.data,
+                //   headers: response.headers,
+                //   request: response.request,
+                //   status: response.status,
+                //   statusText: response.statusText,
+                // };
 
-                const tagColor1 = TopicColor(r1.data.topics[0]); // N.B.: matches tag string to hex code
+                if (response.status == 200) {
+                  const story = response.data as GetStoryResult;
+                  const tagColor1 = TopicColor(story.topics[0]); // N.B.: matches tag string to hex code
 
-                const authorName1 = () => {
-                  // N.B.: traverses arr of storyContributions and return first person listed as an "AUTHOR"'s full name
-                  const contributors: StoryContribution[] =
-                    r1.data.storyContributions;
-                  let count = 0;
-                  let authorFound = false;
+                  const authorName1 = () => {
+                    // N.B.: traverses arr of storyContributions and return first person listed as an "AUTHOR"'s full name
+                    const contributors = story.storyContributions;
+                    let count = 0;
+                    let authorFound = false;
 
-                  while (count < contributors.length && !authorFound) {
-                    if (contributors[count].contributionType == "AUTHOR") {
-                      authorFound = true;
-                    } else {
-                      count++;
+                    while (count < contributors.length && !authorFound) {
+                      if (contributors[count].contributionType == "AUTHOR") {
+                        authorFound = true;
+                      } else {
+                        count++;
+                      }
                     }
-                  }
 
-                  return (
-                    (contributors[count].contributor.firstName as string) +
-                    " " +
-                    (contributors[count].contributor.lastName as string)
-                  );
-                };
+                    return (
+                      contributors[count].contributor.firstName +
+                      " " +
+                      contributors[count].contributor.lastName
+                    );
+                  };
 
-                const article1 = // N.B.: defining the html for the first article
-                  (
-                    <div>
-                      <div className="flex items-center">
-                        <Image
-                          src={r1.data.thumbnailUrl}
-                          fill={false}
-                          width={`${30}`}
-                          height={`${25}`}
-                          alt="thumbnail of article"
-                          className="mx-3 aspect-square h-9 w-9 rounded-md"
-                          style={{ position: "relative" }}
-                        />
+                  article1 = // N.B.: defining the html for the first article
+                    (
+                      <div>
+                        <div className="flex items-center">
+                          <Image
+                            src={story.thumbnailUrl}
+                            fill={false}
+                            width={`${30}`}
+                            height={`${25}`}
+                            alt="thumbnail of article"
+                            className="mx-3 aspect-square h-9 w-9 rounded-md"
+                            style={{ position: "relative" }}
+                          />
 
-                        <div className="flex w-full items-center justify-between">
-                          <div className="ml-3 flex flex-col">
-                            <h2 className="text-sm font-semibold">
-                              {r1.data.title}
-                            </h2>
-                            <p className="mt-1 text-xs text-[#696969]">
-                              By {authorName1()}
+                          <div className="flex w-full items-center justify-between">
+                            <div className="ml-3 flex flex-col">
+                              <h2 className="text-sm font-semibold">
+                                {story.title}
+                              </h2>
+                              <p className="mt-1 text-xs text-[#696969]">
+                                By {authorName1()}
+                              </p>
+                            </div>
+
+                            <p
+                              style={
+                                {
+                                  "--customColor": tagColor1,
+                                } as React.CSSProperties
+                              }
+                              className="py-.5 mx-3 rounded-full bg-[var(--customColor)] px-1.5 text-[.6rem] text-white"
+                            >
+                              {story.topics[0]}
                             </p>
                           </div>
-
-                          <p
-                            style={
-                              {
-                                "--customColor": tagColor1,
-                              } as React.CSSProperties
-                            }
-                            className="py-.5 mx-3 rounded-full bg-[var(--customColor)] px-1.5 text-[.6rem] text-white"
-                          >
-                            {r1.data.topics[0]}
-                          </p>
                         </div>
-                      </div>
 
-                      <hr className="solid my-3 border-[#D6D6D6]"></hr>
-                    </div>
-                  );
+                        <hr className="solid my-3 border-[#D6D6D6]"></hr>
+                      </div>
+                    );
+                }
 
                 axios
                   .get(storyURL2)
