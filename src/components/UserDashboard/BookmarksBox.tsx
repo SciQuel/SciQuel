@@ -1,5 +1,6 @@
 "use client";
 
+import { type GetLatestBookmarkRes } from "@/app/api/user/bookmark/latest/route";
 import { type Brain, type Story, type StoryContribution } from "@prisma/client";
 import axios, {
   type AxiosHeaderValue,
@@ -60,145 +61,75 @@ export default function BookmarksBox() {
     axios
       .get(URL)
       .then((response: AxiosResponse) => {
-        const r0: firstResponseType = {
-          data: response.data,
-          headers: response.headers,
-          request: response.request,
-          status: response.status,
-          statusText: response.statusText,
-        };
+        // const r0: firstResponseType = {
+        //   data: response.data,
+        //   headers: response.headers,
+        //   request: response.request,
+        //   status: response.status,
+        //   statusText: response.statusText,
+        // };
 
-        if (r0.data.length == 0) {
-          // N.B.: if (!response)
-          setReturnVal(<p className="italic">You don't have any Bookmarks!</p>);
-        } else {
-          // N.B.: returns arr of latest 4 bookmarks, including when they were made, storyId, etc.
-          storyURL1 = `http://localhost:3000/api/stories/id/${
-            r0.data[0][`storyId`]
-          }`;
-          storyURL2 = `http://localhost:3000/api/stories/id/${
-            r0.data[1][`storyId`]
-          }`;
-          storyURL3 = `http://localhost:3000/api/stories/id/${
-            r0.data[2][`storyId`]
-          }`;
+        if (response.status == 200) {
+          const bookmarks = response.data as GetLatestBookmarkRes;
+          if (bookmarks.length == 0) {
+            // N.B.: if (!response)
+            setReturnVal(
+              <p className="italic">You don't have any Bookmarks!</p>,
+            );
+          } else {
+            // N.B.: returns arr of latest 4 bookmarks, including when they were made, storyId, etc.
+            storyURL1 = `http://localhost:3000/api/stories/id/${
+              bookmarks[0][`storyId`]
+            }`;
+            storyURL2 = `http://localhost:3000/api/stories/id/${
+              bookmarks[1][`storyId`]
+            }`;
+            storyURL3 = `http://localhost:3000/api/stories/id/${
+              bookmarks[2][`storyId`]
+            }`;
 
-          // N.B.: a, b, c are the individual calls for each of the 3 articles' info
-          axios
-            .get(storyURL1)
-            .then((response: AxiosResponse) => {
-              const r1: secondResponseType = {
-                data: response.data,
-                headers: response.headers,
-                request: response.request,
-                status: response.status,
-                statusText: response.statusText,
-              };
+            // N.B.: a, b, c are the individual calls for each of the 3 articles' info
+            axios
+              .get(storyURL1)
+              .then((response: AxiosResponse) => {
+                const r1: secondResponseType = {
+                  data: response.data,
+                  headers: response.headers,
+                  request: response.request,
+                  status: response.status,
+                  statusText: response.statusText,
+                };
 
-              const tagColor1 = TopicColor(r1.data.topics[0]); // N.B.: matches tag string to hex code
+                const tagColor1 = TopicColor(r1.data.topics[0]); // N.B.: matches tag string to hex code
 
-              const authorName1 = () => {
-                // N.B.: traverses arr of storyContributions and return first person listed as an "AUTHOR"'s full name
-                const contributors: StoryContribution[] =
-                  r1.data.storyContributions;
-                let count = 0;
-                let authorFound = false;
+                const authorName1 = () => {
+                  // N.B.: traverses arr of storyContributions and return first person listed as an "AUTHOR"'s full name
+                  const contributors: StoryContribution[] =
+                    r1.data.storyContributions;
+                  let count = 0;
+                  let authorFound = false;
 
-                while (count < contributors.length && !authorFound) {
-                  if (contributors[count].contributionType == "AUTHOR") {
-                    authorFound = true;
-                  } else {
-                    count++;
-                  }
-                }
-
-                return (
-                  (contributors[count].contributor.firstName as string) +
-                  " " +
-                  (contributors[count].contributor.lastName as string)
-                );
-              };
-
-              const article1 = // N.B.: defining the html for the first article
-                (
-                  <div>
-                    <div className="flex items-center">
-                      <Image
-                        src={r1.data.thumbnailUrl}
-                        fill={false}
-                        width={`${30}`}
-                        height={`${25}`}
-                        alt="thumbnail of article"
-                        className="mx-3 aspect-square h-9 w-9 rounded-md"
-                        style={{ position: "relative" }}
-                      />
-
-                      <div className="flex w-full items-center justify-between">
-                        <div className="ml-3 flex flex-col">
-                          <h2 className="text-sm font-semibold">
-                            {r1.data.title}
-                          </h2>
-                          <p className="mt-1 text-xs text-[#696969]">
-                            By {authorName1()}
-                          </p>
-                        </div>
-
-                        <p
-                          style={
-                            {
-                              "--customColor": tagColor1,
-                            } as React.CSSProperties
-                          }
-                          className="py-.5 mx-3 rounded-full bg-[var(--customColor)] px-1.5 text-[.6rem] text-white"
-                        >
-                          {r1.data.topics[0]}
-                        </p>
-                      </div>
-                    </div>
-
-                    <hr className="solid my-3 border-[#D6D6D6]"></hr>
-                  </div>
-                );
-
-              axios
-                .get(storyURL2)
-                .then((response: AxiosResponse) => {
-                  const r2: secondResponseType = {
-                    data: response.data,
-                    headers: response.headers,
-                    request: response.request,
-                    status: response.status,
-                    statusText: response.statusText,
-                  };
-
-                  const tagColor2 = TopicColor(r2.data.topics[0]);
-
-                  const authorName2 = () => {
-                    const contributors: StoryContribution[] =
-                      r2.data.storyContributions;
-                    let count = 0;
-                    let authorFound = false;
-
-                    while (count < contributors.length && !authorFound) {
-                      if (contributors[count].contributionType == "AUTHOR") {
-                        authorFound = true;
-                      } else {
-                        count++;
-                      }
+                  while (count < contributors.length && !authorFound) {
+                    if (contributors[count].contributionType == "AUTHOR") {
+                      authorFound = true;
+                    } else {
+                      count++;
                     }
+                  }
 
-                    return (
-                      (contributors[count].contributor.firstName as string) +
-                      " " +
-                      (contributors[count].contributor.lastName as string)
-                    );
-                  };
+                  return (
+                    (contributors[count].contributor.firstName as string) +
+                    " " +
+                    (contributors[count].contributor.lastName as string)
+                  );
+                };
 
-                  const article2 = (
+                const article1 = // N.B.: defining the html for the first article
+                  (
                     <div>
                       <div className="flex items-center">
                         <Image
-                          src={r2.data.thumbnailUrl}
+                          src={r1.data.thumbnailUrl}
                           fill={false}
                           width={`${30}`}
                           height={`${25}`}
@@ -210,22 +141,22 @@ export default function BookmarksBox() {
                         <div className="flex w-full items-center justify-between">
                           <div className="ml-3 flex flex-col">
                             <h2 className="text-sm font-semibold">
-                              {r2.data.title}
+                              {r1.data.title}
                             </h2>
                             <p className="mt-1 text-xs text-[#696969]">
-                              By {authorName2()}
+                              By {authorName1()}
                             </p>
                           </div>
 
                           <p
                             style={
                               {
-                                "--customColor": tagColor2,
+                                "--customColor": tagColor1,
                               } as React.CSSProperties
                             }
                             className="py-.5 mx-3 rounded-full bg-[var(--customColor)] px-1.5 text-[.6rem] text-white"
                           >
-                            {r2.data.topics[0]}
+                            {r1.data.topics[0]}
                           </p>
                         </div>
                       </div>
@@ -234,101 +165,176 @@ export default function BookmarksBox() {
                     </div>
                   );
 
-                  axios
-                    .get(storyURL3)
-                    .then((response: AxiosResponse) => {
-                      const r3: secondResponseType = {
-                        data: response.data,
-                        headers: response.headers,
-                        request: response.request,
-                        status: response.status,
-                        statusText: response.statusText,
-                      };
+                axios
+                  .get(storyURL2)
+                  .then((response: AxiosResponse) => {
+                    const r2: secondResponseType = {
+                      data: response.data,
+                      headers: response.headers,
+                      request: response.request,
+                      status: response.status,
+                      statusText: response.statusText,
+                    };
 
-                      const tagColor3 = TopicColor(r3.data.topics[0]);
+                    const tagColor2 = TopicColor(r2.data.topics[0]);
 
-                      const authorName3 = () => {
-                        const contributors: StoryContribution[] =
-                          r3.data.storyContributions;
-                        let count = 0;
-                        let authorFound = false;
+                    const authorName2 = () => {
+                      const contributors: StoryContribution[] =
+                        r2.data.storyContributions;
+                      let count = 0;
+                      let authorFound = false;
 
-                        while (count < contributors.length && !authorFound) {
-                          if (
-                            contributors[count].contributionType == "AUTHOR"
-                          ) {
-                            authorFound = true;
-                          } else {
-                            count++;
-                          }
+                      while (count < contributors.length && !authorFound) {
+                        if (contributors[count].contributionType == "AUTHOR") {
+                          authorFound = true;
+                        } else {
+                          count++;
                         }
+                      }
 
-                        return (
-                          (contributors[count].contributor
-                            .firstName as string) +
-                          " " +
-                          (contributors[count].contributor.lastName as string)
-                        );
-                      };
+                      return (
+                        (contributors[count].contributor.firstName as string) +
+                        " " +
+                        (contributors[count].contributor.lastName as string)
+                      );
+                    };
 
-                      const article3 = (
-                        <div>
-                          <div className="flex items-center">
-                            <Image
-                              src={r3.data.thumbnailUrl}
-                              fill={false}
-                              width={`${30}`}
-                              height={`${25}`}
-                              alt="thumbnail of article"
-                              className="mx-3 aspect-square h-9 w-9 rounded-md"
-                              style={{ position: "relative" }}
-                            />
+                    const article2 = (
+                      <div>
+                        <div className="flex items-center">
+                          <Image
+                            src={r2.data.thumbnailUrl}
+                            fill={false}
+                            width={`${30}`}
+                            height={`${25}`}
+                            alt="thumbnail of article"
+                            className="mx-3 aspect-square h-9 w-9 rounded-md"
+                            style={{ position: "relative" }}
+                          />
 
-                            <div className="flex w-full items-center justify-between">
-                              <div className="ml-3 flex flex-col">
-                                <h2 className="text-sm font-semibold">
-                                  {r3.data.title}
-                                </h2>
-                                <p className="mt-1 text-xs text-[#696969]">
-                                  By {authorName3()}
-                                </p>
-                              </div>
-
-                              <p
-                                style={
-                                  {
-                                    "--customColor": tagColor3,
-                                  } as React.CSSProperties
-                                }
-                                className="py-.5 mx-3 rounded-full bg-[var(--customColor)] px-1.5 text-[.6rem] text-white"
-                              >
-                                {r3.data.topics[0]}
+                          <div className="flex w-full items-center justify-between">
+                            <div className="ml-3 flex flex-col">
+                              <h2 className="text-sm font-semibold">
+                                {r2.data.title}
+                              </h2>
+                              <p className="mt-1 text-xs text-[#696969]">
+                                By {authorName2()}
                               </p>
                             </div>
+
+                            <p
+                              style={
+                                {
+                                  "--customColor": tagColor2,
+                                } as React.CSSProperties
+                              }
+                              className="py-.5 mx-3 rounded-full bg-[var(--customColor)] px-1.5 text-[.6rem] text-white"
+                            >
+                              {r2.data.topics[0]}
+                            </p>
                           </div>
                         </div>
-                      );
 
-                      setReturnVal(
-                        // N.B.: sets state variable equal to all of the articles created in the previous API calls
-                        <div>
-                          {article1}
-                          {article2}
-                          {article3}
-                        </div>,
-                      );
-                    })
-                    .catch((err) => {
-                      console.error(err);
-                    });
-                })
-                .catch((err) => {
-                  console.error(err);
-                });
-            })
-            .catch((err) => {
-              console.error(err);
-            });
+                        <hr className="solid my-3 border-[#D6D6D6]"></hr>
+                      </div>
+                    );
+
+                    axios
+                      .get(storyURL3)
+                      .then((response: AxiosResponse) => {
+                        const r3: secondResponseType = {
+                          data: response.data,
+                          headers: response.headers,
+                          request: response.request,
+                          status: response.status,
+                          statusText: response.statusText,
+                        };
+
+                        const tagColor3 = TopicColor(r3.data.topics[0]);
+
+                        const authorName3 = () => {
+                          const contributors: StoryContribution[] =
+                            r3.data.storyContributions;
+                          let count = 0;
+                          let authorFound = false;
+
+                          while (count < contributors.length && !authorFound) {
+                            if (
+                              contributors[count].contributionType == "AUTHOR"
+                            ) {
+                              authorFound = true;
+                            } else {
+                              count++;
+                            }
+                          }
+
+                          return (
+                            (contributors[count].contributor
+                              .firstName as string) +
+                            " " +
+                            (contributors[count].contributor.lastName as string)
+                          );
+                        };
+
+                        const article3 = (
+                          <div>
+                            <div className="flex items-center">
+                              <Image
+                                src={r3.data.thumbnailUrl}
+                                fill={false}
+                                width={`${30}`}
+                                height={`${25}`}
+                                alt="thumbnail of article"
+                                className="mx-3 aspect-square h-9 w-9 rounded-md"
+                                style={{ position: "relative" }}
+                              />
+
+                              <div className="flex w-full items-center justify-between">
+                                <div className="ml-3 flex flex-col">
+                                  <h2 className="text-sm font-semibold">
+                                    {r3.data.title}
+                                  </h2>
+                                  <p className="mt-1 text-xs text-[#696969]">
+                                    By {authorName3()}
+                                  </p>
+                                </div>
+
+                                <p
+                                  style={
+                                    {
+                                      "--customColor": tagColor3,
+                                    } as React.CSSProperties
+                                  }
+                                  className="py-.5 mx-3 rounded-full bg-[var(--customColor)] px-1.5 text-[.6rem] text-white"
+                                >
+                                  {r3.data.topics[0]}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        );
+
+                        setReturnVal(
+                          // N.B.: sets state variable equal to all of the articles created in the previous API calls
+                          <div>
+                            {article1}
+                            {article2}
+                            {article3}
+                          </div>,
+                        );
+                      })
+                      .catch((err) => {
+                        console.error(err);
+                      });
+                  })
+                  .catch((err) => {
+                    console.error(err);
+                  });
+              })
+              .catch((err) => {
+                console.error(err);
+              });
+          }
         }
       })
       .catch((err) => {

@@ -13,6 +13,14 @@ const requestSchema = z.object({
   page_size: z.string().optional(),
 });
 
+export type GetLatestBrainsRes = {
+  days: number;
+  id: string;
+  createdAt: string;
+  storyId: string;
+  userId: string;
+}[];
+
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const parsedParams = requestSchema.safeParse(
