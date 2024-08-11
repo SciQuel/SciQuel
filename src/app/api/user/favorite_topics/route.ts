@@ -1,4 +1,3 @@
-import prisma from "@/lib/prisma";
 import { type StoryTopic } from "@prisma/client";
 import { NextResponse } from "next/server";
 import {

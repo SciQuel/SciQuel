@@ -1,6 +1,11 @@
 "use client";
 
-import axios, { AxiosResponse } from "axios";
+import { type Brain, type Story, type StoryContribution } from "@prisma/client";
+import axios, {
+  type AxiosHeaderValue,
+  type AxiosResponse,
+  type AxiosResponseHeaders,
+} from "axios";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -15,6 +20,38 @@ export default function BookmarksBox() {
 
   const [returnVal, setReturnVal] = useState(<p>Loading...</p>);
 
+  type firstResponseType = {
+    data: Brain[];
+    headers:
+      | AxiosResponseHeaders
+      | Partial<{
+          Server: AxiosHeaderValue;
+          "Content-Type": AxiosHeaderValue;
+          "Content-Length": AxiosHeaderValue;
+          "Cache-Control": AxiosHeaderValue;
+          "Content-Encoding": AxiosHeaderValue;
+        }>;
+    request: XMLHttpRequest | null;
+    status: number;
+    statusText: string;
+  };
+
+  type secondResponseType = {
+    data: Story;
+    headers:
+      | AxiosResponseHeaders
+      | Partial<{
+          Server: AxiosHeaderValue;
+          "Content-Type": AxiosHeaderValue;
+          "Content-Length": AxiosHeaderValue;
+          "Cache-Control": AxiosHeaderValue;
+          "Content-Encoding": AxiosHeaderValue;
+        }>;
+    request: XMLHttpRequest | null;
+    status: number;
+    statusText: string;
+  };
+
   useEffect(() => {
     let storyURL1: string;
     let storyURL2: string;
@@ -22,32 +59,48 @@ export default function BookmarksBox() {
 
     axios
       .get(URL)
-      .then((response: AxiosResponse<any, any>) => {
-        if (response.data.length == 0) {
+      .then((response: AxiosResponse) => {
+        const r0: firstResponseType = {
+          data: response.data,
+          headers: response.headers,
+          request: response.request,
+          status: response.status,
+          statusText: response.statusText,
+        };
+
+        if (r0.data.length == 0) {
           // N.B.: if (!response)
           setReturnVal(<p className="italic">You don't have any Bookmarks!</p>);
         } else {
           // N.B.: returns arr of latest 4 bookmarks, including when they were made, storyId, etc.
           storyURL1 = `http://localhost:3000/api/stories/id/${
-            response.data[0][`storyId`]
+            r0.data[0][`storyId`]
           }`;
           storyURL2 = `http://localhost:3000/api/stories/id/${
-            response.data[1][`storyId`]
+            r0.data[1][`storyId`]
           }`;
           storyURL3 = `http://localhost:3000/api/stories/id/${
-            response.data[2][`storyId`]
+            r0.data[2][`storyId`]
           }`;
 
           // N.B.: a, b, c are the individual calls for each of the 3 articles' info
           axios
             .get(storyURL1)
-            .then((response: AxiosResponse<any, any>) => {
-              console.log(`response`, response);
-              const tagColor1 = TopicColor(response.data.topics[0]); // N.B.: matches tag string to hex code
+            .then((response: AxiosResponse) => {
+              const r1: secondResponseType = {
+                data: response.data,
+                headers: response.headers,
+                request: response.request,
+                status: response.status,
+                statusText: response.statusText,
+              };
+
+              const tagColor1 = TopicColor(r1.data.topics[0]); // N.B.: matches tag string to hex code
 
               const authorName1 = () => {
                 // N.B.: traverses arr of storyContributions and return first person listed as an "AUTHOR"'s full name
-                const contributors = response.data.storyContributions;
+                const contributors: StoryContribution[] =
+                  r1.data.storyContributions;
                 let count = 0;
                 let authorFound = false;
 
@@ -60,9 +113,9 @@ export default function BookmarksBox() {
                 }
 
                 return (
-                  contributors[count].contributor.firstName +
+                  (contributors[count].contributor.firstName as string) +
                   " " +
-                  contributors[count].contributor.lastName
+                  (contributors[count].contributor.lastName as string)
                 );
               };
 
@@ -71,7 +124,7 @@ export default function BookmarksBox() {
                   <div>
                     <div className="flex items-center">
                       <Image
-                        src={response.data.thumbnailUrl}
+                        src={r1.data.thumbnailUrl}
                         fill={false}
                         width={`${30}`}
                         height={`${25}`}
@@ -83,7 +136,7 @@ export default function BookmarksBox() {
                       <div className="flex w-full items-center justify-between">
                         <div className="ml-3 flex flex-col">
                           <h2 className="text-sm font-semibold">
-                            {response.data.title}
+                            {r1.data.title}
                           </h2>
                           <p className="mt-1 text-xs text-[#696969]">
                             By {authorName1()}
@@ -98,7 +151,7 @@ export default function BookmarksBox() {
                           }
                           className="py-.5 mx-3 rounded-full bg-[var(--customColor)] px-1.5 text-[.6rem] text-white"
                         >
-                          {response.data.topics[0]}
+                          {r1.data.topics[0]}
                         </p>
                       </div>
                     </div>
@@ -109,11 +162,20 @@ export default function BookmarksBox() {
 
               axios
                 .get(storyURL2)
-                .then((response: AxiosResponse<any, any>) => {
-                  const tagColor2 = TopicColor(response.data.topics[0]);
+                .then((response: AxiosResponse) => {
+                  const r2: secondResponseType = {
+                    data: response.data,
+                    headers: response.headers,
+                    request: response.request,
+                    status: response.status,
+                    statusText: response.statusText,
+                  };
+
+                  const tagColor2 = TopicColor(r2.data.topics[0]);
 
                   const authorName2 = () => {
-                    const contributors = response.data.storyContributions;
+                    const contributors: StoryContribution[] =
+                      r2.data.storyContributions;
                     let count = 0;
                     let authorFound = false;
 
@@ -126,9 +188,9 @@ export default function BookmarksBox() {
                     }
 
                     return (
-                      contributors[count].contributor.firstName +
+                      (contributors[count].contributor.firstName as string) +
                       " " +
-                      contributors[count].contributor.lastName
+                      (contributors[count].contributor.lastName as string)
                     );
                   };
 
@@ -136,7 +198,7 @@ export default function BookmarksBox() {
                     <div>
                       <div className="flex items-center">
                         <Image
-                          src={response.data.thumbnailUrl}
+                          src={r2.data.thumbnailUrl}
                           fill={false}
                           width={`${30}`}
                           height={`${25}`}
@@ -148,7 +210,7 @@ export default function BookmarksBox() {
                         <div className="flex w-full items-center justify-between">
                           <div className="ml-3 flex flex-col">
                             <h2 className="text-sm font-semibold">
-                              {response.data.title}
+                              {r2.data.title}
                             </h2>
                             <p className="mt-1 text-xs text-[#696969]">
                               By {authorName2()}
@@ -163,7 +225,7 @@ export default function BookmarksBox() {
                             }
                             className="py-.5 mx-3 rounded-full bg-[var(--customColor)] px-1.5 text-[.6rem] text-white"
                           >
-                            {response.data.topics[0]}
+                            {r2.data.topics[0]}
                           </p>
                         </div>
                       </div>
@@ -174,11 +236,20 @@ export default function BookmarksBox() {
 
                   axios
                     .get(storyURL3)
-                    .then((response: AxiosResponse<any, any>) => {
-                      const tagColor3 = TopicColor(response.data.topics[0]);
+                    .then((response: AxiosResponse) => {
+                      const r3: secondResponseType = {
+                        data: response.data,
+                        headers: response.headers,
+                        request: response.request,
+                        status: response.status,
+                        statusText: response.statusText,
+                      };
+
+                      const tagColor3 = TopicColor(r3.data.topics[0]);
 
                       const authorName3 = () => {
-                        const contributors = response.data.storyContributions;
+                        const contributors: StoryContribution[] =
+                          r3.data.storyContributions;
                         let count = 0;
                         let authorFound = false;
 
@@ -193,9 +264,10 @@ export default function BookmarksBox() {
                         }
 
                         return (
-                          contributors[count].contributor.firstName +
+                          (contributors[count].contributor
+                            .firstName as string) +
                           " " +
-                          contributors[count].contributor.lastName
+                          (contributors[count].contributor.lastName as string)
                         );
                       };
 
@@ -203,7 +275,7 @@ export default function BookmarksBox() {
                         <div>
                           <div className="flex items-center">
                             <Image
-                              src={response.data.thumbnailUrl}
+                              src={r3.data.thumbnailUrl}
                               fill={false}
                               width={`${30}`}
                               height={`${25}`}
@@ -215,7 +287,7 @@ export default function BookmarksBox() {
                             <div className="flex w-full items-center justify-between">
                               <div className="ml-3 flex flex-col">
                                 <h2 className="text-sm font-semibold">
-                                  {response.data.title}
+                                  {r3.data.title}
                                 </h2>
                                 <p className="mt-1 text-xs text-[#696969]">
                                   By {authorName3()}
@@ -230,7 +302,7 @@ export default function BookmarksBox() {
                                 }
                                 className="py-.5 mx-3 rounded-full bg-[var(--customColor)] px-1.5 text-[.6rem] text-white"
                               >
-                                {response.data.topics[0]}
+                                {r3.data.topics[0]}
                               </p>
                             </div>
                           </div>
