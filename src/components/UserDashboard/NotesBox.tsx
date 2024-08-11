@@ -48,6 +48,8 @@ export default function NotesBox() {
       <div className="flex items-center">
         <Image
           src="https://pngimg.com/uploads/letter_f/letter_f_PNG5.png"
+          width={`${100}`}
+          height={`${100}`}
           className="h-8 w-8"
           alt="image of the letter F"
         />

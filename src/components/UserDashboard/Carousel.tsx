@@ -51,6 +51,8 @@ export default function Carousel({
           {stories.map((story, idx) => (
             <Image
               key={idx}
+              width={`${100}`}
+              height={`${100}`}
               src={story.story.thumbnailUrl}
               alt="article image"
               className="h-full w-full flex-none"

@@ -11,6 +11,8 @@ export default function TrendingReadsBox() {
       <Image
         src="https://slidebazaar.com/wp-content/uploads/2023/07/Multiple-Line-Chart-Template.jpg"
         alt="PLACEHOLDER image for line graph"
+        width={`${100}`}
+        height={`${100}`}
       />
     </div>
   );
