@@ -1,6 +1,1 @@
-- [x] (大): resolving type stuff for `eslint`
-  - [x] brained 🧠
-  - [x] bookmarks 📚
-- [ ] (中): use `<Image/>` instead 🖼️
-  - gotta figure out where though lol
-- [ ] (小): link new comments documentation to my documentation 📑
+

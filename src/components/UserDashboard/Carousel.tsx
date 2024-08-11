@@ -1,6 +1,7 @@
 "use client";
 
 import { type ReadingHistory } from "@/app/user-settings/actions/getReadingHistory";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { NextButton } from "../UserSettings/NextButton";
 import { PrevButton } from "../UserSettings/PrevButton";
@@ -48,7 +49,7 @@ export default function Carousel({
           style={{ transform: `translateX(-${readingHistoryIndex * 100}%)` }}
         >
           {stories.map((story, idx) => (
-            <img
+            <Image
               key={idx}
               src={story.story.thumbnailUrl}
               alt="article image"

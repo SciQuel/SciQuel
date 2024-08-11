@@ -1,5 +1,7 @@
 "use default";
 
+import Image from "next/image";
+
 export default function NotesBox() {
   return (
     <div className="m-3 flex w-full flex-col rounded-lg border-2 border-solid border-gray-200 p-4">
@@ -8,10 +10,11 @@ export default function NotesBox() {
       <br></br>
 
       <div className="flex items-center">
-        <img
+        <Image
           src="https://pngimg.com/uploads/letter_f/letter_f_PNG5.png"
           className="h-8 w-8"
-        ></img>
+          alt="image of the letter F"
+        />
 
         <div className="ml-3 flex flex-col">
           <h2 className="mt-1 text-sm font-semibold">Title</h2>
@@ -25,10 +28,11 @@ export default function NotesBox() {
       <hr className="solid my-2 border-[#D6D6D6]"></hr>
 
       <div className="flex items-center">
-        <img
+        <Image
           src="https://pngimg.com/uploads/letter_f/letter_f_PNG5.png"
           className="h-8 w-8"
-        ></img>
+          alt="image of the letter F"
+        />
 
         <div className="ml-3 flex flex-col">
           <h2 className="mt-1 text-sm font-semibold">Title</h2>
@@ -42,10 +46,11 @@ export default function NotesBox() {
       <hr className="solid my-2 border-[#D6D6D6]"></hr>
 
       <div className="flex items-center">
-        <img
+        <Image
           src="https://pngimg.com/uploads/letter_f/letter_f_PNG5.png"
           className="h-8 w-8"
-        ></img>
+          alt="image of the letter F"
+        />
 
         <div className="ml-3 flex flex-col">
           <h2 className="mt-1 text-sm font-semibold">Title</h2>

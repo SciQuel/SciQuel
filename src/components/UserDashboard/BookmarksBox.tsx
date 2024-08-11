@@ -2,12 +2,7 @@
 
 import { type GetStoryResult } from "@/app/api/stories/id/[id]/route";
 import { type GetLatestBookmarkRes } from "@/app/api/user/bookmark/latest/route";
-import { type Brain, type Story, type StoryContribution } from "@prisma/client";
-import axios, {
-  type AxiosHeaderValue,
-  type AxiosResponse,
-  type AxiosResponseHeaders,
-} from "axios";
+import axios, { type AxiosResponse } from "axios";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -22,38 +17,6 @@ export default function BookmarksBox() {
 
   const [returnVal, setReturnVal] = useState(<p>Loading...</p>);
 
-  type firstResponseType = {
-    data: Brain[];
-    headers:
-      | AxiosResponseHeaders
-      | Partial<{
-          Server: AxiosHeaderValue;
-          "Content-Type": AxiosHeaderValue;
-          "Content-Length": AxiosHeaderValue;
-          "Cache-Control": AxiosHeaderValue;
-          "Content-Encoding": AxiosHeaderValue;
-        }>;
-    request: XMLHttpRequest | null;
-    status: number;
-    statusText: string;
-  };
-
-  type secondResponseType = {
-    data: Story;
-    headers:
-      | AxiosResponseHeaders
-      | Partial<{
-          Server: AxiosHeaderValue;
-          "Content-Type": AxiosHeaderValue;
-          "Content-Length": AxiosHeaderValue;
-          "Cache-Control": AxiosHeaderValue;
-          "Content-Encoding": AxiosHeaderValue;
-        }>;
-    request: XMLHttpRequest | null;
-    status: number;
-    statusText: string;
-  };
-
   useEffect(() => {
     let storyURL1: string;
     let storyURL2: string;
@@ -62,18 +25,12 @@ export default function BookmarksBox() {
     axios
       .get(URL)
       .then((response: AxiosResponse) => {
-        // const r0: firstResponseType = {
-        //   data: response.data,
-        //   headers: response.headers,
-        //   request: response.request,
-        //   status: response.status,
-        //   statusText: response.statusText,
-        // };
-
         if (response.status == 200) {
+          // N.B.: making sure typescript linter doesn't yell at the code!
+          //       using GetLatest... instead of bookmarks bc technically it's bookmarks + a "days" since bookmarked variable
           const bookmarks = response.data as GetLatestBookmarkRes;
+
           if (bookmarks.length == 0) {
-            // N.B.: if (!response)
             setReturnVal(
               <p className="italic">You don't have any Bookmarks!</p>,
             );
@@ -89,21 +46,16 @@ export default function BookmarksBox() {
               bookmarks[2][`storyId`]
             }`;
 
-            let article1 = <></>;
-            // N.B.: a, b, c are the individual calls for each of the 3 articles' info
+            let article1 = <></>; // N.B.: declare article variables b/f get request for case that 0 < # of articles user has < 3
+            let article2 = <></>;
+            let article3 = <></>;
+
+            // N.B.: after this are the individual calls for each of the 3 articles' info
             axios
               .get(storyURL1)
               .then((response: AxiosResponse) => {
-                // const r1: secondResponseType = {
-                //   data: response.data,
-                //   headers: response.headers,
-                //   request: response.request,
-                //   status: response.status,
-                //   statusText: response.statusText,
-                // };
-
                 if (response.status == 200) {
-                  const story = response.data as GetStoryResult;
+                  const story = response.data as GetStoryResult; // N.B.: again a typescript linter appeaser
                   const tagColor1 = TopicColor(story.topics[0]); // N.B.: matches tag string to hex code
 
                   const authorName1 = () => {
@@ -172,151 +124,144 @@ export default function BookmarksBox() {
                 axios
                   .get(storyURL2)
                   .then((response: AxiosResponse) => {
-                    const r2: secondResponseType = {
-                      data: response.data,
-                      headers: response.headers,
-                      request: response.request,
-                      status: response.status,
-                      statusText: response.statusText,
-                    };
+                    if (response.status == 200) {
+                      const story = response.data as GetStoryResult;
 
-                    const tagColor2 = TopicColor(r2.data.topics[0]);
+                      const tagColor2 = TopicColor(story.topics[0]);
 
-                    const authorName2 = () => {
-                      const contributors: StoryContribution[] =
-                        r2.data.storyContributions;
-                      let count = 0;
-                      let authorFound = false;
+                      const authorName2 = () => {
+                        const contributors = story.storyContributions;
+                        let count = 0;
+                        let authorFound = false;
 
-                      while (count < contributors.length && !authorFound) {
-                        if (contributors[count].contributionType == "AUTHOR") {
-                          authorFound = true;
-                        } else {
-                          count++;
+                        while (count < contributors.length && !authorFound) {
+                          if (
+                            contributors[count].contributionType == "AUTHOR"
+                          ) {
+                            authorFound = true;
+                          } else {
+                            count++;
+                          }
                         }
-                      }
 
-                      return (
-                        (contributors[count].contributor.firstName as string) +
-                        " " +
-                        (contributors[count].contributor.lastName as string)
-                      );
-                    };
+                        return (
+                          contributors[count].contributor.firstName +
+                          " " +
+                          contributors[count].contributor.lastName
+                        );
+                      };
 
-                    const article2 = (
-                      <div>
-                        <div className="flex items-center">
-                          <Image
-                            src={r2.data.thumbnailUrl}
-                            fill={false}
-                            width={`${30}`}
-                            height={`${25}`}
-                            alt="thumbnail of article"
-                            className="mx-3 aspect-square h-9 w-9 rounded-md"
-                            style={{ position: "relative" }}
-                          />
+                      article2 = (
+                        <div>
+                          <div className="flex items-center">
+                            <Image
+                              src={story.thumbnailUrl}
+                              fill={false}
+                              width={`${30}`}
+                              height={`${25}`}
+                              alt="thumbnail of article"
+                              className="mx-3 aspect-square h-9 w-9 rounded-md"
+                              style={{ position: "relative" }}
+                            />
 
-                          <div className="flex w-full items-center justify-between">
-                            <div className="ml-3 flex flex-col">
-                              <h2 className="text-sm font-semibold">
-                                {r2.data.title}
-                              </h2>
-                              <p className="mt-1 text-xs text-[#696969]">
-                                By {authorName2()}
+                            <div className="flex w-full items-center justify-between">
+                              <div className="ml-3 flex flex-col">
+                                <h2 className="text-sm font-semibold">
+                                  {story.title}
+                                </h2>
+                                <p className="mt-1 text-xs text-[#696969]">
+                                  By {authorName2()}
+                                </p>
+                              </div>
+
+                              <p
+                                style={
+                                  {
+                                    "--customColor": tagColor2,
+                                  } as React.CSSProperties
+                                }
+                                className="py-.5 mx-3 rounded-full bg-[var(--customColor)] px-1.5 text-[.6rem] text-white"
+                              >
+                                {story.topics[0]}
                               </p>
                             </div>
-
-                            <p
-                              style={
-                                {
-                                  "--customColor": tagColor2,
-                                } as React.CSSProperties
-                              }
-                              className="py-.5 mx-3 rounded-full bg-[var(--customColor)] px-1.5 text-[.6rem] text-white"
-                            >
-                              {r2.data.topics[0]}
-                            </p>
                           </div>
-                        </div>
 
-                        <hr className="solid my-3 border-[#D6D6D6]"></hr>
-                      </div>
-                    );
+                          <hr className="solid my-3 border-[#D6D6D6]"></hr>
+                        </div>
+                      );
+                    }
 
                     axios
                       .get(storyURL3)
                       .then((response: AxiosResponse) => {
-                        const r3: secondResponseType = {
-                          data: response.data,
-                          headers: response.headers,
-                          request: response.request,
-                          status: response.status,
-                          statusText: response.statusText,
-                        };
+                        if (response.status == 200) {
+                          const story = response.data as GetStoryResult;
+                          const tagColor3 = TopicColor(story.topics[0]);
 
-                        const tagColor3 = TopicColor(r3.data.topics[0]);
+                          const authorName3 = () => {
+                            const contributors = story.storyContributions;
+                            let count = 0;
+                            let authorFound = false;
 
-                        const authorName3 = () => {
-                          const contributors: StoryContribution[] =
-                            r3.data.storyContributions;
-                          let count = 0;
-                          let authorFound = false;
-
-                          while (count < contributors.length && !authorFound) {
-                            if (
-                              contributors[count].contributionType == "AUTHOR"
+                            while (
+                              count < contributors.length &&
+                              !authorFound
                             ) {
-                              authorFound = true;
-                            } else {
-                              count++;
+                              if (
+                                contributors[count].contributionType == "AUTHOR"
+                              ) {
+                                authorFound = true;
+                              } else {
+                                count++;
+                              }
                             }
-                          }
 
-                          return (
-                            (contributors[count].contributor
-                              .firstName as string) +
-                            " " +
-                            (contributors[count].contributor.lastName as string)
-                          );
-                        };
+                            return (
+                              contributors[count].contributor.firstName +
+                              " " +
+                              contributors[count].contributor.lastName
+                            );
+                          };
 
-                        const article3 = (
-                          <div>
-                            <div className="flex items-center">
-                              <Image
-                                src={r3.data.thumbnailUrl}
-                                fill={false}
-                                width={`${30}`}
-                                height={`${25}`}
-                                alt="thumbnail of article"
-                                className="mx-3 aspect-square h-9 w-9 rounded-md"
-                                style={{ position: "relative" }}
-                              />
+                          article3 = (
+                            <div>
+                              <div className="flex items-center">
+                                <Image
+                                  src={story.thumbnailUrl}
+                                  fill={false}
+                                  width={`${30}`}
+                                  height={`${25}`}
+                                  alt="thumbnail of article"
+                                  className="mx-3 aspect-square h-9 w-9 rounded-md"
+                                  style={{ position: "relative" }}
+                                />
 
-                              <div className="flex w-full items-center justify-between">
-                                <div className="ml-3 flex flex-col">
-                                  <h2 className="text-sm font-semibold">
-                                    {r3.data.title}
-                                  </h2>
-                                  <p className="mt-1 text-xs text-[#696969]">
-                                    By {authorName3()}
+                                <div className="flex w-full items-center justify-between">
+                                  <div className="ml-3 flex flex-col">
+                                    <h2 className="text-sm font-semibold">
+                                      {story.title}
+                                    </h2>
+                                    <p className="mt-1 text-xs text-[#696969]">
+                                      By {authorName3()}
+                                    </p>
+                                  </div>
+
+                                  <p
+                                    style={
+                                      {
+                                        "--customColor": tagColor3,
+                                      } as React.CSSProperties
+                                    }
+                                    className="py-.5 mx-3 rounded-full bg-[var(--customColor)] px-1.5 text-[.6rem] text-white"
+                                  >
+                                    {story.topics[0]}
                                   </p>
                                 </div>
-
-                                <p
-                                  style={
-                                    {
-                                      "--customColor": tagColor3,
-                                    } as React.CSSProperties
-                                  }
-                                  className="py-.5 mx-3 rounded-full bg-[var(--customColor)] px-1.5 text-[.6rem] text-white"
-                                >
-                                  {r3.data.topics[0]}
-                                </p>
                               </div>
                             </div>
-                          </div>
-                        );
+                          );
+                        }
 
                         setReturnVal(
                           // N.B.: sets state variable equal to all of the articles created in the previous API calls
