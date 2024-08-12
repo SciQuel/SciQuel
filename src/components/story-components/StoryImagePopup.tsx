@@ -30,6 +30,7 @@ const StoryImagePopup = ({
   const [dragging, setDragging] = useState(false);
   const [scaleLevel, setScaleLevel] = useState(1);
   const [isSmallScreen, setisSmallScreen] = useState(window.innerWidth <= 768);
+  const[isMediumScreen, setisMediumScreen] = useState(window.innerWidth <= 1024)
   const [isMobile, setIsMobile] = useState(false)
   const [imageDimensions, setImageDimensions] = useState<{ width: number; height: number } | null>(null);
   const [isImageReady, setIsImageReady] = useState(false);
@@ -47,9 +48,10 @@ const StoryImagePopup = ({
 
   // Function to resize the image while maintaining the aspect ratio
   const resizeImage = () => {
-    console.log('image resizing running')
-    const MAX_WIDTH = isSmallScreen ? 550: 700; 
-    const MAX_HEIGHT = isSmallScreen ? 550 : 700; 
+    console.log(window.innerHeight * 0.9)
+  
+    const MAX_WIDTH = isSmallScreen ? 550: isMediumScreen? 700 : 1000; 
+    const MAX_HEIGHT = isSmallScreen ? 550 : isMediumScreen? 700:  window.innerHeight * 0.95  ; 
 
     const MIN_SIZE = 500;
 
@@ -86,8 +88,15 @@ const StoryImagePopup = ({
         newHeight = MAX_HEIGHT;
         newWidth = (width / height) * newHeight;
       }
-      console.log(window.innerWidth)
-      console.log('screen', isSmallScreen)
+
+      
+      
+    
+        const commonWidth = Math.min(newWidth, MAX_WIDTH);
+        newWidth = commonWidth;
+        captionRef.current.style.width = `${commonWidth}px`;
+    
+
       setImageDimensions({ width: newWidth, height: newHeight });
       setIsImageReady(true);
     }
@@ -135,6 +144,9 @@ const StoryImagePopup = ({
   const handleResize = () => {
 
     setisSmallScreen(window.innerWidth <= 768);
+    setisMediumScreen(window.innerWidth <= 1024)
+    console.log(isMediumScreen)
+    console.log(isSmallScreen)
 
 
     // calculateItemShouldCenter();
@@ -169,7 +181,7 @@ const StoryImagePopup = ({
 
       }
     };
-  }, [imageRef]);
+  }, [imageRef, isMediumScreen, isSmallScreen]);
 
   // Handle image click to toggle zoom levels
   const handlePopUpImageClick = () => {
@@ -204,7 +216,8 @@ const StoryImagePopup = ({
     transformOrigin: transformOriginValue,
     transform: transformValue,
     cursor: isMobile ? 'default' : scaleLevel === 1 ? 'zoom-in' : 'zoom-out',
-    display: isImageReady ? 'block' : 'none'
+    display: isImageReady ? 'block' : 'none',
+  
   };
 
   return (
@@ -217,10 +230,10 @@ const StoryImagePopup = ({
         {/* Invisible item that will help format the image to look centered completely */}
         <div className = ' w-[10px] h-[100px]  flex-grow hidden lg:block lg:mx-5'> </div>
         {/* Image container */}
-     <div className=" max-w-[95%]">
+     <div className="">
           <img
             src={src}
-            className={`w-full h-full relative]`}
+            className={`relative object-contain`}
             ref={imageRef}
             onClick={handlePopUpImageClick}
             onMouseMove={handleImageDrag}
@@ -228,7 +241,7 @@ const StoryImagePopup = ({
             style={{ width: imageDimensions?.width, height: imageDimensions?.height, ...imageStyles }}
           />
         </div>
-        <p className={` w-auto min-w-[300px]  flex-grow basis-0 px-auto break-words  lg:mx-5  text-center  cursor-default h-auto ${imageClicked ? 'invisible' : ''}`} ref={captionRef}>
+        <p className={`lg:text-lg min-w-[300px] w-[100%] bg-emerald-300 flex-grow basis-0 px-auto break-words  lg:mx-5  text-center  cursor-default h-auto ${imageClicked ? 'invisible' : ''}`} ref={captionRef}>
           {children}
         </p>
       </div>
