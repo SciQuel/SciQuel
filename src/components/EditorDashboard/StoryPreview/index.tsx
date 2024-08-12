@@ -4,6 +4,7 @@ import ShareLinks from "@/components/story-components/ShareLinks";
 import TopicTag from "@/components/TopicTag";
 import { generateMarkdown } from "@/lib/markdown";
 import { type StoryTopic } from "@prisma/client";
+import { type StoryTopic } from "@prisma/client";
 import Image from "next/image";
 import React, {
   useEffect,
@@ -103,25 +104,15 @@ const StoryPreview: React.FC<Props> = ({
             return <TopicTag name={item} key={`${item}-${index}`} />;
           })}
         </div>
-        {/* Essay/Digest | article type | topic tag */}
-        <div className="flex flex-row">
-          <p className="mr-2">
-            {article.storyType.slice(0, 1) +
-              article.storyType.slice(1).toLowerCase()}{" "}
-            | we need to add article type |
-          </p>{" "}
-          {article.topics.map((item: StoryTopic, index: number) => {
-            return <TopicTag name={item} key={`${item}-${index}`} />;
-          })}
-        </div>
 
         {/* Adding formatted contributors */}
         {/* <div>{contributors}</div> */}
-
-        {/* Adding formatted dates (need to add time zone / fetching?) */}
-        <div className="flex flex-row">
-          <p className="mr-2">{formattedDate}</p>
+        <div>
+          {contributors.map((contributor, index) => (
+          <p key={index}>by {contributor.contributor.firstName + " " + contributor.contributor.lastName}</p>
+          ))}
         </div>
+
         {/* Adding formatted dates (need to add time zone / fetching?) */}
         <div className="flex flex-row">
           <p className="mr-2">{formattedDate}</p>
