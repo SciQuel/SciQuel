@@ -29,12 +29,13 @@ const StoryImagePopup = ({
   const [transformOriginPosition, setTransformOriginPosition] = useState<{ x: number | null; y: number | null; }>({ x: null, y: null });
   const [dragging, setDragging] = useState(false);
   const [scaleLevel, setScaleLevel] = useState(1);
-  const [isSmallScreen, setisSmallScreen] = useState(window.innerWidth <= 768);
-  const[isMediumScreen, setisMediumScreen] = useState(window.innerWidth <= 1024)
+  const [isSmallScreen, setisSmallScreen] = useState(window.innerWidth <= 768 || window.innerHeight <=768);
+  const [isMediumScreen, setisMediumScreen] = useState(window.innerWidth <= 1024)
   const [isMobile, setIsMobile] = useState(false)
   const [imageDimensions, setImageDimensions] = useState<{ width: number; height: number } | null>(null);
   const [isImageReady, setIsImageReady] = useState(false);
-  
+
+
   const invisibleDivRef = useRef<HTMLDivElement>(null) // this ref is for the placeholder element in the div that will only display when image needs to be centered
 
   /* need to resize images while keeping aspect ratio
@@ -49,9 +50,9 @@ const StoryImagePopup = ({
   // Function to resize the image while maintaining the aspect ratio
   const resizeImage = () => {
     console.log(window.innerHeight * 0.9)
-  
-    const MAX_WIDTH = isSmallScreen ? 550: isMediumScreen? 700 : 1000; 
-    const MAX_HEIGHT = isSmallScreen ? 550 : isMediumScreen? 700:  window.innerHeight * 0.95  ; 
+
+    const MAX_WIDTH = isSmallScreen ? 550 : isMediumScreen ? 700 : 1000;
+    const MAX_HEIGHT = isSmallScreen ? 550 : isMediumScreen ? 700 : window.innerHeight * 0.95;
 
     const MIN_SIZE = 500;
 
@@ -89,47 +90,20 @@ const StoryImagePopup = ({
         newWidth = (width / height) * newHeight;
       }
 
-      
-      
-    
-        const commonWidth = Math.min(newWidth, MAX_WIDTH);
-        newWidth = commonWidth;
-        captionRef.current.style.width = `${commonWidth}px`;
-    
+
+
+
+      const commonWidth = Math.min(newWidth, MAX_WIDTH);
+      newWidth = commonWidth;
+
+
 
       setImageDimensions({ width: newWidth, height: newHeight });
       setIsImageReady(true);
     }
   };
 
-  // Function to calculate if the image should be centered
-//   const calculateItemShouldCenter = () => {
-//     console.log(shouldImageCenter)
-//     const imageRect = imageRef.current?.getBoundingClientRect();
 
-//     const spaceToRight = window.innerWidth - (imageRect?.right ?? 0);
-
-//     /*if the image is not completely centered, check the space on the right, if the space is taller than half the image hight, put image
-//     directly in center
-//     */
-//     if (!shouldImageCenter) {
-
-//           if (spaceToRight > (imageRef.current?.height ?? 0) / 2) {
-//         setShouldImageCenter(true);
-
-//       }
-//     } if (shouldImageCenter) {
-
-//     /* if the div has a small width, it means that the image is nearing the left viewport, and the invis div should dissapear to fix layout
-//     if the space to the right of image if small, do the same
-// */      const invisibleDivWidth = invisibleDivRef.current?.clientWidth ?? 0;
-
-//       if (invisibleDivWidth <= 5 || spaceToRight <= 100) {
-//         setShouldImageCenter(false)
-
-//       }
-//     }
-//   };
 
 
   useEffect(() => {
@@ -137,13 +111,21 @@ const StoryImagePopup = ({
   }, [isSmallScreen])
 
   useEffect(() => {
+    //check if user is on mobile device on mount
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
     setIsMobile(isMobile)
+
+    //disable overflow
+    document.body.style.overflow = 'hidden'
+
+    return () => {
+      document.body.style.overflow = 'scroll'
+    }
   }, [])
 
   const handleResize = () => {
 
-    setisSmallScreen(window.innerWidth <= 768);
+    setisSmallScreen(window.innerWidth <= 768 || window.innerHeight === 768);
     setisMediumScreen(window.innerWidth <= 1024)
     console.log(isMediumScreen)
     console.log(isSmallScreen)
@@ -168,7 +150,7 @@ const StoryImagePopup = ({
     // Initial calls to have correct layout on mount
     if (imageRef.current && imageRef.current.complete) {
       handleImageLoad();
-    
+
     }
 
     // calculateItemShouldCenter();
@@ -185,9 +167,13 @@ const StoryImagePopup = ({
 
   // Handle image click to toggle zoom levels
   const handlePopUpImageClick = () => {
+  //remove invisible item so item can look centered if it is not already
+  
+  
     if (!isMobile) {
       if (scaleLevel === 3) {
         setScaleLevel(1);
+        setImageClicked(false)
         return;
       }
       if (!imageClicked) {
@@ -217,20 +203,26 @@ const StoryImagePopup = ({
     transform: transformValue,
     cursor: isMobile ? 'default' : scaleLevel === 1 ? 'zoom-in' : 'zoom-out',
     display: isImageReady ? 'block' : 'none',
-  
+
   };
 
   return (
     <div
-      className={`fixed left-1/2 top-1/2 z-50 flex h-screen w-screen -translate-x-1/2 -translate-y-1/2 transform flex-col justify-center border border-solid border-slate-800 bg-white hover:cursor-pointer`}
+      className={`fixed  left-1/2 top-1/2 z-50 flex h-screen w-screen -translate-x-1/2 -translate-y-1/2 transform flex-col justify-center border border-solid border-slate-800 bg-white hover:cursor-pointer`}
       onClick={handleClick}
     >
       {/* container for content */}
-      <div className=' flex-col sm:flex-col  lg:flex-row   max-h-[100%] w-full ml-auto flex items-center   z-0 border-solid'>
+      <div className={` flex-col sm:flex-col  lg:flex-row   max-h-[100%] w-full flex items-center justify-center  z-0 border-solid `}>
         {/* Invisible item that will help format the image to look centered completely */}
-        <div className = ' w-[10px] h-[100px]  flex-grow hidden lg:block lg:mx-5'> </div>
+      
+        {!imageClicked &&(
+           <div className=' w-[10px] h-[100px]  flex-grow hidden lg:block lg:mx-5'> </div>
+
+        )}
+        
+       
         {/* Image container */}
-     <div className="">
+        <div className="max-w-[95%]">
           <img
             src={src}
             className={`relative object-contain`}
@@ -241,9 +233,13 @@ const StoryImagePopup = ({
             style={{ width: imageDimensions?.width, height: imageDimensions?.height, ...imageStyles }}
           />
         </div>
-        <p className={`lg:text-lg min-w-[300px] w-[100%] bg-emerald-300 flex-grow basis-0 px-auto break-words  lg:mx-5  text-center  cursor-default h-auto ${imageClicked ? 'invisible' : ''}`} ref={captionRef}>
-          {children}
-        </p>
+
+       
+             <p className={` max-w-[95%] lg:text-lg lg:min-w-[300px] flex-grow basis-0 px-auto break-words  lg:mx-5  text-center  cursor-default  ${imageClicked ? 'hidden' : ''}`} ref={captionRef}>
+             {children}
+           </p>
+        
+       
       </div>
       <button aria-label="close popup" className="absolute right-0 top-0 mr-5 mt-1 text-3xl">
         &times;
