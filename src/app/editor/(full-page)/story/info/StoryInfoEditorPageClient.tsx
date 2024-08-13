@@ -4,6 +4,7 @@ import { type GetStoryResult } from "@/app/api/stories/id/[id]/route";
 import StoryInfoForm from "@/components/EditorDashboard/StoryInfoForm";
 import StoryPreview from "@/components/EditorDashboard/StoryPreview";
 import parseMarkdownToSections from "@/components/MarkdownEditor/parseMarkdown";
+import Trivia from "@/components/EditorDashboard/StoryInfoForm/formComponents/TriviaComponents/Trivia";
 import { generateMarkdown } from "@/lib/markdown";
 import {
   ContributionType,
@@ -41,7 +42,8 @@ interface Props {
   };
 }
 
-const StoryInfoEditorClient: React.FC<Props> = ({ story, contributions }) => {
+const StoryInfoEditorClient: React.FC<Props> = ({ story, contributions }) => 
+  {
   // sets the initial body by fetching the article through its ID
   const [body, setBody] = useState<string>("");
   const [title, setTitle] = useState(story.title || "");
@@ -56,7 +58,7 @@ const StoryInfoEditorClient: React.FC<Props> = ({ story, contributions }) => {
   const [summaryColor, setSummaryColor] = useState(story.summaryColor || "");
   const [contributors, setContributors] =
     useState<Contribution[]>(contributions);
-
+  
   // formats the input string and gets is as MM/DD/YYYY and HR:MM AM/PM for display
   const formatPreviewDate = (date: string): string => {
     if (!date) return "";
@@ -250,7 +252,9 @@ const StoryInfoEditorClient: React.FC<Props> = ({ story, contributions }) => {
               setSummaryColor={setSummaryColor}
               contributors={contributors}
               setContributors={setContributors}
-            />
+              //trivia={<Trivia />}
+             />
+             <Trivia/>
           </div>
 
           {/* DIVIDER */}
