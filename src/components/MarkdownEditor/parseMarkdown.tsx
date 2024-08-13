@@ -1,4 +1,4 @@
-import { HTML, Paragraph, Root, Text } from "mdast";
+import { Paragraph, Root } from "mdast";
 import remarkParse from "remark-parse";
 import { unified } from "unified";
 
@@ -46,7 +46,7 @@ function parseMarkdownToSections(markdown: string): Section[] {
             if (!currentTextSection) {
               currentTextSection = { type: "Text", content: "" };
             }
-            currentTextSection.content += textContent + "\n\n";
+            currentTextSection.content += textContent + "\n" + "\n";
           }
         }
       }

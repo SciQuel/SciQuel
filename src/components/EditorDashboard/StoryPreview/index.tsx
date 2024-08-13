@@ -130,21 +130,21 @@ const StoryPreview: React.FC<Props> = ({
       </div>
 
       <div className="mt-4">
-        {/* Article body is markdown text */}
-        <div className="mx-2 mt-2 flex flex-col items-center gap-5 md:mx-auto">
+        {/* Article body is markdown text -- THIS WAS FROM THE ORIGINAL (non-boxes)*/}
+        {/* <div className="mx-2 mt-2 flex flex-col items-center gap-5 md:mx-auto">
           {markdownContent as ReactNode}
-        </div>
+        </div> */}
 
         {/* This part renders the boxes updated live */}
-        <div className="mt-4">
-          <div className="mx-2 mt-2 flex flex-col items-center gap-5 md:mx-auto">
-            {renderedSections &&
-              renderedSections.map((markdownContent, index) => (
-                <div key={index} className="mt-4">
+        <div className="mx-2 mt-2 flex flex-col items-center gap-5 md:mx-auto">
+          {renderedSections &&
+            renderedSections.map((markdownContent, index) => (
+              <div key={index} className="mt-4">
+                <div className="mx-2 mt-2 flex flex-col items-center gap-5 md:mx-auto">
                   {markdownContent}
                 </div>
-              ))}
-          </div>
+              </div>
+            ))}
         </div>
       </div>
     </div>

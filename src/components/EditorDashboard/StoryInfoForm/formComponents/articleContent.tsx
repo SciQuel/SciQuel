@@ -61,7 +61,7 @@ const ArticleContent: React.FC<ArticleContentProps> = ({
               initialValue={section.content}
               onChange={(newContent) => onSectionChange(index, newContent)}
               id={`section-${index}`}
-              style={{ height: "100%" }} // Ensure it has height styling
+              style={{ height: "100%" }}
             />
           </div>
         </div>
