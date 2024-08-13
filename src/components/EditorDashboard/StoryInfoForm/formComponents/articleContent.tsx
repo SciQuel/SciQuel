@@ -1,3 +1,7 @@
+import MarkdownEditorStoryInfo from "@/components/EditorDashboard/MarkdownEditorStoryInfo";
+import clsx from "clsx";
+import dynamic from "next/dynamic";
+import { Inter } from "next/font/google";
 import React, { useState } from "react";
 
 interface Section {
@@ -51,39 +55,15 @@ const ArticleContent: React.FC<ArticleContentProps> = ({
             </button>
           </div>
 
-          {section.type === "Section Header" && (
-            <textarea
-              className="h-32 w-full rounded-md border border-gray-300 p-2"
-              placeholder="Section Header Content"
-              value={section.content}
-              onChange={(e) => onSectionChange(index, e.target.value)}
+          {/* Using MarkdownEditorStoryInfo for all editable content */}
+          <div className="h-[250px] w-full">
+            <MarkdownEditorStoryInfo
+              initialValue={section.content}
+              onChange={(newContent) => onSectionChange(index, newContent)}
+              id={`section-${index}`}
+              style={{ height: "100%" }} // Ensure it has height styling
             />
-          )}
-          {section.type === "Text" && (
-            <textarea
-              className="h-32 w-full rounded-md border border-gray-300 p-2"
-              placeholder="Text Content"
-              value={section.content}
-              onChange={(e) => onSectionChange(index, e.target.value)}
-            />
-          )}
-          {section.type === "Image" && (
-            <input
-              type="text"
-              className="w-full rounded-md border border-gray-300 p-2"
-              placeholder="Image URL"
-              value={section.content}
-              onChange={(e) => onSectionChange(index, e.target.value)}
-            />
-          )}
-          {section.type === "Table/Graph" && (
-            <textarea
-              className="h-32 w-full rounded-md border border-gray-300 p-2"
-              placeholder="Table/Graph Content"
-              value={section.content}
-              onChange={(e) => onSectionChange(index, e.target.value)}
-            />
-          )}
+          </div>
         </div>
       ))}
 

@@ -50,15 +50,31 @@ const StoryPreview: React.FC<Props> = ({
   const [markdownContent, setMarkdownContent] = useState<ReactElement | null>(
     null,
   );
+  const [renderedSections, setRenderedSections] = useState<
+    Array<ReactElement | null>
+  >([]);
 
   useEffect(() => {
+    // Process the main body content of the article
     const processMarkdown = async () => {
       const result = await generateMarkdown(article.body);
       setMarkdownContent(result.file.result);
     };
 
+    // Process each section's content
+    const processSections = async () => {
+      const newRenderedSections = await Promise.all(
+        (article.sections ?? []).map(async (section) => {
+          const result = await generateMarkdown(section.content);
+          return result.file.result;
+        }),
+      );
+      setRenderedSections(newRenderedSections);
+    };
+
     processMarkdown();
-  }, [article.body]);
+    processSections();
+  }, [article.body, article.sections]);
 
   return (
     <div className="flex flex-col">
@@ -95,22 +111,11 @@ const StoryPreview: React.FC<Props> = ({
         {/* Essay/Digest | article type | topic tag */}
         <div className="flex flex-row">
           <p className="mr-2">
-            {article.storyType.slice(0, 1) +
-              article.storyType.slice(1).toLowerCase()}{" "}
+            {(article.storyType ?? "").slice(0, 1) +
+              (article.storyType ?? "").slice(1).toLowerCase()}{" "}
             | we need to add article type |
           </p>{" "}
-          {article.topics.map((item: StoryTopic, index: number) => {
-            return <TopicTag name={item} key={`${item}-${index}`} />;
-          })}
-        </div>
-        {/* Essay/Digest | article type | topic tag */}
-        <div className="flex flex-row">
-          <p className="mr-2">
-            {article.storyType.slice(0, 1) +
-              article.storyType.slice(1).toLowerCase()}{" "}
-            | we need to add article type |
-          </p>{" "}
-          {article.topics.map((item: StoryTopic, index: number) => {
+          {(article.topics ?? []).map((item: StoryTopic, index: number) => {
             return <TopicTag name={item} key={`${item}-${index}`} />;
           })}
         </div>
@@ -122,11 +127,8 @@ const StoryPreview: React.FC<Props> = ({
         <div className="flex flex-row">
           <p className="mr-2">{formattedDate}</p>
         </div>
-        {/* Adding formatted dates (need to add time zone / fetching?) */}
-        <div className="flex flex-row">
-          <p className="mr-2">{formattedDate}</p>
-        </div>
       </div>
+
       <div className="mt-4">
         {/* Article body is markdown text */}
         <div className="mx-2 mt-2 flex flex-col items-center gap-5 md:mx-auto">
@@ -134,29 +136,15 @@ const StoryPreview: React.FC<Props> = ({
         </div>
 
         {/* This part renders the boxes updated live */}
-        <div>
-          {article.sections &&
-            article.sections.map((section, index) => (
-              <div key={index} className="mt-4">
-                {(() => {
-                  // if its a header use an h1 tag, otherwise just use a paragraph tag
-                  if (section.type === "Section Header") {
-                    return (
-                      <h1 className="text-lg font-semibold">
-                        {section.content}
-                      </h1>
-                    );
-                  } else {
-                    return <p>{section.content}</p>;
-                  }
-                })()}
-              </div>
-            ))}
-        </div>
-
-        {/* Displays story content using fetched article */}
-        <div className="">
-          {/* <ArticleDetail articleId={id} includeContent={true} /> */}
+        <div className="mt-4">
+          <div className="mx-2 mt-2 flex flex-col items-center gap-5 md:mx-auto">
+            {renderedSections &&
+              renderedSections.map((markdownContent, index) => (
+                <div key={index} className="mt-4">
+                  {markdownContent}
+                </div>
+              ))}
+          </div>
         </div>
       </div>
     </div>
