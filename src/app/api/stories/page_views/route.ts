@@ -20,7 +20,7 @@ export async function GET(req: Request) {
       },
     });
 
-    return NextResponse.json({ total: count });
+    return NextResponse.json({ total: count || 0 });
   } catch (e) {
     if (e instanceof Prisma.PrismaClientValidationError) {
       console.log(e.message);
@@ -61,7 +61,7 @@ export async function POST(req: Request) {
     });
     const [count, total] = await Promise.all([countPromise, totalPromise]);
     return NextResponse.json({
-      avg: Math.round((count / total) * 10000) / 100,
+      avg: total && count ? Math.round((count / total) * 10000) / 100 : 0,
     });
   } catch (e) {
     if (e instanceof Prisma.PrismaClientValidationError) {
