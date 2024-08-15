@@ -201,6 +201,7 @@ model PageView {
   @@index([storyId])
   @@index([createdAt])
   @@index([userId])
+  @@index([userId, storyId])
 }
 
 model Brain {
