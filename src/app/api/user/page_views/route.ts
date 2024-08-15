@@ -1,5 +1,4 @@
 import prisma from "@/lib/prisma";
-import { Prisma } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { NextResponse, type NextRequest } from "next/server";
 import { getSchema, postSchema } from "./schema";
@@ -9,10 +8,12 @@ export async function GET(req: Request) {
   try {
     // check if user is logged in
     const session = await getServerSession();
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     const user = await prisma.user.findUnique({
       where: { email: session?.user.email ?? "noemail" },
     });
-    console.log(session?.user);
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
@@ -57,7 +58,6 @@ export async function GET(req: Request) {
       distinct: distinct ? ["storyId"] : undefined,
       where: {
         userId: user.id,
-        createdAt: {},
       },
     });
     //this will help get distinct story id from user reading history
@@ -115,12 +115,9 @@ export async function GET(req: Request) {
 
 export async function POST(req: NextRequest) {
   try {
-    //get user if exist
     let user = null;
-    const sessionPromise = getServerSession();
-    const bodyPromise = req.json();
-    const [session, body] = await Promise.all([sessionPromise, bodyPromise]);
-    const parsedBody = postSchema.safeParse(body);
+    const session = await getServerSession();
+    const parsedBody = postSchema.safeParse(await req.json());
     if (!parsedBody.success) {
       return NextResponse.json(
         { error: parsedBody.error.errors[0].message },
@@ -130,7 +127,6 @@ export async function POST(req: NextRequest) {
 
     const storyId = parsedBody.data.story_id;
     const timeZone = parsedBody.data.time_zone;
-    console.log(timeZone);
     // validate story_id
     const story = await prisma.story.findUnique({
       where: {
@@ -140,7 +136,7 @@ export async function POST(req: NextRequest) {
     if (story === null) {
       return NextResponse.json({ error: "Story not found" }, { status: 404 });
     }
-    //get user if session exist and update user reading history
+    //get user if session exist and update (or add new) user reading history timeline
     if (session) {
       //get user
       user = await prisma.user.findUnique({
@@ -150,36 +146,43 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: "User not found" }, { status: 404 });
       }
       //check if user reading the same story in the same day
-      const checkNewDay = await checkDifferentDateRead(
+      const resultCheckDate = await checkDifferentDateRead(
         storyId,
         user.id,
         timeZone,
       );
       //if user reading the same day, update last time user reading story then return
-      if (!checkNewDay.isNewDay) {
+      if (!resultCheckDate.isNewDay) {
         await prisma.pageView.update({
           where: {
-            id: checkNewDay.idLastPost,
+            id: resultCheckDate.idLastPost,
           },
           data: {
             createdAt: new Date(),
           },
         });
-        return NextResponse.json("Updated user reading history", {
-          status: 200,
-        });
+        return NextResponse.json(
+          { message: "Updated user reading history" },
+          {
+            status: 200,
+          },
+        );
       }
     }
     //create new time user reading if not reading the same story in the same day
+    //or it is an unauthenticated user
     await prisma.pageView.create({
       data: {
         userId: user?.id,
         storyId: storyId,
       },
     });
-    return NextResponse.json("Updated user reading history", {
-      status: 200,
-    });
+    return NextResponse.json(
+      { message: "Updated user reading history" },
+      {
+        status: 200,
+      },
+    );
   } catch (e) {
     return NextResponse.json(
       { error: "Internal Server Error" },

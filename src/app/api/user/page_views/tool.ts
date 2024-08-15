@@ -5,7 +5,7 @@ export async function getMarkedStories(
   storyIds: string[],
   type: "BOOK_MARK" | "BRAIN",
 ) {
-  let result: { [key: string]: boolean } = {};
+  const result: { [key: string]: boolean } = {};
   let storiesFound: { storyId: string }[] = [];
   if (type === "BOOK_MARK") {
     storiesFound = await prisma.bookmark.findMany({
