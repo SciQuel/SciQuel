@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import { Prisma } from "@prisma/client";
+import { Prisma, Story } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 import { z } from "zod";
@@ -17,7 +17,7 @@ export type GetLatestBookmarkRes = {
   days: number;
   id: string;
   createdAt: string;
-  story: Prisma.Story;
+  story: Story;
   userId: string;
 }[];
 
@@ -45,11 +45,11 @@ export async function GET(req: Request) {
     pageSize = 4;
   }
 
-  const session = await getServerSession();
-  if (session?.user.email !== user_email) {
-    console.log("session", session);
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
+  // const session = await getServerSession();
+  // if (session?.user.email !== user_email) {
+  //   console.log("session", session);
+  //   return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  // }
 
   try {
     const user = await prisma.user.findUnique({
