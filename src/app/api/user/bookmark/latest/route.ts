@@ -17,7 +17,7 @@ export type GetLatestBookmarkRes = {
   days: number;
   id: string;
   createdAt: string;
-  storyId: string;
+  story: Prisma.Story;
   userId: string;
 }[];
 
@@ -72,6 +72,9 @@ export async function GET(req: Request) {
       },
       skip: (pageNum - 1) * pageSize,
       take: pageSize,
+      include: {
+        story: true,
+      },
     });
 
     if (bookmarks === null) {
@@ -87,9 +90,11 @@ export async function GET(req: Request) {
         (new Date().getTime() - bookmark.createdAt.getTime()) /
           (1000 * 60 * 60 * 24),
       );
+
       return {
         ...bookmark,
         days,
+        story: bookmark.story,
       };
     });
 
