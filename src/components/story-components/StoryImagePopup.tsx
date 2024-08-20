@@ -208,11 +208,11 @@ const StoryImagePopup = ({
 
   return (
     <div
-      className={`fixed  left-1/2 top-1/2 z-50 flex h-[100dvh] w-screen -translate-x-1/2 -translate-y-1/2 transform flex-col justify-center   bg-white hover:cursor-pointer`}
+      className={`fixed  left-1/2 top-1/2 z-50 flex h-[100dvh] w-screen -translate-x-1/2 -translate-y-1/2 transform flex-col justify-center  border-solid border-slate-800 bg-white hover:cursor-pointer`}
       onClick={handleClick}
     >
       {/* container for content */}
-      <div className={` flex-col sm:flex-col  lg:flex-row max-h-[100%] w-full flex items-center justify-center  z-0 border-solid ${imageClicked && 'justify-center'}`}>
+      <div className={`   flex-col sm:flex-col  lg:flex-row max-h-[100%] w-full flex items-center justify-center  z-0 border-solid ${imageClicked && 'justify-center'}`}>
         {/* Invisible item that will help format the image to look centered completely */}
       
         {!imageClicked &&(
@@ -222,7 +222,7 @@ const StoryImagePopup = ({
         
        
         {/* Image container */}
-        <div className="max-w-[95%] h-sm:max-h-[80%] h-md:max-h-[85%] h-lg: max-h-[90%]  "
+        <div className=" max-w-[95%] h-sm:max-h-[80%]  "
          style={{ width: imageDimensions?.width, height: imageDimensions?.height, ...imageStyles }}>
           <img
             src={src}
@@ -236,13 +236,13 @@ const StoryImagePopup = ({
         </div>
 
        
-             <p className={`   text-ellipsis max-w-[95%] lg:text-lg lg:min-w-[300px] md:flex-grow basis-0 px-auto break-words  lg:mx-5  text-center  cursor-default  ${imageClicked ? 'hidden' : ''}`} ref={captionRef}>
+             <p className={` max-w-[95%] lg:text-lg lg:min-w-[300px] lg:flex-grow basis-0 px-auto break-words  lg:mx-5  text-center  cursor-default  ${imageClicked ? 'hidden' : ''}`} ref={captionRef}>
              {children}
            </p>
         
        
       </div>
-      <button aria-label="close popup" className="absolute right-0 top-0 mr-5 mt-1 text-3xl">
+      <button aria-label="close popup" className="absolute right-0  top-0 mr-1 md:mr-5  text-3xl">
         &times;
       </button>
     </div>
