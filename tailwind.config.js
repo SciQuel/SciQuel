@@ -11,6 +11,16 @@ module.exports = {
         alegreyaSansSC: "var(--font-alegreya-sans-sc)",
         sourceSerif4: "var(--font-source-serif-4)",
       },
+
+      screens: {
+        'h-sm': { 'raw': '(max-height: 568px)' },    // Small mobile devices
+        'h-md': { 'raw': '(max-height: 667px)' },    // Medium mobile devices
+        'h-lg': { 'raw': '(max-height: 812px)' },    // Large mobile devices
+        'h-xl': { 'raw': '(max-height: 1024px)' },   // Tablets
+        'h-2xl': { 'raw': '(max-height: 1280px)' },  // Small laptops
+        'h-3xl': { 'raw': '(min-height: 1280px)' },  // Desktops
+      },
+   
       colors: {
         sciquelDarkText: "#333333",
         sciquelTeal: "#109191",

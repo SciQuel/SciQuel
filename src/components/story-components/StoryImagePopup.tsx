@@ -29,7 +29,7 @@ const StoryImagePopup = ({
   const [transformOriginPosition, setTransformOriginPosition] = useState<{ x: number | null; y: number | null; }>({ x: null, y: null });
   const [dragging, setDragging] = useState(false);
   const [scaleLevel, setScaleLevel] = useState(1);
-  const [isSmallScreen, setisSmallScreen] = useState(window.innerWidth <= 768 || window.innerHeight <=768);
+  const [isSmallScreen, setisSmallScreen] = useState(window.innerWidth <= 768);
   const [isMediumScreen, setisMediumScreen] = useState(window.innerWidth <= 1024)
   const [isMobile, setIsMobile] = useState(false)
   const [imageDimensions, setImageDimensions] = useState<{ width: number; height: number } | null>(null);
@@ -52,7 +52,7 @@ const StoryImagePopup = ({
     console.log(window.innerHeight * 0.9)
 
     const MAX_WIDTH = isSmallScreen ? 550 : isMediumScreen ? 700 : 1000;
-    const MAX_HEIGHT = isSmallScreen ? 550 : isMediumScreen ? 700 : window.innerHeight * 0.95;
+    const MAX_HEIGHT = isSmallScreen ? 550 : isMediumScreen ? 700 : window.innerHeight * 0.97;
 
     const MIN_SIZE = 500;
 
@@ -125,7 +125,7 @@ const StoryImagePopup = ({
 
   const handleResize = () => {
 
-    setisSmallScreen(window.innerWidth <= 768 || window.innerHeight === 768);
+    setisSmallScreen(window.innerWidth <= 768);
     setisMediumScreen(window.innerWidth <= 1024)
     console.log(isMediumScreen)
     console.log(isSmallScreen)
@@ -208,11 +208,11 @@ const StoryImagePopup = ({
 
   return (
     <div
-      className={`fixed  left-1/2 top-1/2 z-50 flex h-screen w-screen -translate-x-1/2 -translate-y-1/2 transform flex-col justify-center border border-solid border-slate-800 bg-white hover:cursor-pointer`}
+      className={`fixed  left-1/2 top-1/2 z-50 flex h-[100dvh] w-screen -translate-x-1/2 -translate-y-1/2 transform flex-col justify-center   bg-white hover:cursor-pointer`}
       onClick={handleClick}
     >
       {/* container for content */}
-      <div className={` flex-col sm:flex-col  lg:flex-row   max-h-[100%] w-full flex items-center justify-center  z-0 border-solid `}>
+      <div className={` flex-col sm:flex-col  lg:flex-row max-h-[100%] w-full flex items-center justify-center  z-0 border-solid ${imageClicked && 'justify-center'}`}>
         {/* Invisible item that will help format the image to look centered completely */}
       
         {!imageClicked &&(
@@ -222,20 +222,21 @@ const StoryImagePopup = ({
         
        
         {/* Image container */}
-        <div className="max-w-[95%]">
+        <div className="max-w-[95%] h-sm:max-h-[80%] h-md:max-h-[85%] h-lg: max-h-[90%]  "
+         style={{ width: imageDimensions?.width, height: imageDimensions?.height, ...imageStyles }}>
           <img
             src={src}
-            className={`relative object-contain`}
+            className={`relative object-contain h-full w-full `}
             ref={imageRef}
             onClick={handlePopUpImageClick}
             onMouseMove={handleImageDrag}
             alt={alt}
-            style={{ width: imageDimensions?.width, height: imageDimensions?.height, ...imageStyles }}
+           
           />
         </div>
 
        
-             <p className={` max-w-[95%] lg:text-lg lg:min-w-[300px] flex-grow basis-0 px-auto break-words  lg:mx-5  text-center  cursor-default  ${imageClicked ? 'hidden' : ''}`} ref={captionRef}>
+             <p className={`   text-ellipsis max-w-[95%] lg:text-lg lg:min-w-[300px] md:flex-grow basis-0 px-auto break-words  lg:mx-5  text-center  cursor-default  ${imageClicked ? 'hidden' : ''}`} ref={captionRef}>
              {children}
            </p>
         
