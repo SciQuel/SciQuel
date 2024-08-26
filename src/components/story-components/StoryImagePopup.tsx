@@ -13,7 +13,7 @@ interface Props {
   src: string;
   handleClick: (e: MouseEvent<HTMLDivElement>) => void;
   alt?: string;
-  imageRef: RefObject<HTMLImageElement>;
+  imageRef: RefObject<HTMLImageElement>; 
   captionRef: RefObject<HTMLParagraphElement>;
 }
 
@@ -49,9 +49,8 @@ const StoryImagePopup = ({
 
   // Function to resize the image while maintaining the aspect ratio
   const resizeImage = () => {
-    console.log(window.innerHeight * 0.9)
 
-    const MAX_WIDTH = isSmallScreen ? 550 : isMediumScreen ? 700 : 1000;
+    const MAX_WIDTH = isSmallScreen ? window.innerWidth * 0.95 : isMediumScreen ? 700 : 800;
     const MAX_HEIGHT = isSmallScreen ? 550 : isMediumScreen ? 700 : window.innerHeight * 0.97;
 
     const MIN_SIZE = 500;
@@ -97,7 +96,6 @@ const StoryImagePopup = ({
       newWidth = commonWidth;
 
 
-
       setImageDimensions({ width: newWidth, height: newHeight });
       setIsImageReady(true);
     }
@@ -127,8 +125,7 @@ const StoryImagePopup = ({
 
     setisSmallScreen(window.innerWidth <= 768);
     setisMediumScreen(window.innerWidth <= 1024)
-    console.log(isMediumScreen)
-    console.log(isSmallScreen)
+
 
 
     // calculateItemShouldCenter();
@@ -167,9 +164,9 @@ const StoryImagePopup = ({
 
   // Handle image click to toggle zoom levels
   const handlePopUpImageClick = () => {
-  //remove invisible item so item can look centered if it is not already
-  
-  
+    //remove invisible item so item can look centered if it is not already
+
+
     if (!isMobile) {
       if (scaleLevel === 3) {
         setScaleLevel(1);
@@ -198,9 +195,13 @@ const StoryImagePopup = ({
   const transformValue = imageClicked ? `scale(${scaleLevel})` : "none";
 
   // CSS styles that control the cursor for image, and the scale origin and value
-  const imageStyles = {
+
+  const imageTrasnform = {
     transformOrigin: transformOriginValue,
-    transform: transformValue,
+    transform: transformValue
+  }
+  const imageStyles = {
+
     cursor: isMobile ? 'default' : scaleLevel === 1 ? 'zoom-in' : 'zoom-out',
     display: isImageReady ? 'block' : 'none',
 
@@ -212,35 +213,35 @@ const StoryImagePopup = ({
       onClick={handleClick}
     >
       {/* container for content */}
-      <div className={` flex-col sm:flex-col  lg:flex-row max-h-[100%] w-full flex items-center justify-center  z-0 border-solid ${imageClicked && 'justify-center'}`}>
-        {/* Invisible item that will help format the image to look centered completely */}
-      
-        {!imageClicked &&(
-           <div className=' w-[10px] h-[100px]  flex-grow hidden lg:block lg:mx-5'> </div>
+      <div className={`  flex-col sm:flex-col  lg:flex-row max-h-full w-full flex items-center justify-center  z-0  ${imageClicked && 'justify-center'}`}>
+        {/* Invisible item that will help format the image to look centered completely, shows only on large screen */}
+        {!imageClicked && (
+          <div className='  basis-[10px] invisible bg-black h-[100px] flex-grow hidden lg:block lg:mx-5'> </div>
 
         )}
-        
-       
+
+
         {/* Image container */}
-        <div className="max-w-[95%] h-sm:max-h-[80%] h-md:max-h-[85%] h-lg: max-h-[90%]  "
-         style={{ width: imageDimensions?.width, height: imageDimensions?.height, ...imageStyles }}>
+        <div className="   max-w-full  h-sm:max-h-[80%] h-md:max-h-[85%]    "
+          style={{ width: imageDimensions?.width, height: imageDimensions?.height, ...imageStyles }}>
           <img
             src={src}
-            className={`relative object-contain h-full w-full `}
+            className={`object-contain h-full w-full `}
             ref={imageRef}
             onClick={handlePopUpImageClick}
             onMouseMove={handleImageDrag}
             alt={alt}
-           
+            style={imageTrasnform}
+
           />
         </div>
 
-       
-             <p className={`   text-ellipsis max-w-[95%] lg:text-lg lg:min-w-[300px] md:flex-grow basis-0 px-auto break-words  lg:mx-5  text-center  cursor-default  ${imageClicked ? 'hidden' : ''}`} ref={captionRef}>
-             {children}
-           </p>
-        
-       
+
+        <p className={`   text-ellipsis  lg:text-lg lg:min-w-[300px]  md:flex-grow basis-0 px-auto break-words  lg:mx-5  text-center  cursor-default  ${imageClicked ? 'hidden' : ''}`} ref={captionRef}>
+          {children}
+        </p>
+
+
       </div>
       <button aria-label="close popup" className="absolute right-0 top-0 mr-5 mt-1 text-3xl">
         &times;
