@@ -8,25 +8,44 @@ import { NextResponse, type NextRequest } from "next/server";
 export async function GET(req: NextRequest) {
   try {
     const url = new URL(req.url);
-    const userId = url.searchParams.get("userId");
+    const userEmail = url.searchParams.get("userEmail");
 
-    if (!userId) {
-      return new NextResponse(JSON.stringify({ error: "userId is required" }), {
-        status: 400,
-        headers: { "Content-Type": "application/json" },
-      });
+    if (!userEmail) {
+      return new NextResponse(
+        JSON.stringify({ error: "userEmail is required" }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
     }
-    //get total number of comments made by the user
+
+    //to get user id from email
+    const user = await prisma.user.findUnique({
+      where: { email: userEmail },
+    });
+
+    if (user === null) {
+      return new NextResponse(
+        JSON.stringify({ error: "User email doesn't exist" }),
+        {
+          status: 403,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
+    }
+
+    //to get total number of comments made by the user
     const totalComments = await prisma.comment.count({
       where: {
-        userId: userId,
+        userId: user.id,
         // parentCommentId: null,
       },
     });
 
     //find ids of all the comments made by the user
     const userComments = await prisma.comment.findMany({
-      where: { userId: userId },
+      where: { userId: user.id },
       select: {
         id: true,
       },
@@ -47,7 +66,7 @@ export async function GET(req: NextRequest) {
 
     const totalUnreadReplies = unreadReplies.length;
 
-    //TODO: get total number of unread contributor replies to the user's comments
+    //To get total number of unread contributor replies to the user's comments
     //find users of all the unread replies to the comments made by the user
     const usersWhoseRepliesAreUnread = await prisma.user.findMany({
       where: {

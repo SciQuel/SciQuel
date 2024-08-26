@@ -2,21 +2,22 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import prisma from "@/lib/prisma";
+import { getServerSession } from "next-auth";
 import { NextResponse, type NextRequest } from "next/server";
 import { createCommentSchema } from "./schema";
 
 //to create a comment
 export async function POST(req: NextRequest) {
   try {
-    console.log("Received request:", req);
+    // console.log("Received request:", req);
     const requestBody = await req.json();
-    console.log("Request body:", requestBody);
+    // console.log("Request body:", requestBody);
 
     const parsed = createCommentSchema.safeParse(requestBody);
-    console.log("Validation result:", parsed);
+    // console.log("Validation result:", parsed);
 
     if (!parsed.success) {
-      console.error("Validation error:", parsed.error);
+      // console.error("Validation error:", parsed.error);
       return new NextResponse(JSON.stringify({ error: parsed.error }), {
         status: 400,
         headers: {
@@ -27,12 +28,26 @@ export async function POST(req: NextRequest) {
 
     const commentData = parsed.data;
 
+    //to check auth session
+    const session = await getServerSession();
+    if (session?.user.email !== commentData.userEmail) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email: commentData.userEmail },
+    });
+
+    if (user === null) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
     const createdComment = await prisma.comment.create({
       data: {
         content: commentData.content,
         quote: commentData.quote,
         parentCommentId: commentData.parentCommentId,
-        userId: commentData.userId,
+        userId: user.id,
         storyId: commentData.storyId,
       },
     });
@@ -63,22 +78,27 @@ export async function POST(req: NextRequest) {
   }
 }
 
-//to fetch comments by storyId or userId
+//to fetch comments by storyId or userEmail
 export async function GET(req: NextRequest) {
   try {
     const url = new URL(req.url);
     const storyId = url.searchParams.get("storyId");
-    const userId = url.searchParams.get("userId");
+    const userEmail = url.searchParams.get("userEmail");
 
-    if (!storyId && !userId) {
+    if (!storyId && !userEmail) {
       return new NextResponse(
-        JSON.stringify({ error: "storyId or userId is required" }),
+        JSON.stringify({ error: "storyId or userEmail is required" }),
         {
           status: 400,
           headers: { "Content-Type": "application/json" },
         },
       );
     }
+
+    // const session = await getServerSession();
+    // if (session?.user.email !== userEmail) {
+    //   return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    // }
 
     if (storyId) {
       const comments = await prisma.comment.findMany({
@@ -92,9 +112,19 @@ export async function GET(req: NextRequest) {
         status: 200,
         headers: { "Content-Type": "application/json" },
       });
-    } else if (userId) {
+    } else if (userEmail) {
+      const user = await prisma.user.findUnique({
+        where: { email: userEmail },
+      });
+
+      if (user === null) {
+        return NextResponse.json(
+          { error: "User email doesn't exist" },
+          { status: 403 },
+        );
+      }
       const comments = await prisma.comment.findMany({
-        where: { userId: userId },
+        where: { userId: user.id },
         include: {
           replies: true,
         },

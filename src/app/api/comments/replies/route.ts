@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import { getServerSession } from "next-auth";
 import { NextResponse, type NextRequest } from "next/server";
 import { createCommentSchema } from "../schema";
 
@@ -23,12 +24,25 @@ export async function POST(req: NextRequest) {
 
     const replyData = parsed.data;
 
+    const session = await getServerSession();
+    if (session?.user.email !== replyData.userEmail) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email: replyData.userEmail },
+    });
+
+    if (user === null) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
     const createdReply = await prisma.comment.create({
       data: {
         content: replyData.content,
         quote: replyData.quote,
         parentCommentId: replyData.parentCommentId,
-        userId: replyData.userId,
+        userId: user.id,
         storyId: replyData.storyId,
       },
     });
@@ -61,42 +75,53 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// to get all replies to comments made by the user(userId)
+// to get all replies to comments made by the user(userEmail)
 export async function GET(req: NextRequest) {
   try {
     const url = new URL(req.url);
-    const userId = url.searchParams.get("userId");
+    const userEmail = url.searchParams.get("userEmail");
 
-    if (!userId) {
+    if (!userEmail) {
       return new NextResponse(JSON.stringify({ error: "userId is required" }), {
         status: 400,
         headers: { "Content-Type": "application/json" },
       });
     }
 
-    if (userId) {
-      const userComments = await prisma.comment.findMany({
-        where: { userId: userId },
-        select: {
-          id: true,
-        },
-      });
+    // const session = await getServerSession();
+    // if (session?.user.email !== userEmail) {
+    //   return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    // }
 
-      const userCommentIds = userComments.map((comment) => comment.id);
+    const user = await prisma.user.findUnique({
+      where: { email: userEmail },
+    });
 
-      const replies = await prisma.comment.findMany({
-        where: {
-          parentCommentId: {
-            in: userCommentIds,
-          },
-        },
-      });
-
-      return new NextResponse(JSON.stringify({ replies }), {
-        status: 200,
-        headers: { "Content-Type": "application/json" },
-      });
+    if (user === null) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
+
+    const userComments = await prisma.comment.findMany({
+      where: { userId: user.id },
+      select: {
+        id: true,
+      },
+    });
+
+    const userCommentIds = userComments.map((comment) => comment.id);
+
+    const replies = await prisma.comment.findMany({
+      where: {
+        parentCommentId: {
+          in: userCommentIds,
+        },
+      },
+    });
+
+    return new NextResponse(JSON.stringify({ replies }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
   } catch (error) {
     console.error("Error processing request:", error);
     return new NextResponse(
