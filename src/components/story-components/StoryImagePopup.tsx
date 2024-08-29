@@ -6,14 +6,13 @@ import {
   useEffect,
   useRef,
   useLayoutEffect,
-  useCallback,
 } from "react";
 
 interface Props {
   src: string;
   handleClick: (e: MouseEvent<HTMLDivElement>) => void;
   alt?: string;
-  imageRef: RefObject<HTMLImageElement>; 
+  imageRef: RefObject<HTMLImageElement>;
   captionRef: RefObject<HTMLParagraphElement>;
 }
 
@@ -49,7 +48,7 @@ const StoryImagePopup = ({
 
   // Function to resize the image while maintaining the aspect ratio
   const resizeImage = () => {
-
+      //max sizes
     const MAX_WIDTH = isSmallScreen ? window.innerWidth * 0.95 : isMediumScreen ? 700 : 800;
     const MAX_HEIGHT = isSmallScreen ? 550 : isMediumScreen ? 700 : window.innerHeight * 0.97;
 
@@ -104,12 +103,10 @@ const StoryImagePopup = ({
 
 
 
+  
+   //check if user is on mobile device on mount
   useEffect(() => {
-    resizeImage()
-  }, [isSmallScreen])
-
-  useEffect(() => {
-    //check if user is on mobile device on mount
+   
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
     setIsMobile(isMobile)
 
@@ -121,14 +118,13 @@ const StoryImagePopup = ({
     }
   }, [])
 
-  const handleResize = () => {
 
+  //functions is attached to window resize event listener, 
+  const handleResize = () => {
+      resizeImage()
     setisSmallScreen(window.innerWidth <= 768);
     setisMediumScreen(window.innerWidth <= 1024)
-
-
-
-    // calculateItemShouldCenter();
+// calculateItemShouldCenter();
   };
 
   const handleImageLoad = () => {
@@ -212,6 +208,8 @@ const StoryImagePopup = ({
       className={`fixed  left-1/2 top-1/2 z-50 flex h-[100dvh] w-screen -translate-x-1/2 -translate-y-1/2 transform flex-col justify-center   bg-white hover:cursor-pointer`}
       onClick={handleClick}
     >
+
+
       {/* container for content */}
       <div className={`  flex-col sm:flex-col  lg:flex-row max-h-full w-full flex items-center justify-center  z-0  ${imageClicked && 'justify-center'}`}>
         {/* Invisible item that will help format the image to look centered completely, shows only on large screen */}
@@ -222,7 +220,7 @@ const StoryImagePopup = ({
 
 
         {/* Image container */}
-        <div className="   max-w-full  h-sm:max-h-[80%] h-md:max-h-[85%]    "
+        <div className="   max-w-full  h-sm:max-h-[80%] h-md:max-h-[85%] h-lg:max-h-[97%]   h-sm:w-auto    "
           style={{ width: imageDimensions?.width, height: imageDimensions?.height, ...imageStyles }}>
           <img
             src={src}
@@ -237,7 +235,7 @@ const StoryImagePopup = ({
         </div>
 
 
-        <p className={`   text-ellipsis  lg:text-lg lg:min-w-[300px]  md:flex-grow basis-0 px-auto break-words  lg:mx-5  text-center  cursor-default  ${imageClicked ? 'hidden' : ''}`} ref={captionRef}>
+        <p className={` lg:text-lg lg:min-w-[300px]  lg:flex-grow basis-0 px-auto break-words  lg:mx-5  text-center  cursor-default  ${imageClicked ? 'hidden' : ''}`} ref={captionRef}>
           {children}
         </p>
 
