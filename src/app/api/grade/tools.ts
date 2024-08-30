@@ -14,13 +14,14 @@ interface questinoType {
   correctAnswer: number | boolean[] | string[] | number[];
   maxScore: number;
 }
-interface resultGrade {
+interface resultGradeI {
   errorMessage: string | null;
   errors: string[];
   results: boolean[][];
   correctCount: number;
   total: number;
   userResponseSubpart: string[];
+  categoriesResult?: boolean[];
 }
 
 /**
@@ -29,7 +30,7 @@ interface resultGrade {
 export function grading(params: questinoType) {
   const { questionType, userAnswer, correctAnswer, maxScore } = params;
   // set default value
-  let resultGrade: resultGrade = {
+  let resultGrade: resultGradeI = {
     results: [],
     total: 1,
     errorMessage: null,
@@ -75,10 +76,18 @@ export function grading(params: questinoType) {
     correctCount,
     total,
     userResponseSubpart,
+    categoriesResult,
     results,
   } = resultGrade;
   const score = Math.floor(maxScore * (correctCount / total));
-  return { errorMessage, results, errors, score, userResponseSubpart };
+  return {
+    errorMessage,
+    results,
+    errors,
+    score,
+    userResponseSubpart,
+    categoriesResult,
+  };
 }
 
 /**
@@ -88,6 +97,7 @@ export function grading(params: questinoType) {
  */
 function convertMapCheck(correctAnswer: string[]) {
   const map: { [key: string]: boolean } = {};
+  const countAnswerRemain: number[] = new Array(correctAnswer.length).fill(0);
   let countCorrectAnswer = 0;
   correctAnswer.forEach((str, index) => {
     //if this category is not empty
@@ -96,21 +106,24 @@ function convertMapCheck(correctAnswer: string[]) {
       countCorrectAnswer += numberStr.length;
       numberStr.forEach((num) => {
         map[`${index} ${num}`] = true;
+        countAnswerRemain[index]++;
       });
     }
   });
-  return { map, countCorrectAnswer };
+  return { map, countCorrectAnswer, countAnswerRemain };
 }
 
 function complexMatchingGrade(
   correctAnswer: string[],
   userAnswer: any,
-): resultGrade {
+): resultGradeI {
   let errorMessage = null;
   let errors: string[] = [];
   const results: boolean[][] = [];
   let correctCount = 0;
   let total = 1;
+  //use to check if all option in each categories is all answeared correctly
+  const recordCategoriesResult: boolean[] = [];
   const userResponseSubpart: string[] = [];
   //check user answer type
   const userAnswerParse = complexMatchingAnswerSchema.safeParse(userAnswer);
@@ -119,7 +132,8 @@ function complexMatchingGrade(
     errors = userAnswerParse.error.errors.map((value) => value.message);
   } else {
     //convert correctAnswer to map to check answer
-    const { map, countCorrectAnswer } = convertMapCheck(correctAnswer);
+    const { map, countCorrectAnswer, countAnswerRemain } =
+      convertMapCheck(correctAnswer);
     total = countCorrectAnswer;
     const numbersArray = userAnswerParse.data;
     for (let i = 0; i < numbersArray.length; i++) {
@@ -128,9 +142,11 @@ function complexMatchingGrade(
       numbersArray[i].forEach((number) => {
         const isCorrect = map[`${i} ${number}`] === true;
         correctCount += isCorrect ? 1 : 0;
+        if (isCorrect) countAnswerRemain[i]--;
         curResult.push(isCorrect);
         curResponse += curResponse.length === 0 ? `${number}` : ` ${number}`;
       });
+      recordCategoriesResult.push(countAnswerRemain[i] === 0);
       results.push(curResult);
       userResponseSubpart.push(curResponse);
     }
@@ -142,13 +158,14 @@ function complexMatchingGrade(
     correctCount,
     total,
     userResponseSubpart,
+    categoriesResult: recordCategoriesResult,
   };
 }
 
 function directMatchingGrade(
   correctAnswer: number[],
   userAnswer: any,
-): resultGrade {
+): resultGradeI {
   let errorMessage = null;
   let errors: string[] = [];
   const results: boolean[][] = [];
@@ -156,6 +173,7 @@ function directMatchingGrade(
   let total = 1;
   const userResponseSubpart: string[] = [];
   total = correctAnswer.length;
+  //use to check if all option in each categories is all answeared correctly
 
   //check user answer type
   const userAnswerParse = directMatchingAnswerSchema
@@ -189,7 +207,7 @@ function directMatchingGrade(
 function multipleChoiceGrade(
   correctAnswer: number,
   userAnswer: any,
-): resultGrade {
+): resultGradeI {
   let errorMessage = null;
   let errors: string[] = [];
   const results: boolean[][] = [];
@@ -226,7 +244,7 @@ function multipleChoiceGrade(
 function selectAllGrade(
   correctAnswer: boolean[],
   userAnswer: any,
-): resultGrade {
+): resultGradeI {
   let errorMessage = null;
   let errors: string[] = [];
   const results: boolean[][] = [];
@@ -278,7 +296,7 @@ function selectAllGrade(
 function trueFalseGrade(
   correctAnswer: boolean[],
   userAnswer: any,
-): resultGrade {
+): resultGradeI {
   let errorMessage = null;
   let errors: string[] = [];
   const results: boolean[][] = [];

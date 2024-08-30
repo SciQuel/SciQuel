@@ -13,9 +13,6 @@ import {
 } from "./schema";
 import { createQuizSubpart, getSubpart } from "./tools";
 
-/**
- * Change all safe parse with checkValidInput
- */
 const prisma = new PrismaClient();
 
 /**
@@ -85,7 +82,7 @@ export async function POST(req: NextRequest) {
         message: "Quiz question created",
       }),
       {
-        status: 200,
+        status: 201,
         headers: {
           "Content-Type": "application/json",
         },
@@ -126,6 +123,33 @@ export async function GET(req: NextRequest) {
     const [quizType, storyId] = parseResult.parsedData;
 
     const userId = await user.getUserId();
+    // if (userId) {
+    //   const quizRecord = await prisma.quizRecord.findFirst({
+    //     where: {
+    //       userId,
+    //       storyId,
+    //     },
+    //     orderBy: {
+    //       createAt: "desc",
+    //     },
+    //     select: {
+    //       quizQuestionIdRemain: true,
+    //       id: true,
+    //     },
+    //   });
+    //   if (quizRecord && quizRecord.quizQuestionIdRemain.length !== 0) {
+    //     return new NextResponse(
+    //       JSON.stringify({
+    //         error: "user's old quiz haven't finished",
+    //         quiz_record_id: quizRecord.id,
+    //       }),
+    //       {
+    //         status: 403,
+    //         headers: { "Content-Type": "application/json" },
+    //       },
+    //     );
+    //   }
+    // }
 
     const quizzes = await prisma.quizQuestion.findMany({
       where: { storyId: storyId, deleted: false },
