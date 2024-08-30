@@ -198,10 +198,9 @@ model PageView {
   story     Story    @relation(fields: [storyId], references: [id])
   createdAt DateTime @default(now())
 
-  @@index([storyId])
   @@index([createdAt])
-  @@index([userId])
-  @@index([userId, storyId])
+  @@index([storyId])
+  @@index([userId, storyId, createdAt])
 }
 
 model Brain {
@@ -213,6 +212,7 @@ model Brain {
   createdAt DateTime @default(now())
 
   @@unique([userId, storyId])
+  @@index([storyId])
 }
 
 model Quiz {
@@ -241,6 +241,7 @@ model Bookmark {
   createdAt DateTime @default(now())
 
   @@unique([userId, storyId])
+  @@index([storyId])
 }
 
 // feedback schema

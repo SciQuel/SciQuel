@@ -2,21 +2,10 @@ import prisma from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { NextResponse, type NextRequest } from "next/server";
 import { getSchema, postSchema } from "./schema";
-import { checkDifferentDateRead, getMarkedStories } from "./tool";
+import { getReadingHistory } from "./tool";
 
 export async function GET(req: Request) {
   try {
-    // check if user is logged in
-    const session = await getServerSession();
-    if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-    const user = await prisma.user.findUnique({
-      where: { email: session?.user.email ?? "noemail" },
-    });
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
     const url = new URL(req.url);
     const queryUrl = Object.fromEntries(url.searchParams);
     const parsedResult = getSchema.safeParse({
@@ -30,79 +19,47 @@ export async function GET(req: Request) {
           error: parsedResult.error.errors[0].message,
           errors: parsedResult.error.errors.map((err) => err.message),
         },
-        { status: 404 },
+        { status: 400 },
       );
     }
-    const { page, limit, distinct } = parsedResult.data;
-    const countPageViewAnchor = await prisma.pageView.findMany({
-      orderBy: {
-        createdAt: "desc",
-      },
-      select: {
-        storyId: true,
-        createdAt: true,
-        story: {
-          select: {
-            title: true,
-            storyContributions: {
-              select: {
-                contributorId: true,
-              },
-            },
-            thumbnailUrl: true,
-          },
-        },
-      },
-      skip: page * limit,
-      take: limit,
-      distinct: distinct ? ["storyId"] : undefined,
-      where: {
-        userId: user.id,
-      },
-    });
-    //this will help get distinct story id from user reading history
-    const storyIdSet = new Set<string>();
-    countPageViewAnchor.forEach((pageView) => storyIdSet.add(pageView.storyId));
-    //get bookmark and brain
-    const mapStoryBookmarkedPromise = getMarkedStories(
-      user.id,
-      Array.from(storyIdSet),
-      "BOOK_MARK",
-    );
-    //get brained
-    const mapStoryBrainedPromise = getMarkedStories(
-      user.id,
-      Array.from(storyIdSet),
-      "BRAIN",
-    );
-
-    const countPageViewsPromise = prisma.pageView.findMany({
-      where: {
-        userId: user.id,
-      },
-      distinct: distinct ? ["storyId"] : undefined,
+    // check if user is logged in
+    const session = await getServerSession();
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    const user = await prisma.user.findUnique({
+      where: { email: session?.user.email ?? "noemail" },
       select: { id: true },
     });
-    const [countPageViews, mapStoryBookmarked, mapStoryBrained] =
-      await Promise.all([
-        countPageViewsPromise,
-        mapStoryBookmarkedPromise,
-        mapStoryBrainedPromise,
-      ]);
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+    const { page, limit, distinct } = parsedResult.data;
+    const { paginatedResult, countResult, maxPage } = await getReadingHistory({
+      userId: user.id,
+      limit,
+      page,
+      distinct,
+    });
     return NextResponse.json({
-      total: countPageViews.length,
-      stories_history: countPageViewAnchor.map(
-        ({ storyId, createdAt, story }) => ({
-          story_id: storyId,
-          read_date: createdAt,
-          bookmarked: mapStoryBookmarked[storyId] !== undefined,
-          brained: mapStoryBrained[storyId] !== undefined,
-          cover_image: story.thumbnailUrl,
-          contributors: story.storyContributions.map(
-            (contributor) => contributor.contributorId,
-          ),
-        }),
-      ),
+      total: countResult,
+      max_page: maxPage,
+      story_history: paginatedResult.map((value) => ({
+        story_id: value.id,
+        last_read: value.lastRead,
+        story_summary: value.storySummary,
+        story_title: value.storyTitle,
+        story_thumbnail_url: value.storyThumbnailUrl,
+        story_slug: value.storySlug,
+        article_publish: value.articlePublish,
+        contributors: value.contributors.map((contributor) => ({
+          contributor_id: contributor.id,
+          first_name: contributor.firstName,
+          last_name: contributor.lastName,
+        })),
+        bookmarked: value.bookmarked,
+        brained: value.brained,
+      })),
     });
   } catch (e) {
     console.log(e);
@@ -115,8 +72,12 @@ export async function GET(req: Request) {
 
 export async function POST(req: NextRequest) {
   try {
-    let user = null;
     const session = await getServerSession();
+    const user = await prisma.user.findFirst({
+      where: {
+        email: session?.user.email || "noemail",
+      },
+    });
     const parsedBody = postSchema.safeParse(await req.json());
     if (!parsedBody.success) {
       return NextResponse.json(
@@ -126,7 +87,6 @@ export async function POST(req: NextRequest) {
     }
 
     const storyId = parsedBody.data.story_id;
-    const timeZone = parsedBody.data.time_zone;
     // validate story_id
     const story = await prisma.story.findUnique({
       where: {
@@ -136,41 +96,8 @@ export async function POST(req: NextRequest) {
     if (story === null) {
       return NextResponse.json({ error: "Story not found" }, { status: 404 });
     }
-    //get user if session exist and update (or add new) user reading history timeline
-    if (session) {
-      //get user
-      user = await prisma.user.findUnique({
-        where: { email: session?.user.email ?? "noemail" },
-      });
-      if (!user) {
-        return NextResponse.json({ error: "User not found" }, { status: 404 });
-      }
-      //check if user reading the same story in the same day
-      const resultCheckDate = await checkDifferentDateRead(
-        storyId,
-        user.id,
-        timeZone,
-      );
-      //if user reading the same day, update last time user reading story then return
-      if (!resultCheckDate.isNewDay) {
-        await prisma.pageView.update({
-          where: {
-            id: resultCheckDate.idLastPost,
-          },
-          data: {
-            createdAt: new Date(),
-          },
-        });
-        return NextResponse.json(
-          { message: "Updated user reading history" },
-          {
-            status: 200,
-          },
-        );
-      }
-    }
-    //create new time user reading if not reading the same story in the same day
-    //or it is an unauthenticated user
+
+    //create new time everytime user reading story
     await prisma.pageView.create({
       data: {
         userId: user?.id,
