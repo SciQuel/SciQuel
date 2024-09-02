@@ -159,7 +159,7 @@ export async function getReadingHistory(params: getReadingHistoryI) {
           as: "contributorsName",
         },
       },
-      //get bookmarked data that match story id from read date data. This to check if user is bookmark
+      //get bookmarked data that match story id from read date data. This to check if user readed story is bookmark
       {
         $lookup: {
           from: "Bookmark",
@@ -172,7 +172,7 @@ export async function getReadingHistory(params: getReadingHistoryI) {
           as: "bookmarked",
         },
       },
-      //get bookmarked data that match story id from read date data. This to check if user is brained
+      //get bookmarked data that match story id from read date data. This to check if user readed story is brained
       {
         $lookup: {
           from: "Brain",
