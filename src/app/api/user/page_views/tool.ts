@@ -93,10 +93,9 @@ export async function getReadingHistory(params: getReadingHistoryI) {
     pipeline: [
       //find read date data that match userId
       { $match: { userId: { $oid: userId } } },
-      //This will sort user read date in descending order.
-      //it is requried to get the time that user last read the same story
-      //in the same day
       groupStory,
+      //This will sort user read date in descending order.
+      //it is requried to get the time that user last read the story
       {
         $sort: { createdAt: -1, lastReadTime: -1 },
       },
