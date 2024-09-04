@@ -14,10 +14,10 @@ module.exports = {
 
       screens: {
         'h-sm': { 'raw': '(max-height: 568px)' },    // Small mobile devices
-        'h-md': { 'raw': '(max-height: 667px)' },    // Medium mobile devices
-        'h-lg': { 'raw': '(max-height: 812px)' },    // Large mobile devices
-        'h-xl': { 'raw': '(max-height: 1024px)' },   // Tablets
-        'h-2xl': { 'raw': '(max-height: 1280px)' },  // Small laptops
+        'h-md': { 'raw': '(min-height: 569px)' },    // Medium mobile devices
+        'h-lg': { 'raw': '(min-height: 668px)' },    // Large mobile devices
+        'h-xl': { 'raw': '(min-height: 1024px)' },   // Tablets
+        'h-2xl': { 'raw': '(min-height: 1280px)' },  // Small laptops
         'h-3xl': { 'raw': '(min-height: 1280px)' },  // Desktops
       },
    

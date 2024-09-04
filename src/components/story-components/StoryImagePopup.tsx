@@ -211,7 +211,7 @@ const StoryImagePopup = ({
 
 
       {/* container for content */}
-      <div className={`flex-col sm:flex-col  lg:flex-row max-h-full w-full flex items-center justify-center  z-0  ${imageClicked && 'justify-center'}`}>
+      <div className={`flex-col sm:flex-col h-full   lg:flex-row max-h-full w-full flex items-center justify-center  z-0  ${imageClicked && 'justify-center'}`}>
         {/* Invisible item that will help format the image to look centered completely, shows only on large screen */}
         {!imageClicked && (
           <div className='  basis-[10px] invisible bg-black h-[100px] flex-grow hidden lg:block lg:mx-5'> </div>
@@ -220,7 +220,7 @@ const StoryImagePopup = ({
 
 
         {/* Image container */}
-        <div className=" max-w-full  h-xl:max-h-[97%]   h-lg:max-h-[90%] h-md:max-h-[85%] h-sm:max-h-[80%]  h-sm:w-auto    "
+        <div className=" max-w-full  h-xl:max-h-[97%]   h-lg:max-h-[97%] h-md:max-h-[85%] h-sm:max-h-[80%]  h-sm:w-auto    "
           style={{ width: imageDimensions?.width, height: imageDimensions?.height, ...imageStyles }}>
           <img
             src={src}
@@ -241,7 +241,7 @@ const StoryImagePopup = ({
 
 
       </div>
-      <button aria-label="close popup" className="absolute right-0 top-0 mr-5 mt-1 text-3xl">
+      <button aria-label="close popup" className="absolute right-0 top-0 mr-3 mt-1 text-3xl">
         &times;
       </button>
     </div>
