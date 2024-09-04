@@ -1,99 +1,136 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 interface Props {
   categories: string[];
   options: string[];
   show: boolean;
+  answers: Function;
+  quizQuestionId: string;
+  responed: { correct: boolean[]; explanation: string }[];
+  disable: boolean;
+  current: number;
 }
-// function getCurrentResults(node: Node) {
-//   while (node.hasChildNodes) {
-//     console.log("item", node?.getAttribute("option-key"));
-//     node = node.nextSibling;
-//   }
-// }
+// export type answerInfo = {
+//   quizId: number;
+//   answer: [number] | number;
+// };
 
-export default function MultipleMatch({ categories, options, show }: Props) {
-  let item: HTMLTextAreaElement;
-  let current = 0;
-  var array = [];
-  //console.log(categories);
-  //console.log(options);
+export default function MultipleMatch({
+  categories,
+  options,
+  show,
+  answers,
+  quizQuestionId,
+  responed,
+  disable,
+  current,
+}: Props) {
+  const [comAnswer, setComAnswer] = useState([] as number[][]);
+  const [quizId, _] = useState(quizQuestionId);
+  const result = [] as boolean[];
+
+  responed?.map((res: { correct: any[] }, index: number) =>
+    res.correct.map((lp, key) => (result[comAnswer[index][key]] = lp)),
+  );
+
   useEffect(() => {
-    //dragstart event to initiate mouse dragging
-    document.addEventListener(
-      "dragstart",
-      function (e) {
-        //set the item reference to this element
-        item = e.target as HTMLTextAreaElement;
+    let item: HTMLTextAreaElement | null = null;
 
-        //we don't need the transfer data, but we have to define something
-        //otherwise the drop action won't work at all in firefox
-        //most browsers support the proper mime-type syntax, eg. "text/plain"
-        //but we have to use this incorrect syntax for the benefit of IE10+
-        e.dataTransfer?.setData("text", "");
-      },
-      false,
-    );
+    /**
+     * Handles the drag start event. Sets the item being dragged to the `item` state variable. This
+     * is used to keep track of the item being dragged, and is used in the `handleDrop` handler.
+     *
+     * @param {DragEvent} e - The drag start event.
+     */
+    const handleDragStart = (e: DragEvent) => {
+      // Set the item being dragged to the `item` state variable
+      item = e.target as HTMLTextAreaElement;
+      // Required for Firefox
+      e.dataTransfer?.setData("text", "");
+    };
 
-    //dragover event to allow the drag by preventing its default
-    //ie. the default action of an element is not to allow dragging
-    document.addEventListener(
-      "dragover",
-      function (e) {
-        if (item) {
-          e.preventDefault();
+    /**
+     * Handles the drag over event. Prevents the default drop action.
+     *
+     * @param {DragEvent} e - The drag over event.
+     */
+    const handleDragOver = (e: DragEvent) => {
+      // Check if an item is being dragged
+      if (item) {
+        // Prevent the default drop action
+        e.preventDefault();
+      }
+    };
+
+    /**
+     * Handles the drop event. Inserts the dragged item into its new position, and updates the
+     * content of the target element.
+     *
+     * @param {DragEvent} e - The drop event.
+     */
+    const handleDrop = (e: DragEvent) => {
+      // Prevent default drop action
+      e.preventDefault();
+
+      // Get the target element
+      const target = e.target as HTMLTextAreaElement;
+      let tmp = item?.innerHTML || ""; // Store the current content of the dragged item
+
+      // Check if the target element is a valid drop target
+      if (target.getAttribute("data-draggable") === "target") {
+        // Insert the dragged item into its new position
+        target.parentNode?.insertBefore(item!, target);
+      } else if (target.getAttribute("data-draggable") === "answer") {
+        // Check if the target element and the dragged item have valid parents
+        if (target.parentElement && item) {
+          // Swap the content of the target element and the dragged item
+          item.innerHTML = target.parentElement.innerHTML;
+          target.parentElement.innerHTML = tmp;
         }
-      },
-      false,
-    );
+      }
 
-    //drop event to allow the element to be dropped into valid targets
-    document.addEventListener(
-      "drop",
-      function (e) {
-        //if this element is a drop target, move the item here
-        //then prevent default to allow the action (same as dragover)
-        const target = e.target as HTMLTextAreaElement;
-        let tmp = item.innerHTML;
-        if (target.getAttribute("data-draggable") == "target") {
-          // console.log("cate", target.parentNode?.getAttribute("category-key"));
-          // console.log("item", item?.getAttribute("option-key"));
-          target.parentNode?.insertBefore(item, target);
-          // console.log("nodes", item.parentNode?.);
-          current = target.parentNode?.getAttribute("category-key");
-          // console.log("category", categories[current]);
+      tmp = ""; // Reset the temporary variable
+    };
 
-          e.preventDefault();
-        } else if (target.getAttribute("data-draggable") == "answer") {
-          if (target.parentElement != null && item != null) {
-            item.innerHTML = target.parentElement?.innerHTML;
-            target.parentElement.innerHTML = tmp;
-          }
+    /**
+     * Handles the dragend event. Resets the item variable to null, and updates the state with the
+     * current order of the options.
+     */
+    const handleDragEnd = () => {
+      item = null;
 
-          e.preventDefault();
-        }
-        tmp = "";
-      },
-      false,
-    );
+      const array: number[][] = categories.map((category) => {
+        // Get all the elements with the option-key attribute
+        const container = document.querySelector(`#${category}`);
+        const elements = container?.querySelectorAll("div[option-key]") || [];
+        // Map the elements to their corresponding option-key attribute value
+        return Array.from(elements).map((elem) =>
+          Number(elem.getAttribute("option-key")),
+        );
+      });
 
-    //dragend event to clean-up after drop or abort
-    //which fires whether or not the drop target was valid
-    document.addEventListener(
-      "dragend",
-      function () {
-        item = null as unknown as HTMLTextAreaElement;
-        const container = document.querySelector("#" + categories[current]);
-        console.log("container", container);
-        container
-          ?.querySelectorAll("div[option-key]")
-          .forEach((elem) =>  ));
-        // console.log("matches", matches);
-        //console.log(elem.getAttribute("option-key")
-      },
-      false,
-    );
-  });
+      // Update the state with the current order of the options
+      setComAnswer(array);
+    };
+
+    document.addEventListener("dragstart", handleDragStart);
+    document.addEventListener("dragover", handleDragOver);
+    document.addEventListener("drop", handleDrop);
+    document.addEventListener("dragend", handleDragEnd);
+
+    return () => {
+      document.removeEventListener("dragstart", handleDragStart);
+      document.removeEventListener("dragover", handleDragOver);
+      document.removeEventListener("drop", handleDrop);
+      document.removeEventListener("dragend", handleDragEnd);
+    };
+  }, [categories]);
+
+  // Update the answer info to parent
+  useEffect(() => {
+    console.log("Complex quizId ", quizId);
+    answers({ quizId, answer: comAnswer });
+  }, [comAnswer]);
 
   return (
     <div style={{ display: show ? "block" : "none" }}>
@@ -129,16 +166,48 @@ export default function MultipleMatch({ categories, options, show }: Props) {
           {options.map((Choice, index) => (
             <div
               className="multiple-match-answer-choice-holder min-w-100 relative box-border flex  w-full cursor-move items-center justify-end break-words rounded-[4px] border border-black bg-white text-center text-[18px] transition duration-300 ease-in-out "
-              draggable="true"
+              draggable={!disable}
               data-draggable="item"
               option-key={index}
             >
               <div className="image-holder absolute inset-0 flex h-full w-[35%] max-w-[50px] grow items-center justify-center rounded-bl-[4px] rounded-tl-[4px] bg-[#e6e6fa] px-2 transition duration-300 ease-in-out">
-                <span className="hamburger-menu flex h-4 w-6 flex-col justify-between rounded-[4px] border-none">
-                  <span className="hamburger-line h-0.5 w-full bg-black"></span>
-                  <span className="hamburger-line h-0.5 w-full bg-black"></span>
-                  <span className="hamburger-line h-0.5 w-full bg-black"></span>
-                </span>
+                {result[index] === true ? (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    className="h-6 w-6"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="m4.5 12.75 6 6 9-13.5"
+                    />
+                  </svg>
+                ) : result[index] === false ? (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    className="h-6 w-6"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M6 18 18 6M6 6l12 12"
+                    />
+                  </svg>
+                ) : (
+                  <span className="hamburger-menu flex h-4 w-6 flex-col justify-between rounded-[4px] border-none">
+                    <span className="hamburger-line h-0.5 w-full bg-black"></span>
+                    <span className="hamburger-line h-0.5 w-full bg-black"></span>
+                    <span className="hamburger-line h-0.5 w-full bg-black"></span>
+                  </span>
+                )}
               </div>
               <div
                 className="match-text align-self-center justify-right m-auto flex w-[72%] max-w-full items-center justify-end justify-self-end hyphens-auto break-words p-3 md-qz:inline-block sm-mm:w-[65%] xsm-mm:w-[73%] xsm-mm:text-[16px]"
@@ -155,6 +224,24 @@ export default function MultipleMatch({ categories, options, show }: Props) {
           ></div>
         </div>
       </div>
+      {responed?.map((res: { explanation: string | null | undefined }) => (
+        <div className="col my-2 text-center">
+          <div>
+            <div className="modal-content border-light w-full border">
+              <div
+                className="modal-body"
+                style={{
+                  background: "linear-gradient(to right,#A3C9A8 1%,#F8F8FF 1%)",
+                }}
+              >
+                <p className="p-4 text-left" style={{ color: "#437E64" }}>
+                  {res.explanation}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      ))}
     </div>
   );
 }

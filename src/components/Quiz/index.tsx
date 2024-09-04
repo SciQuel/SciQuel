@@ -15,16 +15,10 @@ import questions from "./questions.json";
 interface Props {
   Quizzes: QuizQuestion;
 }
-export type resps = {
-  subpartId: string;
-  subpartUserAns: string;
-};
-export type selectInfo = {
-  index: string;
-  quizType: string;
-  questionID: string;
-  quizID: number;
-  userAns: resps[];
+
+export type answerInfo = {
+  quizId: number;
+  answer: [number] | number;
 };
 
 export default function Quiz({ Quizzes }: Props) {
@@ -44,12 +38,13 @@ export default function Quiz({ Quizzes }: Props) {
 
   const [isCorrect, setIsCorrect] = useState([] as boolean[]);
   const [explaination, setExplaination] = useState([] as string[]);
+  const [respon, setRespon] = useState([] as any);
 
   {
     /* quiz multiple choice useState  */
   }
 
-  const [selected, setSelected] = useState([] as selectInfo[]);
+  const [selected, setSelected] = useState([] as answerInfo[]);
   {
     /*  Previous,Next,submit buttons */
   }
@@ -58,6 +53,12 @@ export default function Quiz({ Quizzes }: Props) {
   //   setSelected([...selected]);
   //   console.log("userAns: ", selected[currentQuestion]);
   // };
+
+  const getAnswerInfo = (answer: answerInfo) => {
+    console.log("Answer Info ", answer);
+    setSelected([(selected[currentQuestion] = answer)]);
+    setSelected([...selected]);
+  };
 
   const handlePrevious = () => {
     const prevQues = currentQuestion - 1;
@@ -71,48 +72,44 @@ export default function Quiz({ Quizzes }: Props) {
     setProg(String(Number(prog) + Number(gap)));
   };
 
-  // async function submitAnswer() {
-  //   try {
-  //     const response = await axios.post(
-  //       `${env.NEXT_PUBLIC_SITE_URL}/api/grade`,
-  //       {
-  //         storyId: storyId,
-  //         questionType: selected[currentQuestion].quizType,
-  //         userId: "647ad6fda9efff3abe83044f",
-  //         quizQuestionId: selected[currentQuestion].quizID,
-  //         responseSubparts: selected[currentQuestion].userAns,
-  //       },
-  //     );
-  //     if (response.status == 200) {
-  //       console.log("res", response);
-  //       return response;
-  //     }
-  //   } catch (err) {
-  //     console.error(err);
-  //   }
-  //   return;
-  // }
-  // function updateRespon(resps: resp) {
-  //   resps.gradeSubpart.map(
-  //     (res) => (
-  //       setIsCorrect([(isCorrect[currentQuestion] = res.isCorrect)]),
-  //       setIsCorrect([...isCorrect]),
-  //       setExplaination([(explaination[currentQuestion] = res.explanation)]),
-  //       setExplaination([...explaination])
-  //     ),
-  //   );
-  // }
+  async function submitAnswer() {
+    console.log(" selected ", selected[currentQuestion]);
+    try {
+      const response = await axios.post(
+        `${env.NEXT_PUBLIC_SITE_URL}/api/grade`,
+        {
+          quiz_question_id: selected[currentQuestion].quizId,
+          quiz_record_id: Quizzes.quiz_record_id,
+          answer: selected[currentQuestion].answer,
+        },
+      );
+      if (response.status == 200) {
+        console.log("res", response);
+        return response;
+      }
+    } catch (err) {
+      console.error(err);
+    }
+    return;
+  }
   const handleSubmit = async () => {
-    setAnswered([(answered[currentQuestion] = true)]);
-    setAnswered([...answered]);
+    // setAnswered([(answered[currentQuestion] = true)]);
+    // setAnswered([...answered]);
     setSubmitButton([(submitButton[currentQuestion] = true)]);
     setSubmitButton([...submitButton]);
     setDisabled([(disabled[currentQuestion] = true)]);
     setDisabled([...disabled]);
-    // const res = await submitAnswer();
-    // const udp = res?.data as resp;
-
-    // updateRespon(udp);
+    console.log(
+      "Current ",
+      " selected ",
+      currentQuestion,
+      selected[currentQuestion],
+    );
+    const res = await submitAnswer();
+    const udp = res?.data;
+    console.log("udp ", udp.results);
+    setRespon((respon[currentQuestion] = udp.results));
+    setRespon([...respon]);
   };
 
   return (
@@ -158,6 +155,11 @@ export default function Quiz({ Quizzes }: Props) {
                     categories={q.categories}
                     options={q.options}
                     show={index === currentQuestion ? true : false}
+                    answers={getAnswerInfo}
+                    quizQuestionId={q.quiz_question_id}
+                    responed={respon[currentQuestion]}
+                    disable={disabled[currentQuestion]}
+                    current={currentQuestion}
                   />
                 );
               case "COMPLEX_MATCHING":
@@ -167,6 +169,11 @@ export default function Quiz({ Quizzes }: Props) {
                     categories={q.categories}
                     options={q.options}
                     show={index === currentQuestion ? true : false}
+                    answers={getAnswerInfo}
+                    quizQuestionId={q.quiz_question_id}
+                    responed={respon[currentQuestion]}
+                    disable={disabled[currentQuestion]}
+                    current={currentQuestion}
                   />
                 );
               case "SELECT_ALL":
