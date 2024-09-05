@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import { type Prisma } from "@prisma/client";
+import { type ContributionType, type Prisma } from "@prisma/client";
 
 interface getReadingHistoryI {
   userId: string;
@@ -50,6 +50,7 @@ type aggregateResponeAnchorType = {
     _id: {
       $oid: string;
     };
+    contributionType: ContributionType;
     contributorId: {
       $oid: string;
     };
@@ -136,6 +137,7 @@ export async function getReadingHistory(params: getReadingHistoryI) {
             {
               $project: {
                 contributorId: 1,
+                contributionType: 1,
               },
             },
           ],
@@ -202,7 +204,14 @@ export async function getReadingHistory(params: getReadingHistoryI) {
     paginatedResult: (
       paginatedResult as unknown as aggregateResponeAnchorType[]
     ).map(
-      ({ lastReadTime, storyInfo, contributorsName, bookmarked, brained }) => {
+      ({
+        lastReadTime,
+        storyInfo,
+        contributorsName,
+        bookmarked,
+        brained,
+        contributorsId,
+      }) => {
         return {
           lastRead: lastReadTime.$date,
           id: storyInfo[0]._id.$oid,
@@ -211,10 +220,11 @@ export async function getReadingHistory(params: getReadingHistoryI) {
           storySummary: storyInfo[0].summary,
           storyThumbnailUrl: storyInfo[0].thumbnailUrl,
           articlePublish: storyInfo[0].articlePublish.$date,
-          contributors: contributorsName.map((contributor) => ({
+          contributors: contributorsName.map((contributor, index) => ({
             id: contributor._id.$oid,
             firstName: contributor.firstName,
             lastName: contributor.lastName,
+            type: contributorsId[index].contributionType,
           })),
           bookmarked: bookmarked.length !== 0,
           brained: brained.length !== 0,

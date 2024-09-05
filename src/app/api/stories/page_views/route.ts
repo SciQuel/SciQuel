@@ -35,7 +35,13 @@ export async function POST(req: Request) {
   try {
     const parsedParams = postSchema.safeParse(await req.json());
     if (!parsedParams.success) {
-      return NextResponse.json(parsedParams.error, { status: 400 });
+      return NextResponse.json(
+        {
+          error: parsedParams.error.errors[0].message,
+          errors: parsedParams.error.errors.map((err) => err.message),
+        },
+        { status: 400 },
+      );
     }
     const { start_date, end_date, topic } = parsedParams.data;
     const countPromise = prisma.pageView.count({

@@ -9,9 +9,9 @@ export async function GET(req: Request) {
     const url = new URL(req.url);
     const queryUrl = Object.fromEntries(url.searchParams);
     const parsedResult = getSchema.safeParse({
-      page: queryUrl.page ? Number(queryUrl.page) : undefined,
-      limit: queryUrl.limit ? Number(queryUrl.limit) : undefined,
-      distinct: queryUrl.distinct ? Boolean(queryUrl.distinct) : undefined,
+      page: queryUrl.page,
+      limit: queryUrl.limit,
+      distinct: queryUrl.distinct,
     });
     if (!parsedResult.success) {
       return NextResponse.json(
@@ -56,6 +56,7 @@ export async function GET(req: Request) {
           contributor_id: contributor.id,
           first_name: contributor.firstName,
           last_name: contributor.lastName,
+          contributor_type: contributor.type,
         })),
         bookmarked: value.bookmarked,
         brained: value.brained,
