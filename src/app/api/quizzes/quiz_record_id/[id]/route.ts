@@ -50,7 +50,7 @@ export async function GET(req: NextRequest, { params }: { params: Params }) {
       },
       select: {
         id: true,
-        contentCategory: true,
+        // contentCategory: true,
         questionType: true,
         maxScore: true,
         subpartId: true,
@@ -60,13 +60,19 @@ export async function GET(req: NextRequest, { params }: { params: Params }) {
     const subpartPromises = quizQuestionArr.map((quiz) => getSubpart(quiz));
     const subparts = await Promise.all(subpartPromises);
     const quizResponse = quizQuestionArr.map((quiz, index) => {
-      const { subheader, questionType, id, maxScore, contentCategory } = quiz;
+      const {
+        subheader,
+        questionType,
+        id,
+        maxScore,
+        // contentCategory
+      } = quiz;
       return {
         sub_header: subheader,
         question_type: questionType,
         quiz_question_id: id,
         max_score: maxScore,
-        content_category: contentCategory,
+        // content_category: contentCategory,
         ...subparts[index],
       };
     });

@@ -9,7 +9,6 @@ import {
 } from "./schema";
 
 interface QuizQuestionI {
-  contentCategory: string;
   questionType: QuestionType;
   maxScore: number;
   subpartId: string;
@@ -70,53 +69,66 @@ export function getDeleteSuppart({
   }
 }
 
-export function getSubpart(quiz: QuizQuestionI) {
+export async function getSubpart(quiz: QuizQuestionI) {
+  let subpart: any = null;
   if (quiz.questionType === "COMPLEX_MATCHING") {
-    return prisma.complexMatchingSubpart.findUnique({
+    subpart = await prisma.complexMatchingSubpart.findUnique({
       where: { id: quiz.subpartId },
       select: {
+        contentCategories: true,
         question: true,
         categories: true,
         options: true,
       },
     });
   } else if (quiz.questionType === "DIRECT_MATCHING") {
-    return prisma.directMatchingSubpart.findUnique({
+    subpart = await prisma.directMatchingSubpart.findUnique({
       where: { id: quiz.subpartId },
       select: {
+        contentCategories: true,
         question: true,
         categories: true,
         options: true,
       },
     });
   } else if (quiz.questionType === "MULTIPLE_CHOICE") {
-    return prisma.multipleChoiceSubpart.findUnique({
+    subpart = await prisma.multipleChoiceSubpart.findUnique({
       where: { id: quiz.subpartId },
       select: {
         question: true,
+        contentCategory: true,
         options: true,
       },
     });
   } else if (quiz.questionType === "SELECT_ALL") {
-    return prisma.selectAllSubpart.findUnique({
+    subpart = await prisma.selectAllSubpart.findUnique({
       where: { id: quiz.subpartId },
       select: {
+        contentCategory: true,
         question: true,
         options: true,
       },
     });
   } else if (quiz.questionType === "TRUE_FALSE") {
-    return prisma.trueFalseSubpart.findUnique({
+    subpart = await prisma.trueFalseSubpart.findUnique({
       where: { id: quiz.subpartId },
-      select: { questions: true },
+      select: { questions: true, contentCategories: true },
     });
   } else {
     throw new Error(
       "Unknow type " +
         String(quiz.questionType) +
-        " in finding Subpart promise",
+        " in finding Subpart function",
     );
   }
+  //any key that have value is undefined, when JSON stringify that key will be removed from obj
+  return {
+    questions: subpart?.questions,
+    content_categories: subpart?.contentCategories,
+    content_category: subpart?.contentCategory,
+    options: subpart?.options,
+    categories: subpart?.categories,
+  };
 }
 
 function createComplexMatchSubpart(subpartData: any) {
@@ -128,8 +140,14 @@ function createComplexMatchSubpart(subpartData: any) {
     errorMessage = parsedData.error.errors[0].message;
     errors = parsedData.error.errors.map((value) => value.message);
   } else {
-    const { categories, correct_answers, question, options, explanations } =
-      parsedData.data;
+    const {
+      categories,
+      correct_answers,
+      question,
+      options,
+      explanations,
+      content_categories,
+    } = parsedData.data;
     const correctAnswer = correct_answers.map((numbers) => {
       let str = "";
       numbers.forEach((number) => {
@@ -141,6 +159,7 @@ function createComplexMatchSubpart(subpartData: any) {
 
     subpartPromise = prisma.complexMatchingSubpart.create({
       data: {
+        contentCategories: content_categories,
         categories,
         options,
         correctAnswer,
@@ -164,11 +183,18 @@ function createDirectMatchSubpart(subpartData: any) {
     errorMessage = parsedData.error.errors[0].message;
     errors = parsedData.error.errors.map((value) => value.message);
   } else {
-    const { categories, correct_answers, question, options, explanations } =
-      parsedData.data;
+    const {
+      categories,
+      correct_answers,
+      question,
+      options,
+      explanations,
+      content_categories,
+    } = parsedData.data;
 
     subpartPromise = prisma.directMatchingSubpart.create({
       data: {
+        contentCategories: content_categories,
         categories,
         options,
         correctAnswer: correct_answers,
@@ -192,9 +218,11 @@ function createTrueFalseSubpart(subpartData: any) {
     errorMessage = parsedData.error.errors[0].message;
     errors = parsedData.error.errors.map((value) => value.message);
   } else {
-    const { questions, correct_answers, explanations } = parsedData.data;
+    const { questions, correct_answers, explanations, content_categories } =
+      parsedData.data;
     subpartPromise = prisma.trueFalseSubpart.create({
       data: {
+        contentCategories: content_categories,
         correctAnswer: correct_answers,
         questions: questions,
         explanations,
@@ -216,8 +244,13 @@ function createSelectAllSubpart(subpartData: any) {
     errorMessage = parsedData.error.errors[0].message;
     errors = parsedData.error.errors.map((value) => value.message);
   } else {
-    const { correct_answers, question, options, explanations } =
-      parsedData.data;
+    const {
+      correct_answers,
+      question,
+      options,
+      explanations,
+      content_category,
+    } = parsedData.data;
     const correctAnswer: boolean[] = [];
     for (let i = 0; i < options.length; i++) {
       correctAnswer.push(false);
@@ -228,6 +261,7 @@ function createSelectAllSubpart(subpartData: any) {
 
     subpartPromise = prisma.selectAllSubpart.create({
       data: {
+        contentCategory: content_category,
         options,
         correctAnswer,
         question,
@@ -250,10 +284,17 @@ function createMultipleChocieSubpart(subpartData: any) {
     errorMessage = parsedData.error.errors[0].message;
     errors = parsedData.error.errors.map((value) => value.message);
   } else {
-    const { question, options, correct_answer, explanations } = parsedData.data;
+    const {
+      question,
+      options,
+      correct_answer,
+      explanations,
+      content_category,
+    } = parsedData.data;
 
     subpartPromise = prisma.multipleChoiceSubpart.create({
       data: {
+        contentCategory: content_category,
         options,
         correctAnswer: correct_answer,
         question,

@@ -93,11 +93,17 @@ export async function POST(req: NextRequest) {
     }
 
     //start grading
-    const { errorMessage, errors, results, score, userResponseSubpart } =
-      grading({
-        ...quizQuestion,
-        userAnswer: bodyParam.answer,
-      });
+    const {
+      errorMessage,
+      errors,
+      results,
+      score,
+      userResponseSubpart,
+      categoriesResult,
+    } = grading({
+      ...quizQuestion,
+      userAnswer: bodyParam.answer,
+    });
     if (errorMessage) {
       return new NextResponse(JSON.stringify({ error: errorMessage, errors }), {
         status: 400,
@@ -108,24 +114,23 @@ export async function POST(req: NextRequest) {
     const isCorrect = results.every((result) => result.every((val) => val));
     const isLastQuestion = quizRecord.quizQuestionIdRemain.length === 1;
     //create user response
-    const userRes = await prisma.userResponseSubpart.create({
+    const gradePromise = prisma.grade.create({
       data: {
         userId,
         userAns: userResponseSubpart,
         quizQuestionId: quizQuestion.quizQuestionId,
         questionType: quizQuestion.questionType,
-      },
-    });
-
-    //create grade
-    const createGradePromise = prisma.grade.create({
-      data: {
-        userId,
-        userResponseSubpartId: userRes.id,
-        quizQuestionId: quizQuestion.quizQuestionId,
         totalScore: score,
         maxScore: quizQuestion.maxScore,
         quizRecordId: bodyParam.quiz_record_id,
+        //convert bool[][] to string[]. For example: ['true true','false','false true']
+        result: results.map((result) =>
+          result.map((val) => val.toString()).join(" "),
+        ),
+        //if categoriesResult not exist, check if all value in results is all true
+        categoriesResult: categoriesResult || [
+          results.every((result) => result.every((val) => val)),
+        ],
       },
     });
 
@@ -187,7 +192,7 @@ export async function POST(req: NextRequest) {
       });
     }
     await Promise.all([
-      createGradePromise,
+      gradePromise,
       updatequizRecordPromise,
       userFirstAnsPromise,
       userFirstScorePromise,
@@ -215,6 +220,7 @@ export async function POST(req: NextRequest) {
         message: "Quiz question graded",
         score,
         max_score: quizQuestion.maxScore,
+        categories_result: categoriesResult,
         results: results.map((value, index) => {
           return {
             correct: value,

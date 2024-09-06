@@ -62,7 +62,6 @@ export async function POST(req: NextRequest) {
     const createdQuiz = await prisma.quizQuestion.create({
       data: {
         storyId: quizData.story_id,
-        contentCategory: quizData.content_category,
         questionType: quizData.question_type,
         maxScore: quizData.max_score,
         subpartId: subpart.id,
@@ -110,6 +109,7 @@ export async function GET(req: NextRequest) {
     const url = new URL(req.url);
     const storyIdParam = url.searchParams.get("story_id");
     const quizTypeParam = url.searchParams.get("quiz_type");
+    const isEditMode = url.searchParams.get("edit") === "true";
     const user = new User();
     const parseResult = checkValidInput(
       [quizTypeSchema, storyIdSchema],
@@ -123,39 +123,11 @@ export async function GET(req: NextRequest) {
     const [quizType, storyId] = parseResult.parsedData;
 
     const userId = await user.getUserId();
-    // if (userId) {
-    //   const quizRecord = await prisma.quizRecord.findFirst({
-    //     where: {
-    //       userId,
-    //       storyId,
-    //     },
-    //     orderBy: {
-    //       createAt: "desc",
-    //     },
-    //     select: {
-    //       quizQuestionIdRemain: true,
-    //       id: true,
-    //     },
-    //   });
-    //   if (quizRecord && quizRecord.quizQuestionIdRemain.length !== 0) {
-    //     return new NextResponse(
-    //       JSON.stringify({
-    //         error: "user's old quiz haven't finished",
-    //         quiz_record_id: quizRecord.id,
-    //       }),
-    //       {
-    //         status: 403,
-    //         headers: { "Content-Type": "application/json" },
-    //       },
-    //     );
-    //   }
-    // }
 
     const quizzes = await prisma.quizQuestion.findMany({
       where: { storyId: storyId, deleted: false },
       select: {
         id: true,
-        contentCategory: true,
         questionType: true,
         maxScore: true,
         subpartId: true,
@@ -171,35 +143,39 @@ export async function GET(req: NextRequest) {
         },
       );
     }
-
     //get subpart
     const subpartPromises = quizzes.map((quiz) => getSubpart(quiz));
     const subparts = await Promise.all(subpartPromises);
-    const quizRecord = await prisma.quizRecord.create({
-      data: {
-        storyId: storyId,
-        userId: userId,
-        maxScore: quizzes.reduce((sum, quiz) => sum + quiz.maxScore, 0),
-        totalQuestion: quizzes.length,
-        totalCorrectAnswer: 0,
-        score: 0,
-        quizType: quizType,
-        quizQuestionIdRemain: quizzes.map((quiz) => quiz.id),
-      },
-    });
+    let quizRecord = { id: "" };
+    if (!isEditMode) {
+      quizRecord = await prisma.quizRecord.create({
+        data: {
+          storyId: storyId,
+          userId: userId,
+          maxScore: quizzes.reduce((sum, quiz) => sum + quiz.maxScore, 0),
+          totalQuestion: quizzes.length,
+          totalCorrectAnswer: 0,
+          score: 0,
+          quizType: quizType,
+          quizQuestionIdRemain: quizzes.map((quiz) => quiz.id),
+        },
+      });
+    }
     const quizResponse = quizzes.map((quiz, index) => {
-      const { subheader, questionType, id, maxScore, contentCategory } = quiz;
+      const { subheader, questionType, id, maxScore } = quiz;
       return {
         sub_header: subheader,
         question_type: questionType,
         quiz_question_id: id,
         max_score: maxScore,
-        content_category: contentCategory,
         ...subparts[index],
       };
     });
     return new NextResponse(
-      JSON.stringify({ quizzes: quizResponse, quiz_record_id: quizRecord.id }),
+      JSON.stringify({
+        quizzes: quizResponse,
+        quiz_record_id: quizRecord.id,
+      }),
       {
         status: 200,
         headers: { "Content-Type": "application/json" },
@@ -349,7 +325,6 @@ export async function PATCH(req: NextRequest) {
     const createQuizQuestionPromise = prisma.quizQuestion.create({
       data: {
         storyId: quizData.story_id,
-        contentCategory: quizData.content_category,
         questionType: quizData.question_type,
         maxScore: quizData.max_score,
         subheader: quizData.subheader,

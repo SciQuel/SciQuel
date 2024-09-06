@@ -126,7 +126,12 @@ function complexMatchingGrade(
   const recordCategoriesResult: boolean[] = [];
   const userResponseSubpart: string[] = [];
   //check user answer type
-  const userAnswerParse = complexMatchingAnswerSchema.safeParse(userAnswer);
+  const userAnswerParse = complexMatchingAnswerSchema
+    .refine((ans) => ans.length === correctAnswer.length, {
+      message:
+        "The length of answer array must be equal to categories array length. If user not answer, use empty array inside answer array",
+    })
+    .safeParse(userAnswer);
   if (!userAnswerParse.success) {
     errorMessage = userAnswerParse.error.errors[0].message;
     errors = userAnswerParse.error.errors.map((value) => value.message);
@@ -138,15 +143,17 @@ function complexMatchingGrade(
     const numbersArray = userAnswerParse.data;
     for (let i = 0; i < numbersArray.length; i++) {
       let curResponse = "";
+      let isCorrectAll = true;
       const curResult: boolean[] = [];
       numbersArray[i].forEach((number) => {
         const isCorrect = map[`${i} ${number}`] === true;
         correctCount += isCorrect ? 1 : 0;
         if (isCorrect) countAnswerRemain[i]--;
+        else isCorrectAll = false;
         curResult.push(isCorrect);
         curResponse += curResponse.length === 0 ? `${number}` : ` ${number}`;
       });
-      recordCategoriesResult.push(countAnswerRemain[i] === 0);
+      recordCategoriesResult.push(countAnswerRemain[i] === 0 && isCorrectAll);
       results.push(curResult);
       userResponseSubpart.push(curResponse);
     }
@@ -171,6 +178,7 @@ function directMatchingGrade(
   const results: boolean[][] = [];
   let correctCount = 0;
   let total = 1;
+  const recordCategoriesResult: boolean[] = [];
   const userResponseSubpart: string[] = [];
   total = correctAnswer.length;
   //use to check if all option in each categories is all answeared correctly
@@ -191,6 +199,7 @@ function directMatchingGrade(
       const isCorrect = numbers[i] === correctAnswer[i];
       correctCount += isCorrect ? 1 : 0;
       results[i].push(isCorrect);
+      recordCategoriesResult.push(isCorrect);
       userResponseSubpart.push(numbers[i].toString());
     }
   }
@@ -201,6 +210,7 @@ function directMatchingGrade(
     correctCount,
     total,
     userResponseSubpart,
+    categoriesResult: recordCategoriesResult,
   };
 }
 
@@ -303,6 +313,7 @@ function trueFalseGrade(
   let correctCount = 0;
   let total = 1;
   const userResponseSubpart: string[] = [];
+  const recordCategoriesResult: boolean[] = [];
   total = correctAnswer.length;
 
   //check user answer type
@@ -317,6 +328,7 @@ function trueFalseGrade(
       correctCount += isCorrect ? 1 : 0;
       results.push([]);
       results[i].push(isCorrect);
+      recordCategoriesResult.push(isCorrect);
       userResponseSubpart.push(userAnswer[i] ? "true" : "false");
     }
   }
@@ -327,6 +339,7 @@ function trueFalseGrade(
     correctCount,
     total,
     userResponseSubpart,
+    categoriesResult: recordCategoriesResult,
   };
 }
 

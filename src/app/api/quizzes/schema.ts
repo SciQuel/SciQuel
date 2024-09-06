@@ -1,4 +1,4 @@
-import { QuizType } from "@prisma/client";
+import { QuestionType, QuizType } from "@prisma/client";
 import { z } from "zod";
 
 const DEFAULT_MAX_POINT = 10;
@@ -27,20 +27,29 @@ export const quizQuestionIdSchema = z
 export const complexMatchingSubpartSchema = z
   .object({
     question: z.string({
-      required_error: "question is required",
+      required_error: "question required in body",
       invalid_type_error: "question must be a string",
     }),
+    content_categories: z.array(
+      z.string({
+        invalid_type_error: "value in content_categories must be a string",
+      }),
+      {
+        required_error: "content_categories is required in body",
+        invalid_type_error: "content_categories must be a string array",
+      },
+    ),
     categories: z.array(
       z.string({ invalid_type_error: "value in categories must be a string" }),
       {
-        required_error: "categories is required",
+        required_error: "categories required in body",
         invalid_type_error: "categories must be a string array",
       },
     ),
     options: z.array(
       z.string({ invalid_type_error: "value in options must be a string" }),
       {
-        required_error: "options is required",
+        required_error: "options required in body",
         invalid_type_error: "options must be a string array",
       },
     ),
@@ -61,7 +70,7 @@ export const complexMatchingSubpartSchema = z
         },
       ),
       {
-        required_error: "correct_answers is required",
+        required_error: "correct_answers required in body",
         invalid_type_error:
           "correct_answers must be a nonnegative integer 2D array",
       },
@@ -71,18 +80,23 @@ export const complexMatchingSubpartSchema = z
         invalid_type_error: "value in explanations must be a string",
       }),
       {
-        required_error: "explanations is required",
+        required_error: "explanations required in body",
         invalid_type_error: "explanations must be a string array",
       },
     ),
   })
   //check if all length array are equal
   .refine(
-    ({ categories, correct_answers, explanations }) =>
-      compareAllEqual([categories, correct_answers, explanations]),
+    ({ categories, correct_answers, explanations, content_categories }) =>
+      isAllEqual([
+        categories,
+        correct_answers,
+        explanations,
+        content_categories,
+      ]),
     {
       message:
-        "The length array of categories, correct_answers and explanations must be all equal",
+        "The length array of categories, correct_answers, content_categories and explanations, must be all equal",
     },
   )
   //check if there is duplicate index answer
@@ -100,20 +114,29 @@ export const complexMatchingSubpartSchema = z
 export const directMatchingSubpartSchema = z
   .object({
     question: z.string({
-      required_error: "question is required",
+      required_error: "question required in body",
       invalid_type_error: "question must be a string",
     }),
+    content_categories: z.array(
+      z.string({
+        invalid_type_error: "value in content_categories must be a string",
+      }),
+      {
+        required_error: "content_categories required in body",
+        invalid_type_error: "content_categories must be a string array",
+      },
+    ),
     categories: z.array(
       z.string({ invalid_type_error: "value in categories must be a string" }),
       {
-        required_error: "categories is required",
+        required_error: "categories required in body",
         invalid_type_error: "categories must be a string array",
       },
     ),
     options: z.array(
       z.string({ invalid_type_error: "value in options must be a string" }),
       {
-        required_error: "options is required",
+        required_error: "options required in body",
         invalid_type_error: "options must be a string array",
       },
     ),
@@ -126,7 +149,7 @@ export const directMatchingSubpartSchema = z
         .int("correct_answers must be an integer number")
         .nonnegative(),
       {
-        required_error: "correct_answers is required",
+        required_error: "correct_answers required in body",
         invalid_type_error:
           "correct_answers must be a nonnegative integer array",
       },
@@ -136,18 +159,30 @@ export const directMatchingSubpartSchema = z
         invalid_type_error: "value in explanations must be a string",
       }),
       {
-        required_error: "explanations is required",
+        required_error: "explanations required in body",
         invalid_type_error: "explanations must be a string array",
       },
     ),
   })
   //check if all length array are equal
   .refine(
-    ({ categories, options, correct_answers, explanations }) =>
-      compareAllEqual([categories, correct_answers, explanations, options]),
+    ({
+      categories,
+      options,
+      correct_answers,
+      explanations,
+      content_categories,
+    }) =>
+      isAllEqual([
+        categories,
+        correct_answers,
+        explanations,
+        options,
+        content_categories,
+      ]),
     {
       message:
-        "The length array of categories, options, correct_answers and explanations must be all equal",
+        "The length array of categories, options, correct_answers, content_categories and explanations must be all equal",
     },
   )
   //check if there is duplicate index answer
@@ -165,12 +200,21 @@ export const directMatchingSubpartSchema = z
 
 export const trueFalseSubpartSchema = z
   .object({
+    content_categories: z.array(
+      z.string({
+        invalid_type_error: "value in content_category must be a string",
+      }),
+      {
+        required_error: "content_categories required in body",
+        invalid_type_error: "content_categories must be a string array",
+      },
+    ),
     questions: z.array(
       z.string({
         invalid_type_error: "value in questions must be a string",
       }),
       {
-        required_error: "questions is required",
+        required_error: "questions required in body",
         invalid_type_error: "questions must be a string array",
       },
     ),
@@ -179,7 +223,7 @@ export const trueFalseSubpartSchema = z
         invalid_type_error: "value in correct_answers must be a boolean",
       }),
       {
-        required_error: "correct_answers is required",
+        required_error: "correct_answers required in body",
         invalid_type_error: "explanations must be a boolean array",
       },
     ),
@@ -188,30 +232,39 @@ export const trueFalseSubpartSchema = z
         invalid_type_error: "value in explanations must be a string",
       }),
       {
-        required_error: "explanations is required",
+        required_error: "explanations required in body",
         invalid_type_error: "explanations must be a string array",
       },
     ),
   })
   .refine(
-    ({ questions, correct_answers, explanations }) =>
-      compareAllEqual([questions, correct_answers, explanations]),
+    ({ questions, correct_answers, explanations, content_categories }) =>
+      isAllEqual([
+        questions,
+        correct_answers,
+        explanations,
+        content_categories,
+      ]),
     {
       message:
-        "The length array of categories, options, correct_answers and explanations must be all equal",
+        "The length array of categories, options, correct_answers, content_categories and explanations must be all equal",
     },
   );
 
 export const multipleChoiceSubpartSchema = z
   .object({
+    content_category: z.string({
+      invalid_type_error: "value in content_category must be a string",
+      required_error: "content_category is required in body",
+    }),
     question: z.string({
-      required_error: "question is required",
+      required_error: "question required in body",
       invalid_type_error: "question must be a string",
     }),
     options: z.array(
       z.string({ invalid_type_error: "value in options must be a string" }),
       {
-        required_error: "options is required",
+        required_error: "options required in body",
         invalid_type_error: "options must be a string array",
       },
     ),
@@ -226,18 +279,14 @@ export const multipleChoiceSubpartSchema = z
         invalid_type_error: "value in explanations must be a string",
       }),
       {
-        required_error: "explanations is required",
+        required_error: "explanations required in body",
         invalid_type_error: "explanations must be a string array",
       },
     ),
   })
-  .refine(
-    ({ options, explanations }) => compareAllEqual([explanations, options]),
-    {
-      message:
-        "The lengths array of explanations and options must be all equal",
-    },
-  )
+  .refine(({ options, explanations }) => isAllEqual([explanations, options]), {
+    message: "The lengths array of explanations and options must be all equal",
+  })
   .refine(
     ({ correct_answer, options }) => !isOutOfBound([correct_answer], options),
     {
@@ -247,14 +296,18 @@ export const multipleChoiceSubpartSchema = z
 
 export const selectAllSubpartSchema = z
   .object({
+    content_category: z.string({
+      invalid_type_error: "value in content_category must be a string",
+      required_error: "content_category is required in body",
+    }),
     question: z.string({
-      required_error: "question is required",
+      required_error: "question required in body",
       invalid_type_error: "question must be a string",
     }),
     options: z.array(
       z.string({ invalid_type_error: "value in options must be a string" }),
       {
-        required_error: "options is required",
+        required_error: "options required in body",
         invalid_type_error: "options must be a string array",
       },
     ),
@@ -269,7 +322,7 @@ export const selectAllSubpartSchema = z
           message: "value in correct_answer must be a nonnegative number",
         }),
       {
-        required_error: "correct_answers is required",
+        required_error: "correct_answers required in body",
         invalid_type_error:
           "correct_answers must be a nonnegative integer array",
       },
@@ -279,19 +332,15 @@ export const selectAllSubpartSchema = z
         invalid_type_error: "value in explanations must be a string",
       }),
       {
-        required_error: "explanations is required",
+        required_error: "explanations required in body",
         invalid_type_error: "explanations must be a string array",
       },
     ),
   })
   //check if all array equal
-  .refine(
-    ({ options, explanations }) => compareAllEqual([explanations, options]),
-    {
-      message:
-        "The lengths array of explanations, and options must be all equal",
-    },
-  )
+  .refine(({ options, explanations }) => isAllEqual([explanations, options]), {
+    message: "The lengths array of explanations, and options must be all equal",
+  })
   //check if index answer is out of bound
   .refine(
     ({ options, correct_answers }) => !isOutOfBound(correct_answers, options),
@@ -303,27 +352,15 @@ export const selectAllSubpartSchema = z
 export const modifiedQuizSchema = z.object({
   story_id: z
     .string({
-      required_error: "story_id is required",
+      required_error: "story_id required in body",
       invalid_type_error: "story_id must be a ObjectId",
     })
     .regex(/^[0-9a-f]{24}$/, { message: "story_id must be a valid ObjectId" }),
-  content_category: z.string({
-    required_error: "content_category is required",
-    invalid_type_error: "content_category must be a string",
+  question_type: z.nativeEnum(QuestionType, {
+    invalid_type_error:
+      "Invalid question_type.  Valid question_type: " +
+      String(Object.values(QuestionType).map((en) => en[0])),
   }),
-  question_type: z.enum(
-    [
-      "MULTIPLE_CHOICE",
-      "TRUE_FALSE",
-      "DIRECT_MATCHING",
-      "COMPLEX_MATCHING",
-      "SELECT_ALL",
-    ],
-    {
-      invalid_type_error:
-        "Invalid question_type.  Valid question_type: MULTIPLE_CHOICE | TRUE_FALSE | DIRECT_MATCHING | COMPLEX_MATCHING | SELECT_ALL",
-    },
-  ),
   max_score: z
     .number({
       invalid_type_error: "max_score must be a nonnegative int number",
@@ -333,14 +370,14 @@ export const modifiedQuizSchema = z.object({
     .default(DEFAULT_MAX_POINT),
   subpart: z.any(),
   subheader: z.string({
-    required_error: "subheader is required",
+    required_error: "subheader required in body",
     invalid_type_error: "subheader must be a string",
   }),
 });
 export const getQuizzesSchema = z.object({
   storyId: z
     .string({
-      required_error: "story_id is required",
+      required_error: "story_id is required in url",
       invalid_type_error: "story_id must be a ObjectId",
     })
     .regex(/^[0-9a-f]{24}$/, { message: "story_id must be a valid ObjectId" }),
@@ -349,7 +386,7 @@ export const getQuizzesSchema = z.object({
 //Checking value function
 
 //check if all array length are equals to each other
-function compareAllEqual(values: any[][]) {
+function isAllEqual(values: any[][]) {
   const len = values.length;
   if (len === 0) return true;
   for (let i = 1; i < values.length; i++) {
