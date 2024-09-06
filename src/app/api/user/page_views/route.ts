@@ -43,7 +43,8 @@ export async function GET(req: Request) {
     });
     return NextResponse.json({
       total: countResult,
-      max_page: maxPage,
+      page_number: page + 1,
+      total_page: maxPage,
       reading_history: paginatedResult.map((value) => ({
         story_id: value.id,
         last_read: value.lastRead,

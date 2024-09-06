@@ -212,7 +212,6 @@ model Brain {
   createdAt DateTime @default(now())
 
   @@unique([userId, storyId])
-  @@index([storyId])
 }
 
 model Quiz {
@@ -241,7 +240,6 @@ model Bookmark {
   createdAt DateTime @default(now())
 
   @@unique([userId, storyId])
-  @@index([storyId])
 }
 
 // feedback schema
