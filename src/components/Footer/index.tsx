@@ -19,7 +19,7 @@ export default function Footer() {
                    sm:w-64 sm:rounded-r-none"
                 placeholder="team@sciquel.org"
                 pattern="^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"
-                title="Please provide a valid email"
+                title="Please provide a valid email to subscribe to our newsletter"
                 required
               />
               <button

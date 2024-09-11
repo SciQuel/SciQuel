@@ -1,5 +1,6 @@
 import TopicTag from "@/components/TopicTag";
 import { type StoryTopic, type StoryType } from "@prisma/client";
+import Link from "next/link";
 
 interface Props {
   tag: StoryTopic;
@@ -8,6 +9,7 @@ interface Props {
   author: string;
   date: string;
   mediaType: StoryType;
+  href: string;
 }
 
 export default function InnerCard({
@@ -17,9 +19,13 @@ export default function InnerCard({
   author,
   date,
   mediaType,
+  href,
 }: Props) {
   return (
-    <div className="relative bottom-[0%] z-20 flex w-full flex-col rounded bg-white transition-all duration-300 lg:bottom-[27%] lg:bg-transparent">
+    <Link
+      href={href}
+      className="relative bottom-[0%] z-20 flex w-full flex-col rounded bg-white transition-all duration-300 lg:bottom-[27%] lg:bg-transparent"
+    >
       <div className="absolute inset-0 rounded bg-gradient-to-b from-[#027373] to-[#012c2e] opacity-0 transition-opacity duration-300 lg:px-5 lg:pt-12 lg:opacity-100"></div>
       <div className="z-10 flex flex-col rounded p-5">
         <div className="flex items-start justify-between">
@@ -40,6 +46,6 @@ export default function InnerCard({
           {author} | {date}
         </p>
       </div>
-    </div>
+    </Link>
   );
 }
