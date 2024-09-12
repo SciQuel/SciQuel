@@ -24,9 +24,9 @@ export default function InnerCard({
   return (
     <Link
       href={href}
-      className="relative bottom-[0%] z-20 flex w-full flex-col rounded bg-white transition-all duration-300 lg:bottom-[27%] lg:bg-transparent"
+      className="relative z-20 flex w-full flex-col rounded bg-white transition-all duration-300 lg:bg-transparent"
     >
-      <div className="absolute inset-0 rounded bg-gradient-to-b from-[#027373] to-[#012c2e] opacity-0 transition-opacity duration-300 lg:px-5 lg:pt-12 lg:opacity-100"></div>
+      <div className="absolute inset-0 rounded bg-gradient-to-t from-[#027373] to-sciquelTeal opacity-0 transition-opacity duration-300 lg:px-5 lg:pt-12 lg:opacity-100"></div>
       <div className="z-10 flex flex-col rounded p-5">
         <div className="flex items-start justify-between">
           <TopicTag name={tag} />
@@ -34,10 +34,10 @@ export default function InnerCard({
             {mediaType}
           </p>
         </div>
-        <h2 className="my-2 text-left font-alegreyaSansSC text-3xl font-bold text-sciquelDarkText lg:text-white">
+        <h2 className="my-2 text-left font-alegreyaSansSC text-5xl font-bold text-sciquelDarkText lg:text-white">
           {title}
         </h2>
-        <h4 className="line-clamp-3 text-left text-xl text-sciquelDarkText transition-all duration-300 lg:text-white">
+        <h4 className="line-clamp-3 text-left text-2xl text-sciquelDarkText transition-all duration-300 lg:text-white">
           {subtitle}
         </h4>
       </div>
