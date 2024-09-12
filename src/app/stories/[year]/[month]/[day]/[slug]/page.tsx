@@ -125,10 +125,10 @@ export default async function StoriesPage({ params }: Params) {
       <StoryScrollProvider>
         {/* <DictionaryProvider dictionary={testDictList}> */}
         <div className="flex h-fit flex-col overflow-visible">
+          <StoryCredits story={story} />{" "}
           <div className="mx-0 mt-0 grid grid-cols-[1fr_0px] gap-0 px-0 pt-0 lg:grid-cols-[1fr_768px_1fr]">
-            <div className="pointer-events-none relative hidden flex-col items-end px-0 xl:flex">
-              <div className="w-100 h-[calc(100vh_-_2rem)]" />
-              <div className="relative flex h-full w-full flex-1 flex-col items-end gap-0 overflow-visible px-3">
+            <div className="pointer-events-none relative -mt-20 hidden flex-col items-end px-0 xl:flex">
+              <div className="relative mt-1 flex h-full w-full flex-1 flex-col items-end gap-0 overflow-visible px-3">
                 <ShareLinks />
 
                 <div className="flex-1 self-stretch" />
@@ -136,7 +136,6 @@ export default async function StoriesPage({ params }: Params) {
             </div>
             <div className="  w-screen xl:w-full">
               <div className="mx-0 mt-2 flex w-screen flex-col items-center gap-4 px-2 sm:mx-auto md:w-[768px] md:px-0">
-                <StoryCredits story={story} />
                 {/* <Dictionary /> */}
 
                 {file.result as ReactNode}
@@ -186,7 +185,6 @@ export default async function StoriesPage({ params }: Params) {
               </div>
             </div>
           </div>
-
           <StoryFooter
             storyContributions={story.storyContributions}
             articles1={whatsNewArticles}

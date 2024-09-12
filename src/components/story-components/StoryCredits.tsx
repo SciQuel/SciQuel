@@ -284,7 +284,7 @@ export default function StoryCredits({ story }: Props) {
           alt={story.title}
         />
         <p className="my-1 font-sourceSerif4">
-          Title Image provided by Source name
+          {story.storyContent[0].coverImgCredit ?? ""}
         </p>
         <h1 className="my-4  font-customTest text-4xl">{story.title}</h1>
         <h2 className="font-customTest text-2xl">{story.summary}</h2>
@@ -333,7 +333,7 @@ export default function StoryCredits({ story }: Props) {
     </>
   ) : (
     <>
-      <div className="absolute left-0 top-0 m-0 flex min-h-screen w-screen items-end">
+      <div className="relative left-0 m-0 -mt-24 flex min-h-screen w-screen items-end lg:-mt-12">
         <Image
           src={story.thumbnailUrl}
           className="h-full object-cover"
@@ -345,7 +345,7 @@ export default function StoryCredits({ story }: Props) {
           className={`relative m-10 flex min-h-0 w-full flex-col justify-end overflow-hidden `}
         >
           <h1
-            className="mb-0 p-8 pb-0 font-customTest text-6xl font-bold sm:text-8xl lg:w-4/5"
+            className="mb-0 rounded-t-xl p-8 pb-0 font-customTest text-6xl font-bold sm:text-8xl lg:w-4/5"
             style={{
               color: story.titleColor,
 
@@ -368,17 +368,17 @@ export default function StoryCredits({ story }: Props) {
           </h2>
         </div>
       </div>
-      <div className="h-[calc(100vh_-_6rem)] w-full" />{" "}
+      {/* <div className="h-[calc(100vh_-_7.5rem)] w-full" />{" "} */}
       <p className="my-0 w-screen px-2 py-0 font-sourceSerif4">
-        Title Image provided by Source name
+        {story.storyContent[0].coverImgCredit ?? " "}
       </p>
       <div className=" -mt-6 justify-self-start pt-0 font-sourceSerif4">
         <div className="relative mx-0 mt-0 flex w-screen flex-col overflow-hidden px-2 md:mx-auto md:w-[768px] md:px-0">
-          <div className="pointer-events-none relative top-2 flex flex-1 flex-row flex-wrap justify-start xl:hidden">
+          <div className="pointer-events-none relative top-7 flex flex-1 flex-row flex-wrap justify-start xl:hidden">
             <ShareLinks />
           </div>
 
-          <div className="mt-4 flex flex-row">
+          <div className="mt-8 flex flex-row">
             <p className="mr-1  ">
               {story.category
                 ? story.category.slice(0, 1) +

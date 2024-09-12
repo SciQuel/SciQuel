@@ -183,8 +183,9 @@ model StoryContent {
   story   Story  @relation(fields: [storyId], references: [id], onDelete: Cascade)
   storyId String @db.ObjectId
 
-  content String
-  footer  String?
+  content        String
+  coverImgCredit String?
+  footer         String?
 
   createdAt DateTime
 }
