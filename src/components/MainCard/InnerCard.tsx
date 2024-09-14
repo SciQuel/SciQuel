@@ -24,9 +24,9 @@ export default function InnerCard({
   return (
     <Link
       href={href}
-      className="relative z-20 flex w-full flex-col rounded bg-white transition-all duration-300 lg:bg-transparent"
+      className="relative z-20 flex w-full flex-col rounded bg-white transition-all duration-300  lg:min-h-[45%] lg:bg-transparent"
     >
-      <div className="absolute inset-0 rounded bg-gradient-to-t from-[#027373] to-sciquelTeal opacity-0 transition-opacity duration-300 lg:px-5 lg:pt-12 lg:opacity-100"></div>
+      <div className="absolute inset-0  rounded bg-gradient-to-t from-[#027373] to-sciquelTeal opacity-0 transition-opacity duration-300 lg:px-5 lg:pt-12 lg:opacity-100"></div>
       <div className="z-10 flex flex-col rounded p-5">
         <div className="flex items-start justify-between">
           <TopicTag name={tag} />

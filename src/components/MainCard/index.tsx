@@ -34,7 +34,7 @@ export default function MainCard({
     >
       <div
         className={`absolute right-0 top-0 z-10 h-full 
-                    w-full justify-center bg-cover bg-center transition-all duration-300 lg:w-7/12`}
+                    w-full justify-center bg-cover bg-center transition-all duration-300 lg:w-8/12`}
       >
         <Image
           src={thumbnailUrl}

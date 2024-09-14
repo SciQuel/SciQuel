@@ -4,7 +4,12 @@ import Header from "@/components/Header";
 import { authOptions } from "@/lib/auth";
 import clsx from "clsx";
 import { getServerSession } from "next-auth";
-import { Alegreya_Sans_SC, Quicksand, Source_Serif_4 } from "next/font/google";
+import {
+  Alegreya_Sans_SC,
+  Besley,
+  Quicksand,
+  Source_Serif_4,
+} from "next/font/google";
 import AuthProvider from "./AuthProvider";
 
 export const metadata = {
@@ -32,6 +37,12 @@ const sourceSerif4 = Source_Serif_4({
   display: "swap",
 });
 
+const besley = Besley({
+  weight: "variable",
+  subsets: ["latin"],
+  variable: "--font-besley",
+});
+
 export default async function RootLayout({
   children,
 }: {
@@ -42,9 +53,12 @@ export default async function RootLayout({
     <html lang="en">
       <body
         className={clsx(
+          besley.className,
           quicksand.className,
+
           alegreyaSansSC.variable,
           sourceSerif4.variable,
+
           "flex min-h-screen flex-col",
         )}
       >
@@ -55,7 +69,7 @@ export default async function RootLayout({
           >
             Skip to main content
           </a>
-          <div className="min-h-screen">
+          <div className=" min-h-screen">
             <Header></Header>
 
             <main className="pt-36 xs:pt-24 sm:pt-10" id="main">

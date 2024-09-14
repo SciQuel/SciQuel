@@ -356,12 +356,12 @@ export default function StoryCredits({ story }: Props) {
             {story.title}
           </h1>
           <h2
-            className="p-8 pt-0 font-customTest text-4xl font-semibold lg:w-5/6"
+            className=" p-8 pt-0 font-besley text-2xl   lg:w-5/6"
             style={{
               color: story.summaryColor,
 
-              fontSize: `${Math.max(headerFont - 28, 14)}px`,
-              lineHeight: `${Math.max(headerFont - 25, 14)}px`,
+              fontSize: `${Math.max(headerFont - 33, 14)}px`,
+              lineHeight: `${Math.max(headerFont - 28, 14)}px`,
             }}
           >
             {story.summary}
