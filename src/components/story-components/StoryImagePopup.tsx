@@ -48,7 +48,7 @@ const StoryImagePopup = ({
 
   // Function to resize the image while maintaining the aspect ratio
   const resizeImage = () => {
-      //max sizes
+    //max sizes
     const MAX_WIDTH = isSmallScreen ? window.innerWidth * 0.95 : isMediumScreen ? 700 : 800;
     const MAX_HEIGHT = isSmallScreen ? 550 : isMediumScreen ? 700 : window.innerHeight * 0.97;
 
@@ -103,10 +103,10 @@ const StoryImagePopup = ({
 
 
 
-  
-   //check if user is on mobile device on mount
+
+  //check if user is on mobile device on mount
   useEffect(() => {
-   
+
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
     setIsMobile(isMobile)
 
@@ -121,10 +121,10 @@ const StoryImagePopup = ({
 
   //functions is attached to window resize event listener, 
   const handleResize = () => {
-      resizeImage()
+    resizeImage()
     setisSmallScreen(window.innerWidth <= 768);
     setisMediumScreen(window.innerWidth <= 1024)
-// calculateItemShouldCenter();
+    // calculateItemShouldCenter();
   };
 
   const handleImageLoad = () => {
