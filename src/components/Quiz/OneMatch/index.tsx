@@ -24,12 +24,33 @@ export default function OneMatch({
 
   const [dirAnswer, setDirAnswer] = useState([] as number[]);
   const [quizId, _] = useState(quizQuestionId);
-  const result = [] as boolean[];
-  responed?.map((res: { correct: any[] }, index: number) =>
-    res.correct.map((lp, key) => (result[dirAnswer[index]] = lp)),
-  );
-  // console.log("result ", result);
+
+  const [dirresult, setDirresult] = useState([] as boolean[]);
+  // responed?.map((res: { correct: any[] }, index: number) =>
+  //   res.correct.map((lp) => (dirresult[dirAnswer[index]] = lp)),
+  // );
+  // console.log("dirresult ", dirresult);
   // console.log("Direct QuizId ", quizId);
+
+  /**
+   * Flattens an array of objects containing a "correct" property which is an array of booleans, and
+   * an "explanation" property which is a string, into a single array of booleans.
+   *
+   * @param {Array<{ correct: boolean[], explanation: string }>} array - The array of objects to
+   *        flatten.
+   * @returns {boolean[]} - The flattened array of booleans.
+   */
+  const flattenArray = (
+    array: Array<{ correct: boolean[]; explanation: string }>,
+  ): boolean[] => {
+    const result: boolean[] = [];
+    array?.forEach((res, index) =>
+      res.correct.forEach((lp, lpIndex) => (result[dirAnswer[index]] = lp)),
+    );
+    console.log("result ", result);
+    return result;
+  };
+
   useEffect(() => {
     let item: HTMLTextAreaElement | null = null;
 
@@ -60,39 +81,36 @@ export default function OneMatch({
     };
 
     /**
-     * Handles the drop event. Inserts the dragged item into its new position, and updates the
-     * content of the target element.
+     * Handles the drop event. Swaps the dragged item with the target element.
      *
      * @param {DragEvent} e - The drop event.
      */
     const handleDrop = (e: DragEvent) => {
-      // Prevent default drop action
       e.preventDefault();
 
-      // Get the target element
-      const target = e.target as HTMLTextAreaElement;
-      let tmp = item?.innerHTML || ""; // Store the current content of the dragged item
+      const targetElement = e.target as HTMLTextAreaElement;
+      // console.log("targetElement ", targetElement);
+      const draggedItem = item;
+      // console.log("draggedItem ", draggedItem);
 
-      /**
-       * Check if the target element has the attribute "data-draggable" set to "answer". If it does,
-       * swap the contents of the target element and the dragged item.
-       */
+      if (
+        draggedItem &&
+        targetElement.getAttribute("data-draggable") === "answer"
+      ) {
+        const targetParent = targetElement.parentElement;
+        const tempHtml = targetParent?.innerHTML;
+        // console.log("targetParent ", targetParent);
+        // console.log("tempHtml ", tempHtml);
 
-      if (target.getAttribute("data-draggable") === "answer") {
-        console.log("hello");
-        if (target.parentElement != null && item != null) {
-          // Swap the contents of the target element and the dragged item
-          item.innerHTML = target.parentElement?.innerHTML;
-          // console.log("innerHTML", item.innerHTML);
-          target.parentElement.innerHTML = tmp;
-          console.log("tmp", tmp);
-        }
+        console.log("before targetParent!.innerHTML ", targetParent!);
+        console.log(" before  draggedItem.innerHTML ", draggedItem);
 
-        // Prevent the default drop action
-        e.preventDefault();
+        targetParent!.innerHTML = draggedItem.innerHTML;
+
+        draggedItem.innerHTML = tempHtml!;
+        console.log("targetParent!.innerHTML ", targetParent!.innerHTML);
+        console.log("  draggedItem.innerHTML ", draggedItem.innerHTML);
       }
-
-      tmp = ""; // Reset the temporary variable
     };
 
     /**
@@ -102,24 +120,23 @@ export default function OneMatch({
     const handleDragEnd = () => {
       item = null;
 
-      const array = [] as number[];
-      categories.map((category, index) => {
-        const container = document.querySelector("#row" + index.toString());
-        // console.log("container ", container);
-        container
-          ?.querySelectorAll("div[option-key]")
-          .forEach((elem) =>
-            array.push(Number(elem.getAttribute("option-key"))),
-          );
-        setDirAnswer(array);
-        // console.log("array ", array);
+      const options = categories.flatMap((_, index) => {
+        const container = document.querySelector<HTMLDivElement>(
+          `#row${index}`,
+        );
+        return Array.from(
+          container?.querySelectorAll<HTMLDivElement>("[option-key]") || [],
+        ).map((element) => Number(element.getAttribute("option-key")));
       });
+      console.log("options ", options);
+      setDirAnswer(options);
     };
-
-    document.addEventListener("dragstart", handleDragStart);
-    document.addEventListener("dragover", handleDragOver);
-    document.addEventListener("drop", handleDrop);
-    document.addEventListener("dragend", handleDragEnd);
+    if (show) {
+      document.addEventListener("dragstart", handleDragStart);
+      document.addEventListener("dragover", handleDragOver);
+      document.addEventListener("drop", handleDrop);
+      document.addEventListener("dragend", handleDragEnd);
+    }
 
     return () => {
       document.removeEventListener("dragstart", handleDragStart);
@@ -127,18 +144,28 @@ export default function OneMatch({
       document.removeEventListener("drop", handleDrop);
       document.removeEventListener("dragend", handleDragEnd);
     };
-  }, [categories]);
+  }, [show]);
 
   //Update the answer info to parent
   useEffect(() => {
     console.log("Direct QuizId ", quizId);
-    const answerInfo = {
-      quizId: quizId,
-      answer: dirAnswer,
-    };
-    answers(answerInfo);
+    answers({ quizId, answer: dirAnswer });
   }, [dirAnswer]);
 
+  useEffect(() => {
+    if (show) {
+      // const dirresult = [] as boolean[];
+      // responed?.map((res: { correct: any[] }, index: number) =>
+      //   res.correct.map((lp, _) => (dirresult[dirAnswer[index]] = lp)),
+      // );
+      // setTest(dirresult);
+      // console.log("dirresult ", test);
+      // console.log("dirresult at 0  ", test[0]);
+      setDirresult(flattenArray(responed));
+      console.log("dirresult ", flattenArray(responed));
+    }
+  }, [responed]);
+  console.log("dir ", dirresult);
   return (
     <div
       className="one-match-selection mb-[20px] flex flex-col items-start"
@@ -149,27 +176,29 @@ export default function OneMatch({
           Match each word in the word bank to its category.
         </strong>
       </p>
-      {categories.map((cat, index) => (
+      {options.map((op, index) => (
         <div
           id={"row" + index.toString()}
+          key={"row" + op}
           className="quiz-row my-3.5 flex w-full flex-row"
         >
-          <div
+          {/* <div
             className={`one-match-answer-option min-w-100 flex w-[40%] flex-wrap items-center justify-center rounded-[4px] border border-black bg-white p-3`}
           >
             <p className="match-statement-text w-full break-words text-center text-[18px]">
-              {cat}
+              {categories[index]}
             </p>
           </div>
-          <div className="line z-10 h-[2px] w-[60%] self-center bg-black transition duration-300 ease-in-out" />
+          <div className="line z-10 h-[2px] w-[60%] self-center bg-black transition duration-300 ease-in-out" /> */}
           <div className="answer-choice-border z-1 box-border flex w-1/2 rounded-[4px] border-2 border-dashed border-transparent transition-all">
             <div
               className="one-match-answer-choice-holder min-w-100 box-border flex h-full w-full cursor-move items-center break-words rounded-[4px] border border-black bg-white pr-3 text-center text-[18px]  transition-all duration-300 ease-in-out"
               draggable="true"
               data-draggable="item"
+              option-key={index}
             >
               <div className="image-holder flex h-full w-[35%] max-w-[50px] items-center justify-center rounded-bl-[4px] rounded-tl-[4px] bg-[#e6e6fa] px-2 transition duration-300 ease-in-out">
-                {result[index] === true ? (
+                {dirresult[index] === true ? (
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
@@ -184,7 +213,7 @@ export default function OneMatch({
                       d="m4.5 12.75 6 6 9-13.5"
                     />
                   </svg>
-                ) : result[index] === false ? (
+                ) : dirresult[index] === false ? (
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
@@ -210,15 +239,44 @@ export default function OneMatch({
               <div
                 className="match-text align-self-center w-full justify-self-center overflow-hidden hyphens-auto p-3"
                 data-draggable="answer"
-                option-key={index}
+
+                // key={
+                //   typeof dirresult[index] == "boolean"
+                //     ? dirresult[index]
+                //     : index
+                // }
+                // key={`${op}-${index}-${
+                //   typeof dirresult[index] == "boolean"
+                //     ? dirresult[index].toString()
+                //     : "undef"
+                // }`}
               >
-                {options[index]}
+                {op + index + dirresult[index]}
               </div>
             </div>
           </div>
         </div>
       ))}
+      {dirresult}
       {/** two */}
+      {responed?.map((res: { explanation: string | null | undefined }) => (
+        <div className="col my-2 text-center">
+          <div>
+            <div className="modal-content border-light w-full border">
+              <div
+                className="modal-body"
+                style={{
+                  background: "linear-gradient(to right,#A3C9A8 1%,#F8F8FF 1%)",
+                }}
+              >
+                <p className="p-4 text-left" style={{ color: "#437E64" }}>
+                  {res.explanation}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      ))}
     </div>
   );
 }

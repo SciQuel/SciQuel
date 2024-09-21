@@ -18,7 +18,7 @@ interface Props {
 
 export type answerInfo = {
   quizId: number;
-  answer: [number] | number;
+  answer: [number] | number | boolean;
 };
 
 export default function Quiz({ Quizzes }: Props) {
@@ -136,6 +136,9 @@ export default function Quiz({ Quizzes }: Props) {
                     key={index}
                     question={q.options}
                     show={index === currentQuestion ? true : false}
+                    answers={getAnswerInfo}
+                    quizQuestionId={q.quiz_question_id}
+                    responed={respon[currentQuestion]}
                   />
                 );
 
@@ -145,6 +148,9 @@ export default function Quiz({ Quizzes }: Props) {
                     key={index}
                     questions={q.questions}
                     show={index === currentQuestion ? true : false}
+                    answers={getAnswerInfo}
+                    quizQuestionId={q.quiz_question_id}
+                    responed={respon[currentQuestion]}
                   />
                 );
 
@@ -182,6 +188,9 @@ export default function Quiz({ Quizzes }: Props) {
                     key={index}
                     options={q.options}
                     show={index === currentQuestion ? true : false}
+                    answers={getAnswerInfo}
+                    quizQuestionId={q.quiz_question_id}
+                    responed={respon[currentQuestion]}
                   />
                 );
 

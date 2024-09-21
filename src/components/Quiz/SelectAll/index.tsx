@@ -3,18 +3,41 @@ import { useEffect, useState } from "react";
 interface Props {
   options: string[];
   show: boolean;
+  answers: Function;
+  quizQuestionId: string;
+  responed: { correct: boolean[]; explanation: string }[];
 }
 export default function SelectAll({
   options,
 
   show,
+  answers,
+  quizQuestionId,
+  responed,
 }: Props) {
-  const [quest, setQuest] = useState("" as string);
-  const [qsid, setQsid] = useState("" as string);
-  const [qzid, setQzid] = useState("" as string | null);
+  const [saAnswer, setSAAnswer] = useState([] as number[]);
+  const [selected, setSelected] = useState([false] as boolean[]);
 
-  const [index, setIndex] = useState(0);
+  useEffect(() => {
+    const indexes = getAllIndexes(selected, true);
+    // setSAAnswer(indexes);
+    answers({ quizId: quizQuestionId, answer: indexes });
+  }, [selected]);
 
+  const getAllIndexes = (arr: boolean[], val: boolean) =>
+    arr.reduce(
+      (indexes, el, i) => (el === val ? [...indexes, i] : indexes),
+      [] as number[],
+    );
+
+  const handlerSelected = (index: number) => {
+    setSelected([(selected[index] = true)]);
+    setSelected([...selected]);
+  };
+  const handlerUnSelected = (index: number) => {
+    setSelected([(selected[index] = false)]);
+    setSelected([...selected]);
+  };
   return (
     <div>
       <div className=" text-black" style={{ display: show ? "block" : "none" }}>
@@ -30,27 +53,30 @@ export default function SelectAll({
             <button
               key={index}
               className="`multiple-choice-option my-1.5 flex w-full cursor-pointer flex-row items-center justify-between gap-3 rounded-md border border-black px-5 py-5 text-base font-medium transition duration-300 ease-in-out hover:bg-gray-200"
-              // onClick={(e) =>
-              //   handler(
-              //     e.currentTarget,
-              //     index,
-              //     choice.id,
-              //     choice.quizQuestionId,
-              //   )
-              // }
+              onClick={
+                selected[index] === true
+                  ? (e) => handlerUnSelected(index)
+                  : (e) => handlerSelected(index)
+              }
               // disabled={disable}
-              // style={{
-              //   pointerEvents: disable ? "none" : "auto",
-              //   backgroundColor:
-              //     index === Number(selec) && isCorrect === true
-              //       ? "#A3C9A8"
-              //       : index === Number(selec) && isCorrect === false
-              //       ? "#E79595"
-              //       : "white",
-              // }}
+              style={{
+                // pointerEvents: disable ? "none" : "auto",
+                backgroundColor:
+                  responed &&
+                  selected[index] === true &&
+                  responed[index]?.correct[0] === true
+                    ? "#A3C9A8"
+                    : responed &&
+                      selected[index] === true &&
+                      responed[index]?.correct[0] === false
+                    ? "#E79595"
+                    : "white",
+              }}
             >
               {choice}
-              {/* {index === Number(selec) && isCorrect === true ? (
+              {responed &&
+              selected[index] === true &&
+              responed[index]?.correct[0] === true ? (
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -65,7 +91,9 @@ export default function SelectAll({
                     d="m4.5 12.75 6 6 9-13.5"
                   />
                 </svg>
-              ) : index === Number(selec) && isCorrect === false ? (
+              ) : responed &&
+                selected[index] === true &&
+                responed[index]?.correct[0] === false ? (
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -80,7 +108,7 @@ export default function SelectAll({
                     d="M6 18 18 6M6 6l12 12"
                   />
                 </svg>
-              ) : null} */}
+              ) : null}
             </button>
           ))}
         </div>
@@ -90,7 +118,9 @@ export default function SelectAll({
         {/* <div className="col my-2 text-center"> {disable ? exp : ""}</div> */}
 
         <div className="col my-2 text-center">
-          {/* {isCorrect === true ? (
+          {/* {responed &&
+          selected[index] === true &&
+          responed[index]?.correct[0] === true ? (
             <div>
               <div className="modal-content border-light w-full border">
                 <div
@@ -101,7 +131,7 @@ export default function SelectAll({
                   }}
                 >
                   <p className="p-4 text-left" style={{ color: "#437E64" }}>
-                    Correct. {exp}
+                    Correct. {responed[0]?.explanation}
                   </p>
                 </div>
               </div>
@@ -110,7 +140,9 @@ export default function SelectAll({
                 correctly. Great job!
               </p>
             </div>
-          ) : isCorrect === false ? (
+          ) : responed &&
+            selected[index] === true &&
+            responed[index]?.correct[0] === false ? (
             <div>
               <div className="modal-content border-light w-full border">
                 <div
@@ -121,7 +153,7 @@ export default function SelectAll({
                   }}
                 >
                   <p className="p-4 text-left" style={{ color: "#D06363" }}>
-                    Incorrect. {exp}
+                    Incorrect. {responed[0]?.explanation}
                   </p>
                 </div>
               </div>
