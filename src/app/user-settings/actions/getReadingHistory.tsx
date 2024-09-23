@@ -34,10 +34,14 @@ export default async function getReadingHistory() {
         story: true,
       },
       take: 15,
+      orderBy: {
+        createdAt: "desc",
+      },
     });
 
     return views;
   } catch (err) {
+    console.log(err);
     return null;
   }
 }
