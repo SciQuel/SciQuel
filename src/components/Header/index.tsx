@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import logo from "./logo.png";
 import MainSubHeader from "./MainSubHeader";
-// import ProfileButton from "./ProfileButton";
+import ProfileButton from "./ProfileButton";
 import Search from "./search.svg";
 // import SeriesSubHeader from "./SeriesSubHeader";
 import SideBar from "./SideBar/SideBar";
@@ -47,7 +47,7 @@ export default function Header() {
               </form>
             </div>
             <div className="h-[2rem] grow" />
-            {/* <ProfileButton /> */}
+            <ProfileButton />
           </div>
         </div>
         {/* {pathname.split("/")[1] === "stories" ? (
