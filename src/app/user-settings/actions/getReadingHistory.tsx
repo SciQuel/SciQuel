@@ -24,28 +24,19 @@ export default async function getReadingHistory() {
       return null;
     }
 
-    const quizs = await prisma.quiz.findMany({
+    const views = await prisma.pageView.findMany({
       where: {
         user: {
           email: session.user.email,
         },
       },
-      select: {
-        story: {
-          select: {
-            title: true,
-            thumbnailUrl: true,
-            storyContributions: {
-              select: {
-                contributor: true,
-              },
-            },
-          },
-        },
+      include: {
+        story: true,
       },
+      take: 15,
     });
 
-    return quizs;
+    return views;
   } catch (err) {
     return null;
   }
