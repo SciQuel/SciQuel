@@ -2,7 +2,7 @@ import prisma from "@/lib/prisma";
 import { type Contributor } from "@prisma/client";
 import { getServerSession } from "next-auth";
 
-export type ReadingHistory = {
+export type ReadingHistoryType = {
   story: {
     storyContributions: {
       contributor: Contributor;
@@ -38,6 +38,7 @@ export default async function getReadingHistory() {
 
     return views;
   } catch (err) {
+    console.log(err);
     return null;
   }
 }

@@ -7,6 +7,8 @@
   src: url("../../public/fonts/CH_SB_SC_WithoutQ_Kerned_01.otf");
 }
 
+
+
 /* :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
@@ -20,6 +22,33 @@
     --background-end-rgb: 0, 0, 0;
   }
 } */
+
+@layer utilities {
+
+  /* Scrollbar for WebKit browsers */
+  .scrollbar-cyan::-webkit-scrollbar {
+    width: 12px;
+
+
+  }
+
+  .scrollbar-cyan::-webkit-scrollbar-track {
+    background: #f1f1f1;
+
+  }
+
+  .scrollbar-cyan::-webkit-scrollbar-thumb {
+    background-color: cyan;
+    border-radius: 10px;
+    border: 3px solid #f1f1f1;
+  }
+
+  /* Scrollbar for Firefox */
+  .scrollbar-cyan {
+    scrollbar-color: cyan #f1f1f1;
+    /* thumb color | track color */
+  }
+}
 
 body {
   font-family: Quicksand;
