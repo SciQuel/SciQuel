@@ -28,9 +28,9 @@ export default function MainCard({
   return (
     <div
       className={`relative z-0 mx-auto cursor-pointer 
-                  text-center transition-all
-                  duration-300 hover:scale-[1.03]
-                   xs:min-w-[300px]  md:h-[70vh]  xl:min-h-[300px]`}
+                  pt-12 text-center
+                  transition-all duration-300
+                   hover:scale-[1.03] xs:min-w-[300px] md:h-[70vh] md:pt-0  xl:min-h-[300px]`}
     >
       <div
         className={`absolute right-0 top-0 z-10 h-full 
@@ -54,11 +54,11 @@ export default function MainCard({
           mediaType={mediaType}
           tag={tag}
         />
-        <div className="z-10 mx-5 my-3 hidden text-left transition-all duration-300 lg:block">
+        {/* <div className="z-10 mx-5 my-3 hidden text-left transition-all duration-300 lg:relative lg:top-16 lg:block">
           <p className="font-sourceSerif4 text-xl font-[350] text-sciquelTeal">
             {author} | {date}
           </p>
-        </div>
+        </div> */}
       </div>
     </div>
   );
