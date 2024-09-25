@@ -61,19 +61,19 @@ const ReadingDropDown = ({ data, title, email, userId }) => {
       <div className="border-b-2 w-full cursor-pointer h-[45px]" onClick={() => setIsOpen(prev => !prev)}> {title} </div>
 
       {isOpen && (
-        <div className='h-[500px] overflow-y-scroll scrollbar-cyan'>
+        <div className='max-h-[500px] overflow-y-scroll scrollbar-cyan'>
           {data.map((reading) => (
             <ul className='mt-5' key={reading.storyId}>
               <div className='flex items-center gap-7'>
                 <img src={reading.story.thumbnailUrl} alt={`Thumbnail of ${reading.story.title}`} className='w-20 h-20 object-cover' />
                 <div>
-                  <p>{reading.story.title}</p>
-                  <p>{`by ${reading.storyId}`}</p>
-                  <p>{`Viewed ${reading.diffInDays} days ago`}</p>
+                  <p className='font-bold'>{reading.story.title}</p>
+                  <p className='text-sm font-light'>{`By ${reading.story.title}`}</p>
+                  <p className='text-sm font-light'>{`Viewed ${reading.diffInDays} days ago`}</p>
                 </div>
 
                 {/* Icons */}
-                <div className='flex ml-auto items-center mr-5'>
+                <div className='flex ml-auto items-center mr-5 '>
                   <Bookmark fill={`${bookMarkedReadings.includes(reading.storyId) ? 'yellow' : 'none'}`} width='50px' height='20px' onClick={() => handleBookmarkClick(reading.storyId)} />
                   <Lightbulb width='50px' height='20px' />
                   <Share width='50px' height='20px' />
