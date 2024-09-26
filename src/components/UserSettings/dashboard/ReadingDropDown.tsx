@@ -6,6 +6,7 @@ import Share from '../../../../public/assets/images/oi-share-alt.svg'
 import ArrowDown from '../../../../public/assets/images/oi-chevron-down.svg'
 import axios from 'axios'
 import env from '@/lib/env'
+import Link from 'next/link'
 
 const ReadingDropDown = ({ data, title, email, userId }) => {
   const [isOpen, setIsOpen] = useState(false)
@@ -67,16 +68,20 @@ const ReadingDropDown = ({ data, title, email, userId }) => {
       </div>
 
       {isOpen && (
-        <div className='max-h-[500px] overflow-y-scroll scrollbar-cyan'>
-          {data.map((reading) => (
 
+        <div className='max-h-[500px] overflow-y-scroll scrollbar-cyan'>
+          {data.length === 0 && <p> No stories read {title} </p>}
+          {data.map((reading) => (
             <ul className='mt-5' key={reading.storyId}>
               <div className='flex  items-center gap-7'>
                 <img src={reading.story.thumbnailUrl} alt={`Thumbnail of ${reading.story.title}`} className='w-20 h-20 object-cover' />
                 <div>
-                  <p className='font-bold'>{reading.story.title}</p>
+                  <Link href={`stories/${reading.story.createdAt.getYear()}/${reading.story.createdAt.getMonth()}/${reading.story.createdAt.getDay()}/${reading.story.slug}`}>
+                    <p className='font-bold'>{reading.story.title}</p>
+                  </Link>
                   <p className='text-sm font-light'>{`By ${reading.story.title}`}</p>
                   <p className='text-sm font-light'>{`Viewed ${reading.diffInDays} days ago`}</p>
+
                 </div>
 
 
@@ -96,7 +101,8 @@ const ReadingDropDown = ({ data, title, email, userId }) => {
                 </div>
               </div >
 
-            </ul>
+            </ul >
+
           ))}
         </div >
       )}

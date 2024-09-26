@@ -14,6 +14,7 @@ export default async function ReadingHistory() {
   const { email, userId } = session?.user
 
   const data: ReadingHistoryType[] = await getReadingHistory()
+  console.log(data)
   const todayReadings: ReadingHistoryType & { diffInDays: number }[] = []
   const yesterdayReadings: ReadingHistoryType & { diffInDays: number }[] = []
   const pastWeekReadings: ReadingHistoryType & { diffInDays: number }[] = []
