@@ -76,7 +76,7 @@ const ReadingDropDown = ({ data, title, email, userId }) => {
               <div className='flex  items-center gap-7'>
                 <img src={reading.story.thumbnailUrl} alt={`Thumbnail of ${reading.story.title}`} className='w-20 h-20 object-cover' />
                 <div>
-                  <Link href={`stories/${reading.story.createdAt.getYear()}/${reading.story.createdAt.getMonth()}/${reading.story.createdAt.getDay()}/${reading.story.slug}`}>
+                  <Link href={`/stories/${new Date(reading.story.createdAt).getUTCFullYear()}/${new Date(reading.story.createdAt).getUTCMonth() + 1}/${new Date(reading.story.createdAt).getUTCDate()}/${reading.story.slug}`}>
                     <p className='font-bold'>{reading.story.title}</p>
                   </Link>
                   <p className='text-sm font-light'>{`By ${reading.story.title}`}</p>
