@@ -107,7 +107,7 @@ export default function Quiz({ Quizzes }: Props) {
     );
     const res = await submitAnswer();
     const udp = res?.data;
-    console.log("udp ", udp.results);
+    console.log("udp ", udp?.results);
     setRespon((respon[currentQuestion] = udp.results));
     setRespon([...respon]);
   };

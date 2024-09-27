@@ -70,6 +70,8 @@ export default function SelectAll({
                       selected[index] === true &&
                       responed[index]?.correct[0] === false
                     ? "#E79595"
+                    : selected[index] === true
+                    ? "#D5E5FD"
                     : "white",
               }}
             >

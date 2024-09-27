@@ -27,7 +27,7 @@ export default function MultipleChoice({
 // exp,
 // selec,
 Props) {
-  const [mtAnswer, setMTAnswer] = useState(999);
+  const [mtAnswer, setMTAnswer] = useState(9999);
 
   useEffect(() => {
     answers({ quizId: quizQuestionId, answer: mtAnswer });
@@ -64,6 +64,8 @@ Props) {
                       index === mtAnswer &&
                       responed[0]?.correct[0] === false
                     ? "#E79595"
+                    : index === mtAnswer
+                    ? "#D5E5FD"
                     : "white",
               }}
             >

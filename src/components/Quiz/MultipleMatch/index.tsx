@@ -29,10 +29,6 @@ export default function MultipleMatch({
   const [quizId, _] = useState(quizQuestionId);
   const result = [] as boolean[];
 
-  responed?.map((res: { correct: any[] }, index: number) =>
-    res.correct.map((lp, key) => (result[comAnswer[index][key]] = lp)),
-  );
-
   useEffect(() => {
     let item: HTMLTextAreaElement | null = null;
 
@@ -113,24 +109,24 @@ export default function MultipleMatch({
       setComAnswer(array);
     };
 
-    // if (show) {
-    //   document.addEventListener("dragstart", handleDragStart);
-    //   document.addEventListener("dragover", handleDragOver);
-    //   document.addEventListener("drop", handleDrop);
-    //   document.addEventListener("dragend", handleDragEnd);
-    // } else {
-    //   document.removeEventListener("dragstart", handleDragStart);
-    //   document.removeEventListener("dragover", handleDragOver);
-    //   document.removeEventListener("drop", handleDrop);
-    //   document.removeEventListener("dragend", handleDragEnd);
-    // }
+    if (show) {
+      document.addEventListener("dragstart", handleDragStart);
+      document.addEventListener("dragover", handleDragOver);
+      document.addEventListener("drop", handleDrop);
+      document.addEventListener("dragend", handleDragEnd);
+    } else {
+      document.removeEventListener("dragstart", handleDragStart);
+      document.removeEventListener("dragover", handleDragOver);
+      document.removeEventListener("drop", handleDrop);
+      document.removeEventListener("dragend", handleDragEnd);
+    }
 
-    // return () => {
-    //   document.removeEventListener("dragstart", handleDragStart);
-    //   document.removeEventListener("dragover", handleDragOver);
-    //   document.removeEventListener("drop", handleDrop);
-    //   document.removeEventListener("dragend", handleDragEnd);
-    // };
+    return () => {
+      document.removeEventListener("dragstart", handleDragStart);
+      document.removeEventListener("dragover", handleDragOver);
+      document.removeEventListener("drop", handleDrop);
+      document.removeEventListener("dragend", handleDragEnd);
+    };
   }, [show]);
 
   // Update the answer info to parent
@@ -138,14 +134,14 @@ export default function MultipleMatch({
     // console.log("Complex quizId ", quizId);
     answers({ quizId, answer: comAnswer });
   }, [comAnswer]);
-  // useEffect(() => {
-  //   if (show) {
-  //     responed?.map((res: { correct: any[] }, index: number) =>
-  //       res.correct.map((lp, key) => (result[comAnswer[index][key]] = lp)),
-  //     );
-  //     console.log("result ", result);
-  //   }
-  // }, [result]);
+  useEffect(() => {
+    if (show && responed != null) {
+      responed?.map((res: { correct: any[] }, index: number) =>
+        res.correct.map((lp, key) => (result[comAnswer[index][key]] = lp)),
+      );
+      console.log("result ", result);
+    }
+  }, [result]);
 
   return (
     <div style={{ display: show ? "block" : "none" }}>
