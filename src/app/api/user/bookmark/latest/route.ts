@@ -72,9 +72,6 @@ export async function GET(req: Request) {
       },
       skip: (pageNum - 1) * pageSize,
       take: pageSize,
-      include: {
-        story: true,
-      },
     });
 
     if (bookmarks === null) {
