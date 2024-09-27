@@ -28,7 +28,7 @@ export default function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-20 flex h-16 w-screen flex-col text-white ">
+    <header className=" font-quicksand sticky top-0 z-20 flex h-16 w-screen flex-col text-white ">
       <div className="absolute z-20 h-16  w-full bg-sciquelTeal">
         <div
           className="pointer-events-none absolute top-0 flex h-16 w-full items-center justify-end px-6 py-2

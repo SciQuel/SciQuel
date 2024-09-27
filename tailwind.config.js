@@ -18,6 +18,7 @@ module.exports = {
         sourceSerif4: "var(--font-source-serif-4)",
         customTest: ["custom-test", "sans-serif"],
         besley: "var(--font-besley)",
+        quicksand: "var(--font-quicksand)",
       },
       colors: {
         sciquelDarkText: "#333333",

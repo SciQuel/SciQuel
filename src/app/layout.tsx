@@ -21,6 +21,7 @@ const quicksand = Quicksand({
   subsets: ["latin"],
   display: "swap",
   weight: "variable",
+  variable: "--font-quicksand",
 });
 
 const alegreyaSansSC = Alegreya_Sans_SC({
@@ -53,8 +54,8 @@ export default async function RootLayout({
     <html lang="en">
       <body
         className={clsx(
+          quicksand.variable,
           besley.className,
-          quicksand.className,
 
           alegreyaSansSC.variable,
           sourceSerif4.variable,
