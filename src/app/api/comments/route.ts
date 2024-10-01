@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
 
     const commentData = parsed.data;
 
-    //to check auth session
+    // to check auth session
     const session = await getServerSession();
     if (session?.user.email !== commentData.userEmail) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });

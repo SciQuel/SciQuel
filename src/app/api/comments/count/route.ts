@@ -5,6 +5,7 @@ import { NextResponse, type NextRequest } from "next/server";
 //1. total number of comments made by the user and
 //2. total number of unread replies to the user's comments
 //3. total number of unread contributor replies to the user's comments
+
 export async function GET(req: NextRequest) {
   try {
     const url = new URL(req.url);
@@ -36,69 +37,53 @@ export async function GET(req: NextRequest) {
     }
 
     //to get total number of comments made by the user
-    const totalComments = await prisma.comment.count({
+    const totalCommentCount = await prisma.comment.count({
       where: {
         userId: user.id,
-        // parentCommentId: null,
       },
     });
 
-    //find ids of all the comments made by the user
-    const userComments = await prisma.comment.findMany({
-      where: { userId: user.id },
-      select: {
-        id: true,
-      },
-    });
-
-    const userCommentIds = userComments.map((comment) => comment.id);
-
-    //get total number of unread replies to the user's comments
-    const totalReplies = await prisma.comment.findMany({
+    //total number of unread replies to the user's comments
+    const totalUnreadReplyCount = await prisma.comment.count({
       where: {
-        parentCommentId: {
-          in: userCommentIds,
+        parentComment: {
+          is: {
+            userId: user.id,
+          },
+        },
+        read: {
+          equals: false,
         },
       },
     });
-
-    const unreadReplies = totalReplies.filter((reply) => !reply.read);
-
-    const totalUnreadReplies = unreadReplies.length;
 
     //To get total number of unread contributor replies to the user's comments
     //find users of all the unread replies to the comments made by the user
-    const usersWhoseRepliesAreUnread = await prisma.user.findMany({
+    const totalUnreadContributorReplyCount = await prisma.comment.count({
       where: {
-        id: {
-          in: unreadReplies.map((reply) => reply.userId),
+        parentComment: {
+          is: {
+            userId: user.id,
+          },
+        },
+        user: {
+          is: {
+            roles: {
+              hasSome: ["AUTHOR", "EDITOR"],
+            },
+          },
+        },
+        read: {
+          equals: false,
         },
       },
     });
-
-    const contributorUserId = usersWhoseRepliesAreUnread
-      .filter((user) => user.roles.length > 0)
-      .map((user) => user.id);
-
-    const contributorReplies = await prisma.comment.findMany({
-      where: {
-        parentCommentId: {
-          in: userCommentIds,
-        },
-        userId: {
-          in: contributorUserId,
-        },
-      },
-    });
-
-    const totalUnreadContributorReplies = contributorReplies.length;
 
     return new NextResponse(
       JSON.stringify({
-        totalComments,
-        totalUnreadReplies,
-        totalUnreadContributorReplies,
-        // replies: replies,
+        totalCommentCount,
+        totalUnreadReplyCount,
+        totalUnreadContributorReplyCount,
       }),
       {
         status: 200,
