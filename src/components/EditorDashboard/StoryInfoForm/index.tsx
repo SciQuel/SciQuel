@@ -50,6 +50,8 @@ import NewSubject from "./formComponents/subjectComponents/newSubject";
 import NewSubtopic from "./formComponents/subtopicComponents/newSubtopic";
 import { getData, randomBackgroundColor, setTagsColor } from "./StoryFormFunc";
 import Tags from "./Tags";
+import Trivia from "@/components/EditorDashboard/StoryInfoForm/formComponents/TriviaComponents/Trivia";
+
 
 interface Section {
   type: string;
@@ -739,6 +741,7 @@ export default function StoryInfoForm({
               </Transition>
             </Popover>
           </div>
+
           <div className="flex flex-row flex-wrap gap-3">
             {subjects.map((subject: any) => (
               <Tags
@@ -750,7 +753,11 @@ export default function StoryInfoForm({
               />
             ))}
           </div>
+
         </div>
+
+        <Trivia></Trivia>
+
         <button
           type="submit"
           className="my-5 select-none rounded-md bg-teal-600 px-2 py-1 font-semibold text-white disabled:pointer-events-none disabled:opacity-50"
@@ -782,6 +789,7 @@ export default function StoryInfoForm({
         topicList={topics}
         createSubject={createSubject}
       />
+
+
     </div>
-  );
-}
+)}

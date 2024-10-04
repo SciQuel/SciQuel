@@ -52,7 +52,9 @@ const Trivia: React.FC = () => {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [nextId, setNextId] = useState(1);
 
-  const addQuestion = () => {
+  const addQuestion = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault(); // Prevent form submission
+
     setQuestions([
       ...questions,
       {
@@ -382,8 +384,8 @@ const Trivia: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold">Trivia Questions</h1>
+    <div className="container mx-auto py-4">
+      <h1 className="text-l">Trivia Questions</h1>
       {questions.map((question) => (
         <div key={question.id} className="mt-4">
           <select
@@ -402,6 +404,7 @@ const Trivia: React.FC = () => {
             <option value="SELECT_ALL">Select All</option>
           </select>
           <button
+            type="button"
             onClick={() => deleteQuestion(question.id)}
             className="px-2 py-2 text-black"
           >
@@ -457,6 +460,7 @@ const Trivia: React.FC = () => {
         </div>
       ))}
       <button
+        type="button"
         onClick={addQuestion}
         className="mt-4 rounded bg-sciquelTeal px-3 py-2 text-sm text-white"
       >

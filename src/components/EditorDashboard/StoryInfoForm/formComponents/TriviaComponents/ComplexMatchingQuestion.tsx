@@ -61,6 +61,7 @@ const ComplexMatchingQuestion: React.FC<ComplexMatchingQuestionProps> = ({
               placeholder="Enter category name..."
             />
             <button
+              type = "button"
               onClick={() => deleteCategory(question.id, category.id)}
               className="text-sm text-black"
             >
@@ -79,6 +80,7 @@ const ComplexMatchingQuestion: React.FC<ComplexMatchingQuestionProps> = ({
                 placeholder="Enter item content..."
               />
               <button
+                type = "button"
                 onClick={() =>
                   deleteItemFromCategory(question.id, category.id, item.id)
                 }
@@ -89,6 +91,7 @@ const ComplexMatchingQuestion: React.FC<ComplexMatchingQuestionProps> = ({
             </div>
           ))}
           <button
+            type = "button"
             onClick={() => addItemToCategory(question.id, category.id)}
             className="mt-2 rounded border bg-sciquelTeal px-2 py-1 text-sm text-white"
           >
@@ -97,6 +100,7 @@ const ComplexMatchingQuestion: React.FC<ComplexMatchingQuestionProps> = ({
         </div>
       ))}
       <button
+        type = "button"
         onClick={() => addCategory(question.id)}
         className="mt-2 rounded border bg-sciquelTeal px-2 py-1 text-sm text-white"
       >

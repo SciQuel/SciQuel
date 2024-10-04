@@ -1,15 +1,11 @@
 "use client";
 
 import StoryInfoForm from "@/components/EditorDashboard/StoryInfoForm";
+import Trivia from "@/components/EditorDashboard/StoryInfoForm/formComponents/TriviaComponents/Trivia";
 import StoryPreview from "@/components/EditorDashboard/StoryPreview";
 import parseMarkdownToSections from "@/components/MarkdownEditor/parseMarkdown";
-import Trivia from "@/components/EditorDashboard/StoryInfoForm/formComponents/TriviaComponents/Trivia";
-import {
-  type Contributor,
-  type StoryContribution,
-} from "@prisma/client";
+import { type Contributor, type StoryContribution } from "@prisma/client";
 import React, { useEffect, useRef, useState } from "react";
-
 
 // Interface definitions for the component's data structures
 interface Section {
@@ -20,7 +16,6 @@ interface Section {
 export type Contribution = StoryContribution & {
   contributor: Contributor;
 };
-
 
 interface Props {
   contributions: Contribution[];
@@ -53,12 +48,19 @@ const StoryInfoEditorClient: React.FC<Props> = ({ story, contributions }) => {
   const [caption, setCaption] = useState<string>(story.caption || ""); // Can remain empty but not null
   const [slug, setSlug] = useState<string>(story.slug || "default-slug"); // Default slug instead of null
   const [date, setDate] = useState<Date>(story.date || new Date()); // Initialize with current date if null
-  const [storyType, setStoryType] = useState<string>(story.storyType || "defaultType"); // Default type instead of null
+  const [storyType, setStoryType] = useState<string>(
+    story.storyType || "defaultType",
+  ); // Default type instead of null
   const [topics, setTopics] = useState<string[]>(story.topics || []); // Empty array instead of null
-  const [titleColor, setTitleColor] = useState<string>(story.titleColor || "#000000"); // Default color
-  const [summaryColor, setSummaryColor] = useState<string>(story.summaryColor || "#000000"); // Default color
-  const [contributors, setContributors] = useState<Contribution[]>(contributions);
-  
+  const [titleColor, setTitleColor] = useState<string>(
+    story.titleColor || "#000000",
+  ); // Default color
+  const [summaryColor, setSummaryColor] = useState<string>(
+    story.summaryColor || "#000000",
+  ); // Default color
+  const [contributors, setContributors] =
+    useState<Contribution[]>(contributions);
+
   // Function to format date for preview
   // Consider moving this to a utility file for reuse
   const formatPreviewDate = (date: string): string => {
@@ -78,7 +80,6 @@ const StoryInfoEditorClient: React.FC<Props> = ({ story, contributions }) => {
 
   // Function to format contributors for display
   // TODO: This function is defined but never used in the component. Consider removing if unnecessary.
-
 
   // State for managing sections of the story
   const [sections, setSections] = useState<Section[]>([]);
@@ -226,8 +227,9 @@ const StoryInfoEditorClient: React.FC<Props> = ({ story, contributions }) => {
               setSummaryColor={setSummaryColor}
               contributors={contributors}
               setContributors={setContributors}
-             />
-             <Trivia/>
+              //trivia={<Trivia />}
+            />
+            {/* <Trivia/> */}
           </div>
 
           {/* Resizable divider */}
@@ -256,7 +258,7 @@ const StoryInfoEditorClient: React.FC<Props> = ({ story, contributions }) => {
               titleColor,
               summaryColor,
             }}
-            formattedDate={(date?.toString() ?? '')}
+            formattedDate={date?.toString() ?? ""}
             contributors={contributors}
             id={story.id}
           />
