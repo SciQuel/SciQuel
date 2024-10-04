@@ -105,6 +105,8 @@ model Story {
   quizzes         Quiz[]
   staffPick       StaffPick?
   StaffPickRecord StaffPickRecord[]
+  subtopics       String[]          @default([])
+  subjectType     String[]          @default([])
 }
 
 model StoryContribution {
