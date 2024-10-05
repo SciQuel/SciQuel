@@ -10,7 +10,6 @@ import OneMatch from "../Quiz/OneMatch";
 import ProgBar from "../Quiz/ProgressBar";
 import SelectAll from "../Quiz/SelectAll";
 import TrueFalse from "../Quiz/TrueFalse";
-import questions from "./questions.json";
 
 interface Props {
   Quizzes: QuizQuestion;
@@ -22,8 +21,8 @@ export type answerInfo = {
 };
 
 export default function Quiz({ Quizzes }: Props) {
+  console.log("quiz", Quizzes);
   const barMax = 100;
-  const storyId = "";
   const numQues = Quizzes.quizzes.length;
   const gap = barMax / numQues;
   const [prog, setProg] = useState(
@@ -36,8 +35,6 @@ export default function Quiz({ Quizzes }: Props) {
   const [answered, setAnswered] = useState([] as boolean[]);
   const [disabled, setDisabled] = useState([false] as boolean[]);
 
-  const [isCorrect, setIsCorrect] = useState([] as boolean[]);
-  const [explaination, setExplaination] = useState([] as string[]);
   const [respon, setRespon] = useState([] as any);
 
   {
@@ -48,11 +45,6 @@ export default function Quiz({ Quizzes }: Props) {
   {
     /*  Previous,Next,submit buttons */
   }
-  // const updateUserAns = (userAnsInfo: selectInfo) => {
-  //   setSelected([(selected[currentQuestion] = userAnsInfo)]);
-  //   setSelected([...selected]);
-  //   console.log("userAns: ", selected[currentQuestion]);
-  // };
 
   const getAnswerInfo = (answer: answerInfo) => {
     console.log("Answer Info ", answer);
@@ -83,6 +75,7 @@ export default function Quiz({ Quizzes }: Props) {
           answer: selected[currentQuestion].answer,
         },
       );
+      console.log("res before", response);
       if (response.status == 200) {
         console.log("res", response);
         return response;
@@ -90,11 +83,10 @@ export default function Quiz({ Quizzes }: Props) {
     } catch (err) {
       console.error(err);
     }
+
     return;
   }
   const handleSubmit = async () => {
-    // setAnswered([(answered[currentQuestion] = true)]);
-    // setAnswered([...answered]);
     setSubmitButton([(submitButton[currentQuestion] = true)]);
     setSubmitButton([...submitButton]);
     setDisabled([(disabled[currentQuestion] = true)]);
@@ -106,9 +98,9 @@ export default function Quiz({ Quizzes }: Props) {
       selected[currentQuestion],
     );
     const res = await submitAnswer();
-    const udp = res?.data;
-    console.log("udp ", udp?.results);
-    setRespon((respon[currentQuestion] = udp.results));
+    const resp = res?.data;
+    console.log("resp ", resp?.results);
+    setRespon((respon[currentQuestion] = resp.results));
     setRespon([...respon]);
   };
 
@@ -139,6 +131,8 @@ export default function Quiz({ Quizzes }: Props) {
                     answers={getAnswerInfo}
                     quizQuestionId={q.quiz_question_id}
                     responed={respon[currentQuestion]}
+                    disable={disabled[currentQuestion]}
+                    current={q.question}
                   />
                 );
 
@@ -151,6 +145,8 @@ export default function Quiz({ Quizzes }: Props) {
                     answers={getAnswerInfo}
                     quizQuestionId={q.quiz_question_id}
                     responed={respon[currentQuestion]}
+                    disable={disabled[currentQuestion]}
+                    current={currentQuestion}
                   />
                 );
 
@@ -191,6 +187,8 @@ export default function Quiz({ Quizzes }: Props) {
                     answers={getAnswerInfo}
                     quizQuestionId={q.quiz_question_id}
                     responed={respon[currentQuestion]}
+                    disable={disabled[currentQuestion]}
+                    current={q.question}
                   />
                 );
 

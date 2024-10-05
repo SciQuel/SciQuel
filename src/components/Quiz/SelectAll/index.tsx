@@ -6,6 +6,8 @@ interface Props {
   answers: Function;
   quizQuestionId: string;
   responed: { correct: boolean[]; explanation: string }[];
+  disable: boolean;
+  current: string;
 }
 export default function SelectAll({
   options,
@@ -14,6 +16,8 @@ export default function SelectAll({
   answers,
   quizQuestionId,
   responed,
+  disable,
+  current,
 }: Props) {
   const [saAnswer, setSAAnswer] = useState([] as number[]);
   const [selected, setSelected] = useState([false] as boolean[]);
@@ -43,7 +47,7 @@ export default function SelectAll({
       <div className=" text-black" style={{ display: show ? "block" : "none" }}>
         <p className="mb-6 text-left">
           <strong className="font-quicksand mb-1 text-2xl font-bold">
-            What are microglia?
+            {current}
           </strong>
         </p>
         <div className="flex flex-col ">
@@ -58,9 +62,9 @@ export default function SelectAll({
                   ? (e) => handlerUnSelected(index)
                   : (e) => handlerSelected(index)
               }
-              // disabled={disable}
+              disabled={disable}
               style={{
-                // pointerEvents: disable ? "none" : "auto",
+                pointerEvents: disable ? "none" : "auto",
                 backgroundColor:
                   responed &&
                   selected[index] === true &&

@@ -6,7 +6,8 @@ interface Props {
   answers: Function;
   quizQuestionId: string;
   responed: { correct: boolean[]; explanation: string }[];
-  // disable: boolean;
+  disable: boolean;
+  current: number;
 }
 export default function TrueFalse({
   questions,
@@ -14,9 +15,9 @@ export default function TrueFalse({
   answers,
   quizQuestionId,
   responed,
-}: // disable,
-
-Props) {
+  disable,
+  current,
+}: Props) {
   const [numIndex, setNumIndex] = useState([] as string[]);
   const [tfAnswer, setTFAnswer] = useState([] as boolean[]);
 
@@ -60,9 +61,9 @@ Props) {
               key={index + "T"}
               className="select-box-true flex aspect-[1/1] basis-[10%] cursor-pointer items-center justify-between rounded-md bg-gray-200 bg-[length:65%] bg-center bg-no-repeat transition duration-300 hover:bg-gray-300 "
               onClick={() => handler(true, index, index + "T")}
-              // disabled={disable}
+              disabled={disable}
               style={{
-                //   pointerEvents: disable ? "none" : "auto",
+                pointerEvents: disable ? "none" : "auto",
 
                 backgroundColor:
                   responed &&
@@ -100,9 +101,9 @@ Props) {
               key={index + "F"}
               className="select-box-false flex aspect-[1/1] basis-[10%] cursor-pointer items-center justify-between rounded-md bg-gray-200 bg-[length:65%] bg-center bg-no-repeat transition duration-300 hover:bg-gray-300"
               onClick={() => handler(false, index, index + "F")}
-              // disabled={disable}
+              disabled={disable}
               style={{
-                // pointerEvents: disable ? "none" : "auto",
+                pointerEvents: disable ? "none" : "auto",
                 backgroundColor:
                   responed &&
                   index + "F" === numIndex[index] &&

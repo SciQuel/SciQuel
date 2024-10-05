@@ -44,7 +44,7 @@ export default function OneMatch({
   ): boolean[] => {
     const result: boolean[] = [];
     array?.forEach((res, index) =>
-      res.correct.forEach((lp) => (result[dirAnswer[index]] = lp)),
+      res.correct.forEach((lp) => (result[index] = lp)),
     );
     return result;
   };
@@ -114,7 +114,7 @@ export default function OneMatch({
             <div className="answer-choice-border z-1 box-border flex w-1/2 rounded-[4px] border-2 border-dashed border-transparent transition-all">
               <div
                 className="one-match-answer-choice-holder min-w-100 box-border flex h-full w-full cursor-move items-center break-words rounded-[4px] border border-black bg-white pr-3 text-center text-[18px]  transition-all duration-300 ease-in-out"
-                draggable="true"
+                draggable={!disable}
                 data-draggable="item"
                 option-key={item}
               >
