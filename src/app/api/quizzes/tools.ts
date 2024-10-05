@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import { type QuestionType } from "@prisma/client";
+import { QuizType, type QuestionType } from "@prisma/client";
 import {
   complexMatchingSubpartSchema,
   directMatchingSubpartSchema,
@@ -13,36 +13,121 @@ interface QuizQuestionI {
   maxScore: number;
   subpartId: string;
 }
+interface quizResultI {
+  id: string;
+  quizQuestionIdRemain: string[];
+  quizType: QuizType;
+  used: boolean;
+}
+interface getQuizzesParamI {
+  quizResult?: {
+    id: string;
+    quizQuestionIdRemain: string[];
+    quizType: QuizType;
+    used: boolean;
+  } | null;
+  storyId: string;
+}
+interface handleQuizResultParamI {
+  oldQuizResult: quizResultI | null;
+  storyId: string;
+  userId: string;
+  quizType: QuizType;
+  quizzes: {
+    id: string;
+    maxScore: number;
+  }[];
+}
+type lookupSubpart = {
+  [key in QuestionType]: Function;
+};
+// create look up object
+const PRISMA_LOOKUP_SUBPART: {
+  [key in "DELETE" | "GET" | "CREATE"]: lookupSubpart;
+} = {
+  DELETE: {
+    MULTIPLE_CHOICE: (id: string) =>
+      prisma.complexMatchingSubpart.delete({ where: { id } }),
+    TRUE_FALSE: (id: string) =>
+      prisma.trueFalseSubpart.delete({ where: { id } }),
+    DIRECT_MATCHING: (id: string) =>
+      prisma.directMatchingSubpart.delete({ where: { id } }),
+    COMPLEX_MATCHING: (id: string) =>
+      prisma.complexMatchingSubpart.delete({ where: { id } }),
+    SELECT_ALL: (id: string) =>
+      prisma.selectAllSubpart.delete({ where: { id } }),
+  },
+  GET: {
+    MULTIPLE_CHOICE: (id: string) =>
+      prisma.multipleChoiceSubpart.findUnique({
+        where: { id },
+        select: {
+          question: true,
+          contentCategory: true,
+          options: true,
+        },
+      }),
+    TRUE_FALSE: (id: string) =>
+      prisma.trueFalseSubpart.findUnique({
+        where: { id },
+        select: { questions: true, contentCategory: true },
+      }),
+    DIRECT_MATCHING: (id: string) =>
+      prisma.directMatchingSubpart.findUnique({
+        where: { id },
+        select: {
+          contentCategory: true,
+          question: true,
+          categories: true,
+          options: true,
+        },
+      }),
+    COMPLEX_MATCHING: (id: string) =>
+      prisma.complexMatchingSubpart.findUnique({
+        where: { id },
+        select: {
+          contentCategory: true,
+          question: true,
+          categories: true,
+          options: true,
+        },
+      }),
+    SELECT_ALL: (id: string) =>
+      prisma.selectAllSubpart.findUnique({
+        where: { id },
+        select: {
+          contentCategory: true,
+          question: true,
+          options: true,
+        },
+      }),
+  },
+  CREATE: {
+    MULTIPLE_CHOICE: (subpartData: any) =>
+      createMultipleChocieSubpart(subpartData),
+    TRUE_FALSE: (subpartData: any) => createTrueFalseSubpart(subpartData),
+    DIRECT_MATCHING: (subpartData: any) =>
+      createDirectMatchSubpart(subpartData),
+    COMPLEX_MATCHING: (subpartData: any) =>
+      createComplexMatchSubpart(subpartData),
+    SELECT_ALL: (subpartData: any) => createSelectAllSubpart(subpartData),
+  },
+};
 
+//function create quiz question
 export function createQuizSubpart(data: {
-  question_type: QuestionType;
+  questionType: QuestionType;
   subpartData: any;
-}) {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  const { question_type, subpartData } = data;
-  let result: {
-    errorMessage: string | null;
-    subpartPromise: Promise<any> | null;
-    errors: string[];
-  } = { errorMessage: null, subpartPromise: null, errors: [] };
-  if (question_type === "COMPLEX_MATCHING") {
-    result = createComplexMatchSubpart(subpartData);
-  } else if (question_type === "DIRECT_MATCHING") {
-    result = createDirectMatchSubpart(subpartData);
-  } else if (question_type === "MULTIPLE_CHOICE") {
-    result = createMultipleChocieSubpart(subpartData);
-  } else if (question_type === "SELECT_ALL") {
-    result = createSelectAllSubpart(subpartData);
-  } else if (question_type === "TRUE_FALSE") {
-    result = createTrueFalseSubpart(subpartData);
-  } else {
-    throw new Error(
-      "Unknown type: " + String(question_type) + " in modifiedQuiz function",
-    );
-  }
+}): {
+  errorMessage: string | null;
+  subpartPromise: Promise<any> | null;
+  errors: string[];
+} {
+  const { questionType, subpartData } = data;
+  let result = PRISMA_LOOKUP_SUBPART["CREATE"][questionType](subpartData);
   return result;
 }
-
+//function create quiz question
 export function getDeleteSuppart({
   questionType,
   subpartId,
@@ -50,87 +135,21 @@ export function getDeleteSuppart({
   questionType: QuestionType;
   subpartId: string;
 }) {
-  if (questionType === "COMPLEX_MATCHING") {
-    return prisma.complexMatchingSubpart.delete({ where: { id: subpartId } });
-  } else if (questionType === "DIRECT_MATCHING") {
-    return prisma.directMatchingSubpart.delete({ where: { id: subpartId } });
-  } else if (questionType === "MULTIPLE_CHOICE") {
-    return prisma.multipleChoiceSubpart.delete({ where: { id: subpartId } });
-  } else if (questionType === "SELECT_ALL") {
-    return prisma.selectAllSubpart.delete({ where: { id: subpartId } });
-  } else if (questionType === "TRUE_FALSE") {
-    return prisma.trueFalseSubpart.delete({ where: { id: subpartId } });
-  } else {
-    throw new Error(
-      "Unknow type " +
-        String(questionType) +
-        " in getting delete Subpart promise",
-    );
-  }
+  return PRISMA_LOOKUP_SUBPART["DELETE"][questionType](subpartId);
 }
-
+//function get Subpart
 export async function getSubpart(quiz: QuizQuestionI) {
-  let subpart: any = null;
-  if (quiz.questionType === "COMPLEX_MATCHING") {
-    subpart = await prisma.complexMatchingSubpart.findUnique({
-      where: { id: quiz.subpartId },
-      select: {
-        contentCategories: true,
-        question: true,
-        categories: true,
-        options: true,
-      },
-    });
-  } else if (quiz.questionType === "DIRECT_MATCHING") {
-    subpart = await prisma.directMatchingSubpart.findUnique({
-      where: { id: quiz.subpartId },
-      select: {
-        contentCategories: true,
-        question: true,
-        categories: true,
-        options: true,
-      },
-    });
-  } else if (quiz.questionType === "MULTIPLE_CHOICE") {
-    subpart = await prisma.multipleChoiceSubpart.findUnique({
-      where: { id: quiz.subpartId },
-      select: {
-        question: true,
-        contentCategory: true,
-        options: true,
-      },
-    });
-  } else if (quiz.questionType === "SELECT_ALL") {
-    subpart = await prisma.selectAllSubpart.findUnique({
-      where: { id: quiz.subpartId },
-      select: {
-        contentCategory: true,
-        question: true,
-        options: true,
-      },
-    });
-  } else if (quiz.questionType === "TRUE_FALSE") {
-    subpart = await prisma.trueFalseSubpart.findUnique({
-      where: { id: quiz.subpartId },
-      select: { questions: true, contentCategories: true },
-    });
-  } else {
-    throw new Error(
-      "Unknow type " +
-        String(quiz.questionType) +
-        " in finding Subpart function",
-    );
-  }
+  let subpart = await PRISMA_LOOKUP_SUBPART["GET"][quiz.questionType](
+    quiz.subpartId,
+  );
   //any key that have value is undefined, when JSON stringify that key will be removed from obj
   return {
     questions: subpart?.questions,
-    content_categories: subpart?.contentCategories,
     content_category: subpart?.contentCategory,
     options: subpart?.options,
     categories: subpart?.categories,
   };
 }
-
 function createComplexMatchSubpart(subpartData: any) {
   let errorMessage = null;
   let subpartPromise = null;
@@ -146,7 +165,7 @@ function createComplexMatchSubpart(subpartData: any) {
       question,
       options,
       explanations,
-      content_categories,
+      content_category,
     } = parsedData.data;
     const correctAnswer = correct_answers.map((numbers) => {
       let str = "";
@@ -159,7 +178,7 @@ function createComplexMatchSubpart(subpartData: any) {
 
     subpartPromise = prisma.complexMatchingSubpart.create({
       data: {
-        contentCategories: content_categories,
+        contentCategory: content_category,
         categories,
         options,
         correctAnswer,
@@ -189,12 +208,12 @@ function createDirectMatchSubpart(subpartData: any) {
       question,
       options,
       explanations,
-      content_categories,
+      content_category,
     } = parsedData.data;
 
     subpartPromise = prisma.directMatchingSubpart.create({
       data: {
-        contentCategories: content_categories,
+        contentCategory: content_category,
         categories,
         options,
         correctAnswer: correct_answers,
@@ -218,11 +237,11 @@ function createTrueFalseSubpart(subpartData: any) {
     errorMessage = parsedData.error.errors[0].message;
     errors = parsedData.error.errors.map((value) => value.message);
   } else {
-    const { questions, correct_answers, explanations, content_categories } =
+    const { questions, correct_answers, explanations, content_category } =
       parsedData.data;
     subpartPromise = prisma.trueFalseSubpart.create({
       data: {
-        contentCategories: content_categories,
+        contentCategory: content_category,
         correctAnswer: correct_answers,
         questions: questions,
         explanations,
@@ -307,4 +326,89 @@ function createMultipleChocieSubpart(subpartData: any) {
     errorMessage,
     errors,
   };
+}
+
+//get quizzes and subpart of quizzes
+export async function getQuizzes(params: getQuizzesParamI) {
+  const { quizResult, storyId } = params;
+
+  //if there is quiz result to record and user did answer some post-quiz question
+  //get the remain quiz question
+  const haveQuizzesRemain =
+    quizResult &&
+    quizResult.quizType === "POST_QUIZ" &&
+    quizResult.quizQuestionIdRemain.length !== 0 &&
+    quizResult.used;
+
+  const quizzes = await prisma.quizQuestion.findMany({
+    where: haveQuizzesRemain
+      ? {
+          id: {
+            in: quizResult.quizQuestionIdRemain,
+          },
+        }
+      : {
+          storyId: storyId,
+          deleted: false,
+        },
+    select: {
+      id: true,
+      subheader: true,
+      questionType: true,
+      subpartId: true,
+      maxScore: true,
+    },
+  });
+
+  //get subpart
+  const subpartPromises = quizzes.map((quiz) => getSubpart(quiz));
+  const subparts = await Promise.all(subpartPromises);
+  return {
+    quizzes,
+    subparts,
+  };
+}
+
+//determine if need to create new quiz result or keep old quiz
+export async function handleQuizResult(params: handleQuizResultParamI) {
+  const { oldQuizResult, quizType, storyId, quizzes, userId } = params;
+  const isPostType = quizType === "POST_QUIZ";
+  const isNewQuizResult = shouldCreateQuizResult(quizType, oldQuizResult);
+  let quizResult = oldQuizResult;
+  if (!isNewQuizResult) return oldQuizResult;
+  else {
+    quizResult = await prisma.quizResult.create({
+      data: {
+        userId: userId,
+        quizType: quizType,
+        storyId,
+        quizQuestionIdRemain: isPostType ? quizzes.map(({ id }) => id) : [],
+        maxScore: isPostType
+          ? quizzes.reduce((total, curQuiz) => total + curQuiz.maxScore, 0)
+          : 0,
+        totalQuestion: isPostType ? quizzes.length : 0,
+      },
+    });
+  }
+  return quizResult;
+}
+
+//only need new quiz result in 3 cases
+//If there is no old quiz result
+//if old quiz result is pre quiz but need post quiz
+//if old quiz result is post quiz and user have answear all the question
+function shouldCreateQuizResult(
+  quizType: QuizType,
+  oldQuizResult?: quizResultI | null,
+) {
+  const haveQuizzesRemain =
+    oldQuizResult &&
+    oldQuizResult.quizType === "POST_QUIZ" &&
+    oldQuizResult.quizQuestionIdRemain.length !== 0 &&
+    oldQuizResult.used;
+  return (
+    !oldQuizResult ||
+    (oldQuizResult.quizType === "PRE_QUIZ" && quizType === "POST_QUIZ") ||
+    !haveQuizzesRemain
+  );
 }

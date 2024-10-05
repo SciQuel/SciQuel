@@ -30,13 +30,13 @@ export const complexMatchingSubpartSchema = z
       required_error: "question required in body",
       invalid_type_error: "question must be a string",
     }),
-    content_categories: z.array(
+    content_category: z.array(
       z.string({
-        invalid_type_error: "value in content_categories must be a string",
+        invalid_type_error: "value in content_category  must be a string",
       }),
       {
-        required_error: "content_categories is required in body",
-        invalid_type_error: "content_categories must be a string array",
+        required_error: "content_category is required in subpart",
+        invalid_type_error: "content_category  must be a string array",
       },
     ),
     categories: z.array(
@@ -87,16 +87,11 @@ export const complexMatchingSubpartSchema = z
   })
   //check if all length array are equal
   .refine(
-    ({ categories, correct_answers, explanations, content_categories }) =>
-      isAllEqual([
-        categories,
-        correct_answers,
-        explanations,
-        content_categories,
-      ]),
+    ({ categories, correct_answers, explanations, content_category }) =>
+      isAllEqual([categories, correct_answers, explanations, content_category]),
     {
       message:
-        "The length array of categories, correct_answers, content_categories and explanations, must be all equal",
+        "The length array of categories, correct_answers, content_category  and explanations, must be all equal",
     },
   )
   //check if there is duplicate index answer
@@ -117,13 +112,13 @@ export const directMatchingSubpartSchema = z
       required_error: "question required in body",
       invalid_type_error: "question must be a string",
     }),
-    content_categories: z.array(
+    content_category: z.array(
       z.string({
-        invalid_type_error: "value in content_categories must be a string",
+        invalid_type_error: "value in content_category  must be a string",
       }),
       {
-        required_error: "content_categories required in body",
-        invalid_type_error: "content_categories must be a string array",
+        required_error: "content_category is required in subpart",
+        invalid_type_error: "content_category  must be a string array",
       },
     ),
     categories: z.array(
@@ -171,18 +166,18 @@ export const directMatchingSubpartSchema = z
       options,
       correct_answers,
       explanations,
-      content_categories,
+      content_category,
     }) =>
       isAllEqual([
         categories,
         correct_answers,
         explanations,
         options,
-        content_categories,
+        content_category,
       ]),
     {
       message:
-        "The length array of categories, options, correct_answers, content_categories and explanations must be all equal",
+        "The length array of categories, options, correct_answers, content_category  and explanations must be all equal",
     },
   )
   //check if there is duplicate index answer
@@ -200,13 +195,13 @@ export const directMatchingSubpartSchema = z
 
 export const trueFalseSubpartSchema = z
   .object({
-    content_categories: z.array(
+    content_category: z.array(
       z.string({
         invalid_type_error: "value in content_category must be a string",
       }),
       {
-        required_error: "content_categories required in body",
-        invalid_type_error: "content_categories must be a string array",
+        required_error: "content_category is required in subpart",
+        invalid_type_error: "content_category  must be a string array",
       },
     ),
     questions: z.array(
@@ -238,25 +233,30 @@ export const trueFalseSubpartSchema = z
     ),
   })
   .refine(
-    ({ questions, correct_answers, explanations, content_categories }) =>
-      isAllEqual([
-        questions,
-        correct_answers,
-        explanations,
-        content_categories,
-      ]),
+    ({ questions, correct_answers, explanations, content_category }) =>
+      isAllEqual([questions, correct_answers, explanations, content_category]),
     {
       message:
-        "The length array of categories, options, correct_answers, content_categories and explanations must be all equal",
+        "The length array of categories, options, correct_answers, content_category  and explanations must be all equal",
     },
   );
 
 export const multipleChoiceSubpartSchema = z
   .object({
-    content_category: z.string({
-      invalid_type_error: "value in content_category must be a string",
-      required_error: "content_category is required in body",
-    }),
+    content_category: z
+      .array(
+        z.string({
+          invalid_type_error: "value in content_category must be a string",
+        }),
+        {
+          required_error: "content_category is required in subpart",
+          invalid_type_error: "content_category must be a string array",
+        },
+      )
+      .max(
+        1,
+        "content_category's length array should be 1 for this question type",
+      ),
     question: z.string({
       required_error: "question required in body",
       invalid_type_error: "question must be a string",
@@ -296,10 +296,20 @@ export const multipleChoiceSubpartSchema = z
 
 export const selectAllSubpartSchema = z
   .object({
-    content_category: z.string({
-      invalid_type_error: "value in content_category must be a string",
-      required_error: "content_category is required in body",
-    }),
+    content_category: z
+      .array(
+        z.string({
+          invalid_type_error: "value in content_category must be a string",
+        }),
+        {
+          required_error: "content_category is required in subpart",
+          invalid_type_error: "content_category must be a string array",
+        },
+      )
+      .max(
+        1,
+        "content_category's length array should be 1 for this question type",
+      ),
     question: z.string({
       required_error: "question required in body",
       invalid_type_error: "question must be a string",

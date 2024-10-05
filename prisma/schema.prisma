@@ -158,11 +158,11 @@ model User {
   authVerifications AuthVerification[]
 
   roles   UserRole[]   @default([])
-  quizzes QuizRecord[]
+  quizzes QuizResult[]
 
   contactUpdates       ContactMessage[]
-  firstQuizRecord      Json?
-  mostRecentQuizRecord Json?
+  firstQuizResult      Json?
+  mostRecentQuizResult Json?
   StaffPickRecord      StaffPickRecord[]
 }
 
@@ -209,29 +209,30 @@ model Brain {
   @@unique([userId, storyId])
 }
 
-model QuizRecord {
+model QuizResult {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
   storyId String @db.ObjectId
 
   quizType QuizType
 
-  maxScore           Int
-  score              Int
-  totalQuestion      Int
+  maxScore           Int @default(0)
+  score              Int @default(0)
+  totalQuestion      Int @default(0)
   totalCorrectAnswer Int @default(0)
 
   createAt   DateTime @default(now())
   lastUpdate DateTime @default(now())
 
-  userId String? @db.ObjectId
-
-  user                 User?    @relation(fields: [userId], references: [id])
+  userId               String   @db.ObjectId
+  user                 User     @relation(fields: [userId], references: [id])
   quizQuestionIdRemain String[] @db.ObjectId
   grade                Grade[]
 
+  used Boolean @default(true)
+
   @@index([createAt])
-  @@index([storyId, userId])
+  @@index([storyId, userId, createAt])
   @@index([userId])
 }
 
@@ -292,91 +293,104 @@ model BlockedUser {
 model QuizQuestion {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  storyId      String       @db.ObjectId
-  story        Story        @relation(fields: [storyId], references: [id])
+  storyId String @db.ObjectId
+  story   Story  @relation(fields: [storyId], references: [id])
+
   subheader    String
   questionType QuestionType
   maxScore     Int
   subpartId    String       @db.ObjectId
-  deleted      Boolean      @default(false)
+  createAt     DateTime     @default(now())
+
+  deleted Boolean @default(false)
+  Grade   Grade[]
 
   @@unique([subpartId])
   @@index([storyId, deleted])
   @@index([storyId])
+  @@index([id, deleted])
 }
 
 model MultipleChoiceSubpart {
   id              String   @id @default(auto()) @map("_id") @db.ObjectId
   question        String
-  contentCategory String
+  contentCategory String[]
   options         String[]
   correctAnswer   Int
   explanations    String[]
 }
 
 model TrueFalseSubpart {
-  id                String    @id @default(auto()) @map("_id") @db.ObjectId
-  contentCategories String[]
-  questions         String[]
-  correctAnswer     Boolean[]
-  explanations      String[]
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  contentCategory String[]
+  questions       String[]
+  correctAnswer   Boolean[]
+  explanations    String[]
 }
 
 model DirectMatchingSubpart {
-  id                String   @id @default(auto()) @map("_id") @db.ObjectId
-  question          String
-  options           String[]
-  categories        String[]
-  contentCategories String[]
-  correctAnswer     Int[]
-  explanations      String[]
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  contentCategory String[]
+  question        String
+  options         String[]
+  categories      String[]
+  correctAnswer   Int[]
+  explanations    String[]
 }
 
 model ComplexMatchingSubpart {
-  id                String   @id @default(auto()) @map("_id") @db.ObjectId
-  question          String
-  contentCategories String[]
-  categories        String[]
-  options           String[]
-  correctAnswer     String[]
-  explanations      String[]
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  contentCategory String[]
+  question        String
+  categories      String[]
+  options         String[]
+  correctAnswer   String[]
+  explanations    String[]
 }
 
 model SelectAllSubpart {
   id              String    @id @default(auto()) @map("_id") @db.ObjectId
   question        String
-  contentCategory String
+  contentCategory String[]
   options         String[]
   correctAnswer   Boolean[]
   explanations    String[]
 }
 
 model Grade {
-  id               String       @id @default(auto()) @map("_id") @db.ObjectId
-  questionType     QuestionType
-  userId           String?      @db.ObjectId
-  quizQuestionId   String       @db.ObjectId
-  userAns          String[]
-  result           String[]
-  categoriesResult Boolean[]
-  totalScore       Int
-  maxScore         Int
-  quizRecord       QuizRecord?  @relation(fields: [quizRecordId], references: [id])
-  quizRecordId     String?      @db.ObjectId
+  id                        String                   @id @default(auto()) @map("_id") @db.ObjectId
+  questionType              QuestionType
+  userId                    String                   @db.ObjectId
+  quizQuestionId            String                   @db.ObjectId
+  quizQuestion              QuizQuestion             @relation(fields: [quizQuestionId], references: [id])
+  userAns                   String[]
+  result                    String[]
+  categoriesResult          Boolean[]
+  totalScore                Int
+  maxScore                  Int
+  quizResult                QuizResult               @relation(fields: [quizResultId], references: [id])
+  quizResultId              String                   @db.ObjectId
+  questionAnswerFirstTimeId String?                  @db.ObjectId
+  questionAnswerFirstTime   QuestionAnswerFirstTime?
+  createAt                  DateTime                 @default(now())
+  skipped                   Boolean                  @default(false)
 
-  @@index([quizRecordId])
+  @@index([quizResultId])
   @@index([userId, quizQuestionId])
 }
 
 model QuestionAnswerFirstTime {
   id             String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId         String?  @db.ObjectId
+  userId         String   @db.ObjectId
   quizQuestionId String   @db.ObjectId
   correct        Boolean
   createAt       DateTime @default(now())
+  gradeId        String   @unique @db.ObjectId
+  grade          Grade    @relation(fields: [gradeId], references: [id])
+  quizType       QuizType
 
+  @@unique([userId, quizQuestionId, quizType])
   @@index([userId, quizQuestionId])
-  @@index([quizQuestionId])
   @@index([quizQuestionId, correct])
 }
 
@@ -385,11 +399,13 @@ model StoryQuizScoreFirstTime {
   userId             String?  @db.ObjectId
   storyId            String   @db.ObjectId
   totalCorrectAnswer Int
+  gradeIds           String[] @db.ObjectId
   createAt           DateTime @default(now())
+  lastUpdate         DateTime @default(now())
+  quizType           QuizType
 
-  @@index([userId, storyId])
-  @@index([storyId, totalCorrectAnswer])
-  @@index([storyId])
+  @@unique([userId, storyId, quizType])
+  @@index([storyId, totalCorrectAnswer, quizType])
 }
 
 model QuizQuestionRecord {
