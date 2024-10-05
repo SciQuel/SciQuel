@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface Props {
   categories: string[];
@@ -10,10 +10,6 @@ interface Props {
   disable: boolean;
   current: number;
 }
-// export type answerInfo = {
-//   quizId: number;
-//   answer: [number] | number;
-// };
 
 export default function MultipleMatch({
   categories,
@@ -25,109 +21,113 @@ export default function MultipleMatch({
   disable,
   current,
 }: Props) {
-  const [comAnswer, setComAnswer] = useState([] as number[][]);
+  // const [c, setC] = useState(categories.map((item, index) => index));
+  // const empty2DArray = [[]];
+  const [comAnswer, setComAnswer] = useState([[]] as number[][]);
   const [quizId, _] = useState(quizQuestionId);
   const result = [] as boolean[];
+  const currDragRef = useRef<HTMLTextAreaElement | null>(null);
+  const currColRef = useRef<number | null>(null);
+  const currOpRef = useRef<number | null>(null);
+  // useEffect(() => {
+  //   let item: HTMLTextAreaElement | null = null;
 
-  useEffect(() => {
-    let item: HTMLTextAreaElement | null = null;
+  //   /**
+  //    * Handles the drag start event. Sets the item being dragged to the `item` state variable. This
+  //    * is used to keep track of the item being dragged, and is used in the `handleDrop` handler.
+  //    *
+  //    * @param {DragEvent} e - The drag start event.
+  //    */
+  //   const handleDragStart = (e: DragEvent) => {
+  //     // Set the item being dragged to the `item` state variable
+  //     item = e.target as HTMLTextAreaElement;
+  //     // Required for Firefox
+  //     e.dataTransfer?.setData("text", "");
+  //   };
 
-    /**
-     * Handles the drag start event. Sets the item being dragged to the `item` state variable. This
-     * is used to keep track of the item being dragged, and is used in the `handleDrop` handler.
-     *
-     * @param {DragEvent} e - The drag start event.
-     */
-    const handleDragStart = (e: DragEvent) => {
-      // Set the item being dragged to the `item` state variable
-      item = e.target as HTMLTextAreaElement;
-      // Required for Firefox
-      e.dataTransfer?.setData("text", "");
-    };
+  //   /**
+  //    * Handles the drag over event. Prevents the default drop action.
+  //    *
+  //    * @param {DragEvent} e - The drag over event.
+  //    */
+  //   const handleDragOver = (e: DragEvent) => {
+  //     // Check if an item is being dragged
+  //     if (item) {
+  //       // Prevent the default drop action
+  //       e.preventDefault();
+  //     }
+  //   };
 
-    /**
-     * Handles the drag over event. Prevents the default drop action.
-     *
-     * @param {DragEvent} e - The drag over event.
-     */
-    const handleDragOver = (e: DragEvent) => {
-      // Check if an item is being dragged
-      if (item) {
-        // Prevent the default drop action
-        e.preventDefault();
-      }
-    };
+  //   /**
+  //    * Handles the drop event. Inserts the dragged item into its new position, and updates the
+  //    * content of the target element.
+  //    *
+  //    * @param {DragEvent} e - The drop event.
+  //    */
+  //   const handleDrop = (e: DragEvent) => {
+  //     // Prevent default drop action
+  //     e.preventDefault();
 
-    /**
-     * Handles the drop event. Inserts the dragged item into its new position, and updates the
-     * content of the target element.
-     *
-     * @param {DragEvent} e - The drop event.
-     */
-    const handleDrop = (e: DragEvent) => {
-      // Prevent default drop action
-      e.preventDefault();
+  //     // Get the target element
+  //     const target = e.target as HTMLTextAreaElement;
+  //     let tmp = item?.innerHTML || ""; // Store the current content of the dragged item
 
-      // Get the target element
-      const target = e.target as HTMLTextAreaElement;
-      let tmp = item?.innerHTML || ""; // Store the current content of the dragged item
+  //     // Check if the target element is a valid drop target
+  //     if (target.getAttribute("data-draggable") === "target") {
+  //       // Insert the dragged item into its new position
+  //       target.parentNode?.insertBefore(item!, target);
+  //     } else if (target.getAttribute("data-draggable") === "answer") {
+  //       // Check if the target element and the dragged item have valid parents
+  //       if (target.parentElement && item) {
+  //         // Swap the content of the target element and the dragged item
+  //         item.innerHTML = target.parentElement.innerHTML;
+  //         target.parentElement.innerHTML = tmp;
+  //       }
+  //     }
 
-      // Check if the target element is a valid drop target
-      if (target.getAttribute("data-draggable") === "target") {
-        // Insert the dragged item into its new position
-        target.parentNode?.insertBefore(item!, target);
-      } else if (target.getAttribute("data-draggable") === "answer") {
-        // Check if the target element and the dragged item have valid parents
-        if (target.parentElement && item) {
-          // Swap the content of the target element and the dragged item
-          item.innerHTML = target.parentElement.innerHTML;
-          target.parentElement.innerHTML = tmp;
-        }
-      }
+  //     tmp = ""; // Reset the temporary variable
+  //   };
 
-      tmp = ""; // Reset the temporary variable
-    };
+  //   /**
+  //    * Handles the dragend event. Resets the item variable to null, and updates the state with the
+  //    * current order of the options.
+  //    */
+  //   const handleDragEnd = () => {
+  //     item = null;
 
-    /**
-     * Handles the dragend event. Resets the item variable to null, and updates the state with the
-     * current order of the options.
-     */
-    const handleDragEnd = () => {
-      item = null;
+  //     const array: number[][] = categories.map((category) => {
+  //       // Get all the elements with the option-key attribute
+  //       const container = document.querySelector(`#${category}`);
+  //       const elements = container?.querySelectorAll("div[option-key]") || [];
+  //       // Map the elements to their corresponding option-key attribute value
+  //       return Array.from(elements).map((elem) =>
+  //         Number(elem.getAttribute("option-key")),
+  //       );
+  //     });
 
-      const array: number[][] = categories.map((category) => {
-        // Get all the elements with the option-key attribute
-        const container = document.querySelector(`#${category}`);
-        const elements = container?.querySelectorAll("div[option-key]") || [];
-        // Map the elements to their corresponding option-key attribute value
-        return Array.from(elements).map((elem) =>
-          Number(elem.getAttribute("option-key")),
-        );
-      });
+  //     // Update the state with the current order of the options
+  //     setComAnswer(array);
+  //   };
 
-      // Update the state with the current order of the options
-      setComAnswer(array);
-    };
+  //   if (show) {
+  //     document.addEventListener("dragstart", handleDragStart);
+  //     document.addEventListener("dragover", handleDragOver);
+  //     document.addEventListener("drop", handleDrop);
+  //     document.addEventListener("dragend", handleDragEnd);
+  //   } else {
+  //     document.removeEventListener("dragstart", handleDragStart);
+  //     document.removeEventListener("dragover", handleDragOver);
+  //     document.removeEventListener("drop", handleDrop);
+  //     document.removeEventListener("dragend", handleDragEnd);
+  //   }
 
-    if (show) {
-      document.addEventListener("dragstart", handleDragStart);
-      document.addEventListener("dragover", handleDragOver);
-      document.addEventListener("drop", handleDrop);
-      document.addEventListener("dragend", handleDragEnd);
-    } else {
-      document.removeEventListener("dragstart", handleDragStart);
-      document.removeEventListener("dragover", handleDragOver);
-      document.removeEventListener("drop", handleDrop);
-      document.removeEventListener("dragend", handleDragEnd);
-    }
-
-    return () => {
-      document.removeEventListener("dragstart", handleDragStart);
-      document.removeEventListener("dragover", handleDragOver);
-      document.removeEventListener("drop", handleDrop);
-      document.removeEventListener("dragend", handleDragEnd);
-    };
-  }, [show]);
+  //   return () => {
+  //     document.removeEventListener("dragstart", handleDragStart);
+  //     document.removeEventListener("dragover", handleDragOver);
+  //     document.removeEventListener("drop", handleDrop);
+  //     document.removeEventListener("dragend", handleDragEnd);
+  //   };
+  // }, [show]);
 
   // Update the answer info to parent
   useEffect(() => {
@@ -136,7 +136,7 @@ export default function MultipleMatch({
   }, [comAnswer]);
   useEffect(() => {
     if (show && responed != null) {
-      responed?.map((res: { correct: any[] }, index: number) =>
+      responed?.map((res: { correct: boolean[] }, index: number) =>
         res.correct.map((lp, key) => (result[comAnswer[index][key]] = lp)),
       );
       console.log("result ", result);
@@ -153,13 +153,56 @@ export default function MultipleMatch({
         </p>
 
         {/* <div className="multiple-match-drop-area flex w-full flex-row flex-wrap items-start justify-center gap-3 pb-3"></div> */}
+
         <div className="grid w-full  grid-cols-3 justify-stretch gap-4 ">
-          {categories.map((cat, index) => (
+          {categories.map((cat, colIndex) => (
             <div className="quiz-col  my-3.5 flex h-full  basis-[30%] flex-col gap-4 sm-mm:w-[120px] xsm-qz:w-[110px] xsm-mm:w-[100px]">
               <div className="multiple-match-statement flex  w-full flex-wrap items-center justify-center hyphens-auto break-words rounded-[4px] border border-black bg-white p-3 text-center text-[18px] xsm-qz:inline-block xsm-mm:text-[16px]">
                 {cat}
               </div>
-              <div id={cat} category-key={index} className="contents">
+              <div
+                // id={cat}
+                // category-key={index}
+                className="contents"
+                onDragStart={(e) => {
+                  console.log("drag start");
+                  currColRef.current = colIndex;
+                  currDragRef.current = e.target as HTMLTextAreaElement;
+                }}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                }}
+                onDrop={(e) => {
+                  console.log("drop");
+                  const target = e.target as HTMLTextAreaElement;
+                  // console.log("target", target);
+                  let tmp = currDragRef.current?.innerHTML || ""; // Store the current content of the dragged item
+                  // console.log("currDragRef", currDragRef.current);
+
+                  // Check if the target element is a valid drop target
+                  if (target.getAttribute("data-draggable") === "target") {
+                    // Insert the dragged item into its new position
+                    target.parentNode?.insertBefore(
+                      currDragRef.current!,
+                      target,
+                    );
+                  } else if (
+                    target.getAttribute("data-draggable") === "answer"
+                  ) {
+                    // Check if the target element and the dragged item have valid parents
+                    if (target.parentElement && currDragRef.current) {
+                      // Swap the content of the target element and the dragged item
+                      currDragRef.current.innerHTML =
+                        target.parentElement.innerHTML;
+                      target.parentElement.innerHTML = tmp;
+                    }
+                  }
+
+                  tmp = ""; // Reset the temporary variable
+                  currDragRef.current = null;
+                  console.log("currColRef", currColRef.current);
+                }}
+              >
                 <div
                   className="multiple-match-slot h-[50px] w-full rounded-[4px] border bg-gray-200 p-3 transition duration-300"
                   data-draggable="target"
@@ -180,6 +223,40 @@ export default function MultipleMatch({
               draggable={!disable}
               data-draggable="item"
               option-key={index}
+              onDragStart={(e) => {
+                console.log("drag start");
+                currDragRef.current = e.target as HTMLTextAreaElement;
+                currOpRef.current = index;
+                // console.log(" start currDragRef", currDragRef.current);
+              }}
+              onDragOver={(e) => {
+                e.preventDefault();
+              }}
+              onDrop={(e) => {
+                console.log("drop");
+                const target = e.target as HTMLTextAreaElement;
+                // console.log("target", target);
+                let tmp = currDragRef.current?.innerHTML || ""; // Store the current content of the dragged item
+                // console.log("currDragRef", currDragRef.current);
+
+                // Check if the target element is a valid drop target
+                if (target.getAttribute("data-draggable") === "target") {
+                  // Insert the dragged item into its new position
+                  target.parentNode?.insertBefore(currDragRef.current!, target);
+                } else if (target.getAttribute("data-draggable") === "answer") {
+                  // Check if the target element and the dragged item have valid parents
+                  if (target.parentElement && currDragRef.current) {
+                    // Swap the content of the target element and the dragged item
+                    currDragRef.current.innerHTML =
+                      target.parentElement.innerHTML;
+                    target.parentElement.innerHTML = tmp;
+                  }
+                }
+
+                tmp = ""; // Reset the temporary variable
+                currDragRef.current = null;
+                console.log("currOpRef", currOpRef.current);
+              }}
             >
               <div className="image-holder absolute inset-0 flex h-full w-[35%] max-w-[50px] grow items-center justify-center rounded-bl-[4px] rounded-tl-[4px] bg-[#e6e6fa] px-2 transition duration-300 ease-in-out">
                 {result[index] === true ? (
