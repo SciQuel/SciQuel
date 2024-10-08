@@ -7,12 +7,15 @@ interface Props {
   mini?: boolean;
   articles: Stories;
   preferHorizontal?: boolean;
+  hoverEffect?: boolean
+
 }
 
 export default function ArticleList({
   articles,
   mini = false,
   preferHorizontal = false,
+  hoverEffect = true
 }: Props) {
   return (
     <div
@@ -40,6 +43,7 @@ export default function ArticleList({
           topic={article.tags ? article.tags[0] : "BIOLOGY"}
           title={article.title}
           subtitle={article.summary}
+          hoverEffect={hoverEffect}
           author={(() => {
             const author = article.storyContributions.find(
               (value) => value.contributionType === "AUTHOR",

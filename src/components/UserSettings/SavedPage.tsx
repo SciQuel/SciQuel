@@ -82,7 +82,7 @@ const SavedPage = ({ brainedStories, bookmarkData, definitions }: Props) => {
 
 
         {(topic === 'brain' || topic === 'bookmark') && (
-          <ArticleList articles={sortedData} preferHorizontal={true} />
+          <ArticleList articles={sortedData} preferHorizontal={true} hoverEffect={false} />
         )}
 
         {topic === 'definition' && <p> Definitions will be here </p>}
