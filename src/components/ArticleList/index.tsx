@@ -22,8 +22,8 @@ export default function ArticleList({
             ? "grid grid-cols-1 gap-5"
             : "grid grid-cols-1 gap-8 lg:grid-cols-2 2xl:grid-cols-3"
           : preferHorizontal
-          ? "grid grid-cols-1 gap-10"
-          : "grid grid-cols-1 gap-10 md:grid-cols-2 xl:grid-cols-3",
+            ? "grid grid-cols-1 gap-10"
+            : "grid grid-cols-1 gap-10 md:grid-cols-2 xl:grid-cols-3",
       )}
     >
       {articles.map((article) => (
@@ -37,7 +37,7 @@ export default function ArticleList({
             )}/${publishDate.toFormat("dd")}/${article.slug}`;
           })()}
           key={article.title}
-          topic={article.topics ? article.topics[0] : "BIOLOGY"}
+          topic={article.tags ? article.tags[0] : "BIOLOGY"}
           title={article.title}
           subtitle={article.summary}
           author={(() => {

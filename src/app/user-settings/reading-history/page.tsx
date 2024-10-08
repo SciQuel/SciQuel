@@ -1,12 +1,13 @@
 /*  - Ask about backend query also including author name for the article
    - Add Typescript types
    -  updates test data to test time filtering
-  - Ask if the client side fetching for bookmarks is fine, and global css styles for scrollbar
   - What do the other icon buttons do 
+  -- imported type does not contain some needed attributes
+  
 */
 import ReadingDropDown from "@/components/UserSettings/dashboard/ReadingDropDown";
 import getReadingHistory from "../actions/getReadingHistory";
-import { ReadingHistoryType } from "../actions/getReadingHistory";
+import { ReadingHistory as ReadingHistoryType } from "../actions/getReadingHistory";
 import { getServerSession } from "next-auth";
 
 export default async function ReadingHistory() {
@@ -24,12 +25,14 @@ export default async function ReadingHistory() {
   //does past week mean after 7 days or just any day before yesterday
   for (const reading of data) {
 
-
-    const readDate = new Date(reading.story.createdAt).getTime()
+    //find the differnce in days from the read date
+    const readDate = new Date(reading.createdAt).getTime()
     const todayDate = new Date().getTime()
     const diffInMilliseconds = todayDate - readDate
     const diffInDays = Math.floor(diffInMilliseconds / (1000 * 60 * 60 * 24))
 
+
+    //compare and add to corresponding array
     if (diffInDays === 0) {
       todayReadings.push({ ...reading, diffInDays })
     } else if (diffInDays === 1) {
@@ -38,6 +41,8 @@ export default async function ReadingHistory() {
       pastWeekReadings.push({ ...reading, diffInDays })
     }
   }
+
+
   return (
     <div className="flex flex-col flex-grow mr-36">
 
@@ -47,9 +52,9 @@ export default async function ReadingHistory() {
 
       <ul className="ml-20 ">
 
-        <li className="mb-3"> <ReadingDropDown title={'Today'} data={todayReadings} email={email} userId={userId} /> </li>
-        <li className='mb-3'>  <ReadingDropDown title={'Yesterday'} data={yesterdayReadings} email={email} userId={userId} /> </li>
-        <li className="mb-3">  <ReadingDropDown title={'Past Week'} data={pastWeekReadings} email={email} userId={userId} /> </li>
+        <li className="mb-3"> <ReadingDropDown title={'Today'} data={todayReadings} email={email} /> </li>
+        <li className='mb-3'>  <ReadingDropDown title={'Yesterday'} data={yesterdayReadings} email={email} /> </li>
+        <li className="mb-3">  <ReadingDropDown title={'Past Week'} data={pastWeekReadings} email={email} /> </li>
       </ul >
 
     </div >

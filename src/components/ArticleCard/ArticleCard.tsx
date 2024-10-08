@@ -53,8 +53,8 @@ export default function ArticleCard({
                   ? "w-full"
                   : "grow  p-3"
                 : preferHorizontal
-                ? "p-3 sm:w-2/3"
-                : "grow  p-3",
+                  ? "p-3 sm:w-2/3"
+                  : "grow  p-3",
             )}
           >
             {/* Article Card Header */}
@@ -117,8 +117,8 @@ export default function ArticleCard({
                   ? "hidden"
                   : "h-24"
                 : preferHorizontal
-                ? "h-44 w-full sm:h-full sm:w-1/3"
-                : "h-44",
+                  ? "h-44 w-full sm:h-full sm:w-1/3"
+                  : "h-44",
             )}
           >
             <Image

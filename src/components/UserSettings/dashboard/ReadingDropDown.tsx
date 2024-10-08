@@ -8,7 +8,7 @@ import axios from 'axios'
 import env from '@/lib/env'
 import Link from 'next/link'
 
-const ReadingDropDown = ({ data, title, email, userId }) => {
+const ReadingDropDown = ({ data, title, email }) => {
   const [isOpen, setIsOpen] = useState(false)
   const [bookMarkedReadings, setBookMarkedReadings] = useState([])
 
@@ -69,12 +69,13 @@ const ReadingDropDown = ({ data, title, email, userId }) => {
 
       {isOpen && (
 
-        <div className='max-h-[500px] overflow-y-scroll scrollbar-cyan'>
-          {data.length === 0 && <p> No stories read {title} </p>}
+        <div className='max-h-[500px] overflow-y-scroll scrollbar-cyan mt-3'>
+
+
           {data.map((reading) => (
             <ul className='mt-5' key={reading.storyId}>
               <div className='flex  items-center gap-7'>
-                <img src={reading.story.thumbnailUrl} alt={`Thumbnail of ${reading.story.title}`} className='w-20 h-20 object-cover' />
+                <img src={reading.story.thumbnailUrl} alt={`Thumbnail of ${reading.story.title}`} className='w-20 h-20 object-cover rounded-md' />
                 <div>
                   <Link href={`/stories/${new Date(reading.story.createdAt).getUTCFullYear()}/${new Date(reading.story.createdAt).getUTCMonth() + 1}/${new Date(reading.story.createdAt).getUTCDate()}/${reading.story.slug}`}>
                     <p className='font-bold'>{reading.story.title}</p>
@@ -84,13 +85,10 @@ const ReadingDropDown = ({ data, title, email, userId }) => {
 
                 </div>
 
-
-
-
                 {/* Icons */}
                 <div className='flex ml-auto items-center mr-5 ' >
                   <button className='cursor-pointer'>
-                    <Bookmark fill={`${bookMarkedReadings.includes(reading.storyId) ? 'yellow' : 'none'}`} width='50px' height='20px' onClick={() => handleBookmarkClick(reading.storyId)} />
+                    <Bookmark fill={`${bookMarkedReadings.includes(reading.story.id) ? 'yellow' : 'none'}`} width='50px' height='20px' onClick={() => handleBookmarkClick(reading.story.id)} />
                   </button>
                   <button className='cursor-pointer'>
                     <Lightbulb width='50px' height='20px' />

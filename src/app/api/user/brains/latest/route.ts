@@ -45,10 +45,11 @@ export async function GET(req: Request) {
     pageSize = 4;
   }
 
-  const session = await getServerSession();
-  if (session?.user.email !== user_email) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
+  // const session = await getServerSession();
+
+  // if (session?.user.email !== user_email) {
+  //   return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  // }
 
   try {
     const user = await prisma.user.findUnique({
