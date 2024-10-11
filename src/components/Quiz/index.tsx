@@ -17,7 +17,7 @@ interface Props {
 
 export type answerInfo = {
   quizId: number;
-  answer: [number] | number | boolean;
+  answer: number | boolean | [number];
 };
 
 export default function Quiz({ Quizzes }: Props) {
@@ -34,7 +34,6 @@ export default function Quiz({ Quizzes }: Props) {
   const [submitButton, setSubmitButton] = useState([] as boolean[]);
   const [answered, setAnswered] = useState([] as boolean[]);
   const [disabled, setDisabled] = useState([false] as boolean[]);
-
   const [respon, setRespon] = useState([] as any);
 
   {
@@ -63,21 +62,24 @@ export default function Quiz({ Quizzes }: Props) {
 
     setProg(String(Number(prog) + Number(gap)));
   };
-
+  // function removeNullEmptyUndefined(arr: (number | null)[][]) {
+  //   return arr.map((subArray) =>
+  //     subArray.filter((item) => item !== null && item !== undefined),
+  //   );
+  // }
   async function submitAnswer() {
-    console.log(" selected ", selected[currentQuestion]);
+    const selectedAnswer = selected[currentQuestion];
+
     try {
       const response = await axios.post(
         `${env.NEXT_PUBLIC_SITE_URL}/api/grade`,
         {
-          quiz_question_id: selected[currentQuestion].quizId,
+          quiz_question_id: selectedAnswer.quizId,
           quiz_record_id: Quizzes.quiz_record_id,
-          answer: selected[currentQuestion].answer,
+          answer: selectedAnswer.answer,
         },
       );
-      console.log("res before", response);
-      if (response.status == 200) {
-        console.log("res", response);
+      if (response.status === 200) {
         return response;
       }
     } catch (err) {

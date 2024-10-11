@@ -23,9 +23,7 @@ interface resultGrade {
   userResponseSubpart: string[];
 }
 
-/**
- * return score, user response that is converted to string array
- */
+/** return score, user response that is converted to string array */
 export function grading(params: questinoType) {
   const { questionType, userAnswer, correctAnswer, maxScore } = params;
   // set default value
@@ -81,11 +79,7 @@ export function grading(params: questinoType) {
   return { errorMessage, results, errors, score, userResponseSubpart };
 }
 
-/**
- * Convert to map
- * key: "categotyIndex OptionIndex"
- * value: boolean
- */
+/** Convert to map key: "categotyIndex OptionIndex" value: boolean */
 function convertMapCheck(correctAnswer: string[]) {
   const map: { [key: string]: boolean } = {};
   let countCorrectAnswer = 0;
@@ -199,9 +193,7 @@ function multipleChoiceGrade(
 
   total = 1;
   //check user answer type
-  const userAnswerParse = multipleChoiceAnswerSchema
-    .refine((ans) => ans)
-    .safeParse(userAnswer);
+  const userAnswerParse = multipleChoiceAnswerSchema.safeParse(userAnswer);
   if (!userAnswerParse.success) {
     errorMessage = userAnswerParse.error.errors[0].message;
     errors = userAnswerParse.error.errors.map((value) => value.message);
