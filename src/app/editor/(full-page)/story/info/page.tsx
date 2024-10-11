@@ -22,6 +22,7 @@ export default async function StoryInfoEditorPage({
               contributor: true,
             },
           },
+          storyContent: true,
         },
       })
     : null;
@@ -37,6 +38,7 @@ export default async function StoryInfoEditorPage({
     <StoryInfoEditorClient
       contributions={contributions ?? []}
       story={story || {}}
+      content={story?.storyContent?.[0]?.content ?? ""}
     />
   );
 }

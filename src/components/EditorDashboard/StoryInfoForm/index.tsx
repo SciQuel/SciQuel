@@ -34,6 +34,7 @@ import {
   type SetStateAction,
 } from "react";
 import { date } from "zod";
+import { updateWholeArticle } from "./actions/actions";
 import ArticleBody from "./formComponents/articleBody";
 import ArticleContent from "./formComponents/articleContent";
 import ArticleDate from "./formComponents/articleDate";
@@ -76,7 +77,7 @@ interface Props {
   setTitleColor: (value: string) => void;
   summaryColor?: string;
   setSummaryColor: (value: string) => void;
-  topics: StoryTopic;
+  topics: StoryTopic[];
   setTopics: (value: StoryTopic) => void;
   storyType: string;
   setStoryType: (value: string) => void;
@@ -324,58 +325,118 @@ export default function StoryInfoForm({
       <Form
         onSubmit={(e) => {
           e.preventDefault();
-          startTransition(async () => {
-            // creates a form component with all of the fields
-            try {
-              if (dirty) {
-                const formData = new FormData();
+          if (!storyId) {
+            return;
+          }
 
-                // adds all fields
-                if (storyId) {
-                  formData.append("id", storyId);
-                }
-                formData.append("title", title);
-                formData.append("summary", summary);
-                formData.append("body", body);
-                formData.append("imageCaption", caption);
-                formData.append("storyType", storyType);
-                formData.append("category", "ARTICLE");
-                formData.append("titleColor", titleColor);
-                formData.append("summaryColor", summaryColor);
-                formData.append("slug", slug);
-                formData.append("topics", JSON.stringify(topics));
-                formData.append("subtopics", "[]");
-                formData.append("generalSubjects", "[]");
-                formData.append("staffPicks", "false");
-                formData.append("contributions", JSON.stringify(contributors));
-
-                if (image === null) {
-                  return;
-                } else if (typeof image === "string") {
-                  formData.append("imageUrl", image);
-                } else {
-                  const file = new File([image], image.name);
-                  formData.append("image", file, file.name);
-                }
-                // wait for story API
-                const story = await axios.put<{ id: string }>(
-                  "/api/stories",
-                  formData,
-                  {
-                    headers: {
-                      "Content-Type": "multipart/form-data",
-                    },
-                  },
-                );
-                const nextPage = `/editor/story/contributors?id=${story.data.id}`;
-                router.push(nextPage);
-              } else {
-                router.push(`/editor/story/contributors?id=${storyId}`);
-              }
-            } catch (err) {
-              console.error(err);
+          const form = new FormData();
+          form.append("id", storyId);
+          form.append("summary", summary ?? "");
+          if (image) {
+            if (typeof image == "string") {
+              form.append("imageUrl", image);
+            } else if (image instanceof File) {
+              form.append("image", image);
+              form.append("newImageName", "test-image-name");
             }
-          });
+          }
+
+          form.append("imageCaption", initialCaption ?? "");
+
+          form.append("storyType", storyType);
+
+          form.append("category", category);
+
+          form.append("title", initialTitle);
+
+          form.append("titleColor", initialTitleColor ?? "#000000");
+          form.append("summaryColor", initialSummaryColor ?? "#000000");
+
+          form.append("slug", initialSlug ?? "");
+
+          form.append(
+            "topics",
+            `[${initialTopics
+              .map(
+                (topic, index) =>
+                  `"${topic}"${index < initialTopics.length - 1 ? ", " : ""}`,
+              )
+              .toString()}]`,
+          );
+
+          if (typeof initialDate == "string") {
+            form.append("publishDate", initialDate);
+          } else if (initialDate instanceof Date) {
+            form.append("publishDate", initialDate.toISOString());
+          }
+
+          form.append("content", initialBody);
+
+          form.append("footer", "");
+          // note: where is footer val?
+
+          console.log(form);
+
+          updateWholeArticle(form)
+            .then((result) => {
+              console.log(result);
+            })
+            .catch((err) => {
+              console.error(err);
+            });
+
+          // startTransition(async () => {
+          //   // creates a form component with all of the fields
+          //   try {
+          //     if (dirty) {
+          //       const formData = new FormData();
+
+          //       // adds all fields
+          //       if (storyId) {
+          //         formData.append("id", storyId);
+          //       }
+          //       formData.append("title", title);
+          //       formData.append("summary", summary);
+          //       formData.append("body", body);
+          //       formData.append("imageCaption", caption);
+          //       formData.append("storyType", storyType);
+          //       formData.append("category", "ARTICLE");
+          //       formData.append("titleColor", titleColor);
+          //       formData.append("summaryColor", summaryColor);
+          //       formData.append("slug", slug);
+          //       formData.append("topics", JSON.stringify(topics));
+          //       formData.append("subtopics", "[]");
+          //       formData.append("generalSubjects", "[]");
+          //       formData.append("staffPicks", "false");
+          //       formData.append("contributions", JSON.stringify(contributors));
+
+          //       if (image === null) {
+          //         return;
+          //       } else if (typeof image === "string") {
+          //         formData.append("imageUrl", image);
+          //       } else {
+          //         const file = new File([image], image.name);
+          //         formData.append("image", file, file.name);
+          //       }
+          //       // wait for story API
+          //       const story = await axios.put<{ id: string }>(
+          //         "/api/stories",
+          //         formData,
+          //         {
+          //           headers: {
+          //             "Content-Type": "multipart/form-data",
+          //           },
+          //         },
+          //       );
+          //       const nextPage = `/editor/story/contributors?id=${story.data.id}`;
+          //       router.push(nextPage);
+          //     } else {
+          //       router.push(`/editor/story/contributors?id=${storyId}`);
+          //     }
+          //   } catch (err) {
+          //     console.error(err);
+          //   }
+          // });
         }}
       >
         {/* STORY TITLE FORM INPUT */}
@@ -765,6 +826,7 @@ export default function StoryInfoForm({
         >
           Continue
         </button>
+        <button type="submit">test</button>
       </Form>
 
       {/* are these two used for anything? I deleted them 

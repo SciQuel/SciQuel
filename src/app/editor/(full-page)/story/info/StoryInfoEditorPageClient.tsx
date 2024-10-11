@@ -2,14 +2,15 @@
 
 import { type GetStoryResult } from "@/app/api/stories/id/[id]/route";
 import StoryInfoForm from "@/components/EditorDashboard/StoryInfoForm";
+import Trivia from "@/components/EditorDashboard/StoryInfoForm/formComponents/TriviaComponents/Trivia";
 import StoryPreview from "@/components/EditorDashboard/StoryPreview";
 import parseMarkdownToSections from "@/components/MarkdownEditor/parseMarkdown";
-import Trivia from "@/components/EditorDashboard/StoryInfoForm/formComponents/TriviaComponents/Trivia";
 import { generateMarkdown } from "@/lib/markdown";
 import {
   ContributionType,
   type Contributor,
   type StoryContribution,
+  type StoryTopic,
 } from "@prisma/client";
 import React, { useEffect, useRef, useState } from "react";
 import { StringLiteral } from "typescript";
@@ -35,17 +36,22 @@ interface Props {
     date?: Date;
     body?: string;
     storyType?: string;
-    topics?: string[];
+    topics?: StoryTopic[];
     titleColor: string;
     summaryColor: string;
     contributors?: string[];
   };
+
+  content?: string;
 }
 
-const StoryInfoEditorClient: React.FC<Props> = ({ story, contributions }) => 
-  {
+const StoryInfoEditorClient: React.FC<Props> = ({
+  story,
+  contributions,
+  content,
+}) => {
   // sets the initial body by fetching the article through its ID
-  const [body, setBody] = useState<string>("");
+  const [body, setBody] = useState<string>(content ?? "");
   const [title, setTitle] = useState(story.title || "");
   const [summary, setSummary] = useState(story.summary || "");
   const [image, setImage] = useState(story.image || null);
@@ -58,7 +64,7 @@ const StoryInfoEditorClient: React.FC<Props> = ({ story, contributions }) =>
   const [summaryColor, setSummaryColor] = useState(story.summaryColor || "");
   const [contributors, setContributors] =
     useState<Contribution[]>(contributions);
-  
+
   // formats the input string and gets is as MM/DD/YYYY and HR:MM AM/PM for display
   const formatPreviewDate = (date: string): string => {
     if (!date) return "";
@@ -253,8 +259,8 @@ const StoryInfoEditorClient: React.FC<Props> = ({ story, contributions }) =>
               contributors={contributors}
               setContributors={setContributors}
               //trivia={<Trivia />}
-             />
-             <Trivia/>
+            />
+            <Trivia />
           </div>
 
           {/* DIVIDER */}
