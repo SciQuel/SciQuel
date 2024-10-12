@@ -332,12 +332,12 @@ export default function StoryInfoForm({
           const form = new FormData();
           form.append("id", storyId);
           form.append("summary", summary ?? "");
-          if (image) {
-            if (typeof image == "string") {
-              form.append("imageUrl", image);
-            } else if (image instanceof File) {
-              form.append("image", image);
-              form.append("newImageName", "test-image-name");
+          if (initialImage) {
+            if (typeof initialImage == "string") {
+              form.append("imageUrl", initialImage);
+            } else if (initialImage instanceof File) {
+              form.append("image", initialImage);
+              form.append("newImageName", "test-image-name1");
             }
           }
 
