@@ -13,16 +13,11 @@ function parseMarkdownToSections(markdown: string): Section[] {
   // Parse the markdown into an MDAST tree
   const tree = unified().use(remarkParse).parse(markdown) as Root;
 
-  // console.log("Markdown string to parse:", markdown);
-  // console.log("Parsed MDAST Tree:", tree);
+  // Accumulator for current section content (text + images)
+  let currentSection: Section = { type: "Text", content: "" };
 
-  // accumulates all text into a section
-  let currentTextSection: Section | null = null;
-
-  // go through every node in the tree and parse into sections
+  // Process each node in the parsed MDAST tree
   for (const node of tree.children) {
-    console.log("Processing node:", node);
-
     if (node.type === "paragraph" && "children" in node) {
       const paragraphNode = node as Paragraph;
 
@@ -30,35 +25,26 @@ function parseMarkdownToSections(markdown: string): Section[] {
         if ("value" in child && typeof child.value === "string") {
           const textContent = child.value.trim();
 
-          // markdown images are ![], but this seemed like custom
+          // Detect the custom image marker (e.g., ::large-image)
           if (textContent.startsWith("::large-image")) {
-            // if there's text before it, get the accumulated text and push it to a box
-            if (currentTextSection && currentTextSection.content.trim()) {
-              sections.push(currentTextSection);
-              currentTextSection = null; // reset accumulated text
-            }
-            sections.push({
-              type: "Image",
-              content: textContent,
-            });
+            // Append the image marker directly into the current section's content
+            currentSection.content += textContent + "\n";
           } else {
-            // if not an image, we are in a separate paragraph (format it!)
-            if (!currentTextSection) {
-              currentTextSection = { type: "Text", content: "" };
-            }
-            currentTextSection.content += textContent + "\n" + "\n";
+            // Append text content to the current section
+            currentSection.content += textContent + "\n\n"; // Add extra spacing between paragraphs
           }
         }
       }
     }
   }
-  // get any leftover text and add it to the last textbox
-  if (currentTextSection && currentTextSection.content.trim()) {
-    sections.push(currentTextSection);
-  }
 
-  console.log("Parsed Sections before return:", sections);
+  // Push the final accumulated section
+  if (currentSection.content.trim()) {
+    sections.push(currentSection);
+  }
 
   return sections;
 }
+
 export default parseMarkdownToSections;
+

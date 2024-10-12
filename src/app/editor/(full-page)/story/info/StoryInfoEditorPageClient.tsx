@@ -1,20 +1,17 @@
 "use client";
 
-import { type GetStoryResult } from "@/app/api/stories/id/[id]/route";
 import StoryInfoForm from "@/components/EditorDashboard/StoryInfoForm";
 import Trivia from "@/components/EditorDashboard/StoryInfoForm/formComponents/TriviaComponents/Trivia";
 import StoryPreview from "@/components/EditorDashboard/StoryPreview";
 import parseMarkdownToSections from "@/components/MarkdownEditor/parseMarkdown";
-import { generateMarkdown } from "@/lib/markdown";
 import {
-  ContributionType,
   type Contributor,
   type StoryContribution,
   type StoryTopic,
 } from "@prisma/client";
 import React, { useEffect, useRef, useState } from "react";
-import { StringLiteral } from "typescript";
 
+// Interface definitions for the component's data structures
 interface Section {
   type: string;
   content: string;
@@ -45,27 +42,33 @@ interface Props {
   content?: string;
 }
 
-const StoryInfoEditorClient: React.FC<Props> = ({
-  story,
-  contributions,
-  content,
-}) => {
-  // sets the initial body by fetching the article through its ID
-  const [body, setBody] = useState<string>(content ?? "");
-  const [title, setTitle] = useState(story.title || "");
-  const [summary, setSummary] = useState(story.summary || "");
-  const [image, setImage] = useState(story.image || null);
-  const [caption, setCaption] = useState(story.caption || "");
-  const [slug, setSlug] = useState(story.slug || null);
-  const [date, setDate] = useState<Date | null>(story.date ?? null);
-  const [storyType, setStoryType] = useState(story.storyType || null);
-  const [topics, setTopics] = useState(story.topics || null);
-  const [titleColor, setTitleColor] = useState(story.titleColor || null);
-  const [summaryColor, setSummaryColor] = useState(story.summaryColor || "");
+// Main component: StoryInfoEditorClient
+// This component manages the state and layout for editing a story
+const StoryInfoEditorClient: React.FC<Props> = ({ story, contributions }) => {
+  // State declarations for various story properties
+  // Grouping related state variables into a single object could be beneficial
+  const [body, setBody] = useState<string>("");
+  const [title, setTitle] = useState<string>(story.title || "Untitled"); // Changed to default non-null
+  const [summary, setSummary] = useState<string>(story.summary || ""); // Can remain empty but not null
+  const [image, setImage] = useState<string>(story.image || ""); // Empty string instead of null
+  const [caption, setCaption] = useState<string>(story.caption || ""); // Can remain empty but not null
+  const [slug, setSlug] = useState<string>(story.slug || "default-slug"); // Default slug instead of null
+  const [date, setDate] = useState<Date>(story.date || new Date()); // Initialize with current date if null
+  const [storyType, setStoryType] = useState<string>(
+    story.storyType || "defaultType",
+  ); // Default type instead of null
+  const [topics, setTopics] = useState<string[]>(story.topics || []); // Empty array instead of null
+  const [titleColor, setTitleColor] = useState<string>(
+    story.titleColor || "#000000",
+  ); // Default color
+  const [summaryColor, setSummaryColor] = useState<string>(
+    story.summaryColor || "#000000",
+  ); // Default color
   const [contributors, setContributors] =
     useState<Contribution[]>(contributions);
 
-  // formats the input string and gets is as MM/DD/YYYY and HR:MM AM/PM for display
+  // Function to format date for preview
+  // Consider moving this to a utility file for reuse
   const formatPreviewDate = (date: string): string => {
     if (!date) return "";
     const dateObj = new Date(date);
@@ -81,36 +84,18 @@ const StoryInfoEditorClient: React.FC<Props> = ({
     return `${month}-${day}-${year} ${formattedHour}:${minutes} ${AMPM} EDT`;
   };
 
-  // to do: figure out what the API has for contributors -- modify this function if needed
-  const formatContributors = (contributors: string[]): React.ReactNode[] => {
-    const formattedContributors: React.ReactNode[] = [];
+  // Function to format contributors for display
+  // TODO: This function is defined but never used in the component. Consider removing if unnecessary.
 
-    // loop thru contributors and format the string adding line breaks
-    for (let i = 0; i < contributors.length; i++) {
-      formattedContributors.push(
-        <React.Fragment key={i}>
-          <span>by {contributors[i]}</span>
-          <br />
-        </React.Fragment>,
-      );
-    }
-    return formattedContributors;
-  };
-
-  // Function to add a new contributor to the list
-  // const addContributor = (contributor: string) => {
-  //   setContributors((prevContributors) => {
-  //     const newContributors = [...prevContributors, contributor];
-  //     return newContributors;
-  //   });
-  // };
+  // State for managing sections of the story
   const [sections, setSections] = useState<Section[]>([]);
 
+  // Effect for logging sections state (for debugging)
   useEffect(() => {
     console.log("Sections state updated:", sections);
   }, [sections]);
 
-  // fetch article and set body content
+  // Effect for fetching article content and initializing state
   useEffect(() => {
     async function loadArticle() {
       if (story.id) {
@@ -118,18 +103,11 @@ const StoryInfoEditorClient: React.FC<Props> = ({
           const fetchedArticle = await fetchArticleById(story.id, true);
           if (fetchedArticle.storyContent.length > 0) {
             const storyContent = fetchedArticle.storyContent[0].content;
-            console.log("Fetched article content:", storyContent); // Debug log
             setBody(storyContent);
-            setImage(fetchedArticle.thumbnailUrl);
-            setStoryType(fetchedArticle.storyType);
-            setTopics(fetchedArticle.topics);
-            setTitleColor(fetchedArticle.titleColor);
-            setSummaryColor(fetchedArticle.summaryColor);
-            setDate(fetchedArticle.publishedAt);
-            setCaption(fetchedArticle.coverCaption);
-            const initialSections = parseMarkdownToSections(storyContent);
-            console.log("Loaded sections:", initialSections); // Debug log
-            setSections(initialSections);
+
+            // Parse into sections (for editing purposes) but also keep the original content
+            const parsedSections = parseMarkdownToSections(storyContent);
+            setSections(parsedSections);
           }
         } catch (err: any) {
           console.error("Failed to fetch article:", err.message);
@@ -140,62 +118,58 @@ const StoryInfoEditorClient: React.FC<Props> = ({
     loadArticle();
   }, [story.id]);
 
+  // Handler for markdown changes
   const handleMarkdownChange = (newMarkdown: string) => {
     setBody(newMarkdown);
     const parsedSections = parseMarkdownToSections(newMarkdown);
-    console.log("Parsed sections:", parsedSections);
     setSections(parsedSections);
   };
 
-  // inserts newContent into the array at idx – basically anytime user inputs
+  // Handler for section content changes
   const handleSectionChange = (idx: number, newContent: string) => {
     const updatedSections = [...sections];
     updatedSections[idx].content = newContent;
     setSections(updatedSections);
   };
 
-  // adds a section of {Type (header, text, etc) with no content initially}
+  // Handler for adding a new section
   const handleAddSection = (type: string) => {
     setSections([...sections, { type, content: "" }]);
   };
 
-  // copies array into new array except for the section at delIdx
+  // Handler for deleting a section
   const handleDeleteSection = (delIdx: number) => {
-    // will trigger when we press the trash icon
-    const newArray = [];
-    for (let i = 0; i < sections.length; i++) {
-      if (i === delIdx) {
-        continue;
-      }
-      newArray.push(sections[i]);
-    }
+    const newArray = sections.filter((_, index) => index !== delIdx);
     setSections(newArray);
   };
 
-  // for the divider we only need one width (going with left) to dynamically update
+  // State and refs for managing the resizable layout
   const [leftWidth, setLeftWidth] = useState(40); // 40% as default
-  const [isDragging, setIsDragging] = useState(false); // T/f if user is currently dragging
-  const containerRef = useRef<HTMLDivElement>(null); // ref for the container
+  const [isDragging, setIsDragging] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  // handles boolean logic for clicking the dividor
+  // Handlers for the resizable divider
   const handleDividorClick = (click: React.MouseEvent) => {
     click.preventDefault();
     setIsDragging(true);
   };
+
   const handleDividorUnclick = () => {
     setIsDragging(false);
   };
+
   const handleDividorMove = (e: MouseEvent) => {
     if (isDragging && containerRef.current) {
       const containerRect = containerRef.current.getBoundingClientRect();
       const newLeftWidth =
         ((e.clientX - containerRect.left) / containerRect.width) * 100;
       if (newLeftWidth > 10 && newLeftWidth < 90) {
-        setLeftWidth(newLeftWidth); // make sure we are within bounds
+        setLeftWidth(newLeftWidth);
       }
     }
   };
 
+  // Effect for managing event listeners for resizable layout
   useEffect(() => {
     if (isDragging) {
       document.addEventListener("mousemove", handleDividorMove);
@@ -210,6 +184,7 @@ const StoryInfoEditorClient: React.FC<Props> = ({
     };
   }, [isDragging]);
 
+  // Component render
   return (
     <div
       className="mx-12 mt-5 flex flex-col gap-5"
@@ -217,7 +192,7 @@ const StoryInfoEditorClient: React.FC<Props> = ({
       style={{ height: "100vh", overflow: "hidden" }}
     >
       <div className="flex gap-5" style={{ height: "100%", width: "100%" }}>
-        {/* LEFT HAND SIDE */}
+        {/* Left side: Article Builder */}
         <div
           className="relative flex h-full flex-col overflow-hidden pr-4"
           style={{ width: `${leftWidth}%` }}
@@ -242,7 +217,7 @@ const StoryInfoEditorClient: React.FC<Props> = ({
               setSlug={setSlug}
               date={date}
               setDate={setDate}
-              body={body} // should delete this body stuff
+              body={body}
               setBody={setBody}
               sections={sections}
               onSectionChange={handleSectionChange}
@@ -260,17 +235,17 @@ const StoryInfoEditorClient: React.FC<Props> = ({
               setContributors={setContributors}
               //trivia={<Trivia />}
             />
-            <Trivia />
+            {/* <Trivia/> */}
           </div>
 
-          {/* DIVIDER */}
+          {/* Resizable divider */}
           <div
             onMouseDown={handleDividorClick}
             className="absolute bottom-0 right-0 top-0 z-10 w-2 cursor-col-resize bg-sciquelTeal"
           ></div>
         </div>
 
-        {/* RIGHT HAND SIDE */}
+        {/* Right side: Story Preview */}
         <div
           className="h-full overflow-y-auto bg-white"
           style={{ width: `${100 - leftWidth}%` }}
@@ -289,7 +264,7 @@ const StoryInfoEditorClient: React.FC<Props> = ({
               titleColor,
               summaryColor,
             }}
-            formattedDate={formatPreviewDate(date)}
+            formattedDate={date?.toString() ?? ""}
             contributors={contributors}
             id={story.id}
           />
@@ -301,7 +276,8 @@ const StoryInfoEditorClient: React.FC<Props> = ({
 
 export default StoryInfoEditorClient;
 
-// //API fetch below
+// API fetch function
+// TODO: Consider moving this to a separate API utility file
 async function fetchArticleById(id: string, includeContent = false) {
   const includeContentParam = includeContent ? "?include_content=true" : "";
   const response = await fetch(`/api/stories/id/${id}${includeContentParam}`);

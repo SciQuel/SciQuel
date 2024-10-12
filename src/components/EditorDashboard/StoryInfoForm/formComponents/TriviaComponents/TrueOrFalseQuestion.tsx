@@ -52,6 +52,7 @@ const TrueOrFalseQuestion: React.FC<TrueOrFalseQuestionProps> = ({
             <option value="false">False</option>
           </select>
           <button
+            type = "button"
             onClick={() =>
               deleteTrueOrFalseQuestion(question.id, tfQuestion.id)
             }
@@ -62,6 +63,7 @@ const TrueOrFalseQuestion: React.FC<TrueOrFalseQuestionProps> = ({
         </div>
       ))}
       <button
+        type = "button"
         onClick={() => addTrueOrFalseQuestion(question.id)}
         className="mt-2 rounded bg-sciquelTeal px-2 py-1 text-sm text-white"
       >
