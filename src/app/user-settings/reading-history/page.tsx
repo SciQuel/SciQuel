@@ -9,20 +9,56 @@ import ReadingDropDown from "@/components/UserSettings/dashboard/ReadingDropDown
 import getReadingHistory from "../actions/getReadingHistory";
 import { ReadingHistory as ReadingHistoryType } from "../actions/getReadingHistory";
 import { getServerSession } from "next-auth";
+import axios from "axios";
+import env from "@/lib/env";
 
 export default async function ReadingHistory() {
   const session = await getServerSession()
-  const { email, userId } = session?.user
+  const email: string = session?.user?.email || ''
 
-  const data: ReadingHistoryType[] = await getReadingHistory()
-  console.log(data)
+  //get the brained ids and bookmark ids and then pass it to the client componenet 
+  const getBookMarkedReadingsIds = async () => {
+    try {
+      const response = await axios.get(`${env.NEXT_PUBLIC_SITE_URL}/api/user/bookmark/latest`, {
+        params: {
+          user_email: email,
+          page_size: 100 //what can i pass as page size parameter
+        }
+      })
+      return response.data.map(bookmarked => bookmarked.storyId)
+    } catch (err: any) {
+      console.error(err.message)
+      throw err
+    }
+  }
+
+  const getBrainedReadingsIds = async () => {
+    try {
+      const response = await axios.get(`${env.NEXT_PUBLIC_SITE_URL}/api/user/brains/latest`, {
+        params: {
+          user_email: email,
+          page_size: 100
+        }
+      })
+      return response.data.map(brained => brained.storyId)
+    } catch (err) {
+      console.error(err)
+      throw err
+    }
+  }
+
+
+  const [BrainedReadingIds, BookmarkedReadingsIds] = await Promise.all([
+    getBrainedReadingsIds(), getBookMarkedReadingsIds()
+  ])
+
+  const data: ReadingHistoryType = await getReadingHistory()
+
   const todayReadings: ReadingHistoryType & { diffInDays: number }[] = []
   const yesterdayReadings: ReadingHistoryType & { diffInDays: number }[] = []
   const pastWeekReadings: ReadingHistoryType & { diffInDays: number }[] = []
 
-  //check dataes and calculate what array they should belong in
-  //no attribute in data for read time, so just u9se published time for now and get logic down
-  //does past week mean after 7 days or just any day before yesterday
+
   for (const reading of data) {
 
     //find the differnce in days from the read date
@@ -43,6 +79,8 @@ export default async function ReadingHistory() {
   }
 
 
+
+
   return (
     <div className="flex flex-col flex-grow mr-36">
 
@@ -52,9 +90,9 @@ export default async function ReadingHistory() {
 
       <ul className="ml-20 ">
 
-        <li className="mb-3"> <ReadingDropDown title={'Today'} data={todayReadings} email={email} /> </li>
-        <li className='mb-3'>  <ReadingDropDown title={'Yesterday'} data={yesterdayReadings} email={email} /> </li>
-        <li className="mb-3">  <ReadingDropDown title={'Past Week'} data={pastWeekReadings} email={email} /> </li>
+        <li className="mb-3"> <ReadingDropDown title={'Today'} data={todayReadings} email={email} brained={BrainedReadingIds} bookmarked={BookmarkedReadingsIds} /> </li>
+        <li className='mb-3'>  <ReadingDropDown title={'Yesterday'} data={yesterdayReadings} email={email} brained={BrainedReadingIds} bookmarked={BookmarkedReadingsIds} /> </li>
+        <li className="mb-3">  <ReadingDropDown title={'Past Week'} data={pastWeekReadings} email={email} brained={BrainedReadingIds} bookmarked={BookmarkedReadingsIds} /> </li>
       </ul >
 
     </div >

@@ -7,55 +7,89 @@ import ArrowDown from '../../../../public/assets/images/oi-chevron-down.svg'
 import axios from 'axios'
 import env from '@/lib/env'
 import Link from 'next/link'
+import { ReadingHistory as ReadingHistoryType } from '../../../app/user-settings/actions/getReadingHistory'
+import { GetLatestBookmarkRes } from '@/app/api/user/bookmark/latest/route'
 
-const ReadingDropDown = ({ data, title, email }) => {
+interface PropTypes {
+  data: ReadingHistoryType & { diffInDays: number }[];
+  title: string;
+  email: string;
+}
+
+
+
+const ReadingDropDown: React.FC<PropTypes> = ({ data, title, email, brained, bookmarked }) => {
   const [isOpen, setIsOpen] = useState(false)
-  const [bookMarkedReadings, setBookMarkedReadings] = useState([])
+  const [bookMarkedReadingsIds, setBookMarkedReadingsIds] = useState([...bookmarked])
+  const [brainedReadingIds, setBrainedReadingsIds] = useState([...brained])
+  console.log(bookMarkedReadingsIds)
 
 
-  //get list of all stories the user has bookmarked
-  //can this part be on the backend, or should i do the logic to find what stories are bookmarked on front
-  useEffect(() => {
-    const getBookMarkedReadings = async () => {
-      try {
-        const response = await axios.get(`${env.NEXT_PUBLIC_SITE_URL}/api/user/bookmark/latest`, {
-          params: {
-            user_email: email,
-            page_size: data.length //what can i pass as page size parameter
-          }
-        })
-        const bookmarkedReadings = response.data
-        setBookMarkedReadings(bookmarkedReadings.map(reading => reading.storyId)) // Store only storyIds
-      } catch (err) {
-        console.error(err.message)
-      }
-    }
-    getBookMarkedReadings()
-  }, [email, data.length])
 
-  const handleBookmarkClick = async (storyId: number) => {
+
+  const handleBookmarkClick = async (storyId: string) => {
 
     //checck if user has the reading bookmarked
-    const isCurrentlyBookmarked = bookMarkedReadings.includes(storyId)
+    const isCurrentlyBookmarked = bookMarkedReadingsIds.includes(storyId)
 
-    try {
-      if (!isCurrentlyBookmarked) {
+    if (!isCurrentlyBookmarked) {
+      setBookMarkedReadingsIds([...bookMarkedReadingsIds, storyId])
+      try {
         await axios.post(`${env.NEXT_PUBLIC_SITE_URL}/api/user/bookmark`, {
           story_id: storyId,
           user_email: email
         })
-        setBookMarkedReadings([...bookMarkedReadings, storyId])
-      } else {
+        console.log('story bookmarked')
+      } catch (error) {
+        console.error(error)
+        setBookMarkedReadingsIds(bookMarkedReadingsIds.filter(id => id != storyId))
+      }
+    }
+
+
+    if (isCurrentlyBookmarked) {
+      setBookMarkedReadingsIds(bookMarkedReadingsIds.filter(id => id != storyId))
+      try {
         await axios.delete(`${env.NEXT_PUBLIC_SITE_URL}/api/user/bookmark`, {
           params: {
             story_id: storyId,
             user_email: email
           }
         })
-        setBookMarkedReadings(bookMarkedReadings.filter(id => id !== storyId))
+      } catch (error) {
+        console.error(error)
+        setBookMarkedReadingsIds([...bookMarkedReadingsIds, storyId])
       }
-    } catch (error) {
-      console.error(error.message)
+    }
+  }
+
+  const handleBrainClick = async (storyId: string) => {
+    const isBrained = brainedReadingIds.includes(storyId)
+    if (isBrained) {
+      setBrainedReadingsIds(brainedReadingIds.filter(id => id != storyId))
+      try {
+        await axios.delete(`${env.NEXT_PUBLIC_SITE_URL}/api/user/brains`, {
+          params: {
+            story_id: storyId,
+            user_email: email
+          }
+        })
+      } catch (err) {
+        console.error(err)
+        setBrainedReadingsIds([...brainedReadingIds, storyId])
+      }
+    }
+    if (!isBrained) {
+      setBrainedReadingsIds([...brainedReadingIds, storyId])
+      try {
+        await axios.post(`${env.NEXT_PUBLIC_SITE_URL}/api/user/brains`, {
+          story_id: storyId,
+          user_email: email
+        })
+      } catch (err) {
+        console.error(err)
+        setBrainedReadingsIds(brainedReadingIds.filter(id => id != storyId))
+      }
     }
   }
 
@@ -73,11 +107,11 @@ const ReadingDropDown = ({ data, title, email }) => {
 
 
           {data.map((reading) => (
-            <ul className='mt-5' key={reading.storyId}>
+            <ul className='mt-5' key={reading.story.id}>
               <div className='flex  items-center gap-7'>
                 <img src={reading.story.thumbnailUrl} alt={`Thumbnail of ${reading.story.title}`} className='w-20 h-20 object-cover rounded-md' />
                 <div>
-                  <Link href={`/stories/${new Date(reading.story.createdAt).getUTCFullYear()}/${new Date(reading.story.createdAt).getUTCMonth() + 1}/${new Date(reading.story.createdAt).getUTCDate()}/${reading.story.slug}`}>
+                  <Link href={`/stories/${new Date(reading.createdAt).getUTCFullYear()}/${new Date(reading.createdAt).getUTCMonth() + 1}/${new Date(reading.createdAt).getUTCDate()}/${reading.story.slug}`}>
                     <p className='font-bold'>{reading.story.title}</p>
                   </Link>
                   <p className='text-sm font-light'>{`By ${reading.story.title}`}</p>
@@ -88,10 +122,10 @@ const ReadingDropDown = ({ data, title, email }) => {
                 {/* Icons */}
                 <div className='flex ml-auto items-center mr-5 ' >
                   <button className='cursor-pointer'>
-                    <Bookmark fill={`${bookMarkedReadings.includes(reading.story.id) ? 'yellow' : 'none'}`} width='50px' height='20px' onClick={() => handleBookmarkClick(reading.story.id)} />
+                    <Bookmark fill={`${bookMarkedReadingsIds.includes(reading.story.id) ? 'yellow' : 'none'}`} width='50px' height='20px' onClick={() => handleBookmarkClick(reading.story.id)} />
                   </button>
-                  <button className='cursor-pointer'>
-                    <Lightbulb width='50px' height='20px' />
+                  <button onClick={() => handleBrainClick(reading.story.id)} className='cursor-pointer'>
+                    <Lightbulb width={`${brainedReadingIds.includes(reading.story.id) ? '30px' : '20px'}`} height='20px' />
                   </button>
                   <button className='cursor-pointer'>
                     <Share width='50px' height='20px' />

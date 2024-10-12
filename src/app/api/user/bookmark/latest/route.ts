@@ -19,6 +19,7 @@ export type GetLatestBookmarkRes = {
   createdAt: string;
   story: Story;
   userId: string;
+  storyId: string;
 }[];
 
 export async function GET(req: Request) {

@@ -14,8 +14,8 @@ type Orders = "asc" | "desc"
 const SavedPage = ({ brainedStories, bookmarkData, definitions }: Props) => {
   const [topic, setTopic] = useState('brain')
   const [sortOrder, setSortOrder] = useState<Orders>('asc')
-  const [sortedData, setSortedData] = useState<Story>([])
-  let articlesToSort: Story[]
+  const [sortedData, setSortedData] = useState<Story[]>([])
+  let articlesToSort: Story
   useEffect(() => {
 
     switch (topic) {
@@ -31,13 +31,12 @@ const SavedPage = ({ brainedStories, bookmarkData, definitions }: Props) => {
         articlesToSort = []
         break;
     }
-    const sortedDataResults = articlesToSort.sort((a, b) => {
+    const sortedDataResults = [...articlesToSort].sort((a, b) => {
       let result = sortOrder === 'asc' ? a.publishedAt - b.publishedAt : b.publishedAt - a.publishedAt
 
       return result
 
     })
-    console.log(sortedDataResults)
     setSortedData(sortedDataResults)
 
   }, [sortOrder, topic])
