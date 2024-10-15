@@ -172,9 +172,11 @@ model Story {
   thumbnailUrl String
   coverCaption String @default("")
 
-  quizzes               Quiz[]
-  SubtopicOnStory       SubtopicOnStory[]
-  GeneralSubjectOnStory GeneralSubjectOnStory[]
+  quizzes        Quiz[]
+  // SubtopicOnStory       SubtopicOnStory[]
+  // GeneralSubjectOnStory GeneralSubjectOnStory[]
+  subtopicIds    String[] @db.ObjectId
+  subjectTypeIds String[] @db.ObjectId
 }
 
 model StoryContent {
@@ -190,40 +192,40 @@ model StoryContent {
 }
 
 model Subtopic {
-  id              String            @id @default(auto()) @map("_id") @db.ObjectId
-  name            String            @unique
-  Story           Story?            @relation(fields: [storyId], references: [id])
-  storyId         String?           @db.ObjectId
-  SubtopicOnStory SubtopicOnStory[]
+  id      String  @id @default(auto()) @map("_id") @db.ObjectId
+  name    String  @unique
+  Story   Story?  @relation(fields: [storyId], references: [id])
+  storyId String? @db.ObjectId
+  // SubtopicOnStory SubtopicOnStory[]
 }
 
 model GeneralSubject {
-  id                    String                  @id @default(auto()) @map("_id") @db.ObjectId
-  name                  String                  @unique
-  Story                 Story?                  @relation(fields: [storyId], references: [id])
-  storyId               String?                 @db.ObjectId
-  GeneralSubjectOnStory GeneralSubjectOnStory[]
+  id      String  @id @default(auto()) @map("_id") @db.ObjectId
+  name    String  @unique
+  Story   Story?  @relation(fields: [storyId], references: [id])
+  storyId String? @db.ObjectId
+  // GeneralSubjectOnStory GeneralSubjectOnStory[]
 }
 
-model SubtopicOnStory {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  storyId    String   @db.ObjectId
-  subtopicId String   @db.ObjectId
-  story      Story    @relation(fields: [storyId], references: [id])
-  subtopic   Subtopic @relation(fields: [subtopicId], references: [id])
+// model SubtopicOnStory {
+//   id         String   @id @default(auto()) @map("_id") @db.ObjectId
+//   storyId    String   @db.ObjectId
+//   subtopicId String   @db.ObjectId
+//   story      Story    @relation(fields: [storyId], references: [id])
+//   subtopic   Subtopic @relation(fields: [subtopicId], references: [id])
 
-  @@unique([storyId, subtopicId])
-}
+//   @@unique([storyId, subtopicId])
+// }
 
-model GeneralSubjectOnStory {
-  id               String         @id @default(auto()) @map("_id") @db.ObjectId
-  storyId          String         @db.ObjectId
-  generalSubjectId String         @db.ObjectId
-  story            Story          @relation(fields: [storyId], references: [id])
-  generalSubject   GeneralSubject @relation(fields: [generalSubjectId], references: [id])
+// model GeneralSubjectOnStory {
+//   id               String         @id @default(auto()) @map("_id") @db.ObjectId
+//   storyId          String         @db.ObjectId
+//   generalSubjectId String         @db.ObjectId
+//   story            Story          @relation(fields: [storyId], references: [id])
+//   generalSubject   GeneralSubject @relation(fields: [generalSubjectId], references: [id])
 
-  @@unique([storyId, generalSubjectId])
-}
+//   @@unique([storyId, generalSubjectId])
+// }
 
 model PageView {
   id String @id @default(auto()) @map("_id") @db.ObjectId
