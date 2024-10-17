@@ -236,21 +236,21 @@ model Bookmark {
 }
 
 model DictionaryDefinition {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-  word              String   @unique
-  definition        String
-  exampleSentences  String[]
+  id                   String   @id @default(auto()) @map("_id") @db.ObjectId
+  word                 String   @unique
+  definition           String
+  exampleSentences     String[]
   alternativeSpellings String[]
-  storyId String @db.ObjectId
-  story Story @relation(fields: [storyId], references: [id])
+  storyId              String   @db.ObjectId
+  story                Story    @relation(fields: [storyId], references: [id])
 
   // db fields for cloud storage url referencing audio files
-  wordAudioUrl String? 
-  definitionAudioUrl String? 
-  useAudioUrl String? 
+  wordAudioUrl       String?
+  definitionAudioUrl String?
+  useAudioUrl        String?
 
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 // feedback schema
