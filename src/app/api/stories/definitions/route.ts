@@ -65,9 +65,11 @@ export async function POST(req: NextResponse) {
         exampleSentences: parsedData.data.exampleSentences, // Need to fix 'any' warning (zod)
         alternativeSpellings: parsedData.data.alternativeSpellings, // Need to fix 'any' warning (zod)
         storyId: parsedData.data.storyId,
-        wordAudioUrl: await uploadFile(parsedData.data.wordAudio),
-        definitionAudioUrl: await uploadFile(parsedData.data.definitionAudio),
-        useAudioUrl: await uploadFile(parsedData.data.usageAudio),
+        wordAudioUrl: await uploadFile(parsedData.data.wordAudio as File),
+        definitionAudioUrl: await uploadFile(
+          parsedData.data.definitionAudio as File,
+        ),
+        useAudioUrl: await uploadFile(parsedData.data.usageAudio as File),
       },
     });
     return NextResponse.json({ data: newDefinition }, { status: 201 });
@@ -118,13 +120,17 @@ export async function PATCH(req: NextRequest) {
 
   for (const field of fieldsToUpdate) {
     if (field === "wordAudio" && parsedData.data.wordAudio) {
-      updateData.wordAudioUrl = await uploadFile(parsedData.data.wordAudio);
+      updateData.wordAudioUrl = await uploadFile(
+        parsedData.data.wordAudio as File,
+      );
     } else if (field === "definitionAudio" && parsedData.data.definitionAudio) {
       updateData.definitionAudioUrl = await uploadFile(
-        parsedData.data.definitionAudio,
+        parsedData.data.definitionAudio as File,
       );
     } else if (field === "usageAudio" && parsedData.data.usageAudio) {
-      updateData.usageAudioUrl = await uploadFile(parsedData.data.usageAudio);
+      updateData.usageAudioUrl = await uploadFile(
+        parsedData.data.usageAudio as File,
+      );
     } else if (
       field === "word" ||
       field === "definition" ||

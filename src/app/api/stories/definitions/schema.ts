@@ -13,9 +13,18 @@ export const postDefinitionSchema = zfd.formData({
     z.array(z.string()).optional(),
   ),
   storyId: zfd.text(),
-  wordAudio: zfd.file(),
-  definitionAudio: zfd.file(),
-  usageAudio: zfd.file(),
+  wordAudio: z.preprocess(
+    (val) => (val instanceof Blob && val.size === 0 ? undefined : val),
+    z.instanceof(Blob).optional(),
+  ),
+  definitionAudio: z.preprocess(
+    (val) => (val instanceof Blob && val.size === 0 ? undefined : val),
+    z.instanceof(Blob).optional(),
+  ),
+  usageAudio: z.preprocess(
+    (val) => (val instanceof Blob && val.size === 0 ? undefined : val),
+    z.instanceof(Blob).optional(),
+  ),
 });
 
 export const getDefinitionSchema = z.object({
@@ -41,7 +50,16 @@ export const patchDefinitionSchema = zfd.formData({
     )
     .optional(),
   storyId: zfd.text().optional(),
-  wordAudio: zfd.file().optional(),
-  definitionAudio: zfd.file().optional(),
-  usageAudio: zfd.file().optional(),
+  wordAudio: z.preprocess(
+    (val) => (val instanceof Blob && val.size === 0 ? undefined : val),
+    z.instanceof(Blob).optional(),
+  ),
+  definitionAudio: z.preprocess(
+    (val) => (val instanceof Blob && val.size === 0 ? undefined : val),
+    z.instanceof(Blob).optional(),
+  ),
+  usageAudio: z.preprocess(
+    (val) => (val instanceof Blob && val.size === 0 ? undefined : val),
+    z.instanceof(Blob).optional(),
+  ),
 });
