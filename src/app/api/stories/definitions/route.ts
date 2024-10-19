@@ -1,8 +1,13 @@
+import { parse } from "path";
 import prisma from "@/lib/prisma";
 import { Storage } from "@google-cloud/storage";
 import { type DictionaryDefinition } from "@prisma/client";
 import { NextResponse, type NextRequest } from "next/server";
-import { getDefinitionSchema, postDefinitionSchema } from "./schema";
+import {
+  getDefinitionSchema,
+  patchDefinitionSchema,
+  postDefinitionSchema,
+} from "./schema";
 
 export type DictionaryDefinitions = DictionaryDefinition[];
 
@@ -17,6 +22,14 @@ const storage = new Storage({
     private_key: process.env.GCS_KEY ?? "",
   },
 });
+
+interface UpdateData {
+  word?: string;
+  wordAudioUrl?: string;
+  definitionAudioUrl?: string;
+  usageAudioUrl?: string;
+  [key: string]: any;
+}
 
 // TODO: definitely need more checks for file types, size, etc
 async function uploadFile(file: File) {
@@ -84,6 +97,61 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ dictionaryDefinitions }, { status: 200 });
   } catch (error) {
     console.error("Failed to fetch dictionary definitions for story", error);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 },
+    );
+  }
+}
+
+export async function PATCH(req: NextRequest) {
+  const formData = await req.formData();
+  const parsedData = patchDefinitionSchema.safeParse(formData);
+
+  if (!parsedData.success) {
+    console.error(parsedData.error);
+    return NextResponse.json({ error: "Bad Request" }, { status: 400 });
+  }
+
+  const updateData: UpdateData = {};
+  const fieldsToUpdate = Object.keys(parsedData.data);
+
+  for (const field of fieldsToUpdate) {
+    if (field === "wordAudio" && parsedData.data.wordAudio) {
+      updateData.wordAudioUrl = await uploadFile(parsedData.data.wordAudio);
+    } else if (field === "definitionAudio" && parsedData.data.definitionAudio) {
+      updateData.definitionAudioUrl = await uploadFile(
+        parsedData.data.definitionAudio,
+      );
+    } else if (field === "usageAudio" && parsedData.data.usageAudio) {
+      updateData.usageAudioUrl = await uploadFile(parsedData.data.usageAudio);
+    } else if (
+      field === "word" ||
+      field === "definition" ||
+      field === "exampleSentences" ||
+      field === "alternativeSpellings" ||
+      field === "alternativeSpellings"
+    ) {
+      updateData[field] = parsedData.data[field];
+    }
+  }
+
+  const id = formData.get("id");
+  if (!id) {
+    return NextResponse.json(
+      { error: "ID is required for update" },
+      { status: 400 },
+    );
+  }
+
+  try {
+    const updatedDefinition = await prisma.dictionaryDefinition.update({
+      where: { id: id.toString() },
+      data: updateData,
+    });
+    return NextResponse.json({ data: updatedDefinition }, { status: 200 });
+  } catch (error) {
+    console.error("Failed to update dictionary definition", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 },
