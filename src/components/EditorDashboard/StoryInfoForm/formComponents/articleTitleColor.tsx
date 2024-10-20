@@ -3,6 +3,7 @@ import React from "react";
 interface ArticleTitleColorProps {
   value: string;
   onChange: (color: string) => void;
+  setDirty: (value: boolean) => void;
 }
 
 const ArticleTitleColor: React.FC<ArticleTitleColorProps> = ({ value, onChange }) => {

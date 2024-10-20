@@ -1,11 +1,10 @@
 import FormInput from "@/components/Form/FormInput"; // Adjust the import path as needed
 import clsx from "clsx";
-import { image } from "d3";
 import React, { useRef } from "react";
 
 type Props = {
-  image: string;
-  setImage: (image: string) => void;
+  image: File | string | null; // Allow File, string, or null
+  setImage: (image: File | string | null) => void; // Adjust setImage type
   caption: string;
   setCaption: (caption: string) => void;
   loading: boolean;
@@ -43,7 +42,7 @@ const BackgroundImageForm: React.FC<Props> = ({
           ref={fileUploadRef}
           onChange={(e) => {
             setDirty(true);
-            setImage(e.target.files?.[0] ?? null);
+            setImage(e.target.files?.[0] ?? null); // Now correctly allows a File or null
           }}
           accept="image/jpeg, image/png, image/gif"
         />
@@ -53,11 +52,11 @@ const BackgroundImageForm: React.FC<Props> = ({
         <h3 className="mb-3 text-xl font-semibold">Image Preview</h3>
         {image && typeof image !== "string" ? (
           <>
-            <p>Uploaded file: {image.name}</p>
+            <p>Uploaded file: {(image as File).name}</p> {/* Explicitly cast image to File */}
             <div className="h-96">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={URL.createObjectURL(image)}
+                src={URL.createObjectURL(image as File)} // Cast to File when creating object URL
                 className="h-full object-contain"
               />
             </div>
@@ -88,7 +87,5 @@ const BackgroundImageForm: React.FC<Props> = ({
     </div>
   );
 };
-
-console.log(image)
 
 export default BackgroundImageForm;

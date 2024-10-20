@@ -2,8 +2,8 @@ import FormInput from "@/components/Form/FormInput";
 import React, { useEffect, useState } from "react";
 
 type Props = {
-  value: string | null;
-  onChange: (value: string | null) => void;
+  value: Date | null;
+  onChange: (value: Date | null) => void;
   required?: boolean;
   indicateRequired?: boolean;
   disabled?: boolean;
@@ -19,7 +19,7 @@ const ArticleDate = ({
   setDirty,
 }: Props) => {
   // preprocesses date object into YYYY-MM-DD string
-  const formatDate = (date: string | null): string => {
+  const formatDate = (date: Date | null): string => {
     if (!date) return "";
     const dateObj = new Date(date);
     if (isNaN(dateObj.getTime())) return "";
@@ -30,7 +30,7 @@ const ArticleDate = ({
     return `${year}-${month}-${day}`;
   };
 
-  const getHours = (date: string | null): string => {
+  const getHours = (date: Date | null): string => {
     if (!date) return "";
     const dateObj = new Date(date);
     if (isNaN(dateObj.getTime())) return "";
@@ -40,7 +40,7 @@ const ArticleDate = ({
     return formattedHour.toString().padStart(2, "0");
   };
 
-  const getMinutes = (date: string | null): string => {
+  const getMinutes = (date: Date | null): string => {
     if (!date) return "";
     const dateObj = new Date(date);
     if (isNaN(dateObj.getTime())) return "";
@@ -49,7 +49,7 @@ const ArticleDate = ({
     return minutes.toString().padStart(2, "0");
   };
 
-  const getAMPM = (date: string | null): string => {
+  const getAMPM = (date: Date | null): string => {
     if (!date) return "";
     const dateObj = new Date(date);
     if (isNaN(dateObj.getTime())) return "";
@@ -89,7 +89,7 @@ const ArticleDate = ({
     // checking if input is valid
     if (year && month && day && hrs >= 0 && hrs <= 23 && m >= 0 && m <= 59) {
       const date = new Date(year, month - 1, day, hrs, m);
-      onChange(date.toISOString());
+      onChange(date);
     } else {
       onChange(null);
     }

@@ -3,6 +3,7 @@ import React from "react";
 interface ArticleSummaryColorProps {
   value: string;
   onChange: (color: string) => void;
+  setDirty: (value: boolean) => void;
 }
 
 const ArticleSummaryColor: React.FC<ArticleSummaryColorProps> = ({ value, onChange }) => {
