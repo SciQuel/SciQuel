@@ -49,14 +49,14 @@ interface Props {
   setTitle: (value: string) => void;
   summary?: string;
   setSummary: (value: string) => void;
-  image?: string;
-  setImage: (value: string) => void;
+  image?: File | string | null;  //add File | string | null
+  setImage: (image: File | string | null) => void ; //add File | string | null
   caption?: string;
   setCaption: (value: string) => void;
-  slug?: string;
+  slug?: string | undefined;
   setSlug: (value: string) => void;
   date?: Date | null;
-  setDate: (value: Date) => void;
+  setDate: (value: Date | null) => void;
   body: string;
   setBody: (value: string) => void;
   titleColor?: string;
@@ -108,9 +108,11 @@ export default function StoryInfoForm({
   const router = useRouter();
 
   // States to manage form data
-  const [summary] = useState(initialSummary ?? "");
-  const [image] = useState<File | string | null>(initialImage ?? null);
-  const [caption, setCaption] = useState(initialCaption ?? "");
+  const [summary, setSummary] = useState<string>(initialSummary ?? "");
+  const [image, setImage] = useState<File | string | null>(initialImage ?? null);
+  const [caption, setCaption] = useState<string>(initialCaption ?? "");
+
+
   const [dirty, setDirty] = useState(false); // Track form dirty state
   const [loading, startTransition] = useTransition(); // Loading state for async actions
 
@@ -142,10 +144,8 @@ export default function StoryInfoForm({
   const [subjectlist, setSubjectList] = useState(data.subjects);
 
   // Modals for adding new subtopics and subjects
-  const [isCreateSubtopicModalOpen, setIsCreateSubtopicModalOpen] =
-    useState(false);
-  const [isCreateSubjectModalOpen, setIsCreateSubjectModalOpen] =
-    useState(false);
+  const [isCreateSubtopicModalOpen, setIsCreateSubtopicModalOpen] = useState(false);
+
 
   // Filtered lists for topics, subtopics, and subjects based on queries
   const filteredTopicList =
@@ -366,7 +366,7 @@ return (
 
               // Add fields to formData for submission
               if (storyId) formData.append("id", storyId);
-              formData.append("title", title);
+              formData.append("title", initialTitle);
               formData.append("summary", summary);
               formData.append("body", body);
               formData.append("imageCaption", caption);
@@ -422,7 +422,7 @@ return (
 
       {/* Story Summary Input */}
       <ArticleSummary
-        value={initialSummary}
+        value={initialSummary ?? ""} // Fallback to empty string if undefined
         onChange={initialSetSummary}
         required
         indicateRequired
@@ -432,7 +432,7 @@ return (
 
       {/* Publish Date Input */}
       <ArticleDate
-        value={initialDate}
+        value={initialDate ?? null} // Fallback to null if undefined
         onChange={initialSetDate}
         required
         indicateRequired
@@ -442,14 +442,14 @@ return (
 
       {/* Title Color Input */}
       <ArticleTitleColor
-        value={initialTitleColor}
+        value={initialTitleColor ?? ""} // Fallback to empty string if undefined
         onChange={initialSetTitleColor}
         setDirty={setDirty}
       />
 
       {/* Summary Color Input */}
       <ArticleSummaryColor
-        value={initialSummaryColor}
+        value={initialSummaryColor ?? ""} // Fallback to empty string if undefined
         onChange={initialSetSummaryColor}
         setDirty={setDirty}
       />
@@ -464,7 +464,7 @@ return (
 
       {/* Article Slug (URL path) */}
       <ArticleSlug
-        value={initialSlug}
+        value={initialSlug ?? ""} // Fallback to empty string if undefined
         onChange={initialSetSlug}
         required
         indicateRequired
@@ -474,10 +474,10 @@ return (
 
       {/* Background Image & Caption Inputs */}
       <BackgroundImageForm
-        image={initialImage}
-        setImage={initialSetImage}
-        caption={initialCaption}
-        setCaption={initialSetCaption}
+        image={initialImage ?? null} // Handle undefined by defaulting to null
+        setImage={initialSetImage}    // Ensure this function handles string | File | null
+        caption={initialCaption ?? ""} // Handle undefined by defaulting to an empty string
+        setCaption={initialSetCaption} // Ensure this function handles string
         loading={loading}
         setDirty={setDirty}
       />
