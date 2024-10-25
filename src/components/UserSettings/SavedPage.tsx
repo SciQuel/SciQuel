@@ -1,12 +1,13 @@
 'use client'
 import ArticleList from "../ArticleList"
-import { useState, useEffect } from "react"
-import { type Story } from "@prisma/client"
+import { useState, useEffect, useLayoutEffect } from "react"
+import type { Stories } from "@/app/api/stories/route"
+
 
 interface Props {
-  brainedStories: Story,
-  bookmarkData: Story,
-  definition: any
+  brainedStories: Stories,
+  bookmarkData: Stories,
+  definitions: any
 }
 
 type Orders = "asc" | "desc"
@@ -14,8 +15,9 @@ type Orders = "asc" | "desc"
 const SavedPage = ({ brainedStories, bookmarkData, definitions }: Props) => {
   const [topic, setTopic] = useState('brain')
   const [sortOrder, setSortOrder] = useState<Orders>('asc')
-  const [sortedData, setSortedData] = useState<Story[]>([])
-  let articlesToSort: Story
+  const [sortedData, setSortedData] = useState<Stories>([])
+  let articlesToSort: Stories
+
   useEffect(() => {
 
     switch (topic) {
@@ -32,7 +34,7 @@ const SavedPage = ({ brainedStories, bookmarkData, definitions }: Props) => {
         break;
     }
     const sortedDataResults = [...articlesToSort].sort((a, b) => {
-      let result = sortOrder === 'asc' ? a.publishedAt - b.publishedAt : b.publishedAt - a.publishedAt
+      let result = sortOrder === 'asc' ? a.publishedAt.getTime() - b.publishedAt.getTime() : b.publishedAt.getTime() - a.publishedAt.getTime()
 
       return result
 
@@ -44,7 +46,7 @@ const SavedPage = ({ brainedStories, bookmarkData, definitions }: Props) => {
   const ArticleTypeBar = () => {
     return (
       <ul className="flex items-center gap-4 ">
-        <button>
+        <button aria-label="change topic">
           <li onClick={() => setTopic('brain')} className={`${topic === 'brain' ? 'bg-sciquelTeal text-white' : 'bg-[#c8dbe1]'} text-black px-1 rounded-md text-sm border-4 border-sciquelFooter`}> Brained Articles </li>
         </button>
         <button>
@@ -59,19 +61,22 @@ const SavedPage = ({ brainedStories, bookmarkData, definitions }: Props) => {
 
   const SelectForm = () => {
     return (
-      <select value={sortOrder} onChange={(e: React.ChangeEvent) => setSortOrder(e.target.value)} className="ml-auto ">
+      <select aria-label="Sort Readings" value={sortOrder} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSortOrder(e.target.value as Orders)} className="ml-auto ">
         <option value='desc'> Newest to Oldest </option>
-        <option value='asc' > Oldest to Newst </option>
+        <option value='asc' > Oldest to Newest </option>
       </select>
     )
   }
 
   return (
 
+
     <div className="flex flex-col  h-screen ">
+
       <div className=" mt-5 w-full  ">
         <h1 className="font-bold mb-1 text-xl"> Saved </h1>
         <div className="flex ">
+
           <ArticleTypeBar />
           <SelectForm />
         </div>
@@ -79,6 +84,7 @@ const SavedPage = ({ brainedStories, bookmarkData, definitions }: Props) => {
       </div>
       <div className='flex flex-col mb-5  mt-5 overflow-y-scroll overflow-x-hidden before:block before:mt-3  before:border-b-4 before:mr-10 before:w-full before:border-slate-400 before:mb-5 '>
 
+        {sortedData.length === 0 && <p> No data </p>}
 
         {(topic === 'brain' || topic === 'bookmark') && (
           <ArticleList articles={sortedData} preferHorizontal={true} hoverEffect={false} />

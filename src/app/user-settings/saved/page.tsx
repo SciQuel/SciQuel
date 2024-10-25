@@ -7,7 +7,7 @@ import { getServerSession } from "next-auth";
 import SavedPage from "@/components/UserSettings/SavedPage";
 import { type GetLatestBookmarkRes as Bookmarks } from "@/app/api/user/bookmark/latest/route";
 import { type GetLatestBrainsRes as Brained } from "@/app/api/user/brains/latest/route";
-import { type GetStoryResult as StoryResult } from "@/app/api/stories/id/[id]/route";
+
 export default async function SavedPaged() {
 
   const session = await getServerSession()
@@ -46,7 +46,8 @@ export default async function SavedPaged() {
 
     })
 
-    //is type wrong??
+
+    console.log(resp.data)
     return resp.data.map((story: Bookmarks[number]) => story.storyId)
   }
 
@@ -55,13 +56,15 @@ export default async function SavedPaged() {
   let bookMarkedStories = await Promise.all(
     bookMarkedIds.map(async (id: string) => {
       const resp = await axios.get(`${env.NEXT_PUBLIC_SITE_URL}/api/stories/id/${id}`)
+
       return resp.data
+
     })
   )
 
 
   //can this function be in seperate file???
-  const convertDatesInStories = (stories) => {
+  const convertDatesInStories = (stories: Stories) => {
     const result = stories.map((story) => ({
       ...story, publishedAt: new Date(story.publishedAt),
 
@@ -78,6 +81,7 @@ export default async function SavedPaged() {
 
   return (
     <div className="w-full mx-10">
+
       <SavedPage brainedStories={BrainedStories} bookmarkData={bookMarkedStories} definitions={'empty'} />
     </div>
   )

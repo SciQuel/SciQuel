@@ -1,25 +1,23 @@
-/*  - Ask about backend query also including author name for the article
-   - Add Typescript types
-   -  updates test data to test time filtering
-  - What do the other icon buttons do 
-  -- imported type does not contain some needed attributes
-  
-*/
-import ReadingDropDown from "@/components/UserSettings/dashboard/ReadingDropDown";
+import ReadingDropDownContainer from "@/components/UserSettings/ReadingHistory/ReadingDropDownContainer";
 import getReadingHistory from "../actions/getReadingHistory";
 import { ReadingHistory as ReadingHistoryType } from "../actions/getReadingHistory";
 import { getServerSession } from "next-auth";
+import { GetLatestBookmarkRes } from "@/app/api/user/bookmark/latest/route";
+import { GetLatestBrainsRes } from "@/app/api/user/brains/latest/route";
 import axios from "axios";
 import env from "@/lib/env";
+
 
 export default async function ReadingHistory() {
   const session = await getServerSession()
   const email: string = session?.user?.email || ''
 
+
+
   //get the brained ids and bookmark ids and then pass it to the client componenet 
   const getBookMarkedReadingsIds = async () => {
     try {
-      const response = await axios.get(`${env.NEXT_PUBLIC_SITE_URL}/api/user/bookmark/latest`, {
+      const response = await axios.get<GetLatestBookmarkRes>(`${env.NEXT_PUBLIC_SITE_URL}/api/user/bookmark/latest`, {
         params: {
           user_email: email,
           page_size: 100 //what can i pass as page size parameter
@@ -34,7 +32,7 @@ export default async function ReadingHistory() {
 
   const getBrainedReadingsIds = async () => {
     try {
-      const response = await axios.get(`${env.NEXT_PUBLIC_SITE_URL}/api/user/brains/latest`, {
+      const response = await axios.get<GetLatestBrainsRes>(`${env.NEXT_PUBLIC_SITE_URL}/api/user/brains/latest`, {
         params: {
           user_email: email,
           page_size: 100
@@ -52,11 +50,16 @@ export default async function ReadingHistory() {
     getBrainedReadingsIds(), getBookMarkedReadingsIds()
   ])
 
+
+  //get reading history
   const data: ReadingHistoryType = await getReadingHistory()
 
+
+  //initalize arrays for certain readings, fix to contain just on arr of objects instead of seperate lists
   const todayReadings: ReadingHistoryType & { diffInDays: number }[] = []
   const yesterdayReadings: ReadingHistoryType & { diffInDays: number }[] = []
   const pastWeekReadings: ReadingHistoryType & { diffInDays: number }[] = []
+
 
 
   for (const reading of data) {
@@ -82,18 +85,10 @@ export default async function ReadingHistory() {
 
 
   return (
-    <div className="flex flex-col flex-grow mr-36">
+    <div className=" h-screen flex-grow overflow-y-auto pr-36 ">
 
-      <h2 className='ml-8 mt-8 text-2xl mb-10 font-bold ' > Reading History </h2>
-      {data.length === 0 && <p> You have nothing Read Recently </p>}
-
-
-      <ul className="ml-20 ">
-
-        <li className="mb-3"> <ReadingDropDown title={'Today'} data={todayReadings} email={email} brained={BrainedReadingIds} bookmarked={BookmarkedReadingsIds} /> </li>
-        <li className='mb-3'>  <ReadingDropDown title={'Yesterday'} data={yesterdayReadings} email={email} brained={BrainedReadingIds} bookmarked={BookmarkedReadingsIds} /> </li>
-        <li className="mb-3">  <ReadingDropDown title={'Past Week'} data={pastWeekReadings} email={email} brained={BrainedReadingIds} bookmarked={BookmarkedReadingsIds} /> </li>
-      </ul >
+      <h2 className='ml-8 mt-8 text-3xl mb-10 font-bold ' > Reading History </h2>
+      <ReadingDropDownContainer pastWeekReadings={pastWeekReadings} yesterdayReadings={yesterdayReadings} todayReadings={todayReadings} email={email} brained={BrainedReadingIds} bookmarked={BookmarkedReadingsIds} />
 
     </div >
   )
