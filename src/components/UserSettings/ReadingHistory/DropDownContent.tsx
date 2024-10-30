@@ -22,11 +22,13 @@ const DropDownContent: React.FC<Props> = ({
   handleBrainClick,
   handleBookmarkClick,
 }) => {
+
+
   return (
     <>
       <ul className="  scrollbar-cyan mb-2 max-h-[500px] overflow-y-scroll">
-        {data.length === 0 && <p className="font-bold text-md"> No Readings </p>}
-        {data.map((reading) => (
+        {data?.length === 0 && <p className="font-bold text-md"> No Readings </p>}
+        {data?.map((reading) => (
           <li className="mb-5" key={crypto.randomUUID()}>
             <div className="flex  items-center gap-7">
               <img

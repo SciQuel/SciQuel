@@ -22,6 +22,7 @@ const ReadingDropDownContainer: React.FC<Props> = ({
 }) => {
 
   const [openDropDown, setOpenDropDown] = useState("");
+
   const handleClick = (title: string) => {
     if (openDropDown === title) {
       setOpenDropDown("");
@@ -30,7 +31,7 @@ const ReadingDropDownContainer: React.FC<Props> = ({
     }
   };
   return (
-    <div className="ml-20 flex h-full flex-col gap-5  ">
+    <div className="ml-20 flex max-h-screen bg-red-500  flex-col gap-5  ">
       <ReadingDropDown
         title={"Today"}
         data={todayReadings}
