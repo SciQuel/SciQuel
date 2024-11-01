@@ -1,24 +1,9 @@
-import prisma from "@/lib/prisma";
-import { type QuizType } from "@prisma/client";
+import { QuizType } from "@prisma/client";
 import { NextResponse, type NextRequest } from "next/server";
 import { checkValidInput } from "../tools/SchemaTool";
 import User from "../tools/User";
-import { storyIdSchema } from "./schema";
+import { quizTypeSchema, storyIdSchema } from "./schema";
 import { createResponseQuizResult, getQuizResult } from "./tool";
-
-interface QuizResultI {
-  storyId: string;
-  maxScore: number;
-  quizQuestionIdRemain: string[];
-  grades: {
-    id: string;
-    maxScore: number;
-    totalScore: number;
-  }[];
-  quizType: QuizType;
-  score: number;
-  createAt: Date;
-}
 
 /**
  * get first quiz record and recent quiz record.
@@ -26,6 +11,7 @@ interface QuizResultI {
  * If story_id is not included, get records base on user attempt
  */
 export async function GET(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
   try {
     const user = new User();
     const userId = await user.getUserId();
@@ -39,26 +25,27 @@ export async function GET(req: NextRequest) {
         },
       );
     }
-
-    const { searchParams } = new URL(req.url);
-
     //get story_id and check type if exist
     const storyIdParam = searchParams.get("story_id");
-    let storyId = null;
-    if (storyIdParam) {
-      const { nextErrorReponse, parsedData } = checkValidInput(
-        [storyIdSchema],
-        [storyIdParam],
-      );
-      if (nextErrorReponse) {
-        return nextErrorReponse;
-      }
-      storyId = parsedData[0];
+    const quizTypeParam = searchParams.get("quiz_type") || QuizType.POST_QUIZ;
+    const { nextErrorReponse, parsedData } = checkValidInput(
+      [storyIdSchema, quizTypeSchema],
+      [storyIdParam, quizTypeParam],
+    );
+    if (nextErrorReponse) {
+      return nextErrorReponse;
     }
-    const firstQuizResultPromise = getQuizResult("FIRST", userId, storyId);
+    const [storyId, quizType] = parsedData;
+    const firstQuizResultPromise = getQuizResult(
+      "FIRST",
+      userId,
+      quizType,
+      storyId,
+    );
     const mostRecentQuizResultPromise = getQuizResult(
       "RECENT",
       userId,
+      quizType,
       storyId,
     );
     const [firstQuizResult, mostRecentQuizResult] = await Promise.all([
@@ -67,14 +54,8 @@ export async function GET(req: NextRequest) {
     ]);
     return new NextResponse(
       JSON.stringify({
-        first_quiz_record: createResponseQuizResult(
-          firstQuizResult.quizResult,
-          firstQuizResult.subpartArr,
-        ),
-        most_recent_quiz: createResponseQuizResult(
-          mostRecentQuizResult.quizResult,
-          mostRecentQuizResult.subpartArr,
-        ),
+        first_quiz_record: createResponseQuizResult(firstQuizResult),
+        most_recent_quiz: createResponseQuizResult(mostRecentQuizResult),
       }),
       {
         status: 200,

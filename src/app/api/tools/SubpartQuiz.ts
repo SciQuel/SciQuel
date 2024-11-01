@@ -1,12 +1,95 @@
 import prisma from "@/lib/prisma";
-import { QuestionType } from "@prisma/client";
+import { type QuestionType } from "@prisma/client";
 
-interface QuizQuestionI {
+interface QuizSubpartParam {
   questionType: QuestionType;
   subpartId: string;
 }
 
-export async function getSubpartQuizAnswear(quizQuestionId: string) {
+interface QuizSubpartI {
+  correctAnswer: number | string[] | number[] | boolean[];
+  contentCategory: string[];
+  question?: string;
+  categories?: string[];
+  options?: string[];
+  explanations?: string[];
+  questions?: string[];
+}
+//create look up object to get quiz subpart
+const GET_QUIZ_SUBPART: {
+  GET_SUBPART: {
+    [key in QuestionType]: (
+      subpartId: string,
+      includeAnswer: boolean,
+      includeExplain: boolean,
+    ) => Promise<QuizSubpartI | null>;
+  };
+} = {
+  GET_SUBPART: {
+    COMPLEX_MATCHING: (subpartId, includeAnswer, includeExplain) =>
+      prisma.complexMatchingSubpart.findUnique({
+        where: { id: subpartId },
+        select: {
+          correctAnswer: includeAnswer,
+          explanations: includeExplain,
+          contentCategory: true,
+          question: true,
+          categories: true,
+          options: true,
+        },
+      }),
+    DIRECT_MATCHING: (subpartId, includeAnswer, includeExplain) =>
+      prisma.directMatchingSubpart.findUnique({
+        where: { id: subpartId },
+        select: {
+          correctAnswer: includeAnswer,
+          explanations: includeExplain,
+          contentCategory: true,
+          question: true,
+          categories: true,
+          options: true,
+        },
+      }),
+    MULTIPLE_CHOICE: (subpartId, includeAnswer, includeExplain) =>
+      prisma.multipleChoiceSubpart.findUnique({
+        where: { id: subpartId },
+        select: {
+          correctAnswer: includeAnswer,
+          explanations: includeExplain,
+          question: true,
+          contentCategory: true,
+          options: true,
+        },
+      }),
+    SELECT_ALL: (subpartId, includeAnswer, includeExplain) =>
+      prisma.selectAllSubpart.findUnique({
+        where: { id: subpartId },
+        select: {
+          correctAnswer: includeAnswer,
+          explanations: includeExplain,
+          contentCategory: true,
+          question: true,
+          options: true,
+        },
+      }),
+    TRUE_FALSE: (subpartId, includeAnswer, includeExplain) =>
+      prisma.trueFalseSubpart.findUnique({
+        where: { id: subpartId },
+        select: {
+          explanations: includeExplain,
+          questions: true,
+          contentCategory: true,
+          correctAnswer: includeAnswer,
+        },
+      }),
+  },
+};
+
+export async function getSubpartByQuizQuestion(
+  quizQuestionId: string,
+  includeAnswer = false,
+  includeExplain = false,
+) {
   const quizQuestion = await prisma.quizQuestion.findUnique({
     where: { id: quizQuestionId },
     select: {
@@ -16,128 +99,35 @@ export async function getSubpartQuizAnswear(quizQuestionId: string) {
       maxScore: true,
     },
   });
-  let subpart = null;
   if (!quizQuestion) return null;
-  if (quizQuestion.questionType === "COMPLEX_MATCHING") {
-    subpart = await prisma.complexMatchingSubpart.findUnique({
-      where: { id: quizQuestion.subpartId },
-      select: {
-        correctAnswer: true,
-        explanations: true,
-      },
-    });
-  } else if (quizQuestion.questionType === "DIRECT_MATCHING") {
-    subpart = await prisma.directMatchingSubpart.findUnique({
-      where: { id: quizQuestion.subpartId },
-      select: {
-        correctAnswer: true,
-        explanations: true,
-      },
-    });
-  } else if (quizQuestion.questionType === "MULTIPLE_CHOICE") {
-    subpart = await prisma.multipleChoiceSubpart.findUnique({
-      where: { id: quizQuestion.subpartId },
-      select: { correctAnswer: true, explanations: true, options: true },
-    });
-  } else if (quizQuestion.questionType === "SELECT_ALL") {
-    subpart = await prisma.selectAllSubpart.findUnique({
-      where: { id: quizQuestion.subpartId },
-      select: { correctAnswer: true, explanations: true, options: true },
-    });
-  } else if (quizQuestion.questionType === "TRUE_FALSE") {
-    subpart = await prisma.trueFalseSubpart.findUnique({
-      where: { id: quizQuestion.subpartId },
-      select: { correctAnswer: true, explanations: true, questions: true },
-    });
-  } else {
-    throw new Error(
-      "Unknow type " +
-        String(quizQuestion.questionType) +
-        " in getSubpartQuiz function",
-    );
-  }
+  const subpart = await getSubpartById(
+    { ...quizQuestion },
+    includeAnswer,
+    includeExplain,
+  );
   if (!subpart) return null;
   return {
     storyId: quizQuestion.storyId,
-    explanations: subpart.explanations,
-    correctAnswer: subpart.correctAnswer,
     questionType: quizQuestion.questionType,
     maxScore: quizQuestion.maxScore,
     quizQuestionId,
+    ...subpart,
   };
 }
 
-export async function getSubpart(quiz: QuizQuestionI, includeAnswer = false) {
-  let subpart: any = null;
-  if (quiz.questionType === "COMPLEX_MATCHING") {
-    subpart = await prisma.complexMatchingSubpart.findUnique({
-      where: { id: quiz.subpartId },
-      select: {
-        correctAnswer: includeAnswer,
-        contentCategory: true,
-        question: true,
-        categories: true,
-        options: true,
-      },
-    });
-  } else if (quiz.questionType === "DIRECT_MATCHING") {
-    subpart = await prisma.directMatchingSubpart.findUnique({
-      where: { id: quiz.subpartId },
-      select: {
-        correctAnswer: includeAnswer,
-        contentCategory: true,
-        question: true,
-        categories: true,
-        options: true,
-      },
-    });
-  } else if (quiz.questionType === "MULTIPLE_CHOICE") {
-    subpart = await prisma.multipleChoiceSubpart.findUnique({
-      where: { id: quiz.subpartId },
-      select: {
-        correctAnswer: includeAnswer,
-        question: true,
-        contentCategory: true,
-        options: true,
-      },
-    });
-  } else if (quiz.questionType === "SELECT_ALL") {
-    subpart = await prisma.selectAllSubpart.findUnique({
-      where: { id: quiz.subpartId },
-      select: {
-        correctAnswer: includeAnswer,
-        contentCategory: true,
-        question: true,
-        options: true,
-      },
-    });
-  } else if (quiz.questionType === "TRUE_FALSE") {
-    subpart = await prisma.trueFalseSubpart.findUnique({
-      where: { id: quiz.subpartId },
-      select: {
-        questions: true,
-        contentCategory: true,
-        correctAnswer: includeAnswer,
-      },
-    });
-  } else {
-    throw new Error(
-      "Unknow type " +
-        String(quiz.questionType) +
-        " in finding Subpart function",
-    );
-  }
-  return {
-    questions: subpart?.questions,
-    correctAnswer: subpart?.correctAnswer,
-    question: subpart?.question,
-    contentCategory: subpart?.contentCategory,
-    options: subpart?.options,
-    categories: subpart?.categories,
-  };
+export async function getSubpartById(
+  quiz: QuizSubpartParam,
+  includeAnswer = false,
+  includeExplain = false,
+) {
+  return await GET_QUIZ_SUBPART["GET_SUBPART"][quiz.questionType](
+    quiz.subpartId,
+    includeAnswer,
+    includeExplain,
+  );
 }
-export type getSubpartReturnType = Awaited<ReturnType<typeof getSubpart>>;
+export type getSubpartByIdType = Awaited<ReturnType<typeof getSubpartById>>;
 
-export type getSubpartQuizAnswearType = Awaited<
-  ReturnType<typeof getSubpartQuizAnswear>
+export type getSubpartByQuizQuestionType = Awaited<
+  ReturnType<typeof getSubpartByQuizQuestion>
 >;

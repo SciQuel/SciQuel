@@ -2,12 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { NextResponse, type NextRequest } from "next/server";
 import { checkValidInput } from "../tools/SchemaTool";
 import User from "../tools/User";
-import {
-  modifiedQuizSchema,
-  quizQuestionIdSchema,
-  quizTypeSchema,
-  storyIdSchema,
-} from "./schema";
+import { quizTypeSchema, storyIdSchema } from "./schema";
 import { getQuizzes, handleQuizResult } from "./tools";
 
 const prisma = new PrismaClient();
@@ -16,8 +11,8 @@ const prisma = new PrismaClient();
  * give a list of quiz questions from story
  */
 export async function GET(req: NextRequest) {
+  const url = new URL(req.url);
   try {
-    const url = new URL(req.url);
     const storyIdParam = url.searchParams.get("story_id");
     const quizTypeParam = url.searchParams.get("quiz_type");
     const user = new User();
@@ -84,7 +79,7 @@ export async function GET(req: NextRequest) {
     return new NextResponse(
       JSON.stringify({
         quizzes: quizResponse,
-        quiz_record_id: quizResult?.id || "",
+        quiz_result_id: quizResult?.id || "",
       }),
       {
         status: 200,

@@ -217,6 +217,7 @@ model QuizResult {
   quizType QuizType
 
   maxScore           Int @default(0)
+  //only count score that is user first attempt in the current quiz result
   score              Int @default(0)
   totalQuestion      Int @default(0)
   totalCorrectAnswer Int @default(0)
@@ -229,7 +230,10 @@ model QuizResult {
   quizQuestionIdRemain String[] @db.ObjectId
   grade                Grade[]
 
-  used Boolean @default(true)
+  used            Boolean @default(true)
+  skippedQuestion Boolean @default(false)
+
+  StoryQuizScoreFirstTime StoryQuizScoreFirstTime?
 
   @@index([createAt])
   @@index([storyId, userId, createAt])
@@ -303,12 +307,11 @@ model QuizQuestion {
   createAt     DateTime     @default(now())
 
   deleted Boolean @default(false)
-  Grade   Grade[]
+  grade   Grade[]
 
   @@unique([subpartId])
   @@index([storyId, deleted])
   @@index([storyId])
-  @@index([id, deleted])
 }
 
 model MultipleChoiceSubpart {
@@ -358,25 +361,25 @@ model SelectAllSubpart {
 }
 
 model Grade {
-  id                        String                   @id @default(auto()) @map("_id") @db.ObjectId
-  questionType              QuestionType
-  userId                    String                   @db.ObjectId
-  quizQuestionId            String                   @db.ObjectId
-  quizQuestion              QuizQuestion             @relation(fields: [quizQuestionId], references: [id])
-  userAns                   String[]
-  result                    String[]
-  categoriesResult          Boolean[]
-  totalScore                Int
-  maxScore                  Int
-  quizResult                QuizResult               @relation(fields: [quizResultId], references: [id])
-  quizResultId              String                   @db.ObjectId
-  questionAnswerFirstTimeId String?                  @db.ObjectId
-  questionAnswerFirstTime   QuestionAnswerFirstTime?
-  createAt                  DateTime                 @default(now())
-  skipped                   Boolean                  @default(false)
+  id               String       @id @default(auto()) @map("_id") @db.ObjectId
+  questionType     QuestionType
+  userId           String       @db.ObjectId
+  quizQuestionId   String       @db.ObjectId
+  quizQuestion     QuizQuestion @relation(fields: [quizQuestionId], references: [id])
+  userAns          String[]
+  result           String[]
+  categoriesResult Boolean[]
+  totalScore       Int
+  maxScore         Int
+  quizResult       QuizResult   @relation(fields: [quizResultId], references: [id])
+  quizResultId     String       @db.ObjectId
+  createAt         DateTime     @default(now())
+  skipped          Boolean      @default(false)
+
+  QuestionAnswerFirstTime QuestionAnswerFirstTime?
 
   @@index([quizResultId])
-  @@index([userId, quizQuestionId])
+  @@index([userId, quizQuestionId, quizResultId])
 }
 
 model QuestionAnswerFirstTime {
@@ -385,27 +388,29 @@ model QuestionAnswerFirstTime {
   quizQuestionId String   @db.ObjectId
   correct        Boolean
   createAt       DateTime @default(now())
+  quizType       QuizType
   gradeId        String   @unique @db.ObjectId
   grade          Grade    @relation(fields: [gradeId], references: [id])
-  quizType       QuizType
 
-  @@unique([userId, quizQuestionId, quizType])
   @@index([userId, quizQuestionId])
-  @@index([quizQuestionId, correct])
+  @@index([quizQuestionId, correct, quizType])
+  @@index([quizQuestionId, quizType])
 }
 
 model StoryQuizScoreFirstTime {
-  id                 String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId             String?  @db.ObjectId
-  storyId            String   @db.ObjectId
+  id                 String     @id @default(auto()) @map("_id") @db.ObjectId
+  storyId            String     @db.ObjectId
+  userId             String     @db.ObjectId
   totalCorrectAnswer Int
-  gradeIds           String[] @db.ObjectId
-  createAt           DateTime @default(now())
-  lastUpdate         DateTime @default(now())
+  createAt           DateTime   @default(now())
+  lastUpdate         DateTime   @default(now())
   quizType           QuizType
+  quizResultId       String     @db.ObjectId
+  quizResult         QuizResult @relation(fields: [quizResultId], references: [id])
 
-  @@unique([userId, storyId, quizType])
+  @@unique([quizResultId])
   @@index([storyId, totalCorrectAnswer, quizType])
+  @@index([storyId, quizType])
 }
 
 model QuizQuestionRecord {

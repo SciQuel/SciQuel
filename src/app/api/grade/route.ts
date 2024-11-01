@@ -1,13 +1,7 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable prettier/prettier */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { PrismaClient } from "@prisma/client";
 import { NextResponse, type NextRequest } from "next/server";
 import { checkValidInput } from "../tools/SchemaTool";
-import { getSubpartQuizAnswear } from "../tools/SubpartQuiz";
+import { getSubpartByQuizQuestion } from "../tools/SubpartQuiz";
 import User from "../tools/User";
 import { postSchema, scoreSchema, storyIdSchema } from "./schema";
 import {
@@ -17,9 +11,7 @@ import {
   QUIZ_TYPE_HANDLER,
 } from "./tools";
 
-const ROUND_UP_DECIMAL = 1;
 const prisma = new PrismaClient();
-
 /**
  * grade user answer and give out grade result, explanation
  * and percentage of people answer right
@@ -32,12 +24,13 @@ export async function POST(req: NextRequest) {
     if (parseResult.nextErrorReponse) {
       return parseResult.nextErrorReponse;
     }
-
     const [bodyParam] = parseResult.parsedData;
     const userIdPromise = user.getUserId();
 
-    const quizQuestionPromise = getSubpartQuizAnswear(
+    const quizQuestionPromise = getSubpartByQuizQuestion(
       bodyParam.quiz_question_id,
+      true,
+      true,
     );
     const [userId, quizQuestion] = await Promise.all([
       userIdPromise,
@@ -70,7 +63,6 @@ export async function POST(req: NextRequest) {
         status: 400,
       });
     }
-
     //if user is logged in, save user response
     if (userId) {
       const quizResult = await prisma.quizResult.findFirst({
@@ -114,8 +106,8 @@ export async function POST(req: NextRequest) {
 
     //count how many people answer correct question
     const percentagePeopleAnswerCorrect = await getPercentageQuizQuestionRight(
-      "POST_QUIZ",
       bodyParam.quiz_question_id,
+      "POST_QUIZ",
     );
 
     //return result
@@ -128,7 +120,7 @@ export async function POST(req: NextRequest) {
         results: results.map((value, index) => {
           return {
             correct: value,
-            explanation: quizQuestion.explanations[index],
+            explanation: quizQuestion.explanations?.[index],
           };
         }),
         percent_people_answer_correct: percentagePeopleAnswerCorrect,
@@ -169,9 +161,9 @@ export async function GET(req: NextRequest) {
     const [storyId, score] = result.parsedData;
     //count how many people get exact score
     const percentagePeopleAnswerCorrect = await getPercentageQuizStoryGrade(
-      "POST_QUIZ",
       storyId,
       score,
+      "POST_QUIZ",
     );
     return new NextResponse(
       JSON.stringify({

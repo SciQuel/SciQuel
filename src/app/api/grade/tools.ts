@@ -1,7 +1,10 @@
 import prisma from "@/lib/prisma";
-import { QuizType, type Prisma, type QuestionType } from "@prisma/client";
+import { type Prisma, type QuestionType, type QuizType } from "@prisma/client";
 import { NextResponse } from "next/server";
-import { getSubpartQuizAnswearType } from "../tools/SubpartQuiz";
+import {
+  getSubpartByQuizQuestion,
+  type getSubpartByQuizQuestionType,
+} from "../tools/SubpartQuiz";
 import {
   complexMatchingAnswerSchema,
   directMatchingAnswerSchema,
@@ -13,31 +16,35 @@ import {
 const ROUND_UP_DECIMAL = 1;
 
 //lookup-object help determine which function should use for grading based on QuestionType
-const GRADING_FUNCTION: { [key in QuestionType]: Function } = {
+const GRADING_FUNCTION: {
+  [key in QuestionType]: (correctAnswer: any, userAnswer: any) => resultGradeI;
+} = {
   //correctAnswer is guarantee to be string array in data base
-  COMPLEX_MATCHING: (correctAnswer: any, userAnswer: any) =>
+  COMPLEX_MATCHING: (correctAnswer, userAnswer) =>
     complexMatchingGrade(correctAnswer as string[], userAnswer),
   //correctAnswer is guarantee to be number array
-  DIRECT_MATCHING: (correctAnswer: any, userAnswer: any) =>
+  DIRECT_MATCHING: (correctAnswer, userAnswer) =>
     directMatchingGrade(correctAnswer as number[], userAnswer),
   //correctAnswer is guarantee to be number
-  MULTIPLE_CHOICE: (correctAnswer: any, userAnswer: any) =>
+  MULTIPLE_CHOICE: (correctAnswer, userAnswer) =>
     multipleChoiceGrade(correctAnswer as number, userAnswer),
   //correctAnswer is guarantee to be boolean array
-  SELECT_ALL: (correctAnswer: any, userAnswer: any) =>
+  SELECT_ALL: (correctAnswer, userAnswer) =>
     selectAllGrade(correctAnswer as boolean[], userAnswer),
   //correctAnswer is guarantee to be boolean array
-  TRUE_FALSE: (correctAnswer: any, userAnswer: any) =>
+  TRUE_FALSE: (correctAnswer, userAnswer) =>
     trueFalseGrade(correctAnswer as boolean[], userAnswer),
 };
 
-export const QUIZ_TYPE_HANDLER: { [key in QuizType]: Function } = {
+export const QUIZ_TYPE_HANDLER: {
+  [key in QuizType]: (param: handleQuizI) => Promise<handleQuizReturnI>;
+} = {
   POST_QUIZ: handlePostQuiz,
   PRE_QUIZ: handlePreQuiz,
 };
 
 interface handleQuizI {
-  quizQuestion: Exclude<getSubpartQuizAnswearType, null | undefined>;
+  quizQuestion: Exclude<getSubpartByQuizQuestionType, null | undefined>;
   userId: string;
   results: boolean[][];
   score: number;
@@ -48,13 +55,13 @@ interface handleQuizI {
     quizQuestionIdRemain: string[];
     storyId: string;
     totalCorrectAnswer: number;
-    used: true;
+    used: boolean;
   };
 }
 
 interface gradingParam {
   questionType: QuestionType;
-  userAnswer: number | boolean[] | number[];
+  userAnswer: number | boolean[] | number[] | null;
   correctAnswer: number | boolean[] | string[] | number[];
   maxScore: number;
 }
@@ -64,6 +71,7 @@ interface resultGradeI {
   results: boolean[][];
   correctCount: number;
   total: number;
+  skipped: boolean;
   userResponseSubpart: string[];
   categoriesResult?: boolean[];
 }
@@ -76,17 +84,9 @@ interface handleQuizReturnI {
  */
 export function grading(params: gradingParam) {
   const { questionType, userAnswer, correctAnswer, maxScore } = params;
-  // set default value
-  let resultGrade: resultGradeI = {
-    results: [],
-    total: 1,
-    errorMessage: null,
-    errors: [],
-    correctCount: 0,
-    userResponseSubpart: [],
-  };
+
   //correctAnswer is taken from data base which is guarantee the correct type we are looking for
-  resultGrade = GRADING_FUNCTION[questionType](correctAnswer, userAnswer);
+  const resultGrade = GRADING_FUNCTION[questionType](correctAnswer, userAnswer);
 
   const {
     errorMessage,
@@ -112,15 +112,30 @@ export function grading(params: gradingParam) {
  * calculate the percentage of people get the question right
  */
 export async function getPercentageQuizQuestionRight(
-  quizType: QuizType = "POST_QUIZ",
   quizQuestionId: string,
+  quizType: QuizType = "POST_QUIZ",
+  includeSkipped = false,
 ) {
+  const whereInput: Prisma.QuestionAnswerFirstTimeWhereInput = {
+    quizQuestionId: quizQuestionId,
+    quizType,
+  };
+  if (!includeSkipped) {
+    whereInput["grade"] = {
+      is: {
+        skipped: false,
+      },
+    };
+  }
   //count how many people answer correct question
   const countPeopleAnswerCorrectPromise = prisma.questionAnswerFirstTime.count({
-    where: { quizQuestionId: quizQuestionId, correct: true, quizType },
+    where: {
+      ...whereInput,
+      correct: true,
+    },
   });
   const countPeopleAnswerPromise = prisma.questionAnswerFirstTime.count({
-    where: { quizQuestionId: quizQuestionId, quizType },
+    where: whereInput,
   });
   const [countPeopleAnswerCorrect, countPeopleAnswer] = await Promise.all([
     countPeopleAnswerCorrectPromise,
@@ -137,20 +152,34 @@ export async function getPercentageQuizQuestionRight(
  * calculate the percentage of people get the exact number of correct question given
  */
 export async function getPercentageQuizStoryGrade(
-  quizType: QuizType = "POST_QUIZ",
   storyId: string,
   numberCorrectAnswer: number,
+  quizType: QuizType = "POST_QUIZ",
+  includeSkipped = false,
 ) {
+  //create where input
+  const whereInput: Prisma.StoryQuizScoreFirstTimeWhereInput = {
+    storyId,
+    quizType,
+  };
+  //if not include skip question, add additional search variable
+  if (!includeSkipped) {
+    whereInput["quizResult"] = {
+      is: {
+        skippedQuestion: false,
+      },
+    };
+  }
+
   //count how many people answer correct question
   const countPeopleGetExactScorePromise = prisma.storyQuizScoreFirstTime.count({
     where: {
-      storyId: storyId,
+      ...whereInput,
       totalCorrectAnswer: numberCorrectAnswer,
-      quizType,
     },
   });
   const countPeopleGetScoreStoryPromise = prisma.storyQuizScoreFirstTime.count({
-    where: { storyId: storyId, quizType },
+    where: whereInput,
   });
   const [countPeopleGetExactScore, countPeopleGetScoreStory] =
     await Promise.all([
@@ -172,35 +201,61 @@ export async function getPercentageQuizStoryGrade(
  */
 function convertMapCheck(correctAnswer: string[]) {
   const map: { [key: string]: boolean } = {};
-  const countAnswerRemain: number[] = new Array(correctAnswer.length).fill(0);
-  let countCorrectAnswer = 0;
+  const countCorrectAnswerRemain: number[] = createArray(
+    correctAnswer.length,
+    0,
+  );
   correctAnswer.forEach((str, index) => {
     //if this category is not empty
     if (str !== "") {
       const numberStr = str.split(" ");
-      countCorrectAnswer += numberStr.length;
       numberStr.forEach((num) => {
         map[`${index} ${num}`] = true;
-        countAnswerRemain[index]++;
+        countCorrectAnswerRemain[index]++;
       });
     }
   });
-  return { map, countCorrectAnswer, countAnswerRemain };
+  return { map, countCorrectAnswerRemain };
 }
 
 function complexMatchingGrade(
   correctAnswer: string[],
   userAnswer: any,
 ): resultGradeI {
+  const isSkipped = userAnswer === null;
   let errorMessage = null;
   let errors: string[] = [];
   const results: boolean[][] = [];
   let correctCount = 0;
-  let isSkipped = false;
-  let total = 1;
+  //convert correctAnswer to map to check answer
+  //Map converted in a form map[`categoryIndex optionIndex`])
+  const { map, countCorrectAnswerRemain } = convertMapCheck(correctAnswer);
+
   //use to check if all option in each categories is all answeared correctly
   const recordCategoriesResult: boolean[] = [];
   const userResponseSubpart: string[] = [];
+
+  //if user skipped, create empty response
+  if (isSkipped) {
+    correctAnswer.forEach((str) => {
+      if (str.length !== 0) {
+        const numStr = str.split(" ");
+        results.push(createArray(numStr.length, false));
+      }
+      recordCategoriesResult.push(false);
+    });
+    return {
+      errorMessage,
+      errors,
+      results,
+      correctCount,
+      skipped: true,
+      total: correctAnswer.length,
+      userResponseSubpart,
+      categoriesResult: recordCategoriesResult,
+    };
+  }
+
   //check user answer type
   const userAnswerParse = complexMatchingAnswerSchema
     .refine((ans) => ans.length === correctAnswer.length, {
@@ -212,10 +267,6 @@ function complexMatchingGrade(
     errorMessage = userAnswerParse.error.errors[0].message;
     errors = userAnswerParse.error.errors.map((value) => value.message);
   } else {
-    //convert correctAnswer to map to check answer
-    const { map, countCorrectAnswer, countAnswerRemain } =
-      convertMapCheck(correctAnswer);
-    total = countCorrectAnswer;
     const numbersArray = userAnswerParse.data;
     for (let i = 0; i < numbersArray.length; i++) {
       let curResponse = "";
@@ -223,13 +274,15 @@ function complexMatchingGrade(
       const curResult: boolean[] = [];
       numbersArray[i].forEach((number) => {
         const isCorrect = map[`${i} ${number}`] === true;
-        correctCount += isCorrect ? 1 : 0;
-        if (isCorrect) countAnswerRemain[i]--;
+        if (isCorrect) countCorrectAnswerRemain[i]--;
         else isCorrectAll = false;
         curResult.push(isCorrect);
         curResponse += curResponse.length === 0 ? `${number}` : ` ${number}`;
       });
-      recordCategoriesResult.push(countAnswerRemain[i] === 0 && isCorrectAll);
+      const isCurCategoryCorrect =
+        countCorrectAnswerRemain[i] === 0 && isCorrectAll;
+      recordCategoriesResult.push(isCurCategoryCorrect);
+      correctCount += isCurCategoryCorrect ? 1 : 0;
       results.push(curResult);
       userResponseSubpart.push(curResponse);
     }
@@ -239,7 +292,8 @@ function complexMatchingGrade(
     errors,
     results,
     correctCount,
-    total,
+    total: correctAnswer.length,
+    skipped: false,
     userResponseSubpart,
     categoriesResult: recordCategoriesResult,
   };
@@ -251,13 +305,29 @@ function directMatchingGrade(
 ): resultGradeI {
   let errorMessage = null;
   let errors: string[] = [];
-  const results: boolean[][] = [];
+  let results: boolean[][] = [];
+  const isSkipped = userAnswer === null;
   let correctCount = 0;
-  let total = 1;
-  const recordCategoriesResult: boolean[] = [];
-  const userResponseSubpart: string[] = [];
-  total = correctAnswer.length;
+  const total = correctAnswer.length;
   //use to check if all option in each categories is all answeared correctly
+  let recordCategoriesResult: boolean[] = [];
+  const userResponseSubpart: string[] = [];
+
+  //if user skipped, create empty response
+  if (isSkipped) {
+    results = createArray(correctAnswer.length, [false]);
+    recordCategoriesResult = createArray(correctAnswer.length, false);
+    return {
+      errorMessage,
+      errors,
+      results,
+      skipped: true,
+      correctCount,
+      total,
+      userResponseSubpart,
+      categoriesResult: recordCategoriesResult,
+    };
+  }
 
   //check user answer type
   const userAnswerParse = directMatchingAnswerSchema
@@ -271,10 +341,9 @@ function directMatchingGrade(
   } else {
     const numbers = userAnswerParse.data;
     for (let i = 0; i < numbers.length; i++) {
-      results.push([]);
       const isCorrect = numbers[i] === correctAnswer[i];
       correctCount += isCorrect ? 1 : 0;
-      results[i].push(isCorrect);
+      results.push([isCorrect]);
       recordCategoriesResult.push(isCorrect);
       userResponseSubpart.push(numbers[i].toString());
     }
@@ -284,6 +353,7 @@ function directMatchingGrade(
     errors,
     results,
     correctCount,
+    skipped: false,
     total,
     userResponseSubpart,
     categoriesResult: recordCategoriesResult,
@@ -297,10 +367,25 @@ function multipleChoiceGrade(
   let errorMessage = null;
   let errors: string[] = [];
   const results: boolean[][] = [];
+  const isSkipped = userAnswer === null;
   let correctCount = 0;
-  let total = 1;
+  const total = 1;
   const userResponseSubpart: string[] = [];
-  total = 1;
+
+  //if user skipped, create empty response
+  if (isSkipped) {
+    results.push([false]);
+    return {
+      errorMessage,
+      errors,
+      results,
+      correctCount,
+      total,
+      skipped: true,
+      userResponseSubpart,
+    };
+  }
+
   //check user answer type
   const userAnswerParse = multipleChoiceAnswerSchema.safeParse(userAnswer);
   if (!userAnswerParse.success) {
@@ -310,8 +395,7 @@ function multipleChoiceGrade(
     const number = userAnswerParse.data;
     const isCorrect = number === correctAnswer;
     correctCount += isCorrect ? 1 : 0;
-    results.push([]);
-    results[0].push(isCorrect);
+    results.push([isCorrect]);
     userResponseSubpart.push(number.toString());
   }
   return {
@@ -320,6 +404,7 @@ function multipleChoiceGrade(
     results,
     correctCount,
     total,
+    skipped: false,
     userResponseSubpart,
   };
 }
@@ -330,11 +415,25 @@ function selectAllGrade(
 ): resultGradeI {
   let errorMessage = null;
   let errors: string[] = [];
-  const results: boolean[][] = [];
+  let results: boolean[][] = [];
+  const isSkipped = userAnswer === null;
   let correctCount = 0;
-  let total = 1;
+  const total = correctAnswer.length;
   const userResponseSubpart: string[] = [];
-  total = correctAnswer.length;
+
+  //if user skipped, create empty response
+  if (isSkipped) {
+    results = createArray(correctAnswer.length, [false]);
+    return {
+      errorMessage,
+      errors,
+      skipped: true,
+      results,
+      correctCount,
+      total,
+      userResponseSubpart,
+    };
+  }
 
   //check user answer type
   const userAnswerParse = selectAllAnswerSchema
@@ -349,10 +448,7 @@ function selectAllGrade(
     errors = userAnswerParse.error.errors.map((value) => value.message);
   } else {
     const numberAnsArr = userAnswerParse.data;
-    const userAnswer: boolean[] = [];
-    for (let i = 0; i < correctAnswer.length; i++) {
-      userAnswer.push(false);
-    }
+    const userAnswer: boolean[] = createArray(correctAnswer.length, false);
     for (let i = 0; i < numberAnsArr.length; i++) {
       userAnswer[numberAnsArr[i]] = true;
     }
@@ -360,8 +456,7 @@ function selectAllGrade(
       for (let i = 0; i < correctAnswer.length; i++) {
         const isCorrect = userAnswer[i] === correctAnswer[i];
         correctCount += isCorrect ? 1 : 0;
-        results.push([]);
-        results[i].push(isCorrect);
+        results.push([isCorrect]);
         userResponseSubpart.push(userAnswer[i] ? "true" : "false");
       }
     }
@@ -371,6 +466,7 @@ function selectAllGrade(
     errors,
     results,
     correctCount,
+    skipped: false,
     total,
     userResponseSubpart,
   };
@@ -384,11 +480,27 @@ function trueFalseGrade(
   let errors: string[] = [];
   let results: boolean[][] = [];
   let correctCount = 0;
-  let total = 1;
+  const total = correctAnswer.length;
   let userResponseSubpart: string[] = [];
   let recordCategoriesResult: boolean[] = [];
-  let isSkipped = false;
-  total = correctAnswer.length;
+  const isSkipped = userAnswer === null;
+
+  //if user skipped, create empty response
+  if (isSkipped) {
+    recordCategoriesResult = createArray(correctAnswer.length, false);
+    results = createArray(correctAnswer.length, [false]);
+    return {
+      errorMessage,
+      errors,
+      results,
+      skipped: true,
+      correctCount,
+      total,
+      userResponseSubpart,
+      categoriesResult: recordCategoriesResult,
+    };
+  }
+
   //check user answer type
   const userAnswerParse = trueFalseAnswerSchema
     .refine(
@@ -404,7 +516,6 @@ function trueFalseGrade(
     errors = userAnswerParse.error.errors.map((value) => value.message);
   } else {
     const userAnswer = userAnswerParse.data;
-    isSkipped = userAnswerParse.data.length === 0;
     if (isSkipped) {
       results = createArray(correctAnswer.length, [false]);
       recordCategoriesResult = createArray(correctAnswer.length, false);
@@ -423,7 +534,7 @@ function trueFalseGrade(
     errorMessage,
     errors,
     results,
-    // isSkipped,
+    skipped: false,
     correctCount,
     total,
     userResponseSubpart,
@@ -445,16 +556,8 @@ export async function handlePreQuiz(
   } = params;
   //store value to put in database
   const isCorrect = results.every((result) => result.every((val) => val));
-  const userFirstAnsCountPromsie = prisma.questionAnswerFirstTime.count({
-    where: {
-      userId: userId,
-      quizQuestionId: quizQuestion.quizQuestionId,
-      quizType: "PRE_QUIZ",
-    },
-    take: 1,
-  });
 
-  const userGradesPromise = prisma.grade.findMany({
+  const userGrades = await prisma.grade.findMany({
     where: {
       userId: userId,
       quizQuestionId: quizQuestion.quizQuestionId,
@@ -464,11 +567,6 @@ export async function handlePreQuiz(
       id: true,
     },
   });
-  const [userFirsAnsCount, userGrades] = await Promise.all([
-    userFirstAnsCountPromsie,
-    userGradesPromise,
-  ]);
-  const isFirstAns = userFirsAnsCount === 0;
 
   //create user response
   const gradeCreatePromsie = prisma.grade.create({
@@ -504,41 +602,55 @@ export async function handlePreQuiz(
     gradeCreatePromsie,
     gradeDeletePromsie,
   ]);
-
-  if (isFirstAns) {
-    const userFirstAnsPromise = prisma.questionAnswerFirstTime.create({
-      data: {
-        quizType: "PRE_QUIZ",
-        gradeId: gradeCreate.id,
-        userId: userId,
-        quizQuestionId: quizQuestion.quizQuestionId,
-        correct: isCorrect,
-      },
-    });
-    const updateQuizResultPromise = prisma.quizResult.update({
-      where: {
-        id: quizResult.id,
-      },
-      data: {
-        score: { increment: score },
-        totalCorrectAnswer: { increment: isCorrect ? 1 : 0 },
-      },
-    });
-    await Promise.all([userFirstAnsPromise, updateQuizResultPromise]);
-  }
+  //store user first answer
+  await insertIfNotExists<
+    "QuestionAnswerFirstTime",
+    Prisma.QuestionAnswerFirstTimeWhereInput,
+    Prisma.QuestionAnswerFirstTimeUncheckedCreateInput
+  >({
+    model: "QuestionAnswerFirstTime",
+    where: {
+      userId: userId,
+      quizQuestionId: quizQuestion.quizQuestionId,
+      quizType: "PRE_QUIZ",
+    },
+    data: {
+      gradeId: gradeCreate.id,
+      quizType: "PRE_QUIZ",
+      userId: userId,
+      quizQuestionId: quizQuestion.quizQuestionId,
+      correct: isCorrect,
+    },
+  });
   return {
     errorRes: null,
     success: true,
   };
 }
 
+interface aggregateGradeI {
+  _id: {
+    $oid: string;
+  };
+  firstGrade: {
+    totalScore: number;
+    maxScore: number;
+    createAt: {
+      $date: string;
+    };
+    questionType: QuestionType;
+    categoriesResult: boolean[];
+  };
+}
+
 /**
- * Lock pre-quiz which not allow user to use pre-quiz type
  * calculate to get total score and max score
  * calculate how many question user answer right first time
+ * create Grade for other quiz question that user not answered
+ * Update total score, total question, maxScore, and amount of questions user answer right
  */
-export async function lockPreQuiz(userId: string, storyId: string) {
-  //get pre-quiz result and lock if exist
+export async function updatePreQuiz(userId: string, storyId: string) {
+  //get pre-quiz result
   const preQuizResult = await prisma.quizResult.findFirst({
     where: {
       storyId,
@@ -549,7 +661,13 @@ export async function lockPreQuiz(userId: string, storyId: string) {
       id: true,
     },
   });
-  if (!preQuizResult) return;
+  //no update is needed if not exist
+  if (!preQuizResult) {
+    return {
+      errorRes: null,
+      success: true,
+    };
+  }
   //get all quiz question
   const quizzesPromise = prisma.quizQuestion.findMany({
     where: {
@@ -558,32 +676,169 @@ export async function lockPreQuiz(userId: string, storyId: string) {
     },
     select: {
       id: true,
+      maxScore: true,
     },
   });
-  //get all grade quiz
+
+  //get all grades
   const gradesPromise = prisma.grade.aggregateRaw({
     pipeline: [
       {
         $match: { quizResultId: { $oid: preQuizResult.id } },
+      },
+      {
+        $sort: { createAt: 1 },
+      },
+      {
         $group: {
           _id: "$quizQuestionId",
-          grades: {
-            $push: { totalScore: "$totalScore", maxScore: "$maxScore" },
+          firstGrade: {
+            $first: {
+              totalScore: "$totalScore",
+              createAt: "$createAt",
+              questionType: "$questionType",
+              categoriesResult: "$categoriesResult",
+            },
           },
         },
       },
     ],
   });
-  const [grades, quizzes] = await Promise.all([gradesPromise, quizzesPromise]);
-  console.log(grades);
-  console.log(quizzes);
+  const fetchResult = await Promise.all([gradesPromise, quizzesPromise]);
+  const grades = fetchResult[0] as unknown as aggregateGradeI[];
+  const quizzes = fetchResult[1];
 
-  //check which quiz question not submited
-  //create new grade model from missing quiz and mark skipped
-  //create user first ans from missing quiz
-  //create quiz story first score
+  if (!grades) {
+    return {
+      errorRes: null,
+      success: true,
+    };
+  }
+
+  //convert grades array into grade map with key is quiz question id
+  //this help check if user answered quiz question
+  const gradesMap = new Map<string, aggregateGradeI>();
+  grades.forEach((grade) => gradesMap.set(grade._id.$oid, grade));
+
+  const totalQuestion = quizzes.length;
+  const maxScore = quizzes.reduce(
+    (total, current) => total + current.maxScore,
+    0,
+  );
+
+  //record how many question user anwer correctly and how many score user get
+  let totalCorrectAnswer = 0;
+  let totalScore = 0;
+
+  //array of quiz that user haven't answer
+  const quizRemain: typeof quizzes = [];
+  //check each quiz if user answered
+  //if grade exist mean user answered quiz -> add to total record
+  //else add in quiz remain to create grade later
+  quizzes.forEach((quiz) => {
+    const quizGraded = gradesMap.get(quiz.id);
+    if (quizGraded) {
+      const firstGraded = quizGraded.firstGrade;
+      const isCorrect = firstGraded.categoriesResult.every((result) => result);
+      totalCorrectAnswer += isCorrect ? 1 : 0;
+      totalScore += firstGraded.totalScore;
+    } else {
+      quizRemain.push(quiz);
+    }
+  });
+  const subpartRemainPrommise = quizRemain.map((quiz) =>
+    getSubpartByQuizQuestion(quiz.id, true, true),
+  );
+
+  const subpartRemain = await Promise.all(subpartRemainPrommise);
+  //if subpart not exist, then not create grade
+  const gradeResultArr = subpartRemain.map((subpart) => {
+    if (!subpart) return null;
+    return grading({ ...subpart, userAnswer: null });
+  });
+
+  //create remaining missing grade and mark as skipped
+  const dataCreateMissingGrades: Prisma.GradeUncheckedCreateInput[] = [];
+  gradeResultArr.forEach((grade, index) => {
+    const subpart = subpartRemain[index];
+    if (subpart && grade) {
+      dataCreateMissingGrades.push({
+        questionType: subpart.questionType,
+        userId: userId,
+        quizQuestionId: subpart.quizQuestionId,
+        userAns: [],
+        result: grade.results.map((result) =>
+          result.map((isCorrect) => (isCorrect ? "true" : "false")).join(" "),
+        ),
+        categoriesResult: grade.categoriesResult,
+        totalScore: 0,
+        maxScore: subpart.maxScore,
+        quizResultId: preQuizResult.id,
+        skipped: true,
+      });
+    }
+  });
+  const createGrades = await Promise.all(
+    dataCreateMissingGrades.map((data) =>
+      prisma.grade.create({ data, select: { id: true, quizQuestionId: true } }),
+    ),
+  );
+  //create remaining missing user first time answer of pre quiz
+  const createQuestionAnsFirstTimePromise =
+    prisma.questionAnswerFirstTime.createMany({
+      data: createGrades.map((gradeCreated) => ({
+        quizQuestionId: gradeCreated.quizQuestionId,
+        correct: false,
+        quizType: "PRE_QUIZ",
+        userId,
+        gradeId: gradeCreated.id,
+      })),
+    });
+  const createQuizScoreFirstTimePromise = prisma.storyQuizScoreFirstTime.create(
+    {
+      data: {
+        userId,
+        storyId: storyId,
+        totalCorrectAnswer,
+        quizType: "PRE_QUIZ",
+        quizResultId: preQuizResult.id,
+      },
+      select: {
+        id: true,
+      },
+    },
+  );
+  //lock prequiz
+  const updatePreQuizPromise = prisma.quizResult.update({
+    where: {
+      id: preQuizResult.id,
+    },
+    data: {
+      maxScore,
+      score: totalScore,
+      totalQuestion,
+      totalCorrectAnswer,
+      skippedQuestion: quizRemain.length !== 0,
+      lastUpdate: new Date(),
+    },
+    select: {
+      id: true,
+    },
+  });
+  await Promise.all([
+    createQuestionAnsFirstTimePromise,
+    updatePreQuizPromise,
+    createQuizScoreFirstTimePromise,
+  ]);
+
+  return {
+    errorRes: null,
+    success: true,
+  };
 }
 
+//grade the post-quiz
+//if pre-quiz-result exist, then update the pre-quiz-result then grade post-quiz
 export async function handlePostQuiz(
   params: handleQuizI,
 ): Promise<handleQuizReturnI> {
@@ -612,11 +867,20 @@ export async function handlePostQuiz(
       success: false,
     };
   }
-  //if post-quiz-result used is false, set to true
-  //lock pre-quiz which not allow to use pre-quiz type anymore
-  // if (!quizResult.used) {
-  //   lockPreQuiz(userId, quizResult.storyId);
-  // }
+  //if post-quiz-result used is false, mean pre quiz result is not updated
+  //update pre-quiz
+  if (!quizResult.used) {
+    const { errorRes, success } = await updatePreQuiz(
+      userId,
+      quizResult.storyId,
+    );
+    if (!success) {
+      return {
+        errorRes,
+        success,
+      };
+    }
+  }
 
   //if user is logged in create and store user respone
   //declare value to put in database
@@ -653,6 +917,7 @@ export async function handlePostQuiz(
       ),
       totalCorrectAnswer: { increment: isCorrect ? 1 : 0 },
       lastUpdate: new Date(),
+      used: true,
     },
   });
 
@@ -666,6 +931,7 @@ export async function handlePostQuiz(
       ? {
           userId: userId,
           quizQuestionId: quizQuestion.quizQuestionId,
+          quizType: "POST_QUIZ",
         }
       : null,
     data: {
@@ -676,24 +942,16 @@ export async function handlePostQuiz(
       gradeId: grade.id,
     },
   });
+
   //create dummy promise
-  let userFirstScorePromise = new Promise((resolve, reject) => {
+  let userFirstScorePromise = new Promise((resolve) => {
     resolve(0);
   });
-
   if (isLastQuestion) {
-    const gradeIds = await prisma.grade.findMany({
-      where: {
-        quizResultId: quizResult.id,
-      },
-      select: {
-        id: true,
-      },
-    });
     userFirstScorePromise = insertIfNotExists<
       "StoryQuizScoreFirstTime",
       Prisma.StoryQuizScoreFirstTimeWhereInput,
-      Prisma.StoryQuizScoreFirstTimeCreateInput
+      Prisma.StoryQuizScoreFirstTimeUncheckedCreateInput
     >({
       model: "StoryQuizScoreFirstTime",
       where: userId
@@ -705,13 +963,14 @@ export async function handlePostQuiz(
         : null,
       data: {
         quizType: "POST_QUIZ",
-        gradeIds: gradeIds ? gradeIds.map(({ id }) => id) : [],
         userId,
         storyId: quizResult.storyId,
         totalCorrectAnswer: quizResult.totalCorrectAnswer + (isCorrect ? 1 : 0),
+        quizResultId: quizResult.id,
       },
     });
   }
+
   await Promise.all([
     updatequizResultPromise,
     userFirstAnsPromise,
@@ -751,9 +1010,6 @@ export async function insertIfNotExists<
     const result = await modelDelegate.create({
       data,
     });
-    /* eslint-enable @typescript-eslint/no-unsafe-assignment */
-    /* eslint-enable @typescript-eslint/no-unsafe-call */
-    /* eslint-enable @typescript-eslint/no-unsafe-member-access */
     return {
       data: result,
       inserted: true,
@@ -763,10 +1019,13 @@ export async function insertIfNotExists<
       data: null,
       inserted: false,
     };
+    /* eslint-enable @typescript-eslint/no-unsafe-assignment */
+    /* eslint-enable @typescript-eslint/no-unsafe-call */
+    /* eslint-enable @typescript-eslint/no-unsafe-member-access */
   }
 }
-function createArray(length: number, defaultValue: any) {
-  let arr = [];
+function createArray<T>(length: number, defaultValue: T) {
+  const arr: T[] = [];
   for (let i = 0; i < length; i++) {
     arr.push(defaultValue);
   }

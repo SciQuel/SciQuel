@@ -1,3 +1,5 @@
+import React from "react";
+
 export default function Layout(props: {
   greeting: React.ReactNode;
   quiz_history: React.ReactNode;

@@ -1,39 +1,59 @@
 import prisma from "@/lib/prisma";
-import { QuestionType, QuizType } from "@prisma/client";
-import { getSubpart, getSubpartReturnType } from "../tools/SubpartQuiz";
+import { type QuestionType, type QuizType } from "@prisma/client";
+import { getSubpartById } from "../tools/SubpartQuiz";
 
-interface convertAnsI {
-  userAns: string[];
-  questionType: QuestionType;
-  correctAns: string[] | boolean[] | number | number[];
-}
-interface QuizRecordI {
-  storyId: string;
-  maxScore: number;
-  quizQuestionIdRemain: string[];
-  grade: {
-    quizQuestionId: string;
-    quizQuestion: {
-      subpartId: string;
-      questionType: QuestionType;
+type AnsConvertType = (
+  userAns: string[],
+  correctAns: number | string[] | boolean[] | number[],
+) => {
+  userAnswerConvert: number | number[] | number[][] | boolean[] | null;
+  correctAnswerConvert: number | number[] | number[][] | boolean[];
+};
+type getQuizResultType = Awaited<ReturnType<typeof getQuizResult>>;
+const ANS_CONVERT: { [key in QuestionType]: AnsConvertType } = {
+  COMPLEX_MATCHING: (userAns, correctAns) => ({
+    correctAnswerConvert: stringArrToNumberArr(correctAns as string[]),
+    userAnswerConvert:
+      userAns.length !== 0 ? stringArrToNumberArr(userAns) : null,
+  }),
+  DIRECT_MATCHING: (userAns, correctAns) => ({
+    correctAnswerConvert: correctAns as number[],
+    userAnswerConvert:
+      userAns.length !== 0 ? stringArrToNumberArr(userAns, false) : null,
+  }),
+  MULTIPLE_CHOICE: (userAns, correctAns) => ({
+    correctAnswerConvert: correctAns as number,
+    userAnswerConvert: userAns.length !== 0 ? Number(userAns[0]) : null,
+  }),
+  TRUE_FALSE: (userAns, correctAns) => ({
+    correctAnswerConvert: correctAns as boolean[],
+    userAnswerConvert:
+      userAns.length !== 0 ? stringArrToBoolArr(userAns) : null,
+  }),
+  SELECT_ALL: (userAns, correctAns) => {
+    const correctAnswerConvert: number[] = [];
+    const userAnswerConvert: number[] | null = userAns.length !== 0 ? [] : null;
+    (correctAns as boolean[]).forEach((choosed, index) => {
+      if (choosed) correctAnswerConvert.push(index);
+    });
+    if (userAnswerConvert) {
+      userAns.forEach((choosed, index) => {
+        if (choosed === "true") userAnswerConvert.push(index);
+      });
+    }
+    return {
+      correctAnswerConvert,
+      userAnswerConvert,
     };
-    totalScore: number;
-    maxScore: number;
-    userAns: string[];
-    result: string[];
-    categoriesResult: boolean[];
-  }[];
-  quizType: QuizType;
-  score: number;
-  createAt: Date;
-}
-
+  },
+};
 //get quiz result of user
 //if no storyId is included,
 //get the recent or first quizResult of userId base on all the stories
 export async function getQuizResult(
   type: "RECENT" | "FIRST",
   userId: string,
+  quizType: QuizType,
   storyId?: string | null,
 ) {
   const quizResult = await prisma.quizResult.findFirst({
@@ -41,9 +61,11 @@ export async function getQuizResult(
       ? {
           userId: userId,
           storyId: storyId,
+          quizType,
         }
       : {
           userId: userId,
+          quizType,
         },
     select: {
       storyId: true,
@@ -67,6 +89,7 @@ export async function getQuizResult(
           maxScore: true,
           userAns: true,
           result: true,
+          createAt: true,
         },
       },
     },
@@ -76,7 +99,7 @@ export async function getQuizResult(
   });
   const subpartArrPromise =
     quizResult?.grade.map(({ quizQuestion }) =>
-      getSubpart(quizQuestion, true),
+      getSubpartById(quizQuestion, true, true),
     ) || [];
   const subpartArr = await Promise.all(subpartArrPromise);
   return {
@@ -86,10 +109,8 @@ export async function getQuizResult(
 }
 
 //create quizResult resposne for the front-end
-export function createResponseQuizResult(
-  quizResult: QuizRecordI | null,
-  subpartArr: getSubpartReturnType[],
-) {
+export function createResponseQuizResult(param: getQuizResultType) {
+  const { quizResult, subpartArr } = param;
   if (!quizResult) return null;
   const {
     grade,
@@ -101,14 +122,21 @@ export function createResponseQuizResult(
     quizQuestionIdRemain,
   } = quizResult;
   const resultAns = grade.map(({ userAns, quizQuestion }, index) => {
-    const result = convertAns({
+    //if subpart not exist return null
+    if (!subpartArr[index]) {
+      return {
+        userAnsConvert: null,
+        correctAnsConvert: null,
+      };
+    }
+    //convert answer from databse for front end
+    const result = ANS_CONVERT[quizQuestion.questionType](
       userAns,
-      questionType: quizQuestion.questionType,
-      correctAns: subpartArr[index].correctAnswer,
-    });
+      subpartArr[index].correctAnswer,
+    );
     return {
-      userAnsConvert: result.userAnswer,
-      correctAnsConvert: result.correctAnswer,
+      userAnsConvert: result.userAnswerConvert,
+      correctAnsConvert: result.correctAnswerConvert,
     };
   });
   return {
@@ -126,6 +154,7 @@ export function createResponseQuizResult(
         result,
         categoriesResult,
         quizQuestion,
+        createAt,
       } = curGrade;
       return {
         total_score: totalScore,
@@ -134,54 +163,21 @@ export function createResponseQuizResult(
         user_answer: resultAns[index].userAnsConvert,
         correct_answer: resultAns[index].correctAnsConvert,
         categories_result: categoriesResult,
-        questions: subpartArr[index].questions,
-        question: subpartArr[index].question,
-        content_category: subpartArr[index].contentCategory,
-        options: subpartArr[index].options,
-        categories: subpartArr[index].categories,
+        questions: subpartArr[index]?.questions,
+        question: subpartArr[index]?.question,
+        content_category: subpartArr[index]?.contentCategory,
+        options: subpartArr[index]?.options,
+        categories: subpartArr[index]?.categories,
         result: stringArrToBool2DArr(result),
         question_type: quizQuestion.questionType,
+        create_at: createAt,
       };
     }),
   };
 }
 
-function convertAns(params: convertAnsI) {
-  const { userAns, correctAns, questionType } = params;
-  let userAnswerConvert: any = [];
-  let correctAnswerConvert: any = [];
-  if (questionType === "COMPLEX_MATCHING") {
-    userAnswerConvert = stringArrToNumberArr(userAns);
-    correctAnswerConvert = stringArrToNumberArr(correctAns as string[]);
-  } else if (questionType === "DIRECT_MATCHING") {
-    correctAnswerConvert = correctAns as number[];
-    userAnswerConvert = stringArrToNumberArr(userAns, false);
-  } else if (questionType === "MULTIPLE_CHOICE") {
-    correctAnswerConvert = correctAns as number;
-    userAnswerConvert = Number(userAns[0]);
-  } else if (questionType === "SELECT_ALL") {
-    (correctAns as boolean[]).forEach((choosed, index) => {
-      if (choosed) correctAnswerConvert.push(index);
-    });
-    userAns.forEach((choosed, index) => {
-      if (choosed === "true") userAnswerConvert.push(index);
-    });
-  } else if (questionType === "TRUE_FALSE") {
-    correctAnswerConvert = correctAns as boolean[];
-    userAnswerConvert = stringArrToBoolArr(userAns);
-  } else {
-    throw new Error(
-      "Unknown type " + String(questionType) + " in convertAns function",
-    );
-  }
-  return {
-    userAnswer: userAnswerConvert,
-    correctAnswer: correctAnswerConvert,
-  };
-}
-
 function stringArrToNumberArr(arr: string[], is2D = true) {
-  let numberArr: number[][] | number[] = [];
+  const numberArr: number[][] | number[] = [];
   for (let i = 0; i < arr.length; i++) {
     const str = arr[i];
     if (is2D) (numberArr as number[][]).push([]);
@@ -197,14 +193,14 @@ function stringArrToNumberArr(arr: string[], is2D = true) {
   return numberArr;
 }
 function stringArrToBoolArr(arr: string[]) {
-  let boolArr: boolean[] = [];
-  arr.forEach((str, index) => {
+  const boolArr: boolean[] = [];
+  arr.forEach((str) => {
     boolArr.push(str === "true");
   });
   return boolArr;
 }
 function stringArrToBool2DArr(arr: string[]) {
-  let bool2DArr: boolean[][] = [];
+  const bool2DArr: boolean[][] = [];
   arr.forEach((str, index) => {
     bool2DArr.push([]);
     str.split(" ").forEach((strBool) => {

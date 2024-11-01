@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import prisma from "@/lib/prisma";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 import { checkValidInput } from "../../tools/SchemaTool";
 import User from "../../tools/User";
 import {
@@ -7,10 +9,14 @@ import {
   quizQuestionIdSchema,
   storyIdSchema,
 } from "../schema";
-import { createQuizSubpart, getQuizzes } from "../tools";
+import {
+  createEditQuizResponse,
+  createQuizSubpart,
+  getQuizzes,
+} from "../tools";
 
 /**
- * Create a new quiz for story
+ * Create a new quiz for story.
  */
 export async function POST(req: NextRequest) {
   try {
@@ -22,8 +28,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     //check valid body param
-    const requestBody = await req.json();
-    const parseResult = checkValidInput([modifiedQuizSchema], [requestBody]);
+    const parseResult = checkValidInput(
+      [modifiedQuizSchema],
+      [await req.json()],
+    );
     if (parseResult.nextErrorReponse) {
       return parseResult.nextErrorReponse;
     }
@@ -69,7 +77,10 @@ export async function POST(req: NextRequest) {
         quizQuestionId: createdQuiz.id,
       },
     });
-
+    const additionResponse = createEditQuizResponse(
+      quizData.question_type,
+      subpart,
+    );
     return new NextResponse(
       JSON.stringify({
         message: "Quiz question created",
@@ -77,12 +88,7 @@ export async function POST(req: NextRequest) {
         question_type: createdQuiz.questionType,
         quiz_question_id: createdQuiz.id,
         max_score: createdQuiz.maxScore,
-        questions: subpart.questions,
-        correct_answer: subpart.correctAnswer,
-        question: subpart.question,
-        content_category: subpart.contentCategory,
-        options: subpart.options,
-        categories: subpart.categories,
+        ...additionResponse,
       }),
     );
   } catch (error) {
@@ -220,13 +226,15 @@ export async function PATCH(req: NextRequest) {
       questionType: quizQuestionCheck.questionType,
       subpartData: quizData.subpart,
     });
-    const subpart = await subpartPromise;
-
     if (errorMessage) {
       return NextResponse.json(
         { error: errorMessage, errors },
         { status: 400 },
       );
+    }
+    const subpart = await subpartPromise;
+    if (!subpart) {
+      throw new Error("Unable to update quiz question");
     }
     const createQuizQuestionPromise = prisma.quizQuestion.create({
       data: {
@@ -256,6 +264,10 @@ export async function PATCH(req: NextRequest) {
         updateType: "UPDATE",
       },
     });
+    const additionResponse = createEditQuizResponse(
+      quizData.question_type,
+      subpart,
+    );
     return new NextResponse(
       JSON.stringify({
         message: "Quiz question updated",
@@ -263,12 +275,7 @@ export async function PATCH(req: NextRequest) {
         question_type: quizQuestion.questionType,
         quiz_question_id: quizQuestion.id,
         max_score: quizQuestion.maxScore,
-        questions: subpart.questions,
-        correct_answer: subpart.correctAnswer,
-        question: subpart.question,
-        content_category: subpart.contentCategory,
-        options: subpart.options,
-        categories: subpart.categories,
+        ...additionResponse,
       }),
     );
   } catch (error) {

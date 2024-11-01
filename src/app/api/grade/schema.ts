@@ -32,9 +32,14 @@ export const postSchema = z.object({
     .regex(/^[0-9a-f]{24}$/, {
       message: "quiz_question_id must be a valid ObjectId",
     }),
-  answer: z.any({
-    required_error: "answer is required",
-  }),
+  // number | number[] | boolean[] | null
+  answer: z
+    .union([z.number(), z.array(z.number()), z.array(z.boolean())], {
+      invalid_type_error:
+        "answer must be number, number[], boolean[], or null depend on question type",
+      required_error: "answer is required in body",
+    })
+    .nullable(),
 });
 export const complexMatchingAnswerSchema = z
   .array(
