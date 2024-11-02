@@ -132,7 +132,9 @@ export function createResponseQuizResult(param: getQuizResultType) {
     //convert answer from databse for front end
     const result = ANS_CONVERT[quizQuestion.questionType](
       userAns,
-      subpartArr[index].correctAnswer,
+      //unusual error where subpartArr[index] can be null even it had been checked
+      //'!' symbol fix the issue
+      subpartArr[index]!.correctAnswer,
     );
     return {
       userAnsConvert: result.userAnswerConvert,
