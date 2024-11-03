@@ -50,13 +50,15 @@ async function uploadFile(file: File) {
 
 // TODO: need to prevent file upload before prisma errors (how?)
 // checks for duplicate uploads, user permissions?
+//need to check the role of current user, should be editor
 export async function POST(req: NextResponse) {
   const parsedData = postDefinitionSchema.safeParse(await req.formData());
   console.log(parsedData);
   if (!parsedData.success) {
     console.error(parsedData.error);
-    return NextResponse.json({ error: "Bad Request" }, { status: 400 });
+    return NextResponse.json({ error: parsedData.error }, { status: 400 });
   }
+
   try {
     const newDefinition = await prisma.dictionaryDefinition.create({
       data: {
@@ -65,11 +67,15 @@ export async function POST(req: NextResponse) {
         exampleSentences: parsedData.data.exampleSentences, // Need to fix 'any' warning (zod)
         alternativeSpellings: parsedData.data.alternativeSpellings, // Need to fix 'any' warning (zod)
         storyId: parsedData.data.storyId,
-        wordAudioUrl: await uploadFile(parsedData.data.wordAudio as File),
-        definitionAudioUrl: await uploadFile(
-          parsedData.data.definitionAudio as File,
-        ),
-        useAudioUrl: await uploadFile(parsedData.data.usageAudio as File),
+        wordAudioUrl: parsedData.data.wordAudio
+          ? await uploadFile(parsedData.data.wordAudio as File)
+          : undefined,
+        definitionAudioUrl: parsedData.data.definitionAudio
+          ? await uploadFile(parsedData.data.definitionAudio as File)
+          : undefined,
+        useAudioUrl: parsedData.data.usageAudio
+          ? await uploadFile(parsedData.data.usageAudio as File)
+          : undefined,
       },
     });
     return NextResponse.json({ data: newDefinition }, { status: 201 });
