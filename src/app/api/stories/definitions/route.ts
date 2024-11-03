@@ -71,14 +71,14 @@ export async function POST(req: NextResponse) {
   }
 
   //check authentication.
-  // const session = await getServerSession();
-  // const user = await prisma.user.findUnique({
-  //   where: { email: session?.user.email ?? "noemail" },
-  // });
+  const session = await getServerSession();
+  const user = await prisma.user.findUnique({
+    where: { email: session?.user.email ?? "noemail" },
+  });
 
-  // if (!user || !user.roles.includes("EDITOR")) {
-  //   return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  // }
+  if (!user || !user.roles.includes("EDITOR")) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
 
   try {
     const newDefinition = await prisma.dictionaryDefinition.create({
