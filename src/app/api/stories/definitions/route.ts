@@ -1,7 +1,9 @@
+import { randomUUID } from "crypto";
 import { parse } from "path";
 import prisma from "@/lib/prisma";
 import { Storage } from "@google-cloud/storage";
 import { type DictionaryDefinition } from "@prisma/client";
+import { getServerSession } from "next-auth";
 import { NextResponse, type NextRequest } from "next/server";
 import {
   getDefinitionSchema,
@@ -34,8 +36,17 @@ interface UpdateData {
 // TODO: definitely need more checks for file types, size, etc
 async function uploadFile(file: File) {
   try {
+    console.log(file.type);
+    //to check if the file is audio and the size is less than 10MB
+    if (file.type !== "video/mp4") {
+      throw new Error("Invalid file type. Please upload an audio file");
+    } else if (file.size > 10000000) {
+      throw new Error(
+        "File size too large. Please upload a file less than 10MB",
+      );
+    }
     const buffer = await file.arrayBuffer();
-    const fileName = `${Date.now()}-${file.name}`;
+    const fileName = `${randomUUID()}-${file.name}`;
     const fileUrl = `https://storage.googleapis.com/sciquel-dictionary-audio/${fileName}`;
     await storage
       .bucket("sciquel-dictionary-audio")
@@ -58,6 +69,16 @@ export async function POST(req: NextResponse) {
     console.error(parsedData.error);
     return NextResponse.json({ error: parsedData.error }, { status: 400 });
   }
+
+  //check authentication.
+  // const session = await getServerSession();
+  // const user = await prisma.user.findUnique({
+  //   where: { email: session?.user.email ?? "noemail" },
+  // });
+
+  // if (!user || !user.roles.includes("EDITOR")) {
+  //   return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  // }
 
   try {
     const newDefinition = await prisma.dictionaryDefinition.create({
