@@ -61,7 +61,7 @@ interface handleQuizI {
 
 interface gradingParam {
   questionType: QuestionType;
-  userAnswer: number | boolean[] | number[] | null;
+  userAnswer: number | boolean[] | number[] | number[][] | null;
   correctAnswer: number | boolean[] | string[] | number[];
   maxScore: number;
 }
@@ -74,6 +74,7 @@ interface resultGradeI {
   skipped: boolean;
   userResponseSubpart: string[];
   categoriesResult?: boolean[];
+  correctOptionCounts?: number[];
 }
 interface handleQuizReturnI {
   errorRes: NextResponse | null;
@@ -96,6 +97,7 @@ export function grading(params: gradingParam) {
     userResponseSubpart,
     categoriesResult,
     results,
+    correctOptionCounts,
   } = resultGrade;
   const score = Math.floor(maxScore * (correctCount / total));
   return {
@@ -105,6 +107,7 @@ export function grading(params: gradingParam) {
     score,
     userResponseSubpart,
     categoriesResult,
+    correctOptionCounts,
   };
 }
 
@@ -230,7 +233,8 @@ function complexMatchingGrade(
   //convert correctAnswer to map to check answer
   //Map converted in a form map[`categoryIndex optionIndex`])
   const { map, countCorrectAnswerRemain } = convertMapCheck(correctAnswer);
-
+  //make a copy
+  const correctOptionCounts = [...countCorrectAnswerRemain];
   //use to check if all option in each categories is all answeared correctly
   const recordCategoriesResult: boolean[] = [];
   const userResponseSubpart: string[] = [];
@@ -296,6 +300,7 @@ function complexMatchingGrade(
     skipped: false,
     userResponseSubpart,
     categoriesResult: recordCategoriesResult,
+    correctOptionCounts,
   };
 }
 
