@@ -5,7 +5,7 @@ import { getServerSession } from "next-auth";
 export type QuizHistory = {
   story: {
     title: string;
-    tags: StoryTopic[];
+    topics: StoryTopic[];
   };
   quizType: QuizType;
   score: number;

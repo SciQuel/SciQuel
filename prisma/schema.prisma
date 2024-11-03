@@ -89,7 +89,7 @@ model Story {
   summary      String
   summaryColor String
 
-  tags StoryTopic[]
+  topics StoryTopic[]
 
   storyContributions StoryContribution[]
   storyContent       StoryContent[]
@@ -103,6 +103,7 @@ model Story {
   publishedAt     DateTime
   updatedAt       DateTime
   quizQuestions   QuizQuestion[]
+  comments        Comment[]
   staffPick       StaffPick?
   StaffPickRecord StaffPickRecord[]
 }
@@ -157,13 +158,16 @@ model User {
 
   authVerifications AuthVerification[]
 
-  roles   UserRole[]   @default([])
-  quizzes QuizResult[]
+  roles    UserRole[] @default([])
+  comments Comment[]
 
   contactUpdates       ContactMessage[]
-  firstQuizResult      Json?
-  mostRecentQuizResult Json?
-  StaffPickRecord      StaffPickRecord[]
+  firstQuizRecord      Json?
+  mostRecentQuizRecord Json?
+
+  commentLikes    CommentLike[]
+  StaffPickRecord StaffPickRecord[]
+  QuizResult      QuizResult[]
 }
 
 model AuthVerification {
@@ -422,6 +426,38 @@ model QuizQuestionRecord {
 
   @@index([quizQuestionId])
   @@index([createAt])
+}
+
+model Comment {
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  content         String
+  likeNum         Int       @default(0)
+  quote           String?
+  parentCommentId String?   @db.ObjectId
+  parentComment   Comment?  @relation("CommentReplies", fields: [parentCommentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  replies         Comment[] @relation("CommentReplies")
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @db.ObjectId
+
+  story   Story  @relation(fields: [storyId], references: [id], onDelete: NoAction)
+  storyId String @db.ObjectId
+
+  likes CommentLike[]
+  read  Boolean       @default(false)
+}
+
+model CommentLike {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  comment   Comment  @relation(fields: [commentId], references: [id])
+  commentId String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String   @db.ObjectId
+  createdAt DateTime @default(now())
+
+  @@unique([commentId, userId])
 }
 
 model StaffPick {
