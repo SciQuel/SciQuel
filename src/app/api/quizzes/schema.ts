@@ -87,12 +87,23 @@ export const complexMatchingSubpartSchema = z
   })
   //check if all length array are equal
   .refine(
-    ({ categories, correct_answers, explanations, content_category }) =>
-      isAllEqual([categories, correct_answers, explanations, content_category]),
+    ({ categories, correct_answers, content_category }) =>
+      isAllEqual([categories, correct_answers, content_category]),
     {
       message:
-        "The length array of categories, correct_answers, content_category  and explanations, must be all equal",
+        "The length array of categories, correct_answers, content_category must be all equal",
     },
+  )
+  .refine(
+    ({ categories, explanations }) =>
+      explanations.length === categories.length + 1,
+    ({ categories, explanations }) => ({
+      message: `The length array of explanations must be ${
+        categories.length + 1
+      } only found ${
+        explanations.length
+      }. 1 each in categories and 1 for the options holder`,
+    }),
   )
   //check if there is duplicate index answer
   .refine(({ correct_answers }) => !isDuplicate(correct_answers), {
