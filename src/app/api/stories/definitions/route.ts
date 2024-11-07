@@ -33,19 +33,28 @@ interface UpdateData {
   [key: string]: any;
 }
 
-// TODO: definitely need more checks for file types, size, etc
 async function uploadFile(file: File) {
   try {
     console.log(file.type);
     //to check if the file is audio and the size is less than 10MB
     if (file.type !== "video/mp4") {
+      // return NextResponse.json(
+      //   { error: "Invalid file type. Please upload an audio file" },
+      //   { status: 400 },
+      // );
       throw new Error("Invalid file type. Please upload an audio file");
     } else if (file.size > 10000000) {
+      // return NextResponse.json(
+      //   { error: "File size too large. Please upload a file less than 10MB" },
+      //   { status: 400 },
+      // );
+
       throw new Error(
         "File size too large. Please upload a file less than 10MB",
       );
     }
     const buffer = await file.arrayBuffer();
+    //generate a random file name to prevent duplicate file names
     const fileName = `${randomUUID()}-${file.name}`;
     const fileUrl = `https://storage.googleapis.com/sciquel-dictionary-audio/${fileName}`;
     await storage
@@ -59,9 +68,6 @@ async function uploadFile(file: File) {
   }
 }
 
-// TODO: need to prevent file upload before prisma errors (how?)
-// checks for duplicate uploads, user permissions?
-//need to check the role of current user, should be editor
 export async function POST(req: NextResponse) {
   const parsedData = postDefinitionSchema.safeParse(await req.formData());
   console.log(parsedData);
@@ -70,7 +76,7 @@ export async function POST(req: NextResponse) {
     return NextResponse.json({ error: parsedData.error }, { status: 400 });
   }
 
-  //check authentication.
+  // check authentication: only editors can add definitions
   const session = await getServerSession();
   const user = await prisma.user.findUnique({
     where: { email: session?.user.email ?? "noemail" },
@@ -101,6 +107,7 @@ export async function POST(req: NextResponse) {
     });
     return NextResponse.json({ data: newDefinition }, { status: 201 });
   } catch (error) {
+    console.error("Failed to create dictionary definition", error);
     return NextResponse.json(
       { error: "Database operation failed" },
       { status: 500 },
