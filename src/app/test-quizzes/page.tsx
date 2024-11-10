@@ -391,7 +391,7 @@ export default function TestBackEnd() {
             Quiz Question Id:
             <input
               className="inputTest"
-              value={objectQuiz[dummyDataCreate[indexQuizType].question_type]}
+              value={quizQuestionId}
               onChange={(e) => setQuizQuestionId(e.target.value)}
             />
           </label>
@@ -462,9 +462,8 @@ export default function TestBackEnd() {
             Quiz Question Id:
             <input
               className="inputTest"
-              value={
-                objectQuiz[dummyDataCreate[indexQuizType].question_type] || ""
-              }
+              onChange={(e) => setQuizQuestionId(e.target.value)}
+              value={quizQuestionId}
             />
           </label>
         </div>
