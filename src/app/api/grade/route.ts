@@ -118,12 +118,14 @@ export async function POST(req: NextRequest) {
         score,
         max_score: quizQuestion.maxScore,
         categories_result: categoriesResult,
+        //extra option count for complex matching
         correct_option_counts: correctOptionCounts,
         //extra explanation for complex matching
         option_explanation:
           quizQuestion.questionType === "COMPLEX_MATCHING"
             ? quizQuestion.explanations?.[quizQuestion.explanations.length - 1]
             : undefined,
+
         results: results.map((value, index) => {
           return {
             correct: value,

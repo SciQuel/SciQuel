@@ -73,7 +73,7 @@ interface resultGradeI {
   total: number;
   skipped: boolean;
   userResponseSubpart: string[];
-  categoriesResult?: boolean[];
+  categoriesResult: boolean[];
   correctOptionCounts?: number[];
 }
 interface handleQuizReturnI {
@@ -374,6 +374,7 @@ function multipleChoiceGrade(
   const results: boolean[][] = [];
   const isSkipped = userAnswer === null;
   let correctCount = 0;
+  let isCorrect = false;
   const total = 1;
   const userResponseSubpart: string[] = [];
 
@@ -388,6 +389,7 @@ function multipleChoiceGrade(
       total,
       skipped: true,
       userResponseSubpart,
+      categoriesResult: [false],
     };
   }
 
@@ -398,7 +400,7 @@ function multipleChoiceGrade(
     errors = userAnswerParse.error.errors.map((value) => value.message);
   } else {
     const number = userAnswerParse.data;
-    const isCorrect = number === correctAnswer;
+    isCorrect = number === correctAnswer;
     correctCount += isCorrect ? 1 : 0;
     results.push([isCorrect]);
     userResponseSubpart.push(number.toString());
@@ -411,6 +413,7 @@ function multipleChoiceGrade(
     total,
     skipped: false,
     userResponseSubpart,
+    categoriesResult: [isCorrect],
   };
 }
 
@@ -437,6 +440,7 @@ function selectAllGrade(
       correctCount,
       total,
       userResponseSubpart,
+      categoriesResult: [false],
     };
   }
 
@@ -466,6 +470,10 @@ function selectAllGrade(
       }
     }
   }
+  //check if all user answers are correct
+  const allCorrect =
+    results.length != 0 &&
+    results.every((result) => result.every((value) => value));
   return {
     errorMessage,
     errors,
@@ -474,6 +482,7 @@ function selectAllGrade(
     skipped: false,
     total,
     userResponseSubpart,
+    categoriesResult: [allCorrect],
   };
 }
 

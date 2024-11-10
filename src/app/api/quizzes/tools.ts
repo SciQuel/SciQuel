@@ -43,6 +43,8 @@ interface getQuizzesParamI {
     used: boolean;
   } | null;
   storyId: string;
+  includeAnswer?: boolean;
+  includeExplain?: boolean;
 }
 
 //parameter interface for handleQuizResult function
@@ -323,7 +325,12 @@ function createMultipleChoiceSubpart(subpartData: any) {
 
 //get quizzes and subpart of quizzes
 export async function getQuizzes(params: getQuizzesParamI) {
-  const { quizResult, storyId } = params;
+  const {
+    quizResult,
+    storyId,
+    includeAnswer = false,
+    includeExplain = false,
+  } = params;
 
   //if there is quiz result to record and user did answer some post-quiz question
   //get the remain quiz question
@@ -355,7 +362,7 @@ export async function getQuizzes(params: getQuizzesParamI) {
 
   //get subpart
   const subpartPromises = quizzes.map((quiz) =>
-    getSubpartById(quiz, false, false),
+    getSubpartById(quiz, includeAnswer, includeExplain),
   );
   const subparts = await Promise.all(subpartPromises);
   return {
