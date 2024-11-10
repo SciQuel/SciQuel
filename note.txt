@@ -1,1 +1,0 @@
-seperate in calculate percentage of skipped and not skipped quiz
