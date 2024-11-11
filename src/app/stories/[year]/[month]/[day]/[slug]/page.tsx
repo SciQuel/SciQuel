@@ -8,7 +8,7 @@ import { type GetStoriesResult } from "@/app/api/stories/route";
 // import StoryParagraph from "@/components/story-components/markdown/StoryParagraph";
 import { PrintModeProvider } from "@/components/story-components/PrintContext";
 import { StoryScrollProvider } from "@/components/story-components/scroll/ScrollProvider";
-import ShareLinks from "@/components/story-components/ShareLinks";
+// import ShareLinks from "@/components/story-components/ShareLinks";
 import StoryCredits from "@/components/story-components/StoryCredits";
 import StoryFooter from "@/components/story-components/StoryFooter";
 import { tagUser } from "@/lib/cache";
