@@ -1,6 +1,5 @@
 import { type StoryTopic, type StoryType } from "@prisma/client";
 import Image from "next/image";
-import Link from "next/link";
 import React from "react";
 import InnerCard from "./InnerCard";
 

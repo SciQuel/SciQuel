@@ -84,7 +84,7 @@ async function getStories(topic: string) {
       return null;
     }
 
-    const data: GetStoriesResult = await res.json();
+    const data = (await res.json()) as GetStoriesResult;
 
     data.stories = data.stories.map((story) => ({
       ...story,

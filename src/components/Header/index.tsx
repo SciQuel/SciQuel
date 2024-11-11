@@ -1,12 +1,10 @@
 /* eslint-disable isaacscript/complete-sentences-jsdoc */
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import SciquelLogo from "../../../public/assets/images/logoWithNameOnSide.svg";
-import logo from "./logo.png";
 import MainSubHeader from "./MainSubHeader";
 // import ProfileButton from "./ProfileButton";
 import Search from "./search.svg";
@@ -29,7 +27,7 @@ export default function Header() {
   };
 
   return (
-    <header className=" font-quicksand sticky top-0 z-20 flex h-16 w-screen flex-col text-white ">
+    <header className=" sticky top-0 z-20 flex h-16 w-screen flex-col font-quicksand text-white ">
       <div className="absolute z-20 h-16  w-full bg-sciquelTeal">
         <div
           className="pointer-events-none absolute top-0 flex h-16 w-full items-center justify-end px-6 py-2
