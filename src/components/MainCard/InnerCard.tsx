@@ -33,7 +33,7 @@ export default function InnerCard({
             {mediaType}
           </p>
         </div>
-        <h2 className="my-2 text-left font-alegreyaSansSC text-3xl font-bold text-sciquelDarkText lg:text-white">
+        <h2 className="my-2 text-left font-customTest text-3xl font-bold text-sciquelDarkText lg:text-white">
           {title}
         </h2>
         <h3 className="line-clamp-3 text-left text-xl text-sciquelDarkText transition-all duration-300 lg:text-white">

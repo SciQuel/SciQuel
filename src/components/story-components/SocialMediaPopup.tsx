@@ -90,7 +90,7 @@ const SocialMediaPopup = forwardRef(
               {/* this is the arrow, created from a rotated div */}
             </div>
             <div
-              className={`relative flex w-full flex-col-reverse sm:p-2 xl:left-8 xl:flex-row xl:px-0 xl:py-2`}
+              className={`relative flex w-full flex-col-reverse sm:p-2 xl:left-8 xl:flex-row xl:px-0 xl:py-3`}
             >
               {/* button + side-popout container */}
               <div

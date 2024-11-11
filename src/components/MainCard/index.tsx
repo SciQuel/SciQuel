@@ -27,7 +27,7 @@ export default function MainCard({
 }: Props) {
   return (
     <div
-      className={`relative z-0 mx-auto cursor-pointer 
+      className={`relative z-0 mx-auto 
                   pt-12 text-center
                   transition-all duration-300
                    hover:scale-[1.03] xs:min-w-[300px] md:h-[70vh] md:pt-0  xl:min-h-[300px]`}

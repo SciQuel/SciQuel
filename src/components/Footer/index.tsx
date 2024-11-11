@@ -15,7 +15,7 @@ export default function Footer() {
                 type="email"
                 className="h-9 w-full rounded-l-lg rounded-r-lg border border-solid
                  bg-sciquelFooter pl-2 text-xs font-medium
-                  text-sciquelFooter placeholder-white outline-1
+                  text-white placeholder-white outline-1
                    sm:w-64 sm:rounded-r-none"
                 placeholder="team@sciquel.org"
                 pattern="^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"
