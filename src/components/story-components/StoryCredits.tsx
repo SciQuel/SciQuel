@@ -372,7 +372,10 @@ export default function StoryCredits({ story }: Props) {
       <p className="my-0 w-screen px-2 py-0 font-sourceSerif4">
         {story.storyContent[0].coverImgCredit ?? " "}
       </p>
-      <div className=" -mt-6 justify-self-start pt-0 font-sourceSerif4">
+      <div className=" -mt-6 grid grid-cols-1 justify-self-start pt-0 font-sourceSerif4 xl:grid-cols-[1fr_768px_1fr] ">
+        <div className="relative mt-[3.7rem] hidden justify-end px-[1.45rem] xl:flex">
+          <ShareLinks />
+        </div>
         <div className="relative mx-0 mt-0 flex w-screen flex-col px-2 md:mx-auto md:w-[768px] md:px-0">
           <div className="pointer-events-none relative top-7 flex flex-1 flex-row flex-wrap justify-start xl:hidden">
             <ShareLinks />
