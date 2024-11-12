@@ -12,7 +12,7 @@ export default function ContactUsPage() {
         Interested in contributing to our reporting? <br />
       </p>
       <p className="mb-4 w-full text-xl  ">
-        If so, contact us at sciquel.team@gmail.com or fill out the form below.
+        If so, contact us at team@sciquel.org or fill out the form below.
       </p>
       <ContactForm endpoint="/api/contact/get_involved" />
     </div>

@@ -74,7 +74,15 @@ export default function ContactDashboard() {
       if (unopenedRes.status == 200) {
         const unopenedData = unopenedRes.data as GetContactResult;
 
-        setUnopened((state) => state.concat(unopenedData.messages));
+        setUnopened((state) => {
+          const newState = [...state];
+          unopenedData.messages.forEach((message) => {
+            if (!state.some((element) => element.id == message.id)) {
+              newState.push(message);
+            }
+          });
+          return newState;
+        });
         setUnopenedTotal(unopenedData.total_count);
       }
     } catch (err) {
@@ -93,7 +101,16 @@ export default function ContactDashboard() {
     if (inProgressRes.status == 200) {
       const inProgressData = inProgressRes.data as GetContactResult;
 
-      setInProgress((state) => state.concat(inProgressData.messages));
+      setInProgress((state) => {
+        const newState = [...state];
+        inProgressData.messages.forEach((message) => {
+          if (!state.some((element) => element.id == message.id)) {
+            newState.push(message);
+          }
+        });
+        return newState;
+      });
+
       setInProgressTotal(inProgressData.total_count);
     }
   }
@@ -110,7 +127,16 @@ export default function ContactDashboard() {
       if (closedRes.status == 200) {
         const closedData = closedRes.data as GetContactResult;
 
-        setClosed((state) => state.concat(closedData.messages));
+        setClosed((state) => {
+          const newState = [...state];
+          closedData.messages.forEach((message) => {
+            if (!state.some((element) => element.id == message.id)) {
+              newState.push(message);
+            }
+          });
+          return newState;
+        });
+
         setClosedTotal(closedData.total_count);
       }
     } catch (err) {

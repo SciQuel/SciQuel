@@ -10,34 +10,49 @@ export default function MainSubHeader() {
   const heightRef = useRef<HTMLDivElement>(null);
   // const [totalTop, setTotalTop] = useState("-50px");
   return (
-    <div
+    <nav
       ref={heightRef}
       className={`absolute top-0 flex h-fit w-screen flex-row flex-wrap bg-sciquelTeal  text-center text-white transition-transform duration-500 lg:px-40
       ${isScrollingUp ? "translate-y-16" : "-translate-y-16"}`}
     >
-      <div className="grow cursor-pointer px-4 py-2 hover:bg-sciquelHover">
-        <Link href="/stories/latest">LATEST</Link>
-      </div>
+      <Link
+        className="grow cursor-pointer px-4 py-2 hover:bg-sciquelHover"
+        href="/stories/latest"
+      >
+        LATEST
+      </Link>
 
-      <div className="grow cursor-pointer px-4 py-2 hover:bg-sciquelHover">
-        <Link href="/stories/read">READ</Link>
-      </div>
+      <Link
+        className="grow cursor-pointer px-4 py-2 hover:bg-sciquelHover"
+        href="/stories/read"
+      >
+        READ
+      </Link>
 
       {/* <div className="grow cursor-pointer py-2 hover:bg-sciquelHover">
         <Topic />
       </div> */}
 
-      <div className="grow cursor-pointer px-4 py-2 hover:bg-sciquelHover">
-        <Link href="/about">ABOUT</Link>
-      </div>
+      <Link
+        className="grow cursor-pointer px-4 py-2 hover:bg-sciquelHover"
+        href="/about"
+      >
+        ABOUT
+      </Link>
 
-      <div className="grow cursor-pointer px-4 py-2 hover:bg-sciquelHover">
-        <Link href="/leave-feedback">CONTACT</Link>
-      </div>
+      <Link
+        className="grow cursor-pointer px-4 py-2 hover:bg-sciquelHover"
+        href="/leave-feedback"
+      >
+        CONTACT
+      </Link>
 
-      <div className="grow cursor-pointer px-4 py-2 hover:bg-sciquelHover">
-        <Link href="/get-involved">GET INVOLVED</Link>
-      </div>
-    </div>
+      <Link
+        className="grow cursor-pointer px-4 py-2 hover:bg-sciquelHover"
+        href="/get-involved"
+      >
+        GET INVOLVED
+      </Link>
+    </nav>
   );
 }

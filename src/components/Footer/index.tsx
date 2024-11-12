@@ -4,7 +4,7 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <div className=" z-10 flex w-full flex-col bg-sciquelFooter text-white ">
+    <div className=" z-10 flex w-full flex-col bg-sciquelFooter font-quicksand text-white ">
       <div className="relative">
         <div className=" flex w-full flex-row justify-center gap-4 px-4 pb-4 align-middle xs:justify-between sm:px-10 sm:pt-4">
           <div className="hidden flex-col gap-4 pt-4 xs:flex">
@@ -15,11 +15,11 @@ export default function Footer() {
                 type="email"
                 className="h-9 w-full rounded-l-lg rounded-r-lg border border-solid
                  bg-sciquelFooter pl-2 text-xs font-medium
-                  text-sciquelFooter placeholder-white outline-1
+                  text-white placeholder-white outline-1
                    sm:w-64 sm:rounded-r-none"
                 placeholder="team@sciquel.org"
                 pattern="^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"
-                title="Please provide a valid email"
+                title="Please provide a valid email to subscribe to our newsletter"
                 required
               />
               <button
