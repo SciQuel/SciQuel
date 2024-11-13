@@ -1,8 +1,11 @@
+
 import { type Contribution } from "@/app/editor/(full-page)/story/info/StoryInfoEditorPageClient";
+import MarkdownEditorStoryInfo from "@/components/EditorDashboard/MarkdownEditorStoryInfo";
 import Form from "@/components/Form";
 import { Popover, Transition } from "@headlessui/react";
 import {
-  PlusCircleIcon
+  PlusCircleIcon,
+  PlusIcon,
 } from "@heroicons/react/20/solid";
 import {
   type Category,
@@ -11,18 +14,16 @@ import {
   type StoryType,
   type Subtopic,
 } from "@prisma/client";
-import axios from "axios";
-import clsx from "clsx";
 import { useRouter } from "next/navigation";
 import {
   Fragment,
+  useRef,
   useState,
   useTransition,
   type Dispatch,
   type SetStateAction,
 } from "react";
-
-// Import custom form components
+import { updateWholeArticle } from "./actions/actions";
 import ArticleContent from "./formComponents/articleContent";
 import ArticleDate from "./formComponents/articleDate";
 import ArticleSlug from "./formComponents/articleSlug";
@@ -33,23 +34,24 @@ import ArticleTitleColor from "./formComponents/articleTitleColor";
 import ArticleType from "./formComponents/articleType";
 import BackgroundImageForm from "./formComponents/backgroundImageForm";
 import ContributorSearch from "./formComponents/ContributorSearch/ContributorSearch";
+import NewSubject from "./formComponents/subjectComponents/newSubject";
+import NewSubtopic from "./formComponents/subtopicComponents/newSubtopic";
 import { getData } from "./StoryFormFunc";
 import Tags from "./Tags";
+import clsx from "clsx";
 
-// Define the structure for a Section
 interface Section {
   type: string;
   content: string;
 }
 
-// Define the Props interface for the StoryInfoForm component
 interface Props {
   id?: string;
   title: string;
   setTitle: (value: string) => void;
   summary?: string;
   setSummary: (value: string) => void;
-  image?: File | string | null;  //add File | string | null
+  image?: File | string | null;  //add File | string | null;
   setImage: (image: File | string | null) => void ; //add File | string | null
   caption?: string;
   setCaption: (value: string) => void;
@@ -63,7 +65,7 @@ interface Props {
   setTitleColor: (value: string) => void;
   summaryColor?: string;
   setSummaryColor: (value: string) => void;
-  topics: StoryTopic;
+  topics: StoryTopic[];
   setTopics: (value: StoryTopic) => void;
   storyType: string;
   setStoryType: (value: string) => void;
@@ -75,7 +77,6 @@ interface Props {
   setContributors: Dispatch<SetStateAction<Contribution[]>>;
 }
 
-// StoryInfoForm component
 export default function StoryInfoForm({
   id: storyId,
   title: initialTitle,
@@ -90,11 +91,14 @@ export default function StoryInfoForm({
   setSlug: initialSetSlug,
   date: initialDate,
   setDate: initialSetDate,
-  body,
+  body: initialBody,
+  setBody: initialSetBody,
   titleColor: initialTitleColor,
   setTitleColor: initialSetTitleColor,
   summaryColor: initialSummaryColor,
   setSummaryColor: initialSetSummaryColor,
+  topics: initialTopics,
+  setTopics: initialSetTopics,
   storyType: initialStoryType,
   setStoryType: initialSetStoryType,
   sections,
@@ -104,50 +108,47 @@ export default function StoryInfoForm({
   contributors = [],
   setContributors,
 }: Props) {
-  // Router to navigate
+  // Creating states
+  const fileUploadRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
-  // States to manage form data
-  const [summary, setSummary] = useState<string>(initialSummary ?? "");
-  const [image, setImage] = useState<File | string | null>(initialImage ?? null);
-  const [caption, setCaption] = useState<string>(initialCaption ?? "");
+  const [summary, setSummary] = useState(initialSummary ?? "");
+  const [image, setImage] = useState<File | string | null>(
+    initialImage ?? null,
+  );
 
+  const [caption, setCaption] = useState(initialCaption ?? "");
+  // const [date, setDate] = useState<Date | null>(initialDate ?? null);
+  const [dirty, setDirty] = useState(false);
+  const [loading, startTransition] = useTransition();
 
-  const [dirty, setDirty] = useState(false); // Track form dirty state
-  const [loading, startTransition] = useTransition(); // Loading state for async actions
-
-  // Set default values for storyType and category
   const [storyType, setStoryType] = useState<StoryType>("DIGEST");
   const [category, setCategory] = useState<Category>("ARTICLE");
 
-  // Title and summary colors
   const [titleColor, setTitleColor] = useState(initialTitleColor ?? "");
   const [summaryColor, setSummaryColor] = useState(initialSummaryColor ?? "");
 
-  // Slug
-  const [slug, setSlug] = useState(initialSlug ?? "");
+  // const [slug, setSlug] = useState(initialSlug ?? "");
 
-  // Queries for filtering topics, subtopics, and subjects
   const [topicQuery, setTopicQuery] = useState("");
   const [subtopicQuery, setSubtopicQuery] = useState("");
   const [subjectQuery, setSubjectQuery] = useState("");
 
-  // Topic, subtopic, and subject states
   const [topics, setTopics] = useState<StoryTopic[]>([]);
   const [subtopics, setSubtopics] = useState<Subtopic[]>([]);
   const [subjects, setSubjects] = useState<GeneralSubject[]>([]);
 
-  // Fetch predefined data for topics, subtopics, and subjects
   const data = getData();
+
   const [topiclist, setTopicList] = useState(data.topics);
   const [subtopiclist, setSubtopicList] = useState(data.subtopics);
   const [subjectlist, setSubjectList] = useState(data.subjects);
 
-  // Modals for adding new subtopics and subjects
-  const [isCreateSubtopicModalOpen, setIsCreateSubtopicModalOpen] = useState(false);
+  const [isCreateSubtopicModalOpen, setIsCreateSubtopicModalOpen] =
+    useState(false);
+  const [isCreateSubjectModalOpen, setIsCreateSubjectModalOpen] =
+    useState(false);
 
-
-  // Filtered lists for topics, subtopics, and subjects based on queries
   const filteredTopicList =
     topicQuery === ""
       ? topiclist
@@ -177,15 +178,8 @@ export default function StoryInfoForm({
             .replace(/\s+/g, "")
             .includes(subjectQuery.toLowerCase().replace(/\s+/g, "")),
         );
-/**
- * Adds a topic tag to the selected list or removes it if already selected.
- * 
- * @param {any} id - The ID of the topic to be added or removed.
- * 
- * This function iterates through the `topiclist`, checking if the topic matches the given `id`.
- * If the topic is already selected (i.e., `checked === true`), it removes the tag by calling `removeTopicTag(id)`.
- * If the topic is not selected, it adds the topic to the `topics` array and updates its `checked` status to true in the `topiclist`.
- */
+
+  //add a topic tag
   const addTopic = (id: any) => {
     topiclist.forEach((item: any) => {
       if (item.data.id == id) {
@@ -204,15 +198,7 @@ export default function StoryInfoForm({
     });
   };
 
-/**
- * Adds a subtopic tag to the selected list or removes it if already selected.
- * 
- * @param {any} id - The ID of the subtopic to be added or removed.
- * 
- * Similar to the `addTopic` function, this iterates through `subtopiclist` to find the matching subtopic by ID.
- * If the subtopic is already selected (i.e., `checked === true`), it removes the tag by calling `removeSubtopicTag(id)`.
- * If not, it adds the subtopic to the `subtopics` array and updates its `checked` status to true in the `subtopiclist`.
- */
+  // add a subtopic tag
   const addSubtopic = (id: any) => {
     subtopiclist.forEach((item: any) => {
       if (item.id == id) {
@@ -230,23 +216,13 @@ export default function StoryInfoForm({
     });
   };
 
-  /**
- * Adds a subject tag to the selected list or removes it if already selected.
- * 
- * @param {any} id - The ID of the subject to be added or removed.
- * 
- * This function works similarly to `addTopic` and `addSubtopic`. It checks whether the subject tag is already
- * selected. If it is, the subject is removed by calling `removeSubjectTag(id)`. If not, it adds the subject
- * to the `subjects` array and marks it as checked in the `subjectlist`.
- */
+  // add a subject tag
   const addSubject = (id: any) => {
     subjectlist.forEach((item: any) => {
-      // If subtopic is already checked, uncheck and remove it
       if (item.id == id) {
         if (item.checked == true) {
           removeSubjectTag(id);
         } else {
-          // Add subtopic and mark it as checked
           setSubjects((subjects) => [...subjects, item]);
           setSubjectList(
             subjectlist.map((item: any) =>
@@ -258,15 +234,7 @@ export default function StoryInfoForm({
     });
   };
 
-/**
- * Removes a topic tag from the selected list and optionally removes all related subtopic and subject tags.
- * 
- * @param {number} id - The ID of the topic to be removed.
- * 
- * This function filters out the topic from the `topics` array based on the given `id`.
- * It also unchecks the topic in `topiclist` by setting `checked` to false. If all topics are removed (i.e., `topics.length === 1`),
- * the function resets all subtopic and subject tags to their initial state.
- */
+  // remove a topic tag
   const removeTopicTag = (id: number) => {
     setTopics(topics.filter((item: any) => item.data.id != id));
     setTopicList(
@@ -284,26 +252,17 @@ export default function StoryInfoForm({
     }
   };
 
-      /**
-     * Removes a tag from the subtopic list.
-     * @param {number} id - The ID of the tag to be removed.
-     */
-    const removeSubtopicTag = (id: number) => {
-      // Remove the selected subtopic from the list of current subtopics
-      setSubtopics(subtopics.filter((item: any) => item.id != id));
+  // remove a subtopic tag
+  const removeSubtopicTag = (id: number) => {
+    setSubtopics(subtopics.filter((item: any) => item.id != id));
+    setSubtopicList(
+      subtopiclist.map((item: any) =>
+        item.id == id ? { ...item, checked: false } : item,
+      ),
+    );
+  };
 
-      // Mark the removed subtopic as unchecked in the main subtopic list
-      setSubtopicList(
-        subtopiclist.map((item: any) =>
-          item.id == id ? { ...item, checked: false } : item,  // Update the checked status
-        ),
-      );
-    };
-
-    /**
-     * Removes a tag from the subject list.
-     * @param {number} id - The ID of the tag to be removed.
-     */
+  // remove a subject tag
   const removeSubjectTag = (id: number) => {
     setSubjects(subjects.filter((item: any) => item.id != id));
     setSubjectList(
@@ -341,88 +300,87 @@ export default function StoryInfoForm({
     setSubjects((subjects) => [...subjects, newSubject]);
   };
 
-
+  console.log(typeof initialTopics[0]);
 
   // Div outlining what the left half of the page actually looks like
-// Main form component for creating or editing an article
-return (
-  <div className="flex flex-col gap-2">
-    {/* Contributor Search Component */}
-    <ContributorSearch
-      contributions={contributors}
-      setContributions={setContributors}
-      storyId={storyId ?? ""}
-    />
-
-    {/* Main Form Handling for Article */}
-    <Form
-      onSubmit={(e) => {
-        e.preventDefault();
-        startTransition(async () => {
-          try {
-            // Only submit if the form is dirty (changes have been made)
-            if (dirty) {
-              const formData = new FormData();
-
-              // Add fields to formData for submission
-              if (storyId) formData.append("id", storyId);
-              formData.append("title", initialTitle);
-              formData.append("summary", summary);
-              formData.append("body", body);
-              formData.append("imageCaption", caption);
-              formData.append("storyType", storyType);
-              formData.append("category", "ARTICLE");
-              formData.append("titleColor", titleColor);
-              formData.append("summaryColor", summaryColor);
-              formData.append("slug", slug);
-              formData.append("topics", JSON.stringify(topics));
-              formData.append("subtopics", "[]");
-              formData.append("generalSubjects", "[]");
-              formData.append("staffPicks", "false");
-              formData.append("contributions", JSON.stringify(contributors));
-
-              // Handle image upload logic
-              if (image !== null) {
-                if (typeof image === "string") {
-                  formData.append("imageUrl", image);
-                } else {
-                  const file = new File([image], image.name);
-                  formData.append("image", file, file.name);
-                }
-              }
-
-              // API call to submit story
-              const story = await axios.put<{ id: string }>(
-                "/api/stories",
-                formData,
-                {
-                  headers: { "Content-Type": "multipart/form-data" },
-                }
-              );
-              const nextPage = `/editor/story/contributors?id=${story.data.id}`;
-              router.push(nextPage);
-            } else {
-              router.push(`/editor/story/contributors?id=${storyId}`);
-            }
-          } catch (err) {
-            console.error(err);
-          }
-        });
-      }}
-    >
-      {/* Story Title Input */}
-      <ArticleTitle
-        value={initialTitle}
-        onChange={initialSetTitle}
-        indicateRequired
-        required
-        disabled={loading}
-        setDirty={setDirty}
+  return (
+    <div className="flex flex-col gap-2">
+      <ContributorSearch
+        contributions={contributors}
+        setContributions={setContributors}
+        storyId={storyId ?? ""}
       />
+      <Form
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (!storyId) {
+            return;
+          }
+  
+          const form = new FormData();
+          form.append("id", storyId);
+          form.append("summary", summary ?? "");
+          if (image) {
+            if (typeof image == "string") {
+              form.append("imageUrl", image);
+            } else if (image instanceof File) {
+              form.append("image", image);
+              form.append("newImageName", "test-image-name");
+            }
+          }
+  
+          form.append("imageCaption", initialCaption ?? "");
+          form.append("storyType", storyType);
+          form.append("category", category);
+          form.append("title", initialTitle);
+          form.append("titleColor", initialTitleColor ?? "#000000");
+          form.append("summaryColor", initialSummaryColor ?? "#000000");
+          form.append("slug", initialSlug ?? "");
+          form.append(
+            "topics",
+            `[${initialTopics
+              .map(
+                (topic, index) =>
+                  `"${topic}"${index < initialTopics.length - 1 ? ", " : ""}`
+              )
+              .toString()}]`
+          );
+  
+          if (typeof initialDate == "string") {
+            form.append("publishDate", initialDate);
+          } else if (initialDate instanceof Date) {
+            form.append("publishDate", initialDate.toISOString());
+          }
+  
+          form.append("content", initialBody);
+          form.append("footer", "");
+          console.log(form);
+  
+          updateWholeArticle(form)
+            .then((result) => {
+              console.log(result);
+            })
+            .catch((err) => {
+              console.error(err);
+            });
+        }}
+      >
 
-      {/* Story Summary Input */}
+  
+
+        {/* STORY TITLE FORM INPUT */}
+        <ArticleTitle
+          value={initialTitle}
+          onChange={initialSetTitle}
+          indicateRequired
+          required
+          disabled={loading}
+          setDirty={setDirty}
+        />
+
+      {/* SUMMARY INPUT */}
       <ArticleSummary
-        value={initialSummary ?? ""} // Fallback to empty string if undefined
+        value={initialSummary ?? ""}
         onChange={initialSetSummary}
         required
         indicateRequired
@@ -430,217 +388,396 @@ return (
         setDirty={setDirty}
       />
 
-      {/* Publish Date Input */}
-      <ArticleDate
-        value={initialDate ?? null} // Fallback to null if undefined
-        onChange={initialSetDate}
-        required
-        indicateRequired
-        disabled={loading}
-        setDirty={setDirty}
-      />
+        {/* PUBLISH DATE FORM */}
+        <ArticleDate
+          value={initialDate ?? null}
+          onChange={initialSetDate}
+          required
+          indicateRequired
+          disabled={loading}
+          setDirty={setDirty}
+        />
 
-      {/* Title Color Input */}
-      <ArticleTitleColor
-        value={initialTitleColor ?? ""} // Fallback to empty string if undefined
-        onChange={initialSetTitleColor}
-        setDirty={setDirty}
-      />
-
-      {/* Summary Color Input */}
-      <ArticleSummaryColor
-        value={initialSummaryColor ?? ""} // Fallback to empty string if undefined
-        onChange={initialSetSummaryColor}
-        setDirty={setDirty}
-      />
-
-      {/* Article Content Sections (text/body) */}
-      <ArticleContent
-        sections={sections}
-        onSectionChange={onSectionChange}
-        onAddSection={onAddSection}
-        onDeleteSection={onDeleteSection}
-      />
-
-      {/* Article Slug (URL path) */}
-      <ArticleSlug
-        value={initialSlug ?? ""} // Fallback to empty string if undefined
-        onChange={initialSetSlug}
-        required
-        indicateRequired
-        disabled={loading}
-        setDirty={setDirty}
-      />
-
-      {/* Background Image & Caption Inputs */}
-      <BackgroundImageForm
-        image={initialImage ?? null} // Handle undefined by defaulting to null
-        setImage={initialSetImage}    // Ensure this function handles string | File | null
-        caption={initialCaption ?? ""} // Handle undefined by defaulting to an empty string
-        setCaption={initialSetCaption} // Ensure this function handles string
-        loading={loading}
-        setDirty={setDirty}
-      />
-
-      {/* Story Type Dropdown */}
-      <ArticleType
-        value={initialStoryType}
-        onChange={initialSetStoryType}
-        setDirty={setDirty}
-      />
-
-      {/* Category Dropdown */}
-      <label className="my-5 block">
-        Category
-        <select
-          className={clsx(
-            `peer w-full rounded-md px-2 py-1 placeholder-transparent outline outline-1
-            outline-gray-200 hover:outline-sciquelTeal focus:outline-2 focus:outline-sciquelTeal focus:ring-0`,
-            "disabled:pointer-events-none disabled:bg-gray-50 disabled:text-gray-300"
-          )}
-          value={category}
-          onChange={(e) => {
-            setDirty(true);
-            setCategory(e.target.value as Category);
-          }}
-        >
-          <option value="ARTICLE">Article</option>
-          <option value="PODCAST">Podcast</option>
-        </select>
-      </label>
-
-      {/* Topic Selection with Popover & Checkbox */}
-      <div className="grid w-1/3 grid-cols-1 gap-2">
-        <div className="flex flex-row justify-items-center gap-4">
-          <label>Select topic</label>
-          <Popover className="relative">
-            <Popover.Button>
-              <PlusCircleIcon className="plus-circle-icon h-6" aria-hidden="true" />
-            </Popover.Button>
-
-            <Transition as={Fragment} leave="transition ease-in duration-100">
-              <Popover.Panel className="absolute z-10 w-max">
-                <div className="border-1 grid grid-cols-1 gap-1 rounded-md border bg-white px-1 py-1 shadow-lg">
-                  <input
-                    placeholder="Search a topic"
-                    className="custom_input_sm"
-                    onChange={(e) => setTopicQuery(e.target.value)}
-                  />
-                  <ul className="max-h-[170px] overflow-y-auto px-1">
-                    {filteredTopicList.length === 0 && topicQuery !== "" ? (
-                      <div className="py-2 text-center text-sm text-gray-700">
-                        No results found.
-                      </div>
-                    ) : (
-                      filteredTopicList.map((topic: any) => (
-                        <li>
-                          <div className="flex items-center py-2">
-                            <input
-                              type="checkbox"
-                              defaultChecked={topic.checked}
-                              onChange={() => addTopic(topic.data.id)}
-                              className="h-4 w-4 cursor-pointer rounded border-gray-300 bg-gray-100"
-                            />
-                            <label className="ml-2 text-sm font-medium text-gray-900">
-                              {topic.data.name}
-                            </label>
-                          </div>
-                        </li>
-                      ))
-                    )}
-                  </ul>
-                </div>
-              </Popover.Panel>
-            </Transition>
-          </Popover>
+        {/* ARTICLE TEXT BODY INPUT */}
+        <div className="h-[250px]">
+          Article Body
+          <MarkdownEditorStoryInfo
+            initialValue={initialBody}
+            onChange={initialSetBody}
+            id={storyId}
+            style={{ height: "100%" }}
+          />
         </div>
 
-        {/* Display selected topics as tags */}
-        <div className="flex flex-row flex-wrap gap-3">
-          {topics.map((topic: any) => (
-            <Tags
-              key={topic.data.id}
-              id={topic.data.id}
-              name={topic.data.name}
-              color={topic.data.color}
-              removeTag={removeTopicTag}
-            />
+        <ArticleTitleColor
+          value={initialTitleColor ?? ""} // Fallback to empty string if undefined}
+          onChange={initialSetTitleColor}
+          setDirty={setDirty}
+          // value={initialSetTitleColor}
+        ></ArticleTitleColor>
+
+        <ArticleSummaryColor
+          value={initialSummaryColor ?? ""} // Fallback to empty string if undefined}
+          onChange={initialSetSummaryColor}
+          setDirty={setDirty}
+        ></ArticleSummaryColor>
+
+        {/* ARTICLE CONTENT BOXES */}
+        <ArticleContent
+          sections={sections}
+          onSectionChange={onSectionChange}
+          onAddSection={onAddSection}
+          onDeleteSection={onDeleteSection}
+        />
+
+        {/* ADDING CONTRIBUTORS FORM */}
+        {/* <NewContributor addContributor={addContributor} />
+        <ul className="list-disc pl-5">
+          {contributors.map((contributor, index) => (
+            <li key={index}>{contributor}</li>
           ))}
-        </div>
-      </div>
+        </ul> */}
 
-      {/* Subtopic Selection */}
-      <div className="my-5 grid w-1/3 grid-cols-1 gap-2">
-        <div className="flex flex-row justify-items-center gap-4">
-          <label>Select subtopic</label>
-          <Popover className="relative">
-            <Popover.Button>
-              <PlusCircleIcon className="plus-circle-icon h-6" aria-hidden="true" />
-            </Popover.Button>
+        {/* SLUG FORM */}
+        <ArticleSlug
+          value={initialSlug ?? ""} // Fallback to empty string if undefined}
+          onChange={initialSetSlug}
+          required
+          indicateRequired
+          disabled={loading}
+          setDirty={setDirty}
+        />
 
-            <Transition as={Fragment} leave="transition ease-in duration-100">
-              <Popover.Panel className="absolute z-10 w-max">
-                <div className="border-1 grid grid-cols-1 gap-1 rounded-md border bg-white px-1 py-1 shadow-lg">
-                  <input
-                    placeholder="Search a subtopic"
-                    className="custom_input_sm"
-                    onChange={(e) => setSubtopicQuery(e.target.value)}
-                  />
-                  <ul className="max-h-[170px] overflow-y-auto px-1">
-                    {filteredSubtopicList.length === 0 && subtopicQuery !== "" ? (
-                      <div className="py-2 text-center text-sm">
-                        <span className="block cursor-default pb-1 text-gray-700">
+        {/* BACKGROUND IMAGE FORM */}
+        <BackgroundImageForm
+          image={initialImage ?? null} // Handle undefined by defaulting to null}
+          setImage={initialSetImage}
+          caption={initialCaption ?? ""} // Handle undefined by defaulting to an empty string}
+          setCaption={initialSetCaption}
+          loading={loading}
+          setDirty={setDirty}
+        />
+
+        {/* STORY TYPE INPUT */}
+        <ArticleType
+          value={initialStoryType}
+          onChange={initialSetStoryType}
+          setDirty={setDirty}
+        ></ArticleType>
+
+        {/* CATEGORY DROPDOWN */}
+        <label className="my-5 block">
+          Category
+          <select
+            className={clsx(
+              `peer w-full rounded-md px-2 py-1 placeholder-transparent outline outline-1
+                outline-gray-200 hover:outline-sciquelTeal focus:outline-2 focus:outline-sciquelTeal
+                focus:ring-0`,
+              "disabled:pointer-events-none disabled:bg-gray-50 disabled:text-gray-300",
+            )}
+            value={category}
+            onChange={(e) => {
+              setDirty(true);
+              setCategory(e.target.value as Category);
+            }}
+          >
+              <option value="" disabled selected hidden>
+              Select a story type
+              </option>
+            <option value="ARTICLE">Article</option>
+            <option value="PODCAST">Podcast</option>
+          </select>
+        </label>
+
+        {/* SELECT TOPIC (+) BUTTON */}
+        <div className="grid w-1/3 grid-cols-1 gap-2">
+          <div className="flex flex-row justify-items-center gap-4">
+            <label>Select topic</label>
+            <Popover className="relative">
+              <Popover.Button>
+                <PlusCircleIcon
+                  className="plus-circle-icon h-6"
+                  aria-hidden="true"
+                />
+              </Popover.Button>
+
+              <Transition
+                as={Fragment}
+                leave="transition ease-in duration-100"
+                leaveFrom="opacity-100"
+                leaveTo="opacity-0"
+                afterLeave={() => setTopicQuery("")}
+              >
+                <Popover.Panel className="absolute z-10 w-max">
+                  <div className="border-1 grid grid-cols-1 gap-1 rounded-md border bg-white px-1 py-1 shadow-lg shadow-gray-400">
+                    <input
+                      placeholder="Search a topic"
+                      className="custom_input_sm"
+                      onChange={(event) => setTopicQuery(event.target.value)}
+                    />
+                    <ul className="max-h-[170px] overflow-y-auto px-1">
+                      {filteredTopicList.length === 0 && topicQuery !== "" ? (
+                        <div className="relative cursor-default select-none py-2 text-center text-sm text-gray-700">
                           No results found.
-                        </span>
-                        <span
-                          className="text-green-sheen block cursor-pointer underline"
-                          onClick={() => setIsCreateSubtopicModalOpen(true)}
-                        >
-                          Create a subtopic tag
-                        </span>
-                      </div>
-                    ) : (
-                      filteredSubtopicList.map((subtopic: any) => (
-                        <li>
-                          <div className="flex flex-row items-center gap-2 py-2">
-                            <input
-                              type="checkbox"
-                              defaultChecked={subtopic.checked}
-                              onChange={() => addSubtopic(subtopic.id)}
-                              className="h-4 w-4 cursor-pointer rounded border-gray-300 bg-gray-100"
-                            />
-                            <label className="ml-2 text-sm font-medium text-gray-900">
-                              {subtopic.name}
-                            </label>
-                            <span className="text-xs font-semibold text-[#0d6efd]">
-                              ({subtopic.number_of_articles} article
-                              {subtopic.number_of_articles > 1 ? "s" : ""})
-                            </span>
-                          </div>
-                        </li>
-                      ))
-                    )}
-                  </ul>
-                </div>
-              </Popover.Panel>
-            </Transition>
-          </Popover>
+                        </div>
+                      ) : (
+                        filteredTopicList.map((topic: any) => (
+                          <li>
+                            <div className="flex items-center py-2">
+                              <input
+                                type="checkbox"
+                                defaultChecked={topic.checked}
+                                onChange={(event) => addTopic(topic.data.id)}
+                                className="h-4 w-4 cursor-pointer rounded border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600"
+                              />
+                              <label className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+                                {topic.data.name}
+                              </label>
+                            </div>
+                          </li>
+                        ))
+                      )}
+                    </ul>
+                  </div>
+                </Popover.Panel>
+              </Transition>
+            </Popover>
+          </div>
+          <div className="flex flex-row flex-wrap gap-3">
+            {topics.map((topic: any) => (
+              <Tags
+                key={topic.data.id}
+                id={topic.data.id}
+                name={topic.data.name}
+                color={topic.data.color}
+                removeTag={removeTopicTag}
+              />
+            ))}
+          </div>
         </div>
 
-        {/* Display selected subtopics as tags */}
-        <div className="flex flex-row flex-wrap gap-3">
-          {subtopics.map((subtopic: any) => (
-            <Tags
-              key={subtopic.id}
-              id={subtopic.id}
-              name={subtopic.name}
-              color={subtopic.color}
-              removeTag={removeSubtopicTag}
-            />
-          ))}
+        {/* SELECT SUBTOPIC (+) BUTTON */}
+        <div className={`my-5 grid max-h-none w-1/3 grid-cols-1 gap-2`}>
+          <div className="flex flex-row justify-items-center gap-4">
+            <label>Select subtopic</label>
+            <Popover className="relative">
+              <Popover.Button>
+                <PlusCircleIcon
+                  className="plus-circle-icon h-6"
+                  aria-hidden="true"
+                />
+              </Popover.Button>
+
+              <Transition
+                as={Fragment}
+                leave="transition ease-in duration-100"
+                leaveFrom="opacity-100"
+                leaveTo="opacity-0"
+                afterLeave={() => setSubtopicQuery("")}
+              >
+                <Popover.Panel className="absolute z-10 w-max">
+                  <div className="border-1 grid grid-cols-1 gap-1 rounded-md border bg-white px-1 py-1 shadow-lg shadow-gray-400">
+                    <div className="flex flex-row gap-1">
+                      <input
+                        placeholder="Search a subtopic"
+                        className="custom_input_sm grow"
+                        onChange={(event) =>
+                          setSubtopicQuery(event.target.value)
+                        }
+                      />
+                      <PlusIcon
+                        className="plus-icon"
+                        aria-hidden="true"
+                        onClick={(event) => setIsCreateSubtopicModalOpen(true)}
+                      />
+                    </div>
+
+                    <ul className="max-h-[170px] overflow-y-auto px-1">
+                      {filteredSubtopicList.length === 0 &&
+                      subtopicQuery !== "" ? (
+                        <div className="relative  select-none py-2 text-center text-sm">
+                          <span className="block cursor-default pb-1 text-gray-700">
+                            No results found.
+                          </span>
+                          <span
+                            className="text-green-sheen block cursor-pointer underline"
+                            onClick={(event) =>
+                              setIsCreateSubtopicModalOpen(true)
+                            }
+                          >
+                            Create a subtopic tag
+                          </span>
+                        </div>
+                      ) : (
+                        filteredSubtopicList.map((subtopic: any) => (
+                          <li>
+                            <div className="flex flex-row items-center gap-2 py-2">
+                              <div className="flex items-center ">
+                                <input
+                                  type="checkbox"
+                                  defaultChecked={subtopic.checked}
+                                  onChange={(event) => addSubtopic(subtopic.id)}
+                                  className="h-4 w-4 cursor-pointer rounded border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600"
+                                />
+                                <label className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+                                  {subtopic.name}
+                                </label>
+                              </div>
+
+                              <span className="text-xs font-semibold text-[#0d6efd]">
+                                ({subtopic.number_of_articles} article
+                                {subtopic.number_of_articles > 1 ? "s" : ""})
+                              </span>
+                            </div>
+                          </li>
+                        ))
+                      )}
+                    </ul>
+                  </div>
+                </Popover.Panel>
+              </Transition>
+            </Popover>
+          </div>
+          <div className="flex flex-row flex-wrap gap-3">
+            {subtopics.map((subtopic: any) => (
+              <Tags
+                key={subtopic.id}
+                id={subtopic.id}
+                name={subtopic.name}
+                color="bg-[#E8E8E8] text-black"
+                removeTag={removeSubtopicTag}
+              />
+            ))}
+          </div>
         </div>
-      </div>
-    </Form>
+
+        {/* SELECT SUBJECT (+) BUTTON */}
+        <div className={`grid w-1/3 grid-cols-1 gap-2`}>
+          <div className="flex flex-row justify-items-center gap-4">
+            <label>Select subject</label>
+
+            <Popover className="relative">
+              <Popover.Button>
+                <PlusCircleIcon
+                  className="plus-circle-icon h-6"
+                  aria-hidden="true"
+                />
+              </Popover.Button>
+
+              <Transition
+                as={Fragment}
+                leave="transition ease-in duration-100"
+                leaveFrom="opacity-100"
+                leaveTo="opacity-0"
+                afterLeave={() => setSubjectQuery("")}
+              >
+                <Popover.Panel className="absolute z-10 w-max">
+                  <div className="border-1 grid grid-cols-1 gap-1 rounded-md border bg-white px-1 py-1 shadow-lg shadow-gray-400">
+                    <div className="flex flex-row gap-1">
+                      <input
+                        placeholder="Search a subject"
+                        className="custom_input_sm grow"
+                        onChange={(event) =>
+                          setSubjectQuery(event.target.value)
+                        }
+                      />
+                      <PlusIcon
+                        className="plus-icon"
+                        aria-hidden="true"
+                        onClick={(event) => setIsCreateSubjectModalOpen(true)}
+                      />
+                    </div>
+                    <ul className="max-h-[170px] overflow-y-auto px-1">
+                      {filteredSubjectList.length === 0 &&
+                      subjectQuery !== "" ? (
+                        <div className="relative select-none py-2 text-center text-sm">
+                          <span className="block cursor-default pb-1 text-gray-700">
+                            No results found.
+                          </span>
+                          <span className="text-green-sheen block cursor-pointer underline">
+                            Create a subject tag
+                          </span>
+                        </div>
+                      ) : (
+                        filteredSubjectList.map((subject: any) => (
+                          <li>
+                            <div className="flex flex-row items-center gap-2 py-2">
+                              <div className="flex items-center ">
+                                <input
+                                  type="checkbox"
+                                  defaultChecked={subject.checked}
+                                  onChange={(event) => addSubject(subject.id)}
+                                  className="h-4 w-4 cursor-pointer rounded border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600"
+                                />
+                                <label className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+                                  {subject.name}
+                                </label>
+                              </div>
+
+                              <span className="text-xs font-semibold text-[#0d6efd]">
+                                ({subject.number_of_articles} article
+                                {subject.number_of_articles > 1 ? "s" : ""})
+                              </span>
+                            </div>
+                          </li>
+                        ))
+                      )}
+                    </ul>
+                  </div>
+                </Popover.Panel>
+              </Transition>
+            </Popover>
+          </div>
+          <div className="flex flex-row flex-wrap gap-3">
+            {subjects.map((subject: any) => (
+              <Tags
+                key={subject.id}
+                id={subject.id}
+                name={subject.name}
+                color="bg-[#E8E8E8] text-black"
+                removeTag={removeSubjectTag}
+              />
+            ))}
+          </div>
+        </div>
+        {/* Real-time validation messages */}
+        <div className="text-red-500 text-sm mb-3">
+          {initialTitle.length === 0 && <p>Title is required.</p>}
+          {summary.length === 0 && <p>Summary is required.</p>}
+          {initialImage === null && <p>An image is required.</p>}
+          {loading && <p>Loading... Please wait.</p>}
+        </div>
+        <button
+        type="submit"
+        className="my-5 select-none rounded-md bg-teal-600 px-2 py-1 font-semibold text-white disabled:pointer-events-none disabled:opacity-50"
+        disabled={
+          initialTitle.length === 0 ||
+          summary.length === 0 ||
+          initialImage === null ||
+          loading
+        }
+      >
+        Continue
+      </button>
+      <button type="submit">test</button>
+    
+      </Form>
+
+      {/* are these two used for anything? I deleted them 
+        and nothing happened . . . */}
+    <NewSubtopic
+      isOpen={isCreateSubtopicModalOpen}
+      setIsOpen={setIsCreateSubtopicModalOpen}
+      topicList={topics}
+      createSubtopic={createSubtopic}
+    />
+
+    <NewSubject
+      isOpen={isCreateSubjectModalOpen}
+      setIsOpen={setIsCreateSubjectModalOpen}
+      topicList={topics}
+      createSubject={createSubject}
+    />
   </div>
-);
+  );
 }
