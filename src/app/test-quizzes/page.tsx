@@ -287,7 +287,6 @@ const dummyDataGrade = [
     answer: -1,
   },
 ];
-const objectQuiz: { [key: string]: string } = {};
 export default function TestBackEnd() {
   const [storyId, setStoryId] = useState("6488c6f6f5f617c772f6f61a");
   const [quizQuestionId, setQuizQuestionId] = useState("");
@@ -301,13 +300,7 @@ export default function TestBackEnd() {
         params: { quiz_type: "PRE_QUIZ", story_id: storyId },
       })
       .then((data) => {
-        console.log(data.data);
         setQuizRecordId(data.data.quiz_record_id || "");
-        data.data.quizzes.forEach(
-          ({ quiz_question_id = "", question_type = "" }) => {
-            objectQuiz[question_type as string] = quiz_question_id;
-          },
-        );
       });
   }
   function createQuiz() {
@@ -318,16 +311,6 @@ export default function TestBackEnd() {
       })
       .then((data) => console.log(data.data));
   }
-  function createGroupQuiz() {
-    for (let i = 0; i < dummyDataCreate.length; i++) {
-      axios
-        .post("/api/quizzes/edit", {
-          story_id: storyId,
-          ...dummyDataCreate[i],
-        })
-        .then((data) => console.log(data.data));
-    }
-  }
   function updateQuiz() {
     axios
       .patch(
@@ -335,8 +318,7 @@ export default function TestBackEnd() {
         { story_id: storyId, ...dummyDataUpdate[indexQuizType] },
         {
           params: {
-            quiz_question_id:
-              objectQuiz[dummyDataCreate[indexQuizType].question_type],
+            quiz_question_id: quizQuestionId,
           },
         },
       )
@@ -346,8 +328,7 @@ export default function TestBackEnd() {
     axios
       .delete("/api/quizzes/edit", {
         params: {
-          quiz_question_id:
-            objectQuiz[dummyDataCreate[indexQuizType].question_type],
+          quiz_question_id: quizQuestionId,
         },
       })
       .then((data) => console.log(data.data));
@@ -355,8 +336,7 @@ export default function TestBackEnd() {
   function gradeQuiz() {
     axios
       .post("/api/grade", {
-        quiz_question_id:
-          objectQuiz[dummyDataCreate[indexQuizType].question_type],
+        quiz_question_id: quizQuestionId,
         quiz_record_id: quizRecordId,
         answer: dummyDataGrade[indexQuizAnsType].answer,
       })
@@ -431,11 +411,6 @@ export default function TestBackEnd() {
         <div className="buttonContainerTest">
           <button className="buttonQuizTest" onClick={createQuiz}>
             Create Quiz
-          </button>
-        </div>
-        <div className="buttonContainerTest">
-          <button className="buttonQuizTest" onClick={createGroupQuiz}>
-            Create Group Quiz
           </button>
         </div>
         <div className="buttonContainerTest">
