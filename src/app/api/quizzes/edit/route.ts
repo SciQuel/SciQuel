@@ -113,6 +113,7 @@ export async function DELETE(req: NextRequest) {
     const userId = await user.getUserId();
     const isEditor = await user.isEditor();
     const quizQuestionIdParam = url.searchParams.get("quiz_question_id");
+    console.log(quizQuestionIdParam);
     const { nextErrorReponse, parsedData } = checkValidInput(
       [quizQuestionIdSchema],
       [quizQuestionIdParam],
@@ -130,7 +131,7 @@ export async function DELETE(req: NextRequest) {
       select: { subpartId: true, questionType: true },
     });
 
-    if (quizQuestionCheck) {
+    if (!quizQuestionCheck) {
       return new NextResponse(
         JSON.stringify({ error: "Quiz question not found" }),
         {

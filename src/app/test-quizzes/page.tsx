@@ -293,14 +293,13 @@ export default function TestBackEnd() {
   const [indexQuizType, setIndexQuizType] = useState(0);
 
   const [indexQuizAnsType, setIndexQuizAnsType] = useState(0);
-  const [quizRecordId, setQuizRecordId] = useState("");
   function getQuiz() {
     axios
       .get("/api/quizzes", {
         params: { quiz_type: "PRE_QUIZ", story_id: storyId },
       })
       .then((data) => {
-        setQuizRecordId(data.data.quiz_record_id || "");
+        console.log(data.data);
       });
   }
   function createQuiz() {
@@ -337,7 +336,6 @@ export default function TestBackEnd() {
     axios
       .post("/api/grade", {
         quiz_question_id: quizQuestionId,
-        quiz_record_id: quizRecordId,
         answer: dummyDataGrade[indexQuizAnsType].answer,
       })
       .then((data) => console.log(data));
