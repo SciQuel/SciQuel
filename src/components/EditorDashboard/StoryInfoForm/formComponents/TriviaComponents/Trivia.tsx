@@ -15,6 +15,7 @@ export interface MatchingPair {
   id: number;
   left: string;
   right: string;
+  color?: string;
 }
 
 export interface TrueOrFalseQuestion {

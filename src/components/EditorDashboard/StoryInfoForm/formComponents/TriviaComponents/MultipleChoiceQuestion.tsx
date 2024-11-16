@@ -63,7 +63,7 @@ const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
             className="mr-2"
           />
           <button
-            type = "button"
+            type="button"
             onClick={() => deleteChoice(question.id, choice.id)}
             className="text-sciquelTeal"
           >
@@ -72,7 +72,7 @@ const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
         </div>
       ))}
       <button
-        type = "button"
+        type="button"
         onClick={() => addChoice(question.id)}
         className="mt-2 rounded bg-sciquelTeal px-2 py-1 text-sm text-white"
       >

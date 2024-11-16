@@ -1,16 +1,11 @@
 import React, { useEffect, useState } from "react";
-
-interface MatchingPair {
-  id: number;
-  left: string;
-  right: string;
-  color: string; // Color property for each pair
-}
+import { Question, type MatchingPair } from "./Trivia";
 
 interface DirectMatchingQuestionProps {
   question: {
     id: number;
     content: string;
+    color?: string;
     pairs?: MatchingPair[];
   };
   updateQuestion: (id: number, updatedQuestion: Partial<any>) => void;
@@ -53,7 +48,7 @@ const DirectMatchingQuestion: React.FC<DirectMatchingQuestionProps> = ({
     const updatedOrder = (question.pairs || []).map((pair) => ({
       id: pair.id,
       right: pair.right,
-      color: pair.color,
+      color: pair.color ?? "transparent",
     }));
 
     // Ensure the right side order is maintained if already exists
