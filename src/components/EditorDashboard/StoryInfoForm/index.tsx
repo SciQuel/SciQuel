@@ -1,12 +1,9 @@
-
 import { type Contribution } from "@/app/editor/(full-page)/story/info/StoryInfoEditorPageClient";
 import MarkdownEditorStoryInfo from "@/components/EditorDashboard/MarkdownEditorStoryInfo";
+import Trivia from "@/components/EditorDashboard/StoryInfoForm/formComponents/TriviaComponents/Trivia";
 import Form from "@/components/Form";
 import { Popover, Transition } from "@headlessui/react";
-import {
-  PlusCircleIcon,
-  PlusIcon,
-} from "@heroicons/react/20/solid";
+import { PlusCircleIcon, PlusIcon } from "@heroicons/react/20/solid";
 import {
   type Category,
   type GeneralSubject,
@@ -14,6 +11,7 @@ import {
   type StoryType,
   type Subtopic,
 } from "@prisma/client";
+import clsx from "clsx";
 import { useRouter } from "next/navigation";
 import {
   Fragment,
@@ -38,7 +36,6 @@ import NewSubject from "./formComponents/subjectComponents/newSubject";
 import NewSubtopic from "./formComponents/subtopicComponents/newSubtopic";
 import { getData } from "./StoryFormFunc";
 import Tags from "./Tags";
-import clsx from "clsx";
 
 interface Section {
   type: string;
@@ -51,8 +48,8 @@ interface Props {
   setTitle: (value: string) => void;
   summary?: string;
   setSummary: (value: string) => void;
-  image?: File | string | null;  //add File | string | null;
-  setImage: (image: File | string | null) => void ; //add File | string | null
+  image?: File | string | null; //add File | string | null;
+  setImage: (image: File | string | null) => void; //add File | string | null
   caption?: string;
   setCaption: (value: string) => void;
   slug?: string | undefined;
@@ -316,7 +313,7 @@ export default function StoryInfoForm({
           if (!storyId) {
             return;
           }
-  
+
           const form = new FormData();
           form.append("id", storyId);
           form.append("summary", summary ?? "");
@@ -328,7 +325,7 @@ export default function StoryInfoForm({
               form.append("newImageName", "test-image-name");
             }
           }
-  
+
           form.append("imageCaption", initialCaption ?? "");
           form.append("storyType", storyType);
           form.append("category", category);
@@ -341,21 +338,21 @@ export default function StoryInfoForm({
             `[${initialTopics
               .map(
                 (topic, index) =>
-                  `"${topic}"${index < initialTopics.length - 1 ? ", " : ""}`
+                  `"${topic}"${index < initialTopics.length - 1 ? ", " : ""}`,
               )
-              .toString()}]`
+              .toString()}]`,
           );
-  
+
           if (typeof initialDate == "string") {
             form.append("publishDate", initialDate);
           } else if (initialDate instanceof Date) {
             form.append("publishDate", initialDate.toISOString());
           }
-  
+
           form.append("content", initialBody);
           form.append("footer", "");
           console.log(form);
-  
+
           updateWholeArticle(form)
             .then((result) => {
               console.log(result);
@@ -365,9 +362,6 @@ export default function StoryInfoForm({
             });
         }}
       >
-
-  
-
         {/* STORY TITLE FORM INPUT */}
         <ArticleTitle
           value={initialTitle}
@@ -378,15 +372,15 @@ export default function StoryInfoForm({
           setDirty={setDirty}
         />
 
-      {/* SUMMARY INPUT */}
-      <ArticleSummary
-        value={initialSummary ?? ""}
-        onChange={initialSetSummary}
-        required
-        indicateRequired
-        disabled={loading}
-        setDirty={setDirty}
-      />
+        {/* SUMMARY INPUT */}
+        <ArticleSummary
+          value={initialSummary ?? ""}
+          onChange={initialSetSummary}
+          required
+          indicateRequired
+          disabled={loading}
+          setDirty={setDirty}
+        />
 
         {/* PUBLISH DATE FORM */}
         <ArticleDate
@@ -481,9 +475,9 @@ export default function StoryInfoForm({
               setCategory(e.target.value as Category);
             }}
           >
-              <option value="" disabled selected hidden>
+            <option value="" disabled selected hidden>
               Select a story type
-              </option>
+            </option>
             <option value="ARTICLE">Article</option>
             <option value="PODCAST">Podcast</option>
           </select>
@@ -741,43 +735,43 @@ export default function StoryInfoForm({
           </div>
         </div>
         {/* Real-time validation messages */}
-        <div className="text-red-500 text-sm mb-3">
+        <div className="mb-3 text-sm text-red-500">
           {initialTitle.length === 0 && <p>Title is required.</p>}
           {summary.length === 0 && <p>Summary is required.</p>}
           {initialImage === null && <p>An image is required.</p>}
           {loading && <p>Loading... Please wait.</p>}
         </div>
+        <Trivia></Trivia>
         <button
-        type="submit"
-        className="my-5 select-none rounded-md bg-teal-600 px-2 py-1 font-semibold text-white disabled:pointer-events-none disabled:opacity-50"
-        disabled={
-          initialTitle.length === 0 ||
-          summary.length === 0 ||
-          initialImage === null ||
-          loading
-        }
-      >
-        Continue
-      </button>
-      <button type="submit">test</button>
-    
+          type="submit"
+          className="my-5 select-none rounded-md bg-teal-600 px-2 py-1 font-semibold text-white disabled:pointer-events-none disabled:opacity-50"
+          disabled={
+            initialTitle.length === 0 ||
+            summary.length === 0 ||
+            initialImage === null ||
+            loading
+          }
+        >
+          Continue
+        </button>
+        <button type="submit">test</button>
       </Form>
 
       {/* are these two used for anything? I deleted them 
         and nothing happened . . . */}
-    <NewSubtopic
-      isOpen={isCreateSubtopicModalOpen}
-      setIsOpen={setIsCreateSubtopicModalOpen}
-      topicList={topics}
-      createSubtopic={createSubtopic}
-    />
+      <NewSubtopic
+        isOpen={isCreateSubtopicModalOpen}
+        setIsOpen={setIsCreateSubtopicModalOpen}
+        topicList={topics}
+        createSubtopic={createSubtopic}
+      />
 
-    <NewSubject
-      isOpen={isCreateSubjectModalOpen}
-      setIsOpen={setIsCreateSubjectModalOpen}
-      topicList={topics}
-      createSubject={createSubject}
-    />
-  </div>
+      <NewSubject
+        isOpen={isCreateSubjectModalOpen}
+        setIsOpen={setIsCreateSubjectModalOpen}
+        topicList={topics}
+        createSubject={createSubject}
+      />
+    </div>
   );
 }
