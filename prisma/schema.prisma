@@ -177,6 +177,49 @@ model Story {
   // GeneralSubjectOnStory GeneralSubjectOnStory[]
   subtopicIds    String[] @db.ObjectId
   subjectTypeIds String[] @db.ObjectId
+  currentVersion Int      @default(1) // Current version of the story
+}
+
+model StoryHistory {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  storyId String @db.ObjectId
+  version Int
+
+  storyType StoryType
+  category  Category
+
+  image    String?
+  imageUrl String?
+
+  title      String
+  titleColor String
+
+  slug String // Title slug for URL conforming to RFC 3986
+
+  summary      String
+  summaryColor String
+
+  topics          Json
+  subtopics       Json
+  generalSubjects Json
+
+  storyContributions Json
+  storyContent       Json
+
+  published   Boolean
+  createdAt   DateTime
+  publishedAt DateTime?
+  updatedAt   DateTime
+
+  staffPick Boolean?
+
+  thumbnailUrl String
+  coverCaption String @default("")
+
+  quizzes Json
+
+  subtopicIds    String[] @db.ObjectId
+  subjectTypeIds String[] @db.ObjectId
 }
 
 model StoryContent {

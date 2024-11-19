@@ -210,6 +210,10 @@ export async function updateWholeArticle(formData: FormData) {
       },
       include: {
         storyContent: true,
+        subtopics: true,
+        generalSubjects: true,
+        storyContributions: true,
+        quizzes: true,
       },
     });
 
@@ -219,6 +223,41 @@ export async function updateWholeArticle(formData: FormData) {
         error: "unknown story id",
       };
     }
+
+    //to store the current version of the story before updating it
+    const staffPickValue: boolean | null = originalStory.staffPick;
+    const publishedAtValue: Date | null = originalStory.publishedAt;
+    const safePublishedAt: Date | string = publishedAtValue ?? new Date();
+    await prisma.storyHistory.create({
+      data: {
+        storyId: originalStory.id,
+        version: originalStory.currentVersion,
+        storyType: originalStory.storyType,
+        category: originalStory.category,
+        image: originalStory.image,
+        imageUrl: originalStory.imageUrl,
+        title: originalStory.title,
+        titleColor: originalStory.titleColor,
+        slug: originalStory.slug,
+        summary: originalStory.summary,
+        summaryColor: originalStory.summaryColor,
+        topics: JSON.stringify(originalStory.topics),
+        subtopics: JSON.stringify(originalStory.subtopics),
+        generalSubjects: JSON.stringify(originalStory.generalSubjects),
+        storyContributions: JSON.stringify(originalStory.storyContributions),
+        storyContent: JSON.stringify(originalStory.storyContent),
+        published: originalStory.published,
+        staffPick: staffPickValue ?? false,
+        thumbnailUrl: originalStory.thumbnailUrl,
+        coverCaption: originalStory.coverCaption,
+        quizzes: JSON.stringify(originalStory.quizzes),
+        subtopicIds: JSON.stringify(originalStory.subtopicIds),
+        subjectTypeIds: JSON.stringify(originalStory.subjectTypeIds),
+        createdAt: originalStory.createdAt,
+        publishedAt: safePublishedAt,
+        updatedAt: originalStory.updatedAt,
+      },
+    });
 
     let finalThumbnailUrl = imageUrl ?? undefined;
     if (image && newImageName) {
@@ -251,6 +290,8 @@ export async function updateWholeArticle(formData: FormData) {
         slug: slug,
         topics: topics,
         publishedAt: publishDate,
+        //update the version number
+        currentVersion: originalStory.currentVersion + 1,
       },
     };
 
