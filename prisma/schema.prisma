@@ -92,10 +92,45 @@ model Story {
   thumbnailUrl String
   coverCaption String @default("")
 
+  createdAt      DateTime
+  publishedAt    DateTime
+  updatedAt      DateTime
+  quizzes        Quiz[]
+  currentVersion Int      @default(1) // Current version of the story
+}
+
+model StoryHistory {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  storyId   String    @db.ObjectId
+  version   Int
+  storyType StoryType
+  category  Category
+
+  title      String
+  titleColor String
+
+  slug String
+
+  summary      String
+  summaryColor String
+
+  tags               StoryTopic[]
+  //to store a snapshot of the storyContributions and storyContent
+  storyContributions Json
+  storyContent       Json
+
+  published Boolean
+
+  staffPick Boolean
+
+  thumbnailUrl String
+  coverCaption String @default("")
+
   createdAt   DateTime
   publishedAt DateTime
   updatedAt   DateTime
-  quizzes     Quiz[]
+
+  quizzes Json
 }
 
 model StoryContribution {
@@ -134,9 +169,9 @@ model User {
   roles   UserRole[] @default([])
   quizzes Quiz[]
 
-  contactUpdates ContactMessage[]
-  firstQuizRecord       Json?
-  mostRecentQuizRecord  Json?
+  contactUpdates       ContactMessage[]
+  firstQuizRecord      Json?
+  mostRecentQuizRecord Json?
 }
 
 model AuthVerification {
@@ -283,50 +318,49 @@ model UserResponse {
 }
 
 model ResponseSubpart {
-  id              String        @id @default(auto()) @map("_id") @db.ObjectId
-  subpartId       String        @db.ObjectId
-  subpartUserAns  String[]
-  UserResponse    UserResponse? @relation(fields: [userResponseId], references: [id])
-  userResponseId  String?       @db.ObjectId
+  id             String        @id @default(auto()) @map("_id") @db.ObjectId
+  subpartId      String        @db.ObjectId
+  subpartUserAns String[]
+  UserResponse   UserResponse? @relation(fields: [userResponseId], references: [id])
+  userResponseId String?       @db.ObjectId
 }
 
-model CurStoryHeadline{
-  id                        String        @id @default(auto()) @map("_id") @db.ObjectId
-  version                   Int           @unique
-  prevVersion               Int
-  headline                  String
-  displayHeadline           String
-  subHeadline               String
-  headlineColor             String        @default("black")
-  subheadlineColor          String        @default("black")
-  headlineConfiguration     String
-  headlineBackgroundColor   String?
-  isCurrent                 Boolean       @default(true)
-  createdAt                 DateTime      @default(now())
-  updatedAt                 DateTime      @updatedAt
-
+model CurStoryHeadline {
+  id                      String   @id @default(auto()) @map("_id") @db.ObjectId
+  version                 Int      @unique
+  prevVersion             Int
+  headline                String
+  displayHeadline         String
+  subHeadline             String
+  headlineColor           String   @default("black")
+  subheadlineColor        String   @default("black")
+  headlineConfiguration   String
+  headlineBackgroundColor String?
+  isCurrent               Boolean  @default(true)
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
 }
 
-model HistoryStoryHeadline{
-  id                        String        @id @default(auto()) @map("_id") @db.ObjectId
-  version                   Int           @unique
-  prevVersion               Int
-  headline                  String
-  displayHeadline           String
-  subHeadline               String
-  headlineColor             String        @default("black")
-  subheadlineColor          String        @default("black")
-  headlineConfiguration     String
-  headlineBackgroundColor   String?
-  isCurrent                 Boolean       @default(true)
-  createdAt                 DateTime      @default(now())
-  updatedAt                 DateTime      @updatedAt
+model HistoryStoryHeadline {
+  id                      String   @id @default(auto()) @map("_id") @db.ObjectId
+  version                 Int      @unique
+  prevVersion             Int
+  headline                String
+  displayHeadline         String
+  subHeadline             String
+  headlineColor           String   @default("black")
+  subheadlineColor        String   @default("black")
+  headlineConfiguration   String
+  headlineBackgroundColor String?
+  isCurrent               Boolean  @default(true)
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
 
   @@index([createdAt, version], name: "createdAt_version_idx")
 }
 
-model rollbackHistoryStoryHeadline{
-  id                        String        @id @default(auto()) @map("_id") @db.ObjectId
-  curVersion                Int
-  targetVersion             Int
+model rollbackHistoryStoryHeadline {
+  id            String @id @default(auto()) @map("_id") @db.ObjectId
+  curVersion    Int
+  targetVersion Int
 }
