@@ -228,36 +228,57 @@ export async function updateWholeArticle(formData: FormData) {
     const staffPickValue: boolean | null = originalStory.staffPick;
     const publishedAtValue: Date | null = originalStory.publishedAt;
     const safePublishedAt: Date | string = publishedAtValue ?? new Date();
-    await prisma.storyHistory.create({
-      data: {
-        storyId: originalStory.id,
-        version: originalStory.currentVersion,
-        storyType: originalStory.storyType,
-        category: originalStory.category,
-        image: originalStory.image,
-        imageUrl: originalStory.imageUrl,
-        title: originalStory.title,
-        titleColor: originalStory.titleColor,
-        slug: originalStory.slug,
-        summary: originalStory.summary,
-        summaryColor: originalStory.summaryColor,
-        topics: JSON.stringify(originalStory.topics),
-        subtopics: JSON.stringify(originalStory.subtopics),
-        generalSubjects: JSON.stringify(originalStory.generalSubjects),
-        storyContributions: JSON.stringify(originalStory.storyContributions),
-        storyContent: JSON.stringify(originalStory.storyContent),
-        published: originalStory.published,
-        staffPick: staffPickValue ?? false,
-        thumbnailUrl: originalStory.thumbnailUrl,
-        coverCaption: originalStory.coverCaption,
-        quizzes: JSON.stringify(originalStory.quizzes),
-        subtopicIds: JSON.stringify(originalStory.subtopicIds),
-        subjectTypeIds: JSON.stringify(originalStory.subjectTypeIds),
-        createdAt: originalStory.createdAt,
-        publishedAt: safePublishedAt,
-        updatedAt: originalStory.updatedAt,
-      },
-    });
+
+    await prisma.$transaction([
+      prisma.storyHistory.create({
+        data: {
+          storyId: originalStory.id,
+          version: originalStory.currentVersion,
+          storyType: originalStory.storyType,
+          category: originalStory.category,
+          image: originalStory.image,
+          imageUrl: originalStory.imageUrl,
+          title: originalStory.title,
+          titleColor: originalStory.titleColor,
+          slug: originalStory.slug,
+          summary: originalStory.summary,
+          summaryColor: originalStory.summaryColor,
+          topics: originalStory.topics,
+          subtopics: {
+            connect: originalStory.subtopics.map((sub) => ({ id: sub.id })),
+          },
+          generalSubjects: {
+            connect: originalStory.generalSubjects.map((sub) => ({
+              id: sub.id,
+            })),
+          },
+          storyContributions: {
+            connect: originalStory.storyContributions.map((contrib) => ({
+              id: contrib.id,
+            })),
+          },
+          storyContent: {
+            connect: originalStory.storyContent.map((content) => ({
+              id: content.id,
+            })),
+          },
+          published: originalStory.published,
+          staffPick: staffPickValue ?? false,
+          thumbnailUrl: originalStory.thumbnailUrl,
+          coverCaption: originalStory.coverCaption,
+          quizzes: {
+            connect: originalStory.quizzes.map((quiz) => ({
+              id: quiz.id,
+            })),
+          },
+          subtopicIds: originalStory.subtopicIds,
+          subjectTypeIds: originalStory.subjectTypeIds,
+          createdAt: originalStory.createdAt,
+          publishedAt: safePublishedAt,
+          updatedAt: originalStory.updatedAt,
+        },
+      }),
+    ]);
 
     let finalThumbnailUrl = imageUrl ?? undefined;
     if (image && newImageName) {

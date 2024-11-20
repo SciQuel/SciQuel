@@ -84,7 +84,9 @@ model StoryContribution {
   otherContributorCredit String?
   contributorByline      String?
 
-  bio String?
+  bio            String?
+  StoryHistory   StoryHistory? @relation(fields: [storyHistoryId], references: [id])
+  storyHistoryId String?       @db.ObjectId
 }
 
 model Contributor {
@@ -199,12 +201,12 @@ model StoryHistory {
   summary      String
   summaryColor String
 
-  topics          Json
-  subtopics       Json
-  generalSubjects Json
+  topics          StoryTopic[]
+  subtopics       Subtopic[]
+  generalSubjects GeneralSubject[]
 
-  storyContributions Json
-  storyContent       Json
+  storyContributions StoryContribution[]
+  storyContent       StoryContent[]
 
   published   Boolean
   createdAt   DateTime
@@ -216,7 +218,7 @@ model StoryHistory {
   thumbnailUrl String
   coverCaption String @default("")
 
-  quizzes Json
+  quizzes Quiz[]
 
   subtopicIds    String[] @db.ObjectId
   subjectTypeIds String[] @db.ObjectId
@@ -230,24 +232,30 @@ model StoryContent {
 
   createdAt DateTime @default(now())
 
-  story   Story  @relation(fields: [storyId], references: [id], onDelete: Cascade)
-  storyId String @db.ObjectId
+  story          Story         @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  storyId        String        @db.ObjectId
+  StoryHistory   StoryHistory? @relation(fields: [storyHistoryId], references: [id])
+  storyHistoryId String?       @db.ObjectId
 }
 
 model Subtopic {
-  id      String  @id @default(auto()) @map("_id") @db.ObjectId
-  name    String  @unique
-  Story   Story?  @relation(fields: [storyId], references: [id])
-  storyId String? @db.ObjectId
+  id             String        @id @default(auto()) @map("_id") @db.ObjectId
+  name           String        @unique
+  Story          Story?        @relation(fields: [storyId], references: [id])
+  storyId        String?       @db.ObjectId
   // SubtopicOnStory SubtopicOnStory[]
+  StoryHistory   StoryHistory? @relation(fields: [storyHistoryId], references: [id])
+  storyHistoryId String?       @db.ObjectId
 }
 
 model GeneralSubject {
-  id      String  @id @default(auto()) @map("_id") @db.ObjectId
-  name    String  @unique
-  Story   Story?  @relation(fields: [storyId], references: [id])
-  storyId String? @db.ObjectId
+  id             String        @id @default(auto()) @map("_id") @db.ObjectId
+  name           String        @unique
+  Story          Story?        @relation(fields: [storyId], references: [id])
+  storyId        String?       @db.ObjectId
   // GeneralSubjectOnStory GeneralSubjectOnStory[]
+  StoryHistory   StoryHistory? @relation(fields: [storyHistoryId], references: [id])
+  storyHistoryId String?       @db.ObjectId
 }
 
 // model SubtopicOnStory {
@@ -301,8 +309,10 @@ model Quiz {
   score      Int
   date       DateTime @default(now())
 
-  user  User  @relation(fields: [userId], references: [id])
-  story Story @relation(fields: [storyId], references: [id])
+  user           User          @relation(fields: [userId], references: [id])
+  story          Story         @relation(fields: [storyId], references: [id])
+  StoryHistory   StoryHistory? @relation(fields: [storyHistoryId], references: [id])
+  storyHistoryId String?       @db.ObjectId
 
   @@unique([userId, storyId])
 }
