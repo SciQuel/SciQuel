@@ -1,19 +1,18 @@
+/* eslint-disable prettier/prettier */
+/* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import Bookmark from "../../../../public/assets/images/bookmark-final.svg";
 import Lightbulb from "../../../../public/assets/images/oi-lightbulb.svg";
 import Share from "../../../../public/assets/images/oi-share-alt.svg";
-import { ReadingHistory as ReadingHistoryType } from '../../../app/user-settings/actions/getReadingHistory'
-
+import { type ReadingHistory as ReadingHistoryType } from "../../../app/user-settings/actions/getReadingHistory";
 
 interface Props {
-  data: ReadingHistoryType
+  data: ReadingHistoryType;
   bookMarkedReadingsIds: string[];
   brainedReadingIds: string[];
-  handleBrainClick: (storyId: string) => void;
-  handleBookmarkClick: (storyId: string) => void;
+  handleBrainClick: (storyId: string) => Promise<void>;
+  handleBookmarkClick: (storyId: string) => Promise<void>;
 }
-
-
 
 const DropDownContent: React.FC<Props> = ({
   data,
@@ -22,17 +21,17 @@ const DropDownContent: React.FC<Props> = ({
   handleBrainClick,
   handleBookmarkClick,
 }) => {
-
-
   return (
     <>
       <ul className="  scrollbar-cyan mb-2 max-h-[500px] overflow-y-scroll">
-        {data?.length === 0 && <p className="font-bold text-md"> No Readings </p>}
+        {data?.length === 0 && (
+          <p className="text-md font-bold"> No Readings </p>
+        )}
         {data?.map((reading) => (
           <li className="mb-5" key={crypto.randomUUID()}>
             <div className="flex  items-center gap-7">
               <img
-                src={reading.story.thumbnailUrl}
+                src={reading?.story?.thumbnailUrl}
                 alt={`Thumbnail of ${reading.story.title}`}
                 className="h-20 w-20 rounded-md object-cover"
               />
@@ -52,29 +51,28 @@ const DropDownContent: React.FC<Props> = ({
 
               {/* Icons */}
               <div className="ml-auto mr-5 flex items-center ">
-                <button className="cursor-pointer">
-                  <Bookmark
-                    fill={`${bookMarkedReadingsIds.includes(reading.story.id)
-                      ? "yellow"
-                      : "none"
-                      }`}
-                    width="50px"
-                    height="20px"
-                    onClick={() => handleBookmarkClick(reading.story.id)}
-                  />
-                </button>
-                <button
+
+                <Bookmark
+                  fill={`${bookMarkedReadingsIds.includes(reading.story.id)
+                    ? "yellow"
+                    : "none"
+                    }`}
+                  width="50px"
+                  height="20px"
+                  role='button'
+                  onClick={() => handleBookmarkClick(reading.story.id)}
+                />
+
+                <Lightbulb
+                  role="button"
                   onClick={() => handleBrainClick(reading.story.id)}
-                  className="cursor-pointer"
-                >
-                  <Lightbulb
-                    width={`${brainedReadingIds.includes(reading.story.id)
-                      ? "30px"
-                      : "20px"
-                      }`}
-                    height="20px"
-                  />
-                </button>
+                  width={`${brainedReadingIds.includes(reading.story.id)
+                    ? "30px"
+                    : "20px"
+                    }`}
+                  height="20px"
+                />
+
                 <button className="cursor-pointer">
                   <Share width="50px" height="20px" />
                 </button>

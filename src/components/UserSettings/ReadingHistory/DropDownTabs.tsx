@@ -3,7 +3,7 @@ import ArrowDown from "../../../../public/assets/images/oi-chevron-down.svg";
 interface Props {
   openDropDown: string;
   title: string;
-  onClick: (title: string) => void
+  onClick: (title: string) => void;
 }
 const DropDownTabs: React.FC<Props> = ({ openDropDown, title, onClick }) => {
   return (

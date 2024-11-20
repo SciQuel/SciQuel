@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { type ReadingHistory as ReadingHistoryType } from "../../../app/user-settings/actions/getReadingHistory";
 import ReadingDropDown from "./ReadingDropDown";
-import { ReadingHistory as ReadingHistoryType } from "../../../app/user-settings/actions/getReadingHistory";
 
 interface Props {
   email: string;
@@ -18,9 +18,8 @@ const ReadingDropDownContainer: React.FC<Props> = ({
   brained,
   bookmarked,
   todayReadings,
-  yesterdayReadings
+  yesterdayReadings,
 }) => {
-
   const [openDropDown, setOpenDropDown] = useState("");
 
   const handleClick = (title: string) => {
@@ -31,7 +30,7 @@ const ReadingDropDownContainer: React.FC<Props> = ({
     }
   };
   return (
-    <div className="ml-20 flex max-h-screen bg-red-500  flex-col gap-5  ">
+    <div className="ml-20 flex max-h-screen flex-col gap-5  ">
       <ReadingDropDown
         title={"Today"}
         data={todayReadings}

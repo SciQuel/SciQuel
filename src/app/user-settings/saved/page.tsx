@@ -1,89 +1,92 @@
-//navbar is  not responsive
-
-import axios from "axios"
-import env from "@/lib/env"
-import { type Stories } from "@/app/api/stories/route";
-import { getServerSession } from "next-auth";
+import { type GetStoryResult } from "@/app/api/stories/id/[id]/route";
+import {
+  type GetLatestBookmarkRes as Bookmarks,
+  type GetLatestBookmarkRes,
+} from "@/app/api/user/bookmark/latest/route";
+import {
+  type GetLatestBrainsRes as Brained,
+  type GetLatestBrainsRes,
+} from "@/app/api/user/brains/latest/route";
 import SavedPage from "@/components/UserSettings/SavedPage";
-import { type GetLatestBookmarkRes as Bookmarks } from "@/app/api/user/bookmark/latest/route";
-import { type GetLatestBrainsRes as Brained } from "@/app/api/user/brains/latest/route";
+import env from "@/lib/env";
+import axios, { type AxiosResponse } from "axios";
+import { getServerSession } from "next-auth";
 
 export default async function SavedPaged() {
+  const session = await getServerSession();
 
-  const session = await getServerSession()
-
-  const email = session?.user.email
+  const email = session?.user.email;
 
   //fetch data
   const fetchBrainedIds = async () => {
-    const response = await axios.get(`${env.NEXT_PUBLIC_SITE_URL}/api/user/brains/latest`, {
-      params: {
-        user_email: email,
-        page_size: 10
-      }
+    const response: AxiosResponse<GetLatestBrainsRes> = await axios.get(
+      `${env.NEXT_PUBLIC_SITE_URL}/api/user/brains/latest`,
+      {
+        params: {
+          user_email: email,
+          page_size: 100,
+        },
+      },
+    );
+    return response.data.map((story: Brained[number]) => story.storyId);
+  };
+  const data = await fetchBrainedIds();
+  console.log(data);
 
-    })
-    return response.data.map((story: Brained[number]) => story.storyId)
-
-  }
-  const data = await fetchBrainedIds()
-  let BrainedStories: Stories = await Promise.all(
+  let BrainedStories: GetStoryResult[] = await Promise.all(
     data.map(async (id: string) => {
-      const resp = await axios.get(`${env.NEXT_PUBLIC_SITE_URL}/api/stories/id/${id}`)
-      return resp.data
-    })
-  )
-
-
+      const resp: AxiosResponse<GetStoryResult> = await axios.get(
+        `${env.NEXT_PUBLIC_SITE_URL}/api/stories/id/${id}`,
+      );
+      return resp.data;
+    }),
+  );
 
   //get bookimarked data
   const getBookmarkedIds = async () => {
-    const resp = await axios.get(`${env.NEXT_PUBLIC_SITE_URL}/api/user/bookmark/latest`, {
-      params: {
-        user_email: email,
-        page_size: 20
-      }
+    const resp: AxiosResponse<GetLatestBookmarkRes> = await axios.get(
+      `${env.NEXT_PUBLIC_SITE_URL}/api/user/bookmark/latest`,
+      {
+        params: {
+          user_email: email,
+          page_size: 100,
+        },
+      },
+    );
 
-    })
+    return resp.data.map((story: Bookmarks[number]) => story.storyId);
+  };
 
+  const bookMarkedIds = await getBookmarkedIds();
 
-    console.log(resp.data)
-    return resp.data.map((story: Bookmarks[number]) => story.storyId)
-  }
-
-  const bookMarkedIds = await getBookmarkedIds()
-
-  let bookMarkedStories = await Promise.all(
+  let bookMarkedStories: GetStoryResult[] = await Promise.all(
     bookMarkedIds.map(async (id: string) => {
-      const resp = await axios.get(`${env.NEXT_PUBLIC_SITE_URL}/api/stories/id/${id}`)
+      const resp: AxiosResponse<GetStoryResult> = await axios.get(
+        `${env.NEXT_PUBLIC_SITE_URL}/api/stories/id/${id}`,
+      );
 
-      return resp.data
+      return resp.data;
+    }),
+  );
 
-    })
-  )
-
-
-  //can this function be in seperate file???
-  const convertDatesInStories = (stories: Stories) => {
+  const convertDatesInStories = (stories: GetStoryResult[]) => {
     const result = stories.map((story) => ({
-      ...story, publishedAt: new Date(story.publishedAt),
+      ...story,
+      publishedAt: new Date(story.publishedAt),
+    }));
+    return result;
+  };
 
-
-
-    }))
-    return result
-  }
-
-
-  bookMarkedStories = convertDatesInStories(bookMarkedStories)
-  BrainedStories = convertDatesInStories(BrainedStories)
-
+  bookMarkedStories = convertDatesInStories(bookMarkedStories);
+  BrainedStories = convertDatesInStories(BrainedStories);
 
   return (
-    <div className="w-full mx-10">
-
-      <SavedPage brainedStories={BrainedStories} bookmarkData={bookMarkedStories} definitions={'empty'} />
+    <div className="mx-10 w-full">
+      <SavedPage
+        brainedStories={BrainedStories}
+        bookmarkData={bookMarkedStories}
+        definitions={"empty"}
+      />
     </div>
-  )
-
+  );
 }

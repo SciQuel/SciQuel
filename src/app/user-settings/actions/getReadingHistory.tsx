@@ -35,7 +35,7 @@ interface PageViewGet {
   };
 }
 
-export type ReadingHistory = PageViewGet[] | null;
+export type ReadingHistory = PageViewGet[];
 
 export async function getSession() {
   return await getServerSession();
