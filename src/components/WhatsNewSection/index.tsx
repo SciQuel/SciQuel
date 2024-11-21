@@ -33,7 +33,11 @@ export default function WhatsNewSection({ articles }: Props) {
               headlineArticle.publishedAt,
             ).toLocaleString(DateTime.DATE_FULL)}
             mediaType={headlineArticle.storyType}
-            tag={headlineArticle.tags[0]}
+            tag={
+              headlineArticle.topics && headlineArticle.topics[0]
+                ? headlineArticle.topics[0]
+                : "BIOLOGY"
+            }
             href={(() => {
               const publishDate = DateTime.fromJSDate(
                 headlineArticle.publishedAt,
@@ -46,7 +50,7 @@ export default function WhatsNewSection({ articles }: Props) {
         )}
       </div>
       {readMoreArticles && <ArticleList articles={readMoreArticles} />}
-      <NavigateLink text="Read all recent" route="/stories/list" />
+      <NavigateLink text="Read all recent" route="/stories/read" />
     </HomepageSection>
   );
 }

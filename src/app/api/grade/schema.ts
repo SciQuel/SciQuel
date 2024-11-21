@@ -1,19 +1,12 @@
+import { QuestionType } from "@prisma/client";
 import { z } from "zod";
 
-export const questionTypeSchema = z.enum(
-  [
-    "MULTIPLE_CHOICE",
-    "TRUE_FALSE",
-    "DIRECT_MATCHING",
-    "COMPLEX_MATCHING",
-    "SELECT_ALL",
-  ],
-  {
-    required_error: "question_type is required",
-    invalid_type_error:
-      "Invalid question_type.  Valid question_type: MULTIPLE_CHOICE | SELECT_ALL | COMPLEX_MATCHING | DIRECT_MATCHING | TRUE_FALSE",
-  },
-);
+export const questionTypeSchema = z.nativeEnum(QuestionType, {
+  required_error: "question_type is required",
+  invalid_type_error:
+    "Invalid question_type.  Valid question_type: " +
+    Object.keys(QuestionType).join(" | "),
+});
 
 export const storyIdSchema = z
   .string({
@@ -39,17 +32,22 @@ export const postSchema = z.object({
     .regex(/^[0-9a-f]{24}$/, {
       message: "quiz_question_id must be a valid ObjectId",
     }),
-  quiz_record_id: z
-    .string({
-      required_error: "quiz_record_id is required",
-      invalid_type_error: "quiz_record_id must be a ObjectId",
-    })
-    .regex(/^[0-9a-f]{24}$/, {
-      message: "quiz_record_id must be a valid ObjectId",
-    }),
-  answer: z.any({
-    required_error: "answer is required",
-  }),
+  // number | number[] | number[][] | boolean[] | null
+  answer: z
+    .union(
+      [
+        z.number(),
+        z.array(z.number()),
+        z.array(z.boolean()),
+        z.array(z.array(z.number())),
+      ],
+      {
+        invalid_type_error:
+          "answer must be number, number[], number[][], boolean[], or null depend on question type",
+        required_error: "answer is required in body",
+      },
+    )
+    .nullable(),
 });
 export const complexMatchingAnswerSchema = z
   .array(
