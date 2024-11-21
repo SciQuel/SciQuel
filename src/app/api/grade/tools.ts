@@ -80,16 +80,8 @@ interface handleQuizReturnI {
   errorRes: NextResponse | null;
   success: boolean;
 }
-<<<<<<< HEAD
-
 /** return score, user response that is converted to string array */
-export function grading(params: questinoType) {
-=======
-/**
- * return score, user response that is converted to string array
- */
 export function grading(params: gradingParam) {
->>>>>>> origin/quiz_back_end
   const { questionType, userAnswer, correctAnswer, maxScore } = params;
 
   //correctAnswer is taken from data base which is guarantee the correct type we are looking for
@@ -117,9 +109,7 @@ export function grading(params: gradingParam) {
   };
 }
 
-/**
- * calculate the percentage of people get the question right
- */
+/** calculate the percentage of people get the question right */
 export async function getPercentageQuizQuestionRight(
   quizQuestionId: string,
   quizType: QuizType = "POST_QUIZ",
@@ -157,9 +147,7 @@ export async function getPercentageQuizQuestionRight(
   return percentageRoundUp;
 }
 
-/**
- * calculate the percentage of people get the exact number of correct question given
- */
+/** calculate the percentage of people get the exact number of correct question given */
 export async function getPercentageQuizStoryGrade(
   storyId: string,
   numberCorrectAnswer: number,
@@ -660,10 +648,9 @@ interface aggregateGradeI {
 }
 
 /**
- * calculate to get total score and max score
- * calculate how many question user answer right first time
- * create Grade for other quiz question that user not answered
- * Update total score, total question, maxScore, and amount of questions user answer right
+ * calculate to get total score and max score calculate how many question user answer right first
+ * time create Grade for other quiz question that user not answered Update total score, total
+ * question, maxScore, and amount of questions user answer right
  */
 export async function updatePreQuiz(userId: string, storyId: string) {
   //get pre-quiz result

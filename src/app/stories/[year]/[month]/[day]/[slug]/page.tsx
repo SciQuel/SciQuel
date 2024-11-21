@@ -1,11 +1,9 @@
 import { type GetStoryResult } from "@/app/api/stories/[year]/[month]/[day]/[slug]/route";
 import { type GetStoriesResult } from "@/app/api/stories/route";
-<<<<<<< HEAD
 import Avatar from "@/components/Avatar";
 import MoreCard from "@/components/MoreCard";
 import Quiz from "@/components/Quiz";
 import FromThisSeries from "@/components/story-components/FromThisSeries";
-=======
 // import Dictionary from "@/components/story-components/dictionary/Dictionary";
 // import { DictionaryProvider } from "@/components/story-components/dictionary/DictionaryContext";
 // import DictionarySentence from "@/components/story-components/dictionary/DictionarySentence";
@@ -14,23 +12,19 @@ import FromThisSeries from "@/components/story-components/FromThisSeries";
 // import StoryParagraph from "@/components/story-components/markdown/StoryParagraph";
 import { PrintModeProvider } from "@/components/story-components/PrintContext";
 import { StoryScrollProvider } from "@/components/story-components/scroll/ScrollProvider";
->>>>>>> origin/quiz_back_end
 import ShareLinks from "@/components/story-components/ShareLinks";
 import StoryCredits from "@/components/story-components/StoryCredits";
 import StoryFooter from "@/components/story-components/StoryFooter";
 import { tagUser } from "@/lib/cache";
 import env from "@/lib/env";
 import { generateMarkdown } from "@/lib/markdown";
-<<<<<<< HEAD
 import { type QuizQuestion, type StoryTopic } from "@prisma/client";
 import { DateTime } from "luxon";
 import Image from "next/image";
 import React, { type ReactNode } from "react";
-=======
+
 // import { getServerSession } from "next-auth";
 // import Image from "next/image";
-import { type ReactNode } from "react";
->>>>>>> origin/quiz_back_end
 
 interface Params {
   params: {
@@ -163,53 +157,6 @@ export default async function StoriesPage({ params }: Params) {
                 <p className=" mt-2 text-sm text-[#616161]">
                   {story.storyContent ? story.storyContent[0].footer ?? "" : ""}
                 </p>
-<<<<<<< HEAD
-              );
-            })}
-          </div>
-          <p>
-            {DateTime.fromJSDate(story.publishedAt).toLocaleString({
-              ...DateTime.DATETIME_MED,
-              timeZoneName: "short",
-            })}
-            {story.updatedAt != story.publishedAt
-              ? " | " +
-                DateTime.fromJSDate(story.updatedAt).toLocaleString({
-                  ...DateTime.DATETIME_MED,
-                  timeZoneName: "short",
-                })
-              : ""}
-          </p>
-        </div>
-        <Quiz Quizzes={quizzes} />
-        <div className="mx-2 mt-2 flex flex-col items-center gap-5 md:mx-auto">
-          {file.result as ReactNode}
-        </div>
-        <p className="w-[calc( 100% - 1rem )] mx-2 my-5 border-t-2 border-[#616161]  text-sm text-[#616161] md:mx-auto md:w-[720px]">
-          Animation provided by Source name 1. Sources provided by Source name
-          2. We thank Funding 1 for their support, and Professor 2 for their
-          guidance. Ex. Cover Image: “Hawaiian Bobtail Squid” is licensed under
-          CC BY-NC 4.0.
-        </p>
-        {story.storyContributions.map((element, index) => (
-          <div
-            key={`contributor-footer-${index}`}
-            className="w-[calc( 100% - 1rem )] mx-2 mb-3 flex flex-row items-stretch rounded-2xl border border-sciquelCardBorder p-3 shadow-md md:mx-auto md:w-[720px]"
-          >
-            <Avatar
-              imageUrl={element.contributor.avatarUrl ?? undefined}
-              label={element.contributor.firstName[0]}
-              className="m-5"
-              size="4xl"
-            />
-            <div className="m-5 flex flex-[2.3] flex-col">
-              <p className="font-alegreyaSansSC text-4xl font-medium text-sciquelTeal">
-                {element.contributor.firstName} {element.contributor.lastName}
-              </p>
-              <p className="flex-1 font-sourceSerif4 text-xl">
-                {element.bio ?? element.contributorByline ?? ""}
-              </p>
-=======
                 {/* <p className=" mt-2 text-sm text-[#616161]">
                     <span className="font-semibold">Acknowledgements:</span>{" "}
                     Animation provided by Source name 1. Sources provided by
@@ -249,10 +196,9 @@ export default async function StoriesPage({ params }: Params) {
                     10.1038/nature10810
                   </p> */}
               </div>
->>>>>>> origin/quiz_back_end
             </div>
           </div>
-
+          <Quiz Quizzes={quizzes} />
           <StoryFooter
             storyContributions={story.storyContributions}
             articles1={whatsNewArticles}

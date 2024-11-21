@@ -75,7 +75,6 @@ export default function Quiz({ Quizzes }: Props) {
         `${env.NEXT_PUBLIC_SITE_URL}/api/grade`,
         {
           quiz_question_id: selectedAnswer.quizId,
-          quiz_record_id: Quizzes.quiz_record_id,
           answer: selectedAnswer.answer,
         },
       );
@@ -107,15 +106,15 @@ export default function Quiz({ Quizzes }: Props) {
   };
 
   return (
-    <div className="quiz-body mx-auto my-6 flex w-[720px] max-w-screen-lg flex-col rounded-sm border border-sciquelCardBorder bg-white md-qz:w-full">
+    <div className="quiz-body md-qz:w-full mx-auto my-6 flex w-[720px] max-w-screen-lg flex-col rounded-sm border border-sciquelCardBorder bg-white">
       <div className="quiz-subheader ml-5 mt-6">
         <h2 className="font-sourceSerif4 text-base font-normal text-black">
           How much do you know already know about microglia?
         </h2>
       </div>
       <ProgBar current={prog} numOfQues={numQues} answered={answered}></ProgBar>
-      <div className="quiz-content mt-6 flex h-full w-full flex-col items-center px-11 py-3 md-qz:self-center">
-        <div className="question-container relative w-full px-5 md-qz:flex md-qz:flex-col md-qz:p-0">
+      <div className="quiz-content md-qz:self-center mt-6 flex h-full w-full flex-col items-center px-11 py-3">
+        <div className="question-container md-qz:flex md-qz:flex-col md-qz:p-0 relative w-full px-5">
           <div className="absolute left-[-4%] top-[1%] w-[7%]">
             <p>
               {currentQuestion + 1} of {numQues}

@@ -136,32 +136,7 @@ export default function ArticleCard({
             </span>
           </div>
         </div>
-<<<<<<< HEAD
-
-        <div
-          className={clsx(
-            "relative",
-            mini
-              ? preferHorizontal
-                ? "hidden"
-                : "h-24"
-              : preferHorizontal
-              ? "w-1/3"
-              : "h-44",
-          )}
-        >
-          <Image
-            src={thumbnailUrl}
-            fill={true}
-            style={{ objectFit: "cover" }}
-            alt={title}
-          />
-        </div>
-      </div>
-    </Link>
-=======
       </Link>
     </div>
->>>>>>> origin/quiz_back_end
   );
 }
