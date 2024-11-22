@@ -17,7 +17,7 @@ export function getData() {
         checked: false,
       },
       {
-        data: { id: 3, name: "Chemical Eng.", color: "bg-[#E3954F]" },
+        data: { id: 3, name: "Chemical Engineering", color: "bg-[#E3954F]" },
         checked: false,
       },
       {
@@ -25,15 +25,15 @@ export function getData() {
         checked: false,
       },
       {
-        data: { id: 5, name: "Comp Sci.", color: "bg-[#FFC834]" },
+        data: { id: 5, name: "Computer Science", color: "bg-[#FFC834]" },
         checked: false,
       },
       {
-        data: { id: 6, name: "Electrical Eng.", color: "bg-[#ACB377]" },
+        data: { id: 6, name: "Electrical Engineering", color: "bg-[#ACB377]" },
         checked: false,
       },
       {
-        data: { id: 7, name: "Envir. Science", color: "bg-[#54623A]" },
+        data: { id: 7, name: "Environment Science", color: "bg-[#54623A]" },
         checked: false,
       },
       {
@@ -45,7 +45,7 @@ export function getData() {
         checked: false,
       },
       {
-        data: { id: 10, name: "Mechanical Eng.", color: "bg-[#0A2B5E]" },
+        data: { id: 10, name: "Mechanical Engineering", color: "bg-[#0A2B5E]" },
         checked: false,
       },
       {
