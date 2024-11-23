@@ -82,7 +82,7 @@ const ComplexMatchingQuestion: React.FC<ComplexMatchingQuestionProps> = ({
       );
 
       if (draggedIndex !== -1 && targetIndex !== -1) {
-        // reorder items
+        // Reorder items in the flat word bank
         const reorderedItems = [...allItems];
         const [movedItem] = reorderedItems.splice(draggedIndex, 1);
         reorderedItems.splice(targetIndex, 0, movedItem);
@@ -233,7 +233,7 @@ const ComplexMatchingQuestion: React.FC<ComplexMatchingQuestionProps> = ({
         </div>
 
         <div className="mt-2 flex flex-wrap gap-4">
-          {(question.categories || []).map((category) => {
+          {(question.categories || []).map((category, index) => {
             const categoryColor =
               defaultColors[
                 (question.categories || []).indexOf(category) %
@@ -250,7 +250,7 @@ const ComplexMatchingQuestion: React.FC<ComplexMatchingQuestionProps> = ({
                   color: categoryColor,
                 }}
               >
-                + Add Word to {category.name}
+                + Add Word to {index + 1}
               </button>
             );
           })}
