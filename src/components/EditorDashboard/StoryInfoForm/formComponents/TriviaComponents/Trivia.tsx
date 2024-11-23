@@ -47,7 +47,7 @@ export interface Question {
   categories?: MatchingCategory[];
   options?: { id: number; content: string }[];
   correct_answers?: number[];
-  wordBank: WordBankItem[]; // Add this to the type definition
+  //wordBank: WordBankItem[]; // Add this to the type definition
 }
 
 const Trivia: React.FC = () => {

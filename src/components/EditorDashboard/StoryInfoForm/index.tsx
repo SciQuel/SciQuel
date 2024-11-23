@@ -1,12 +1,9 @@
-
 import { type Contribution } from "@/app/editor/(full-page)/story/info/StoryInfoEditorPageClient";
 import MarkdownEditorStoryInfo from "@/components/EditorDashboard/MarkdownEditorStoryInfo";
+import Trivia from "@/components/EditorDashboard/StoryInfoForm/formComponents/TriviaComponents/Trivia";
 import Form from "@/components/Form";
 import { Popover, Transition } from "@headlessui/react";
-import {
-  PlusCircleIcon,
-  PlusIcon,
-} from "@heroicons/react/20/solid";
+import { PlusCircleIcon, PlusIcon } from "@heroicons/react/20/solid";
 import {
   type Category,
   type GeneralSubject,
@@ -14,6 +11,7 @@ import {
   type StoryType,
   type Subtopic,
 } from "@prisma/client";
+import clsx from "clsx";
 import { useRouter } from "next/navigation";
 import {
   Fragment,
@@ -38,7 +36,6 @@ import NewSubject from "./formComponents/subjectComponents/newSubject";
 import NewSubtopic from "./formComponents/subtopicComponents/newSubtopic";
 import { getData } from "./StoryFormFunc";
 import Tags from "./Tags";
-import clsx from "clsx";
 
 interface Section {
   type: string;
@@ -51,8 +48,8 @@ interface Props {
   setTitle: (value: string) => void;
   summary?: string;
   setSummary: (value: string) => void;
-  image?: File | string | null;  //add File | string | null;
-  setImage: (image: File | string | null) => void ; //add File | string | null
+  image?: File | string | null; //add File | string | null;
+  setImage: (image: File | string | null) => void; //add File | string | null
   caption?: string;
   setCaption: (value: string) => void;
   slug?: string | undefined;
@@ -148,7 +145,7 @@ export default function StoryInfoForm({
     useState(false);
   const [isCreateSubjectModalOpen, setIsCreateSubjectModalOpen] =
     useState(false);
-  
+
   const [success, setSuccess] = useState(false);
   const filteredTopicList =
     topicQuery === ""
@@ -181,31 +178,32 @@ export default function StoryInfoForm({
         );
 
   //add a topic tag
-const addTopic = (id: any) => {
-  setTopicList((prevList) =>
-    prevList.map((item: any) => {
-      if (item.data.id === id) {
-        if (item.checked) {
-          // Uncheck and remove the topic
-          removeTopicTag(id);
-          return { ...item, checked: false };
-        } else {
-          // Check and add the topic only if it's not already in the topics state
-          setTopics((prevTopics) => {
-            const isAlreadyAdded = prevTopics.some((topic) => topic.data.id === id);
-            if (!isAlreadyAdded) {
-              return [...prevTopics, item];
-            }
-            return prevTopics;
-          });
-          return { ...item, checked: true };
+  const addTopic = (id: any) => {
+    setTopicList((prevList) =>
+      prevList.map((item: any) => {
+        if (item.data.id === id) {
+          if (item.checked) {
+            // Uncheck and remove the topic
+            removeTopicTag(id);
+            return { ...item, checked: false };
+          } else {
+            // Check and add the topic only if it's not already in the topics state
+            setTopics((prevTopics) => {
+              const isAlreadyAdded = prevTopics.some(
+                (topic) => topic.data.id === id,
+              );
+              if (!isAlreadyAdded) {
+                return [...prevTopics, item];
+              }
+              return prevTopics;
+            });
+            return { ...item, checked: true };
+          }
         }
-      }
-      return item;
-    }),
-  );
-};
-
+        return item;
+      }),
+    );
+  };
 
   // add a subtopic tag
   const addSubtopic = (id: any) => {
@@ -247,7 +245,7 @@ const addTopic = (id: any) => {
   const removeTopicTag = (id: number) => {
     setTopics((prevTopics) => {
       const updatedTopics = prevTopics.filter((item: any) => item.id !== id);
-      
+
       // If no topics remain, reset subtopics and subjects
       if (updatedTopics.length === 0) {
         setSubtopicList(data.subtopics);
@@ -255,17 +253,16 @@ const addTopic = (id: any) => {
         setSubtopics([]);
         setSubjects([]);
       }
-  
+
       return updatedTopics;
     });
-  
+
     setTopicList((prevList) =>
       prevList.map((item: any) =>
         item.id === id ? { ...item, checked: false } : item,
-      )
+      ),
     );
   };
-  
 
   // remove a subtopic tag
   const removeSubtopicTag = (id: number) => {
@@ -321,8 +318,8 @@ const addTopic = (id: any) => {
   return (
     <div className="flex flex-col gap-2">
       {/* Success Popup */}
-           {success && (
-        <div className="fixed top-4 right-4 bg-green-500 text-white p-2 rounded shadow-lg">
+      {success && (
+        <div className="fixed right-4 top-4 rounded bg-green-500 p-2 text-white shadow-lg">
           Update successful!
         </div>
       )}
@@ -331,31 +328,32 @@ const addTopic = (id: any) => {
         setContributions={setContributors}
         storyId={storyId ?? ""}
       />
-    <Form
+      <Form
         onSubmit={(e) => {
           e.preventDefault();
           if (!storyId) {
             return;
           }
-          
+
           const form = new FormData();
           const topicNames = topics
-          .map(topic => {
-            if (typeof topic === "string") {
-              
-              return topic.toUpperCase().replace(/ /g, "_");
-              // Don't know why complier complain about....topic is array with data object.
-            } else if (topic.data && topic.data.name) {
-              return topic.data.name.toUpperCase().replace(/ /g, "_");
-            } else {
-              return null;
-            }
-          })
-          .filter(name => name !== null); // Filter out any invalid values
-      
-        // Convert to JSON string format
-        const topicString = `[${topicNames.map(name => `"${name}"`).join(", ")}]`;
-        console.log("Final topic string:", topicString); // Debug log
+            .map((topic) => {
+              if (typeof topic === "string") {
+                return topic.toUpperCase().replace(/ /g, "_");
+                // Don't know why complier complain about....topic is array with data object.
+              } else if (topic.data && topic.data.name) {
+                return topic.data.name.toUpperCase().replace(/ /g, "_");
+              } else {
+                return null;
+              }
+            })
+            .filter((name) => name !== null); // Filter out any invalid values
+
+          // Convert to JSON string format
+          const topicString = `[${topicNames
+            .map((name) => `"${name}"`)
+            .join(", ")}]`;
+          console.log("Final topic string:", topicString); // Debug log
 
           form.append("id", storyId);
           form.append("summary", summary ?? "");
@@ -369,7 +367,7 @@ const addTopic = (id: any) => {
           }
 
           form.append("imageCaption", initialCaption ?? "");
-          
+
           form.append("storyType", storyType);
 
           form.append("category", category);
@@ -377,9 +375,9 @@ const addTopic = (id: any) => {
           form.append("titleColor", initialTitleColor ?? "#000000");
           form.append("summaryColor", initialSummaryColor ?? "#000000");
           form.append("slug", initialSlug ?? "");
-          
+
           form.append("topics", topicString);
-          
+
           // form.append(
           //   "topics",
           //   `[${initialTopics
@@ -389,7 +387,7 @@ const addTopic = (id: any) => {
           //     )
           //     .toString()}]`
           // );
-          console.log("topic",topics);
+          console.log("topic", topics);
 
           if (typeof initialDate === "string") {
             form.append("publishDate", initialDate);
@@ -399,7 +397,7 @@ const addTopic = (id: any) => {
 
           form.append("content", initialBody);
           form.append("footer", "");
-          console.log(form)
+          console.log(form);
 
           updateWholeArticle(form)
             .then((result) => {
@@ -413,8 +411,6 @@ const addTopic = (id: any) => {
             });
         }}
       >
-  
-
         {/* STORY TITLE FORM INPUT */}
         <ArticleTitle
           value={initialTitle}
@@ -425,15 +421,15 @@ const addTopic = (id: any) => {
           setDirty={setDirty}
         />
 
-      {/* SUMMARY INPUT */}
-      <ArticleSummary
-        value={initialSummary ?? ""}
-        onChange={initialSetSummary}
-        required
-        indicateRequired
-        disabled={loading}
-        setDirty={setDirty}
-      />
+        {/* SUMMARY INPUT */}
+        <ArticleSummary
+          value={initialSummary ?? ""}
+          onChange={initialSetSummary}
+          required
+          indicateRequired
+          disabled={loading}
+          setDirty={setDirty}
+        />
 
         {/* PUBLISH DATE FORM */}
         <ArticleDate
@@ -528,9 +524,9 @@ const addTopic = (id: any) => {
               setCategory(e.target.value as Category);
             }}
           >
-              <option value="" disabled selected hidden>
+            <option value="" disabled selected hidden>
               Select a story type
-              </option>
+            </option>
             <option value="ARTICLE">Article</option>
             <option value="PODCAST">Podcast</option>
           </select>
@@ -788,42 +784,42 @@ const addTopic = (id: any) => {
           </div>
         </div>
         {/* Real-time validation messages */}
-        <div className="text-red-500 text-sm mb-3">
+        <div className="mb-3 text-sm text-red-500">
           {initialTitle.length === 0 && <p>Title is required.</p>}
           {summary.length === 0 && <p>Summary is required.</p>}
           {initialImage === null && <p>An image is required.</p>}
           {loading && <p>Loading... Please wait.</p>}
         </div>
+        <Trivia></Trivia>
         <button
-        type="submit"
-        className="my-5 select-none rounded-md bg-teal-600 px-2 py-1 font-semibold text-white disabled:pointer-events-none disabled:opacity-50"
-        disabled={
-          initialTitle.length === 0 ||
-          summary.length === 0 ||
-          initialImage === null ||
-          loading
-        }
-      >
-        Continue
-      </button>
-    
+          type="submit"
+          className="my-5 select-none rounded-md bg-teal-600 px-2 py-1 font-semibold text-white disabled:pointer-events-none disabled:opacity-50"
+          disabled={
+            initialTitle.length === 0 ||
+            summary.length === 0 ||
+            initialImage === null ||
+            loading
+          }
+        >
+          Continue
+        </button>
       </Form>
 
       {/* are these two used for anything? I deleted them 
         and nothing happened . . . */}
-    <NewSubtopic
-      isOpen={isCreateSubtopicModalOpen}
-      setIsOpen={setIsCreateSubtopicModalOpen}
-      topicList={topics}
-      createSubtopic={createSubtopic}
-    />
+      <NewSubtopic
+        isOpen={isCreateSubtopicModalOpen}
+        setIsOpen={setIsCreateSubtopicModalOpen}
+        topicList={topics}
+        createSubtopic={createSubtopic}
+      />
 
-    <NewSubject
-      isOpen={isCreateSubjectModalOpen}
-      setIsOpen={setIsCreateSubjectModalOpen}
-      topicList={topics}
-      createSubject={createSubject}
-    />
-  </div>
+      <NewSubject
+        isOpen={isCreateSubjectModalOpen}
+        setIsOpen={setIsCreateSubjectModalOpen}
+        topicList={topics}
+        createSubject={createSubject}
+      />
+    </div>
   );
 }
