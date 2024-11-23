@@ -58,7 +58,7 @@ const ComplexMatchingQuestion: React.FC<ComplexMatchingQuestionProps> = ({
 
   const handleDrop = (targetItemId: number) => {
     if (draggedItem) {
-      // Flatten the word bank: Treat all items as independent entities
+      // flatten word bank
       const allItems: Array<{
         id: number;
         content: string;
@@ -71,25 +71,22 @@ const ComplexMatchingQuestion: React.FC<ComplexMatchingQuestionProps> = ({
           })),
         ) || [];
 
-      // Find the index of the dragged item
       const draggedIndex = allItems.findIndex(
         (item) =>
           item.id === draggedItem.itemId &&
           item.categoryId === draggedItem.originalCategoryId,
       );
 
-      // Find the index of the target item
       const targetIndex = allItems.findIndex(
         (item) => item.id === targetItemId,
       );
 
       if (draggedIndex !== -1 && targetIndex !== -1) {
-        // Reorder items in the flat word bank
+        // reorder items
         const reorderedItems = [...allItems];
         const [movedItem] = reorderedItems.splice(draggedIndex, 1);
         reorderedItems.splice(targetIndex, 0, movedItem);
 
-        // Reorganize items into categories while maintaining their original category
         const updatedCategories = question.categories?.map((category) => ({
           ...category,
           items: reorderedItems
