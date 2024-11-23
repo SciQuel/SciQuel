@@ -30,6 +30,12 @@ export interface MatchingCategory {
   items: { id: number; content: string }[];
 }
 
+export interface MatchingItem {
+  id: number;
+  categoryId: number;
+  content: string;
+}
+
 export type QuestionType =
   | "MULTIPLE_CHOICE"
   | "TRUE_FALSE"
@@ -45,6 +51,7 @@ export interface Question {
   pairs?: MatchingPair[];
   trueOrFalseQuestions?: TrueOrFalseQuestion[];
   categories?: MatchingCategory[];
+  categoryItems?: MatchingItem[];
   options?: { id: number; content: string }[];
   correct_answers?: number[];
   //wordBank: WordBankItem[]; // Add this to the type definition
@@ -192,6 +199,24 @@ const Trivia: React.FC = () => {
     );
   };
 
+  const testDeleteCat = (questionId: number, categoryId: number) => {
+    setQuestions(
+      questions.map((q) =>
+        q.id === questionId
+          ? {
+              ...q,
+              categories: (q.categories || []).filter(
+                (c) => c.id !== categoryId,
+              ),
+              categoryItems: (q.categoryItems || []).filter(
+                (citem) => citem.categoryId !== categoryId,
+              ),
+            }
+          : q,
+      ),
+    );
+  };
+
   const updateCategory = (
     questionId: number,
     categoryId: number,
@@ -209,6 +234,36 @@ const Trivia: React.FC = () => {
           : q,
       ),
     );
+  };
+
+  // temp test
+  const testAddItemToCategory = (questionId: number, categoryId: number) => {
+    setQuestions(
+      questions.map((q) => {
+        return q.id === questionId
+          ? {
+              ...q,
+              categoryItems: [
+                ...(q.categoryItems ?? []),
+                {
+                  id: nextId,
+                  content: "",
+                  categoryId: categoryId,
+                },
+              ],
+              // categories: (q.categories || []).map((c) =>
+              //   c.id === categoryId
+              //     ? {
+              //         ...c,
+              //         items: [...(c.items || []), { id: nextId, content: "" }],
+              //       }
+              //     : c,
+              // ),
+            }
+          : q;
+      }),
+    );
+    setNextId(nextId + 1);
   };
 
   const addItemToCategory = (questionId: number, categoryId: number) => {
@@ -230,6 +285,73 @@ const Trivia: React.FC = () => {
       ),
     );
     setNextId(nextId + 1);
+  };
+
+  const testUpdateItemInCategory = (
+    questionId: number,
+    //  categoryId: number,
+    itemId: number,
+    updatedItem: Partial<{ content: string }>,
+  ) => {
+    setQuestions(
+      questions.map((q) => {
+        const items = q.categoryItems
+          ? q.categoryItems.map((categoryItem) => {
+              if (categoryItem.id == itemId) {
+                return { ...categoryItem, content: updatedItem.content ?? "" };
+              }
+              return categoryItem;
+            })
+          : ([] as MatchingItem[]);
+
+        return q.id === questionId
+          ? {
+              ...q,
+              categoryItems: [...(items ?? [])],
+              // categories: (q.categories || []).map((c) =>
+              //   c.id === categoryId
+              //     ? {
+              //         ...c,
+              //         items: (c.items || []).map((i) =>
+              //           i.id === itemId ? { ...i, ...updatedItem } : i,
+              //         ),
+              //       }
+              //     : c,
+              // ),
+            }
+          : q;
+      }),
+    );
+  };
+
+  const testSwapCatItems = (
+    questionId: number,
+    index1: number,
+    index2: number,
+  ) => {
+    setQuestions((state) =>
+      state.map((question) => {
+        if (question.id != questionId) {
+          return question;
+        }
+
+        const temp = question.categoryItems ? [...question.categoryItems] : [];
+
+        if (index1 < 0 || index2 < 0) {
+          return question;
+        }
+
+        if (index1 < temp.length && index2 < temp.length) {
+          const tempItem = { ...(temp[index1] ?? {}) };
+          temp[index1] = temp[index2];
+          temp[index2] = tempItem;
+
+          return { ...question, categoryItems: temp };
+        }
+
+        return question;
+      }),
+    );
   };
 
   const updateItemInCategory = (
@@ -443,11 +565,12 @@ const Trivia: React.FC = () => {
               question={question}
               updateQuestion={updateQuestion}
               addCategory={addCategory}
-              deleteCategory={deleteCategory}
+              deleteCategory={testDeleteCat}
               updateCategory={updateCategory}
-              addItemToCategory={addItemToCategory}
-              updateItemInCategory={updateItemInCategory}
+              addItemToCategory={testAddItemToCategory}
+              updateItemInCategory={testUpdateItemInCategory}
               deleteItemFromCategory={deleteItemFromCategory}
+              testSwap={testSwapCatItems}
             />
           )}
           {question.type === "SELECT_ALL" && (

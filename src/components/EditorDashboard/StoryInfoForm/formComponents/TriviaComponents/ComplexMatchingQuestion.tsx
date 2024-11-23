@@ -14,7 +14,7 @@ interface ComplexMatchingQuestionProps {
   addItemToCategory: (questionId: number, categoryId: number) => void;
   updateItemInCategory: (
     questionId: number,
-    categoryId: number,
+    // categoryId: number,
     itemId: number,
     updatedItem: Partial<{ content: string }>,
   ) => void;
@@ -23,6 +23,7 @@ interface ComplexMatchingQuestionProps {
     categoryId: number,
     itemId: number,
   ) => void;
+  testSwap: (questionId: number, index1: number, index2: number) => void;
 }
 
 const ComplexMatchingQuestion: React.FC<ComplexMatchingQuestionProps> = ({
@@ -34,11 +35,14 @@ const ComplexMatchingQuestion: React.FC<ComplexMatchingQuestionProps> = ({
   addItemToCategory,
   updateItemInCategory,
   deleteItemFromCategory,
+  testSwap,
 }) => {
   const [draggedItem, setDraggedItem] = useState<{
     itemId: number;
     originalCategoryId: number;
   } | null>(null);
+
+  const [testDraggedIndex, setTestDraggedIndex] = useState<number | null>(null);
 
   const handleCategoryNameChange = (categoryId: number, name: string) => {
     updateCategory(question.id, categoryId, { name });
@@ -49,9 +53,9 @@ const ComplexMatchingQuestion: React.FC<ComplexMatchingQuestionProps> = ({
     itemId: number,
     content: string,
   ) => {
-    updateItemInCategory(question.id, categoryId, itemId, { content });
+    updateItemInCategory(question.id, itemId, { content });
   };
-
+  // categoryId,
   const handleDragStart = (itemId: number, originalCategoryId: number) => {
     setDraggedItem({ itemId, originalCategoryId });
   };
@@ -169,6 +173,35 @@ const ComplexMatchingQuestion: React.FC<ComplexMatchingQuestionProps> = ({
 
       <div className="word-bank mt-6">
         <h3 className="text-lg font-semibold">Word Bank</h3>
+        <div>
+          <h4>test</h4>
+          <div className="grid grid-cols-3 gap-5">
+            {question.categoryItems ? (
+              question.categoryItems.map((item, index) => (
+                <div
+                  draggable
+                  onDragOver={handleDragOver}
+                  onDragStart={() => {
+                    console.log("drag start: ", index);
+                    setTestDraggedIndex(index);
+                  }}
+                  onDrop={() => {
+                    if (typeof testDraggedIndex == "number") {
+                      console.log("drag end: ", testDraggedIndex, " ", index);
+                      testSwap(question.id, testDraggedIndex, index);
+                    }
+                  }}
+                  key={item.content + `${index}`}
+                  className="bg-slate-400"
+                >
+                  Test {item.id} {item.categoryId} {item.content}
+                </div>
+              ))
+            ) : (
+              <></>
+            )}
+          </div>
+        </div>
         <div
           className="flex flex-wrap gap-4 py-4"
           style={{ width: "100%", minHeight: "150px", overflow: "hidden" }}
@@ -243,7 +276,11 @@ const ComplexMatchingQuestion: React.FC<ComplexMatchingQuestionProps> = ({
               <button
                 key={category.id}
                 type="button"
-                onClick={() => addItemToCategory(question.id, category.id)}
+                onClick={() => {
+                  console.log("click!");
+                  console.log(question.categoryItems);
+                  addItemToCategory(question.id, category.id);
+                }}
                 className="rounded border px-2 py-1 text-sm"
                 style={{
                   borderColor: categoryColor,
