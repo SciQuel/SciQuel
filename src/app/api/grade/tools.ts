@@ -15,27 +15,6 @@ import {
 
 const ROUND_UP_DECIMAL = 1;
 
-//lookup-object help determine which function should use for grading based on QuestionType
-const GRADING_FUNCTION: {
-  [key in QuestionType]: (correctAnswer: any, userAnswer: any) => resultGradeI;
-} = {
-  //correctAnswer is guarantee to be string array in data base
-  COMPLEX_MATCHING: (correctAnswer, userAnswer) =>
-    complexMatchingGrade(correctAnswer as string[], userAnswer),
-  //correctAnswer is guarantee to be number array
-  DIRECT_MATCHING: (correctAnswer, userAnswer) =>
-    directMatchingGrade(correctAnswer as number[], userAnswer),
-  //correctAnswer is guarantee to be number
-  MULTIPLE_CHOICE: (correctAnswer, userAnswer) =>
-    multipleChoiceGrade(correctAnswer as number, userAnswer),
-  //correctAnswer is guarantee to be boolean array
-  SELECT_ALL: (correctAnswer, userAnswer) =>
-    selectAllGrade(correctAnswer as boolean[], userAnswer),
-  //correctAnswer is guarantee to be boolean array
-  TRUE_FALSE: (correctAnswer, userAnswer) =>
-    trueFalseGrade(correctAnswer as boolean[], userAnswer),
-};
-
 export const QUIZ_TYPE_HANDLER: {
   [key in QuizType]: (param: handleQuizI) => Promise<handleQuizReturnI>;
 } = {
@@ -80,6 +59,27 @@ interface handleQuizReturnI {
   errorRes: NextResponse | null;
   success: boolean;
 }
+
+//lookup-object help determine which function should use for grading based on QuestionType
+const GRADING_FUNCTION: {
+  [key in QuestionType]: (correctAnswer: any, userAnswer: any) => resultGradeI;
+} = {
+  //correctAnswer is guarantee to be string array in data base
+  COMPLEX_MATCHING: (correctAnswer, userAnswer) =>
+    complexMatchingGrade(correctAnswer as string[], userAnswer),
+  //correctAnswer is guarantee to be number array
+  DIRECT_MATCHING: (correctAnswer, userAnswer) =>
+    directMatchingGrade(correctAnswer as number[], userAnswer),
+  //correctAnswer is guarantee to be number
+  MULTIPLE_CHOICE: (correctAnswer, userAnswer) =>
+    multipleChoiceGrade(correctAnswer as number, userAnswer),
+  //correctAnswer is guarantee to be boolean array
+  SELECT_ALL: (correctAnswer, userAnswer) =>
+    selectAllGrade(correctAnswer as boolean[], userAnswer),
+  //correctAnswer is guarantee to be boolean array
+  TRUE_FALSE: (correctAnswer, userAnswer) =>
+    trueFalseGrade(correctAnswer as boolean[], userAnswer),
+};
 /**
  * return score, user response that is converted to string array
  */
@@ -257,6 +257,7 @@ function complexMatchingGrade(
       total: correctAnswer.length,
       userResponseSubpart,
       categoriesResult: recordCategoriesResult,
+      correctOptionCounts,
     };
   }
 

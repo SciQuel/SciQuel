@@ -132,6 +132,11 @@ export async function POST(req: NextRequest) {
             explanation: quizQuestion.explanations?.[index],
           };
         }),
+        //last expplaination in array is for options holder
+        options_explanation:
+          quizQuestion.questionType === "COMPLEX_MATCHING"
+            ? quizQuestion.explanations?.[results.length - 1]
+            : undefined,
         percent_people_answer_correct: percentagePeopleAnswerCorrect,
       }),
       {
