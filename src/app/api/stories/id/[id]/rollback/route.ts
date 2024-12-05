@@ -5,7 +5,6 @@ interface Params {
   id: unknown;
 }
 
-//to get all the version numbers of the story
 async function POST(request: NextRequest, { params }: { params: Params }) {
   try {
     const { id } = params;
@@ -102,6 +101,7 @@ async function POST(request: NextRequest, { params }: { params: Params }) {
   }
 }
 
+//to get all the version numbers of the story
 async function GET(request: NextRequest, { params }: { params: Params }) {
   try {
     const { id } = params;

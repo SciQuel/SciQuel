@@ -245,21 +245,29 @@ export async function updateWholeArticle(formData: FormData) {
           summaryColor: originalStory.summaryColor,
           topics: originalStory.topics,
           subtopics: {
-            connect: originalStory.subtopics.map((sub) => ({ id: sub.id })),
+            create: originalStory.subtopics.map((subtopic) => ({
+              name: subtopic.name,
+            })),
           },
           generalSubjects: {
-            connect: originalStory.generalSubjects.map((sub) => ({
-              id: sub.id,
+            create: originalStory.generalSubjects.map((sub) => ({
+              name: sub.name,
+              storyId: originalStory.id,
             })),
           },
           storyContributions: {
-            connect: originalStory.storyContributions.map((contrib) => ({
-              id: contrib.id,
+            create: originalStory.storyContributions.map((contrib) => ({
+              storyId: originalStory.id,
+              bio: contrib.bio,
+              contributionType: contrib.contributionType,
+              contributorId: contrib.contributorId,
             })),
           },
           storyContent: {
-            connect: originalStory.storyContent.map((content) => ({
-              id: content.id,
+            create: originalStory.storyContent.map((content) => ({
+              content: content.content,
+              footer: content.footer,
+              storyId: originalStory.id,
             })),
           },
           published: originalStory.published,
@@ -267,8 +275,12 @@ export async function updateWholeArticle(formData: FormData) {
           thumbnailUrl: originalStory.thumbnailUrl,
           coverCaption: originalStory.coverCaption,
           quizzes: {
-            connect: originalStory.quizzes.map((quiz) => ({
-              id: quiz.id,
+            create: originalStory.quizzes.map((quiz) => ({
+              storyId: originalStory.id,
+              quizType: quiz.quizType,
+              totalScore: quiz.totalScore,
+              score: quiz.score,
+              userId: quiz.userId,
             })),
           },
           subtopicIds: originalStory.subtopicIds,
@@ -279,6 +291,20 @@ export async function updateWholeArticle(formData: FormData) {
         },
       }),
     ]);
+
+    //create new storyContent/storyContribution...
+    // StoryContent.create({
+    //   data: {
+    //     content: originalStory.storyContent.content,
+    //     footer: originalStory.storyContent.footer,
+    //     story: originalStory,
+    //     storyId: originalStory.id,
+    //     storyHistoryId
+
+    //     footer: footer,
+    //     storyId: id,
+    //   },
+    // });
 
     let finalThumbnailUrl = imageUrl ?? undefined;
     if (image && newImageName) {
