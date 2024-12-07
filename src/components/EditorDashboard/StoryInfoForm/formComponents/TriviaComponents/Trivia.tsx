@@ -193,21 +193,6 @@ const Trivia: React.FC = () => {
               categories: (q.categories || []).filter(
                 (c) => c.id !== categoryId,
               ),
-            }
-          : q,
-      ),
-    );
-  };
-
-  const testDeleteCat = (questionId: number, categoryId: number) => {
-    setQuestions(
-      questions.map((q) =>
-        q.id === questionId
-          ? {
-              ...q,
-              categories: (q.categories || []).filter(
-                (c) => c.id !== categoryId,
-              ),
               categoryItems: (q.categoryItems || []).filter(
                 (citem) => citem.categoryId !== categoryId,
               ),
@@ -236,8 +221,7 @@ const Trivia: React.FC = () => {
     );
   };
 
-  // temp test
-  const testAddItemToCategory = (questionId: number, categoryId: number) => {
+  const addItemToCategory = (questionId: number, categoryId: number) => {
     setQuestions(
       questions.map((q) => {
         return q.id === questionId
@@ -251,14 +235,6 @@ const Trivia: React.FC = () => {
                   categoryId: categoryId,
                 },
               ],
-              // categories: (q.categories || []).map((c) =>
-              //   c.id === categoryId
-              //     ? {
-              //         ...c,
-              //         items: [...(c.items || []), { id: nextId, content: "" }],
-              //       }
-              //     : c,
-              // ),
             }
           : q;
       }),
@@ -266,28 +242,7 @@ const Trivia: React.FC = () => {
     setNextId(nextId + 1);
   };
 
-  const addItemToCategory = (questionId: number, categoryId: number) => {
-    setQuestions(
-      questions.map((q) =>
-        q.id === questionId
-          ? {
-              ...q,
-              categories: (q.categories || []).map((c) =>
-                c.id === categoryId
-                  ? {
-                      ...c,
-                      items: [...(c.items || []), { id: nextId, content: "" }],
-                    }
-                  : c,
-              ),
-            }
-          : q,
-      ),
-    );
-    setNextId(nextId + 1);
-  };
-
-  const testUpdateItemInCategory = (
+  const UpdateItemInCategory = (
     questionId: number,
     //  categoryId: number,
     itemId: number,
@@ -308,23 +263,13 @@ const Trivia: React.FC = () => {
           ? {
               ...q,
               categoryItems: [...(items ?? [])],
-              // categories: (q.categories || []).map((c) =>
-              //   c.id === categoryId
-              //     ? {
-              //         ...c,
-              //         items: (c.items || []).map((i) =>
-              //           i.id === itemId ? { ...i, ...updatedItem } : i,
-              //         ),
-              //       }
-              //     : c,
-              // ),
             }
           : q;
       }),
     );
   };
 
-  const testSwapCatItems = (
+  const positionSwapCatItems = (
     questionId: number,
     index1: number,
     index2: number,
@@ -351,33 +296,6 @@ const Trivia: React.FC = () => {
 
         return question;
       }),
-    );
-  };
-
-  const updateItemInCategory = (
-    questionId: number,
-    categoryId: number,
-    itemId: number,
-    updatedItem: Partial<{ content: string }>,
-  ) => {
-    setQuestions(
-      questions.map((q) =>
-        q.id === questionId
-          ? {
-              ...q,
-              categories: (q.categories || []).map((c) =>
-                c.id === categoryId
-                  ? {
-                      ...c,
-                      items: (c.items || []).map((i) =>
-                        i.id === itemId ? { ...i, ...updatedItem } : i,
-                      ),
-                    }
-                  : c,
-              ),
-            }
-          : q,
-      ),
     );
   };
 
@@ -565,12 +483,12 @@ const Trivia: React.FC = () => {
               question={question}
               updateQuestion={updateQuestion}
               addCategory={addCategory}
-              deleteCategory={testDeleteCat}
+              deleteCategory={deleteCategory}
               updateCategory={updateCategory}
-              addItemToCategory={testAddItemToCategory}
-              updateItemInCategory={testUpdateItemInCategory}
+              addItemToCategory={addItemToCategory}
+              updateItemInCategory={UpdateItemInCategory}
               deleteItemFromCategory={deleteItemFromCategory}
-              testSwap={testSwapCatItems}
+              positionSwap={positionSwapCatItems}
             />
           )}
           {question.type === "SELECT_ALL" && (
