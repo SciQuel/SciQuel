@@ -228,7 +228,7 @@ export default function Settings() {
             <p className="">Text size (px)</p>
             <FontSlider />
           </li>
-          <li className="min-h-16 flex items-center justify-between">
+          <li className="flex min-h-16 items-center justify-between">
             <span className="basis-3/4">
               Turn on automatic captions for audio and video content
             </span>
