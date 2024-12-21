@@ -22,8 +22,8 @@
     "bcrypt": "^5.1.0",
     "clsx": "^1.2.1",
     "d3": "^7.8.5",
-    "eslint": "^8.44.0",
-    "eslint-config-next": "^13.4.7",
+    "eslint": "^9.16.0",
+    "eslint-config-next": "^15.0.4",
     "formidable": "^3.5.1",
     "formidable-serverless": "^1.1.1",
     "hastscript": "^7.2.0",
@@ -58,6 +58,8 @@
     "zod-form-data": "^2.0.1"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3.2.0",
+    "@eslint/js": "^9.16.0",
     "@ianvs/prettier-plugin-sort-imports": "^4.0.0",
     "@svgr/webpack": "^8.0.1",
     "@types/bcrypt": "^5.0.0",
@@ -72,16 +74,15 @@
     "@types/react-dom": "^18.2.6",
     "@types/slug": "^5.0.3",
     "@types/wavesurfer.js": "^6.0.6",
-    "@typescript-eslint/eslint-plugin": "^5.59.8",
     "encoding": "^0.1.13",
-    "eslint-config-prettier": "^8.8.0",
-    "eslint-plugin-isaacscript": "^2.6.7",
-    "eslint-plugin-prettier": "^4.2.1",
-    "prettier": "^2.8.8",
-    "prettier-plugin-tailwindcss": "^0.3.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-isaacscript": "^4.0.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "prettier": "^3.4.2",
+    "prettier-plugin-tailwindcss": "^0.6.9",
     "prisma": "^4.15.0",
-    "request": "^2.88.2",
     "tailwindcss-touch": "^1.0.1",
-    "ts-node": "^10.9.1"
+    "ts-node": "^10.9.1",
+    "typescript-eslint": "^8.18.0"
   }
 }

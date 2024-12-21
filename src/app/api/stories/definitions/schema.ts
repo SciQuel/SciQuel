@@ -6,7 +6,7 @@ export const postDefinitionSchema = zfd.formData({
   definition: zfd.text(),
   exampleSentences: z.preprocess(
     (val) => (typeof val == "string" ? JSON.parse(val) : undefined),
-    z.array(z.string()),
+    z.array(z.string()).optional(),
   ),
   alternativeSpellings: z.preprocess(
     (val) => (typeof val == "string" ? JSON.parse(val) : undefined),
@@ -49,7 +49,7 @@ export const patchDefinitionSchema = zfd.formData({
       z.array(z.string()).optional(),
     )
     .optional(),
-  storyId: zfd.text().optional(),
+  definitionId: zfd.text(),
   wordAudio: z.preprocess(
     (val) => (val instanceof Blob && val.size === 0 ? undefined : val),
     z.instanceof(Blob).optional(),

@@ -1,8 +1,7 @@
 import { randomUUID } from "crypto";
-import { parse } from "path";
 import prisma from "@/lib/prisma";
 import { Storage } from "@google-cloud/storage";
-import { type DictionaryDefinition } from "@prisma/client";
+import { type DictionaryDefinition, type Prisma } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { NextResponse, type NextRequest } from "next/server";
 import {
@@ -24,14 +23,6 @@ const storage = new Storage({
     private_key: process.env.GCS_KEY ?? "",
   },
 });
-
-interface UpdateData {
-  word?: string;
-  wordAudioUrl?: string;
-  definitionAudioUrl?: string;
-  usageAudioUrl?: string;
-  [key: string]: any;
-}
 
 async function uploadFile(file: File) {
   try {
@@ -87,22 +78,41 @@ export async function POST(req: NextResponse) {
   }
 
   try {
+    let wordAudioUrl: string | undefined = undefined;
+    let definitionAudioUrl: string | undefined = undefined;
+    let useAudioUrl: string | undefined = undefined;
+
+    const {
+      word,
+      definition,
+      exampleSentences,
+      alternativeSpellings,
+      storyId,
+      wordAudio,
+      definitionAudio,
+      usageAudio,
+    } = parsedData.data;
+
+    if (wordAudio) {
+      wordAudioUrl = await uploadFile(wordAudio as File);
+    }
+    if (definitionAudio) {
+      definitionAudioUrl = await uploadFile(definitionAudio as File);
+    }
+    if (usageAudio) {
+      useAudioUrl = await uploadFile(usageAudio as File);
+    }
+
     const newDefinition = await prisma.dictionaryDefinition.create({
       data: {
-        word: parsedData.data.word,
-        definition: parsedData.data.definition,
-        exampleSentences: parsedData.data.exampleSentences, // Need to fix 'any' warning (zod)
-        alternativeSpellings: parsedData.data.alternativeSpellings, // Need to fix 'any' warning (zod)
-        storyId: parsedData.data.storyId,
-        wordAudioUrl: parsedData.data.wordAudio
-          ? await uploadFile(parsedData.data.wordAudio as File)
-          : undefined,
-        definitionAudioUrl: parsedData.data.definitionAudio
-          ? await uploadFile(parsedData.data.definitionAudio as File)
-          : undefined,
-        useAudioUrl: parsedData.data.usageAudio
-          ? await uploadFile(parsedData.data.usageAudio as File)
-          : undefined,
+        word: word,
+        definition: definition,
+        exampleSentences: exampleSentences ?? ([] as string[]), // Need to fix 'any' warning (zod)
+        alternativeSpellings: alternativeSpellings ?? ([] as string[]), // Need to fix 'any' warning (zod)
+        storyId: storyId,
+        wordAudioUrl: wordAudioUrl,
+        definitionAudioUrl: definitionAudioUrl,
+        useAudioUrl: useAudioUrl,
       },
     });
     return NextResponse.json({ data: newDefinition }, { status: 201 });
@@ -149,7 +159,7 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ error: "Bad Request" }, { status: 400 });
   }
 
-  const updateData: UpdateData = {};
+  const updateData: Prisma.DictionaryDefinitionUpdateInput = {};
   const fieldsToUpdate = Object.keys(parsedData.data);
 
   for (const field of fieldsToUpdate) {
@@ -162,7 +172,7 @@ export async function PATCH(req: NextRequest) {
         parsedData.data.definitionAudio as File,
       );
     } else if (field === "usageAudio" && parsedData.data.usageAudio) {
-      updateData.usageAudioUrl = await uploadFile(
+      updateData.useAudioUrl = await uploadFile(
         parsedData.data.usageAudio as File,
       );
     } else if (
@@ -176,7 +186,7 @@ export async function PATCH(req: NextRequest) {
     }
   }
 
-  const id = formData.get("id");
+  const id = parsedData.data.definitionId;
   if (!id) {
     return NextResponse.json(
       { error: "ID is required for update" },
@@ -186,7 +196,7 @@ export async function PATCH(req: NextRequest) {
 
   try {
     const updatedDefinition = await prisma.dictionaryDefinition.update({
-      where: { id: id.toString() },
+      where: { id: id },
       data: updateData,
     });
     return NextResponse.json({ data: updatedDefinition }, { status: 200 });
