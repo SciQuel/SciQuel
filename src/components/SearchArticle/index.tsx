@@ -8,7 +8,14 @@ interface Props {
 
 export default function SearchArticle({ articles }: Props) {
   if (articles.length === 0) {
-    return null;
+    return (
+      <div className={`w-full`}>
+        <p className={`w-full text-center`}>
+          There are no stories that match the search criteria. Check back soon
+          for new stories!
+        </p>
+      </div>
+    );
   }
 
   return (

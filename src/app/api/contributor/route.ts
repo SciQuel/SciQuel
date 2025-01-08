@@ -34,7 +34,7 @@ export interface GetContributionResult {
 }
 
 /**
- * one api for every single story a contributor has worked on sorted by time (given the user id) one
+ * One api for every single story a contributor has worked on sorted by time (given the user id) one
  * api for the same thing, but for stories that have been staff picked I'll do do a single api that
  * determines if we should do staff picked based on input
  *
