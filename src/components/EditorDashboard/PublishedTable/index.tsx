@@ -64,12 +64,18 @@ export default function PublishedTable() {
                     story.updatedAt as unknown as string,
                   ).toLocaleString(DateTime.DATETIME_FULL)}
                 </td>
-                <td>
+                <td className="flex flex-row flex-wrap gap-1">
                   <Link
                     href={`/editor/story/info?id=${story.id}`}
-                    className="mr-2 rounded-md bg-teal-600 px-2 py-1 text-sm font-semibold text-white hover:bg-teal-700"
+                    className=" rounded-md bg-teal-600 px-2 py-1 text-sm font-semibold text-white hover:bg-teal-700"
                   >
                     Edit
+                  </Link>
+                  <Link
+                    href={`/editor/story/dictionary?id=${story.id}`}
+                    className=" rounded-md bg-teal-600 px-2 py-1 text-sm font-semibold text-white hover:bg-teal-700"
+                  >
+                    Dictionary
                   </Link>
                   <button className="rounded-md bg-red-600 px-2 py-1 text-sm font-semibold text-white hover:bg-red-700">
                     Unpublish
