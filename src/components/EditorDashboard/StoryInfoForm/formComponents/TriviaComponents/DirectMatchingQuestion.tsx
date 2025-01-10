@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Question, type MatchingPair } from "./Trivia";
+import { type MatchingPair } from "./Trivia";
 
 interface DirectMatchingQuestionProps {
   question: {

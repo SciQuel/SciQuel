@@ -125,6 +125,10 @@ const ComplexMatchingQuestion: React.FC<ComplexMatchingQuestionProps> = ({
         <div className="grid grid-cols-3 gap-5">
           {question.categoryItems?.map((item, index) => {
             const categoryColor = getCategoryColor(item.categoryId);
+            const categoryIndex =
+              question.categories?.findIndex(
+                (category) => category.id === item.categoryId,
+              ) ?? -1;
 
             return (
               <div
@@ -142,18 +146,25 @@ const ComplexMatchingQuestion: React.FC<ComplexMatchingQuestionProps> = ({
                   borderWidth: "3px",
                 }}
               >
-                <input
-                  type="text"
-                  value={item.content || ""}
-                  onChange={(e) =>
-                    handleItemContentChange(item.id, e.target.value)
-                  }
-                  className="w-full border-none bg-transparent text-center"
-                  placeholder="Enter word"
-                  style={{
-                    outline: "none", // removes the focus outline
-                  }}
-                />
+                {/* Display the category index for the word */}
+                <div className="flex items-center">
+                  <span className="mr-2 font-semibold text-gray-500">
+                    {categoryIndex >= 0 ? categoryIndex + 1 : "?"}.
+                  </span>
+                  <input
+                    type="text"
+                    value={item.content || ""}
+                    onChange={(e) =>
+                      handleItemContentChange(item.id, e.target.value)
+                    }
+                    className="w-full border-none bg-transparent text-center"
+                    placeholder="Enter word"
+                    style={{
+                      outline: "none", // removes the focus outline
+                      marginLeft: "-20px",
+                    }}
+                  />
+                </div>
               </div>
             );
           })}

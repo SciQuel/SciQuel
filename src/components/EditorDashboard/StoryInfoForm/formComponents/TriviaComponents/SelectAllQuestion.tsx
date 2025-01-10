@@ -60,7 +60,7 @@ const SelectAllQuestion: React.FC<SelectAllQuestionProps> = ({
             className="mr-2"
           />
           <button
-            type = "button"
+            type="button"
             onClick={() => deleteOption(question.id, option.id)}
             className="px-2 py-1 text-black"
           >
@@ -69,7 +69,7 @@ const SelectAllQuestion: React.FC<SelectAllQuestionProps> = ({
         </div>
       ))}
       <button
-        type = "button"
+        type="button"
         onClick={() => addOption(question.id)}
         className="mt-2 rounded bg-sciquelTeal p-2 text-white"
       >
