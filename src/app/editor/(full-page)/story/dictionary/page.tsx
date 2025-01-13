@@ -1,4 +1,6 @@
+import DefinitionsDisplay from "@/components/EditorDashboard/DefinitionsDisplay/DefinitionsDisplay";
 import DictionaryDefinitionForm from "@/components/EditorDashboard/DictionaryForm/DictionaryForm";
+import DictionaryList from "@/components/EditorDashboard/DictionaryForm/DictionaryList/DictionaryList";
 import prisma from "@/lib/prisma";
 import { redirect } from "next/navigation";
 
@@ -43,10 +45,12 @@ export default async function StoryInfoEditorPage({
       <h2 className="text-3xl font-semibold text-sciquelTeal">
         Story Dictionary - {storyInfo.title}
       </h2>
-      <div className="flex flex-row flex-wrap">
-        <div>
-          <DictionaryDefinitionForm id={id} />
-        </div>
+      <div>
+        <DictionaryDefinitionForm id={id} />
+      </div>
+
+      <div>
+        <DictionaryList definitions={storyInfo.definitions} />
       </div>
     </div>
   );
