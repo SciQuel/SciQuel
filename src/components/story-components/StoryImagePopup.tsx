@@ -232,7 +232,7 @@ const StoryImagePopup = ({
 
         {/* Image container */}
         <div
-          className="bg-red flex max-h-[90%] max-w-full justify-center  h-md:max-h-full   "
+          className="bg-red flex max-h-[100%] max-w-full justify-center  h-md:max-h-full   "
           style={{
             width: imageDimensions?.width,
             height: imageDimensions?.height,
