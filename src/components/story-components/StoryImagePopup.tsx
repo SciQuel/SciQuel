@@ -68,7 +68,7 @@ const StoryImagePopup = ({
         ? 700
         : window.innerHeight * 0.97;
 
-    const MIN_SIZE = 500;
+    const MIN_SIZE = window.innerWidth * 0.98;
 
     if (imageRef.current) {
       const img = imageRef.current;
@@ -220,7 +220,7 @@ const StoryImagePopup = ({
     >
       {/* container for content */}
       <div
-        className={`z-0 flex h-full   max-h-full w-full flex-col items-center justify-center sm:flex-col  lg:flex-row  ${imageClicked && "justify-center"
+        className={` z-0 mx-7 my-3 flex h-full  max-h-full w-auto  flex-col items-center justify-center sm:py-5 lg:flex-row   lg:py-0   ${imageClicked && "justify-center"
           }`}
       >
         {/* Invisible item that will help format the image to look centered completely, shows only on large screen */}
@@ -232,26 +232,26 @@ const StoryImagePopup = ({
 
         {/* Image container */}
         <div
-          className=" max-w-full  h-sm:max-h-[80%]   h-sm:w-auto h-md:max-h-[85%] h-lg:max-h-[97%]  h-xl:max-h-[97%]    "
+          className="bg-red flex max-h-full max-w-full  justify-center    "
           style={{
             width: imageDimensions?.width,
             height: imageDimensions?.height,
-            ...imageStyles,
           }}
         >
           <img
             src={src}
-            className={`h-full w-full object-contain `}
+            className={`max-h-full max-w-full object-contain `}
             ref={imageRef}
             onClick={handlePopUpImageClick}
             onMouseMove={handleImageDrag}
             alt={alt}
-            style={imageTrasnform}
+            style={{ ...imageStyles, ...imageTrasnform }}
           />
         </div>
 
         <p
-          className={` px-auto mx-5 basis-0  cursor-default break-words text-center lg:mx-5  lg:min-w-[300px]  lg:flex-grow  lg:text-lg  ${imageClicked ? "hidden" : ""
+          className={`px-auto mx-5  flex-shrink basis-0 cursor-default break-words  text-left  lg:mx-5 lg:w-auto  lg:flex-grow  lg:text-lg  ${imageClicked ? "hidden" : ""
+            }
             }`}
           ref={captionRef}
         >
@@ -260,7 +260,7 @@ const StoryImagePopup = ({
       </div>
       <button
         aria-label="close popup"
-        className="absolute right-0 top-0 mr-3 mt-1 text-3xl"
+        className="absolute right-0 top-0 z-[-1] mr-2 mt-[-0.3rem] text-3xl"
       >
         &times;
       </button>
