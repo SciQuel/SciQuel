@@ -63,7 +63,7 @@ const StoryImagePopup = ({
         ? 700
         : 800;
     const MAX_HEIGHT = isSmallScreen
-      ? 550
+      ? 630
       : isMediumScreen
         ? 700
         : window.innerHeight * 0.97;
@@ -215,12 +215,12 @@ const StoryImagePopup = ({
 
   return (
     <div
-      className={`fixed  left-1/2 top-1/2 z-50 flex h-[100dvh] w-screen -translate-x-1/2 -translate-y-1/2 transform flex-col justify-center   bg-white hover:cursor-pointer`}
+      className={`fixed left-1/2 top-1/2  z-50 flex h-[100dvh] w-screen -translate-x-1/2 -translate-y-1/2 transform flex-col justify-center overflow-hidden bg-white py-3    hover:cursor-pointer`}
       onClick={handleOutsideClick}
     >
       {/* container for content */}
       <div
-        className={` z-0 mx-7 my-3 flex h-full  max-h-full w-auto  flex-col items-center justify-center sm:py-5 lg:flex-row   lg:py-0   ${imageClicked && "justify-center"
+        className={`z-0 mx-7 flex h-full max-h-full w-auto flex-col  items-center justify-center  border border-red-300 sm:py-5 lg:flex-row lg:py-0     ${imageClicked && "justify-center"
           }`}
       >
         {/* Invisible item that will help format the image to look centered completely, shows only on large screen */}
@@ -232,7 +232,7 @@ const StoryImagePopup = ({
 
         {/* Image container */}
         <div
-          className="bg-red flex max-h-full max-w-full  justify-center    "
+          className="bg-red flex max-h-[90%] max-w-full justify-center  h-md:max-h-full   "
           style={{
             width: imageDimensions?.width,
             height: imageDimensions?.height,
