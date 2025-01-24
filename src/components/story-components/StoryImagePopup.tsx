@@ -220,7 +220,7 @@ const StoryImagePopup = ({
     >
       {/* container for content */}
       <div
-        className={`z-0 mx-7 flex h-full max-h-full w-auto flex-col  items-center justify-center  border border-red-300 sm:py-5 lg:flex-row lg:py-0     ${imageClicked && "justify-center"
+        className={`z-0 mx-7 flex h-full max-h-full w-auto flex-col  items-center justify-center  sm:py-5 lg:flex-row lg:py-0     ${imageClicked && "justify-center"
           }`}
       >
         {/* Invisible item that will help format the image to look centered completely, shows only on large screen */}
