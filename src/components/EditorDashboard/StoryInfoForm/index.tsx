@@ -400,6 +400,7 @@ export default function StoryInfoForm({
           console.log(form);
 
           updateWholeArticle(form)
+          window.location.reload();
             .then((result) => {
               console.log(result);
               setSuccess(true); // Show success popup
