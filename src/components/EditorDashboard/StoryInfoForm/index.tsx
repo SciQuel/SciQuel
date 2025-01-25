@@ -398,9 +398,8 @@ export default function StoryInfoForm({
           form.append("content", initialBody);
           form.append("footer", "");
           console.log(form);
-
-          updateWholeArticle(form)
           window.location.reload();
+          updateWholeArticle(form)
             .then((result) => {
               console.log(result);
               setSuccess(true); // Show success popup
