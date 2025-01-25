@@ -312,14 +312,14 @@ export default function StoryInfoForm({
     setSubjects((subjects) => [...subjects, newSubject]);
   };
 
-  console.log(typeof initialTopics[0]);
+
 
   // Div outlining what the left half of the page actually looks like
   return (
     <div className="flex flex-col gap-2">
       {/* Success Popup */}
-      {success && (
-        <div className="fixed right-4 top-4 rounded bg-green-500 p-2 text-white shadow-lg">
+           {success && (
+        <div className="fixed top-4 right-4 bg-green-500 text-white p-2 rounded shadow-lg">
           Update successful!
         </div>
       )}
@@ -333,27 +333,26 @@ export default function StoryInfoForm({
           e.preventDefault();
           if (!storyId) {
             return;
-          }
-
+          }          
           const form = new FormData();
           const topicNames = topics
             .map((topic) => {
               if (typeof topic === "string") {
                 return topic.toUpperCase().replace(/ /g, "_");
                 // Don't know why complier complain about....topic is array with data object.
-              } else if (topic.data && topic.data.name) {
-                return topic.data.name.toUpperCase().replace(/ /g, "_");
+                // 1/25/2025 complier got confuse on what type topic.data is
+              } else if (topic && typeof topic === "object" && "data" in topic) {
+                const name = (topic as { data: { name: string } }).data.name;
+                return name.toUpperCase().replace(/ /g, "_");
               } else {
                 return null;
               }
             })
             .filter((name) => name !== null); // Filter out any invalid values
 
-          // Convert to JSON string format
-          const topicString = `[${topicNames
-            .map((name) => `"${name}"`)
-            .join(", ")}]`;
-          console.log("Final topic string:", topicString); // Debug log
+        // Convert to JSON string format
+        const topicString = `[${topicNames.map(name => `"${name}"`).join(", ")}]`;
+        console.log("Final topic string:", topicString); // Debug log
 
           form.append("id", storyId);
           form.append("summary", summary ?? "");
@@ -367,7 +366,7 @@ export default function StoryInfoForm({
           }
 
           form.append("imageCaption", initialCaption ?? "");
-
+          
           form.append("storyType", storyType);
 
           form.append("category", category);
@@ -375,9 +374,9 @@ export default function StoryInfoForm({
           form.append("titleColor", initialTitleColor ?? "#000000");
           form.append("summaryColor", initialSummaryColor ?? "#000000");
           form.append("slug", initialSlug ?? "");
-
+          
           form.append("topics", topicString);
-
+          
           // form.append(
           //   "topics",
           //   `[${initialTopics
@@ -387,7 +386,7 @@ export default function StoryInfoForm({
           //     )
           //     .toString()}]`
           // );
-          console.log("topic", topics);
+          console.log("topic",topics);
 
           if (typeof initialDate === "string") {
             form.append("publishDate", initialDate);
@@ -397,19 +396,21 @@ export default function StoryInfoForm({
 
           form.append("content", initialBody);
           form.append("footer", "");
-          console.log(form);
-          window.location.reload();
+          
           updateWholeArticle(form)
             .then((result) => {
               console.log(result);
               setSuccess(true); // Show success popup
               // Hide success popup after 3 seconds
+              window.location.reload();
               setTimeout(() => setSuccess(false), 3000);
             })
+            
             .catch((err) => {
               console.error(err);
             });
-        }}
+        } 
+      }
       >
         {/* STORY TITLE FORM INPUT */}
         <ArticleTitle
@@ -569,7 +570,7 @@ export default function StoryInfoForm({
                             <div className="flex items-center py-2">
                               <input
                                 type="checkbox"
-                                defaultChecked={topic.checked}
+                                checked={topic.checked}
                                 onChange={(event) => addTopic(topic.data.id)}
                                 className="h-4 w-4 cursor-pointer rounded border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600"
                               />
