@@ -323,9 +323,14 @@ export default function ListItemForm({ item, closeForm }: Props) {
           </figure>
         ) : null}
       </div>
+      {error ? (
+        <p className="my-4 rounded border-2 border-red-500 bg-red-100 text-red-950">
+          {error}
+        </p>
+      ) : null}
       <button
         type="submit"
-        disabled={isPending}
+        disabled={isPending || !dirty}
         className={`mt-4 rounded bg-sciquelTeal px-2 py-1 text-white 
           disabled:opacity-60`}
       >
