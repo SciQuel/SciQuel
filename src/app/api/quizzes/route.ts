@@ -68,15 +68,18 @@ export async function GET(req: NextRequest) {
     const storyId = url.searchParams.get("storyId");
 
     if (!storyId) {
-      return new NextResponse(JSON.stringify({ error: "storyId is required" }), {
-        status: 400,
-        headers: { "Content-Type": "application/json" },
-      });
+      return new NextResponse(
+        JSON.stringify({ error: "storyId is required" }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
     }
 
     const quizzes = await prisma.quizQuestion.findMany({
       where: { storyId: storyId },
-      include:{
+      include: {
         subparts: true,
       },
     });
@@ -87,9 +90,12 @@ export async function GET(req: NextRequest) {
     });
   } catch (error) {
     console.error("Error processing request:", error);
-    return new NextResponse(JSON.stringify({ error: "Internal Server Error" }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
+    return new NextResponse(
+      JSON.stringify({ error: "Internal Server Error" }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      },
+    );
   }
 }

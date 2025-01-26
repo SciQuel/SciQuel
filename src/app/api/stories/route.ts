@@ -50,6 +50,7 @@ export async function GET(req: NextRequest) {
     date_to,
     sort_by,
     published,
+    category,
   } = parsedParams.data;
   // Can only retrieve unpublished stories if EDITOR
   if (published === false) {
@@ -82,8 +83,9 @@ export async function GET(req: NextRequest) {
           : {}),
         published,
         staffPick: staff_pick ? { isNot: null } : undefined,
-        ...(topic ? { tags: { has: topic } } : {}),
+        ...(topic ? { topics: { has: topic } } : {}),
         storyType: type,
+        category: category,
         createdAt: {
           gte: date_from,
           lt: date_to,
@@ -114,13 +116,11 @@ export async function GET(req: NextRequest) {
       where: query.where,
     });
 
-    return NextResponse.json(
-      {
-        stories,
-        page_number: numPagesToSkip + 1,
-        total_pages: Math.ceil(numStories / numStoriesPerPage),
-      } ?? { stories: [] },
-    );
+    return NextResponse.json({
+      stories,
+      page_number: numPagesToSkip + 1,
+      total_pages: Math.ceil(numStories / numStoriesPerPage),
+    });
   } catch (e) {
     if (e instanceof Prisma.PrismaClientValidationError) {
       console.log(e.message);

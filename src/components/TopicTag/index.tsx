@@ -30,7 +30,7 @@ export default function TopicTag({ name }: Props) {
       style={{ backgroundColor: topicTagColors[name] }}
     >
       <p className="m-0 text-xs font-medium text-white">
-        {name.replace("_", " ").toLowerCase()}
+        {name?.replace("_", " ").toLowerCase()}
       </p>
     </span>
   );

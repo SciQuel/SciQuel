@@ -138,7 +138,7 @@ export async function DELETE(req: NextRequest) {
 
     const params = {
       story_id: searchParams.get("story_id"),
-      user_id: searchParams.get("user_id"),
+      user_email: searchParams.get("user_email"),
     };
 
     const result = requestSchema.safeParse(params);

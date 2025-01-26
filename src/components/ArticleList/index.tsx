@@ -17,14 +17,13 @@ export default function ArticleList({
   return (
     <div
       className={clsx(
-        "grid auto-rows-max",
         mini
           ? preferHorizontal
-            ? ""
-            : "grid-cols-3 gap-80"
+            ? "grid grid-cols-1 gap-5"
+            : "grid grid-cols-1 gap-8 lg:grid-cols-2 2xl:grid-cols-3"
           : preferHorizontal
-          ? "grid-cols-1 gap-4"
-          : "grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3",
+          ? "grid grid-cols-1 gap-10"
+          : "grid grid-cols-1 gap-10 md:grid-cols-2 xl:grid-cols-3",
       )}
     >
       {articles.map((article) => (
@@ -38,7 +37,7 @@ export default function ArticleList({
             )}/${publishDate.toFormat("dd")}/${article.slug}`;
           })()}
           key={article.title}
-          topic={article.tags[0]}
+          topic={article.topics ? article.topics[0] : "BIOLOGY"}
           title={article.title}
           subtitle={article.summary}
           author={(() => {
