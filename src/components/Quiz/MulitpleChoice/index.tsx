@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
+import { type resInfo } from "../index";
 
 interface Props {
   question: string[];
   show: boolean;
   answers: Function;
   quizQuestionId: string;
-  responed: { correct: boolean[]; explanation: string }[];
+  responed: resInfo;
   disable: boolean;
   current: string;
 }
@@ -51,11 +52,11 @@ export default function MultipleChoice({
               backgroundColor:
                 responed &&
                 index === mtAnswer &&
-                responed[0]?.correct[0] === true
+                responed.results[0]?.correct[0] === true
                   ? "#A3C9A8"
                   : responed &&
                     index === mtAnswer &&
-                    responed[0]?.correct[0] === false
+                    responed.results[0]?.correct[0] === false
                   ? "#E79595"
                   : index === mtAnswer
                   ? "#D5E5FD"
@@ -65,7 +66,7 @@ export default function MultipleChoice({
             {choice}
             {responed &&
             index === mtAnswer &&
-            responed[0]?.correct[0] === true ? (
+            responed.results[0]?.correct[0] === true ? (
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -82,7 +83,7 @@ export default function MultipleChoice({
               </svg>
             ) : responed &&
               index === mtAnswer &&
-              responed[0]?.correct[0] === false ? (
+              responed.results[0]?.correct[0] === false ? (
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -104,7 +105,7 @@ export default function MultipleChoice({
 
       {responed && (
         <div className="col my-2 text-center">
-          {responed[0]?.correct[0] === true ? (
+          {responed.results[0]?.correct[0] === true ? (
             <div className="modal-content border-light w-full border">
               <div
                 className="modal-body"
@@ -113,7 +114,7 @@ export default function MultipleChoice({
                 }}
               >
                 <p className="p-4 text-left" style={{ color: "#437E64" }}>
-                  Correct. {responed[0]?.explanation}
+                  Correct. {responed.results[0]?.explanation}
                 </p>
               </div>
             </div>
@@ -126,7 +127,7 @@ export default function MultipleChoice({
                 }}
               >
                 <p className="p-4 text-left" style={{ color: "#D06363" }}>
-                  Incorrect. {responed[0]?.explanation}
+                  Incorrect. {responed.results[0]?.explanation}
                 </p>
               </div>
             </div>

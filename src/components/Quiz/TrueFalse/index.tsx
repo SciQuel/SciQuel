@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
+import { type resInfo } from "../index";
 
 interface Props {
   questions: string[];
   show: boolean;
   answers: Function;
   quizQuestionId: string;
-  responed: { correct: boolean[]; explanation: string }[];
+  responed: resInfo;
+  answer: number | boolean | [number];
   disable: boolean;
   current: number;
 }
@@ -40,7 +42,7 @@ export default function TrueFalse({
             Mark each statement as true or false.
           </strong>
         </p>
-        <div className="true-false-letters mb-[-35px] mt-[-35px] flex h-[-100px] w-full flex-row items-center justify-center gap-6 md-qz:mt-0">
+        <div className="true-false-letters md-qz:mt-0 mb-[-35px] mt-[-35px] flex h-[-100px] w-full flex-row items-center justify-center gap-6">
           <div className="blankspace flex aspect-[8/1] basis-[80%] items-center justify-between gap-5"></div>
           <div className="true-letter flex aspect-[1/1] basis-[10%] items-center justify-center text-lg font-bold">
             T
@@ -54,7 +56,7 @@ export default function TrueFalse({
 
         {questions?.map((statement, index) => (
           <div className="true-false-container flex h-full w-full flex-row items-center justify-center gap-6">
-            <div className="true-false-statement flex aspect-[8/1] basis-[80%] flex-row items-center justify-between gap-5 rounded-md border border-black p-5 text-base font-medium md-qz:p-0">
+            <div className="true-false-statement md-qz:p-0 flex aspect-[8/1] basis-[80%] flex-row items-center justify-between gap-5 rounded-md border border-black p-5 text-base font-medium">
               <p>{statement}</p>
             </div>
             <button
@@ -68,11 +70,11 @@ export default function TrueFalse({
                 backgroundColor:
                   responed &&
                   index + "T" == numIndex[index] &&
-                  responed[index]?.correct[0] === true
+                  responed.results[index]?.correct[0] === true
                     ? "#A3C9A8"
                     : responed &&
                       index + "T" == numIndex[index] &&
-                      responed[index]?.correct[0] === false
+                      responed.results[index]?.correct[0] === false
                     ? "#E79595"
                     : "rgb(229 231 235)",
               }}
@@ -107,11 +109,11 @@ export default function TrueFalse({
                 backgroundColor:
                   responed &&
                   index + "F" === numIndex[index] &&
-                  responed[index]?.correct[0] === true
+                  responed.results[index]?.correct[0] === true
                     ? "#A3C9A8"
                     : responed &&
                       index + "F" === numIndex[index] &&
-                      responed[index]?.correct[0] === false
+                      responed.results[index]?.correct[0] === false
                     ? "#E79595"
                     : "rgb(229 231 235)",
               }}
@@ -139,7 +141,7 @@ export default function TrueFalse({
         ))}
       </div>
       <div className="col my-2 text-center">
-        {responed?.map(
+        {responed?.results?.map(
           (res: {
             correct: boolean[];
             explanation: string | null | undefined;

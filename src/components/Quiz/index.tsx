@@ -19,6 +19,11 @@ export type answerInfo = {
   quizId: number;
   answer: number | boolean | [number];
 };
+export type resInfo = {
+  results: { correct: boolean[]; explanation: string }[];
+  correct_option_counts: number[] | null;
+  score: number;
+};
 
 export default function Quiz({ Quizzes }: Props) {
   console.log("quiz", Quizzes);
@@ -34,7 +39,7 @@ export default function Quiz({ Quizzes }: Props) {
   const [submitButton, setSubmitButton] = useState([] as boolean[]);
   const [answered, setAnswered] = useState([] as boolean[]);
   const [disabled, setDisabled] = useState([false] as boolean[]);
-  const [respon, setRespon] = useState([] as any);
+  const [respon, setRespon] = useState([] as resInfo[]);
 
   {
     /* quiz multiple choice useState  */
@@ -100,8 +105,18 @@ export default function Quiz({ Quizzes }: Props) {
     );
     const res = await submitAnswer();
     const resp = res?.data;
-    console.log("resp ", resp?.results);
-    setRespon((respon[currentQuestion] = resp.results));
+    console.log("resp ", resp);
+    console.log("resp.results ", resp.results);
+
+    setRespon([
+      (respon[currentQuestion] = {
+        results: resp.results,
+        correct_option_counts: resp.correct_option_counts
+          ? resp.correct_option_counts
+          : [-1, -1, -1],
+        score: resp.score,
+      }),
+    ]);
     setRespon([...respon]);
   };
 

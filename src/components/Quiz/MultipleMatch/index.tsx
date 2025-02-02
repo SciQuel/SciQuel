@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { set } from "zod";
+import { type resInfo } from "../index";
 
 interface Props {
   categories: string[];
@@ -9,7 +9,7 @@ interface Props {
   show: boolean;
   answers: Function;
   quizQuestionId: string;
-  responed: { correct: boolean[]; explanation: string }[];
+  responed: resInfo;
   disable: boolean;
   current: number;
 }
@@ -38,6 +38,7 @@ export default function MultipleMatch({
   const [opList, setOpList] = useState(options.map((item, index) => index));
   const [quizId, _] = useState(quizQuestionId);
   const [result, setResult] = useState([] as boolean[]);
+  const [trueResult, setTrueResult] = useState([] as number[]);
   // const result = [] as boolean[];
   const currDragRef = useRef<HTMLTextAreaElement | null>(null);
   const currColRef = useRef<number | null>(null);
@@ -61,6 +62,20 @@ export default function MultipleMatch({
     // result.push(...correctArray);
     return correctArray;
   };
+  const numberOfTrue = (
+    array: Array<{ correct: boolean[]; explanation: string }>,
+  ) => {
+    const trueArray = [] as number[];
+    if (array !== undefined) {
+      array.forEach(
+        ({ correct }, index) =>
+          (trueArray[index] = correct.filter((value) => value === true).length),
+      );
+    }
+    // console.log("trueArray ", trueArray);
+    // result.push(...correctArray);
+    return trueArray;
+  };
 
   // Update the answer info to parent
   useEffect(() => {
@@ -70,7 +85,8 @@ export default function MultipleMatch({
 
   useEffect(() => {
     if (show) {
-      setResult(flattenCorrectArray(responed));
+      setResult(flattenCorrectArray(responed?.results));
+      setTrueResult(numberOfTrue(responed?.results));
     }
   }, [responed]);
 
@@ -85,12 +101,13 @@ export default function MultipleMatch({
 
         {/* <div className="multiple-match-drop-area flex w-full flex-row flex-wrap items-start justify-center gap-3 pb-3"></div> */}
 
+        {/* categorise */}
         <div className="grid w-full  grid-cols-3 justify-stretch gap-4 ">
           {catList.map((cat, colIndex) => {
             const fullCat = categories[cat];
             return (
-              <div className="quiz-col  my-3.5 flex h-full  basis-[30%] flex-col gap-4 sm-mm:w-[120px] xsm-qz:w-[110px] xsm-mm:w-[100px]">
-                <div className="multiple-match-statement flex  w-full flex-wrap items-center justify-center hyphens-auto break-words rounded-[4px] border border-black bg-white p-3 text-center text-[18px] xsm-qz:inline-block xsm-mm:text-[16px]">
+              <div className="quiz-col  sm-mm:w-[120px] xsm-qz:w-[110px] xsm-mm:w-[100px]  my-3.5 flex h-full basis-[30%] flex-col gap-4">
+                <div className="multiple-match-statement xsm-qz:inline-block  xsm-mm:text-[16px] flex w-full flex-wrap items-center justify-center hyphens-auto break-words rounded-[4px] border border-black bg-white p-3 text-center text-[18px]">
                   {fullCat}
                 </div>
                 <div
@@ -110,20 +127,18 @@ export default function MultipleMatch({
                   }}
                   onDrop={(e) => {
                     // console.log("drop", colIndex);
+                    e.preventDefault();
                     const target = e.target as HTMLTextAreaElement;
-                    // // console.log("target", target);
+                    // console.log("target", target);
                     // let tmp = currDragRef.current?.innerHTML || ""; // Store the current content of the dragged item
                     // console.log("currDragRef", currDragRef.current);
 
                     // Check if the target element is a valid drop target
-                    if (
-                      target.getAttribute("data-draggable") === "target" &&
-                      currDragRef.current
-                    ) {
+                    if (target.getAttribute("data-draggable") === "target") {
                       // Insert the dragged item into its new position
                       const newcol = colIndex;
-                      console.log("newcol form ", newcol);
-
+                      // console.log("newcol form ", newcol);
+                      // console.log("currColRef", currColRef.current);
                       if (
                         currColRef.current != null &&
                         currColRef.current != newcol
@@ -133,45 +148,50 @@ export default function MultipleMatch({
                           const op = currOpRef.current!;
                           newState[newcol][op] = op;
                           newState[currColRef.current!][op] = null;
-
+                          // console.log("here1 ");
+                          setComAnswer([...removeNull(newState)]);
                           return newState;
                         });
                       } else {
                         setOrder((state) => {
                           const newState = [...state];
 
-                          if (!newState[colIndex]) newState[colIndex] = [];
+                          // if (!newState[colIndex]) newState[colIndex] = [];
                           const op = currOpRef.current!;
                           newState[colIndex][op] = op;
-
-                          console.log("drop", newState[colIndex]);
+                          // console.log("here2 ");
+                          // console.log("drop", newState[colIndex]);
+                          setComAnswer([...removeNull(newState)]);
                           return newState;
                         });
+                        // console.log("here5 ");
+
+                        // console.log("here6 ");
                       }
+                      // console.log("here7 ");
 
                       setOpList((state) => {
                         const newState = [...state];
                         const index = currOpRef.current!;
                         newState[index] = -1;
-                        console.log("newState", newState);
+                        // console.log("newState", newState);
+                        // console.log("hello4");
                         return newState;
                       });
                     }
-
-                    currDragRef.current = null;
+                    console.log("hello3");
                     console.log("currColRef", currColRef.current);
-
-                    // console.log("drop", cat);
-
                     setComAnswer([...removeNull(order)]);
+                    // console.log("drop", cat);
                   }}
                   onDragEnd={(e) => {
                     e.preventDefault();
-                    currDragRef.current = null;
-                    currOpRef.current = null;
-                    currColRef.current = null;
+                    // currDragRef.current = null;
+                    // currOpRef.current = null;
+                    // currColRef.current = null;
                   }}
                 >
+                  {/* Answers in each column */}
                   {comAnswer[colIndex]?.map((op, index) => {
                     if (op === null) return null;
 
@@ -231,11 +251,12 @@ export default function MultipleMatch({
                         }}
                         onDragEnd={(e) => {
                           e.preventDefault();
-                          currDragRef.current = null;
-                          currOpRef.current = null;
-                          currColRef.current = null;
+                          // currDragRef.current = null;
+                          // currOpRef.current = null;
+                          // currColRef.current = null;
                         }}
                       >
+                        {/* correctness icon */}
                         <div className="image-holder absolute inset-0 flex h-full w-[35%] max-w-[50px] grow items-center justify-center rounded-bl-[4px] rounded-tl-[4px] bg-[#e6e6fa] px-2 transition duration-300 ease-in-out">
                           {result[op] === true ? (
                             <svg
@@ -276,7 +297,7 @@ export default function MultipleMatch({
                           )}
                         </div>
                         <div
-                          className="match-text align-self-center justify-right m-auto flex w-[72%] max-w-full items-center justify-end justify-self-end hyphens-auto break-words p-3 md-qz:inline-block sm-mm:w-[65%] xsm-mm:w-[73%] xsm-mm:text-[16px]"
+                          className="match-text align-self-center justify-right md-qz:inline-block sm-mm:w-[65%] xsm-mm:w-[73%] xsm-mm:text-[16px] m-auto flex w-[72%] max-w-full items-center justify-end justify-self-end hyphens-auto break-words p-3"
                           data-draggable="answer"
                         >
                           {fullOp}
@@ -285,7 +306,8 @@ export default function MultipleMatch({
                     );
                   })}
                   <div
-                    className="multiple-match-slot h-[50px] w-full rounded-[4px] border bg-gray-200 p-3 transition duration-300"
+                    className="multiple-match-slot h-[50px] w-full  rounded-[4px]   bg-gray-200 p-3 transition duration-300 "
+                    style={{ border: "2px dashed black" }}
                     data-draggable="target"
                   ></div>
                 </div>
@@ -318,14 +340,15 @@ export default function MultipleMatch({
                   }}
                   onDragOver={(e) => {
                     e.preventDefault();
-                    // console.log("drag over currColRef", currColRef.current);
-                    // console.log("drag over currOpRef", currOpRef.current);
+                    console.log("drag over currColRef", currColRef.current);
+                    console.log("drag over currOpRef", currOpRef.current);
                   }}
                   onDrop={(e) => {
                     e.preventDefault();
                   }}
                   onDragEnd={(e) => {
                     e.preventDefault();
+                    console.log("hello5");
                   }}
                 >
                   <div className="image-holder absolute inset-0 flex h-full w-[35%] max-w-[50px] grow items-center justify-center rounded-bl-[4px] rounded-tl-[4px] bg-[#e6e6fa] px-2 transition duration-300 ease-in-out">
@@ -336,7 +359,7 @@ export default function MultipleMatch({
                     </span>
                   </div>
                   <div
-                    className="match-text align-self-center justify-right m-auto flex w-[72%] max-w-full items-center justify-end justify-self-end hyphens-auto break-words p-3 md-qz:inline-block sm-mm:w-[65%] xsm-mm:w-[73%] xsm-mm:text-[16px]"
+                    className="match-text align-self-center justify-right md-qz:inline-block sm-mm:w-[65%] xsm-mm:w-[73%] xsm-mm:text-[16px] m-auto flex w-[72%] max-w-full items-center justify-end justify-self-end hyphens-auto break-words p-3"
                     data-draggable="answer"
                   >
                     {fullItem}
@@ -352,14 +375,19 @@ export default function MultipleMatch({
           ></div>
         </div>
       </div>
-      {responed?.map((res: { explanation: string | null | undefined }) => (
+      {responed?.results?.map((res, index: number) => (
         <div className="col my-2 text-center">
           <div>
             <div className="modal-content border-light w-full border">
               <div
                 className="modal-body"
                 style={{
-                  background: "linear-gradient(to right,#A3C9A8 1%,#F8F8FF 1%)",
+                  background:
+                    trueResult[index] === responed.correct_option_counts[index]!
+                      ? "linear-gradient(to right,#A3C9A8 1%,#F8F8FF 1%)"
+                      : trueResult[index] === 0
+                      ? "linear-gradient(to right,#F2D49A 1%,#F8F8FF 1%)"
+                      : "linear-gradient(to right,#FFFF00 1%,#F8F8FF 1%)",
                 }}
               >
                 <p className="p-4 text-left" style={{ color: "#437E64" }}>

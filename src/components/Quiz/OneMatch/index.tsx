@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { type resInfo } from "../index";
 
 interface Props {
   categories: string[];
@@ -6,7 +7,7 @@ interface Props {
   show: boolean;
   answers: Function;
   quizQuestionId: string;
-  responed: { correct: boolean[]; explanation: string }[];
+  responed: resInfo;
   disable: boolean;
   current: number;
 }
@@ -56,7 +57,7 @@ export default function OneMatch({
 
   useEffect(() => {
     if (show) {
-      setDirresult(flattenArray(responed));
+      setDirresult(flattenArray(responed?.results));
       // console.log("dirresult ", flattenArray(responed));
     }
   }, [responed]);
@@ -169,7 +170,7 @@ export default function OneMatch({
         );
       })}
       {/** two */}
-      {responed?.map((res: { explanation: string | null | undefined }) => (
+      {responed?.results?.map((res) => (
         <div className="col my-2 text-center">
           <div>
             <div className="modal-content border-light w-full border">

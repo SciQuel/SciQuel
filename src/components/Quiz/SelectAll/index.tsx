@@ -1,17 +1,17 @@
 import { useEffect, useState } from "react";
+import { type resInfo } from "../index";
 
 interface Props {
   options: string[];
   show: boolean;
   answers: Function;
   quizQuestionId: string;
-  responed: { correct: boolean[]; explanation: string }[];
+  responed: resInfo;
   disable: boolean;
   current: string;
 }
 export default function SelectAll({
   options,
-
   show,
   answers,
   quizQuestionId,
@@ -68,11 +68,11 @@ export default function SelectAll({
                 backgroundColor:
                   responed &&
                   selected[index] === true &&
-                  responed[index]?.correct[0] === true
+                  responed.results[index]?.correct[0] === true
                     ? "#A3C9A8"
                     : responed &&
                       selected[index] === true &&
-                      responed[index]?.correct[0] === false
+                      responed.results[index]?.correct[0] === false
                     ? "#E79595"
                     : selected[index] === true
                     ? "#D5E5FD"
@@ -82,7 +82,7 @@ export default function SelectAll({
               {choice}
               {responed &&
               selected[index] === true &&
-              responed[index]?.correct[0] === true ? (
+              responed.results[index]?.correct[0] === true ? (
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -99,7 +99,7 @@ export default function SelectAll({
                 </svg>
               ) : responed &&
                 selected[index] === true &&
-                responed[index]?.correct[0] === false ? (
+                responed.results[index]?.correct[0] === false ? (
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -124,9 +124,7 @@ export default function SelectAll({
         {/* <div className="col my-2 text-center"> {disable ? exp : ""}</div> */}
 
         <div className="col my-2 text-center">
-          {/* {responed &&
-          selected[index] === true &&
-          responed[index]?.correct[0] === true ? (
+          {responed && responed.score === 10 ? (
             <div>
               <div className="modal-content border-light w-full border">
                 <div
@@ -137,7 +135,7 @@ export default function SelectAll({
                   }}
                 >
                   <p className="p-4 text-left" style={{ color: "#437E64" }}>
-                    Correct. {responed[0]?.explanation}
+                    Correct.
                   </p>
                 </div>
               </div>
@@ -146,20 +144,18 @@ export default function SelectAll({
                 correctly. Great job!
               </p>
             </div>
-          ) : responed &&
-            selected[index] === true &&
-            responed[index]?.correct[0] === false ? (
+          ) : responed && responed.score === 0 ? (
             <div>
               <div className="modal-content border-light w-full border">
                 <div
                   className="modal-body"
                   style={{
                     background:
-                      "linear-gradient(to right,#E79595 1%,#F8F8FF 1%)",
+                      "linear-gradient(to right, #E79595 1%,#F8F8FF 1%)",
                   }}
                 >
                   <p className="p-4 text-left" style={{ color: "#D06363" }}>
-                    Incorrect. {responed[0]?.explanation}
+                    Incorrect.
                   </p>
                 </div>
               </div>
@@ -167,7 +163,26 @@ export default function SelectAll({
                 87.6% of SciQuel readers answered this question correctly.
               </p>
             </div>
-          ) : null} */}
+          ) : responed && responed.score > 0 && responed.score < 10 ? (
+            <div>
+              <div className="modal-content border-light w-full border">
+                <div
+                  className="modal-body"
+                  style={{
+                    background:
+                      "linear-gradient(to right, #F2D49A 1%,#F8F8FF 1%)",
+                  }}
+                >
+                  <p className="p-4 text-left" style={{ color: "#F2D49A" }}>
+                    Partially Correct.
+                  </p>
+                </div>
+              </div>
+              <p className="text-right text-sm" style={{ color: "#424242" }}>
+                87.6% of SciQuel readers answered this question correctly.
+              </p>
+            </div>
+          ) : null}
         </div>
       </div>
     </div>
