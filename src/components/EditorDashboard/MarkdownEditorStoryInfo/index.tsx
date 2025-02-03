@@ -24,6 +24,7 @@ import italic from "./Toolbar/actions/italic";
 import link from "./Toolbar/actions/link";
 import quote from "./Toolbar/actions/quote";
 
+
 const Editor = dynamic(
   () => import("@monaco-editor/react").then((module) => module.Editor),
   { ssr: false },
@@ -33,10 +34,12 @@ const inter = Inter({ subsets: ["latin"] });
 
 interface Props {
   initialValue?: string;
+  onChange: (value: string) => void;
   id: string;
+  style: {height: string};
 }
 
-export default function MarkdownEditor({ initialValue, id }: Props) {
+export default function MarkdownEditor({ initialValue, onChange, id }: Props) {
   const router = useRouter();
   const [dirty, setDirty] = useState(false);
   const [value, setValue] = useState(initialValue ?? "");
@@ -46,6 +49,18 @@ export default function MarkdownEditor({ initialValue, id }: Props) {
   );
   const [stats, setStats] = useState<Record<string, number>>({});
   const [loading, startTransition] = useTransition();
+  
+
+  const handleChange = (value: string | undefined) => {
+    if (value !== undefined) {
+      onChange(value);
+      setValue(value); // This keeps the local state updated if needed
+    }
+  };
+
+useEffect(() => {
+  setValue(initialValue ?? "");
+}, [initialValue]);
 
   useEffect(() => {
     void generateMarkdown(value).then(({ file, wordStats }) => {
@@ -120,23 +135,20 @@ export default function MarkdownEditor({ initialValue, id }: Props) {
   }, [value, id]);
 
   return (
-    <div className="flex h-full min-h-screen grow flex-row">
-      <div className={clsx("flex w-1/2 flex-col border-r", inter.className)}>
+    <div className="flex h-full grow flex-row w-full">
+      <div className={clsx("flex flex-col border-r w-full h-full", inter.className)}>
         <Toolbar
           editor={editor}
           onSubmit={handleEditorSubmit}
           loading={loading}
           storyId={id}
         />
-        <div className="grow">
+        <div className="flex-grow flex h-full">
           <Editor
             language="markdown"
             loading={<></>}
             value={value}
-            onChange={(v) => {
-              setValue(v ?? "");
-              setDirty(true);
-            }}
+            onChange={handleChange}
             options={{
               wordWrap: "on",
               readOnly: loading,
@@ -149,14 +161,7 @@ export default function MarkdownEditor({ initialValue, id }: Props) {
             onMount={handleEditorMount}
           />
         </div>
-        {<StatusBar wordStats={stats} />}
-      </div>
-      <div className="flex max-h-full w-1/2 flex-col overflow-scroll">
-        <div className="h-0">
-          <div className="flex flex-col gap-5 pt-5 @container">
-            {renderedContent}
-          </div>
-        </div>
+        <StatusBar wordStats={stats} />
       </div>
     </div>
   );

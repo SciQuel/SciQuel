@@ -20,6 +20,7 @@ export type Stories = (Story & {
       firstName: string;
       lastName: string;
     };
+    // placeholder need to add storyContent
     contributionType: ContributionType;
   }[];
 })[];
@@ -213,7 +214,11 @@ export async function PUT(request: NextRequest) {
 
     const newStory = await prisma.story.create({
       data: {
+        storyType: parsedRequest.data.storyType,
+        category: parsedRequest.data.category,
         title: parsedRequest.data.title,
+        titleColor: parsedRequest.data.titleColor,
+        slug: parsedRequest.data.slug,
         summary: parsedRequest.data.summary,
         storyType: StoryType.ESSAY,
         category: Category.ARTICLE,
@@ -226,6 +231,19 @@ export async function PUT(request: NextRequest) {
         published: false,
         thumbnailUrl,
         coverCaption: parsedRequest.data.imageCaption,
+        storyContent: {
+          create: {
+            // ! need to run npx prisma generate
+            content: parsedRequest.data.content,
+            footer: parsedRequest.data.footer,
+          },
+          storyContributions: {
+            create: parsedRequest.data.contributions,
+          },
+        },
+        createdAt: new Date(),
+        publishedAt: parsedRequest.data.published ? new Date() : (null as any),
+        updatedAt: new Date(),
       },
     });
 

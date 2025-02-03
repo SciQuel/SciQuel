@@ -33,11 +33,7 @@ export default function WhatsNewSection({ articles }: Props) {
               headlineArticle.publishedAt,
             ).toLocaleString(DateTime.DATE_FULL)}
             mediaType={headlineArticle.storyType}
-            tag={
-              headlineArticle.topics && headlineArticle.topics[0]
-                ? headlineArticle.topics[0]
-                : "BIOLOGY"
-            }
+            tag={headlineArticle.topics?.[0] ?? "BIOLOGY"}
             href={(() => {
               const publishDate = DateTime.fromJSDate(
                 headlineArticle.publishedAt,
