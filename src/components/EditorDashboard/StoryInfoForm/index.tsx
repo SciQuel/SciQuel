@@ -20,6 +20,7 @@ import {
   useTransition,
   type Dispatch,
   type SetStateAction,
+  useEffect
 } from "react";
 import { updateWholeArticle } from "./actions/actions";
 import ArticleContent from "./formComponents/articleContent";
@@ -146,6 +147,8 @@ export default function StoryInfoForm({
   const [isCreateSubjectModalOpen, setIsCreateSubjectModalOpen] =
     useState(false);
 
+    
+    
   const [success, setSuccess] = useState(false);
   const filteredTopicList =
     topicQuery === ""
@@ -312,7 +315,24 @@ export default function StoryInfoForm({
     setSubjects((subjects) => [...subjects, newSubject]);
   };
 
-
+  useEffect(() => {
+    let extractedTopics: string[] = [];
+  
+    // Extract every element in initialTopics
+    initialTopics.forEach(topic => {
+      extractedTopics.push(topic.toUpperCase()); // Convert to uppercase for case-insensitive matching
+    });
+  
+    setTopicList(prevList =>
+      prevList.map(topic => ({
+        ...topic,
+        checked: extractedTopics.includes(topic.data.name.toUpperCase()), // Compare correctly
+        enabled:extractedTopics.includes(topic.data.name.toUpperCase())
+      }))
+    );
+  }, [initialTopics]); // Runs when `initialTopics` changes
+  
+  
 
   // Div outlining what the left half of the page actually looks like
   return (
@@ -569,9 +589,12 @@ export default function StoryInfoForm({
                           <li>
                             <div className="flex items-center py-2">
                               <input
-                                type="checkbox"
-                                checked={topic.checked}
-                                onChange={(event) => addTopic(topic.data.id)}
+                                type="checkbox"                             
+                                checked={topic.checked}  // Controlled by state updates
+                                disabled={topic.disabled} // Dynamically control disabled state
+                                onChange={(event) => {
+                                  addTopic(topic.data.id);
+                                }}
                                 className="h-4 w-4 cursor-pointer rounded border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600"
                               />
                               <label className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
