@@ -63,58 +63,16 @@ export const postStorySchema = z.object({
   content: z.string(),
 });
 
-const subtopicSchema = z.object({
-  id: z.string(),
-});
-
-const generalSubjectSchema = z.object({
-  id: z.string(),
-});
-
-const storyContributionSchema = z.object({
-  userId: z.string(),
-  contributionType: z.nativeEnum(ContributionType),
-  bio: z.string().optional(),
-});
-
 export const putStorySchema = zfd.formData({
   id: zfd.text().optional(),
-  storyType: z.nativeEnum(StoryType),
-  category: z.nativeEnum(Category),
   title: zfd.text(),
-  titleColor: zfd.text(),
-  slug: zfd.text(),
   summary: zfd.text(),
-  summaryColor: zfd.text(),
-  topics: z.preprocess(
-    (val) => (typeof val == "string" ? JSON.parse(val) : ""),
-    z.array(z.nativeEnum(StoryTopic)),
-  ),
-  subtopics: z.preprocess(
-    (val) => (typeof val == "string" ? JSON.parse(val) : ""),
-    z.array(subtopicSchema),
-  ),
-  generalSubjects: z.preprocess(
-    (val) => (typeof val == "string" ? JSON.parse(val) : ""),
-    z.array(generalSubjectSchema),
-  ),
-  staffPick: zfd.checkbox(),
   image: z.preprocess(
     (val) => (val instanceof Blob && val.size === 0 ? undefined : val),
     z.instanceof(Blob).optional(),
   ),
   imageUrl: zfd.text().optional(),
-  imageCaption: zfd.text().optional(),
-  // storyContent
-  content: zfd.text(),
-  footer: zfd.text().optional(),
-  // storyContribution, 1 to many relationship
-  contributions: z.preprocess(
-    (val) => (typeof val == "string" ? JSON.parse(val) : ""),
-    z.array(storyContributionSchema),
-  ),
-
-  published: zfd.checkbox(),
+  imageCaption: zfd.text(),
 });
 
 export const patchStorySchema = z.object({

@@ -149,7 +149,7 @@ export default function MarkdownEditor({ initialValue, id }: Props) {
             onMount={handleEditorMount}
           />
         </div>
-        {<StatusBar wordStats={stats} />}
+        <StatusBar wordStats={stats} />
       </div>
       <div className="flex max-h-full w-1/2 flex-col overflow-scroll">
         <div className="h-0">
