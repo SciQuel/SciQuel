@@ -57,7 +57,7 @@ const StoryInfoEditorClient: React.FC<Props> = ({ story, contributions }) => {
   const [storyType, setStoryType] = useState<string>(
     story.storyType || "defaultType",
   ); // Default type instead of null
-  const [topics, setTopics] = useState<string[]>(story.topics || []); // Empty array instead of null
+  const [topics, setTopics] = useState<StoryTopic[]>(story.topics || []); //use storytopic instead of string
   const [titleColor, setTitleColor] = useState<string>(
     story.titleColor || "#000000",
   ); // Default color
