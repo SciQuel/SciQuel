@@ -1,92 +1,91 @@
-/* eslint-disable prettier/prettier */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import prisma from "@/lib/prisma";
 import { PrismaClient } from "@prisma/client";
 import { NextResponse, type NextRequest } from "next/server";
-import { createQuizSchema } from "./schema";
+import { checkValidInput } from "../tools/SchemaTool";
+import User from "../tools/User";
+import { quizTypeSchema, storyIdSchema } from "./schema";
+import { getQuizzes, handleQuizResult } from "./tools";
 
-export async function POST(req: NextRequest) {
+const prisma = new PrismaClient();
+
+/**
+ * give a list of quiz questions from story
+ */
+export async function GET(req: NextRequest) {
+  const url = new URL(req.url);
   try {
-    const requestBody = await req.json();
-    const parsed = createQuizSchema.safeParse(requestBody);
+    const storyIdParam = url.searchParams.get("story_id");
+    const quizTypeParam = url.searchParams.get("quiz_type");
+    const user = new User();
+    const parseResult = checkValidInput(
+      [quizTypeSchema, storyIdSchema],
+      [quizTypeParam, storyIdParam],
+    );
 
-    if (!parsed.success) {
-      return new NextResponse(JSON.stringify({ error: parsed.error }), {
-        status: 400,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+    if (parseResult.nextErrorReponse) {
+      return parseResult.nextErrorReponse;
     }
 
-    const quizData = parsed.data;
+    const [quizType, storyId] = parseResult.parsedData;
 
-    const createdQuiz = await prisma.quizQuestion.create({
-      data: {
-        storyId: quizData.storyId,
-        contentCategory: quizData.contentCategory,
-        questionType: quizData.questionType,
-        questionName: quizData.questionName,
-        totalScore: quizData.totalScore,
-        subparts: {
-          create: quizData.subparts,
-        },
-      },
-    });
-
-    return new NextResponse(
-      JSON.stringify({
-        message: "Quiz question created",
-        quizData: createdQuiz,
-      }),
-      {
-        status: 200,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      },
-    );
-  } catch (error) {
-    console.error("Error processing request:", error);
-    return new NextResponse(
-      JSON.stringify({ error: "Internal Server Error" }),
-      {
-        status: 500,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      },
-    );
-  }
-}
-
-export async function GET(req: NextRequest) {
-  try {
-    const url = new URL(req.url);
-    const storyId = url.searchParams.get("storyId");
-
-    if (!storyId) {
-      return new NextResponse(
-        JSON.stringify({ error: "storyId is required" }),
+    const userId = await user.getUserId();
+    let quizResult = userId
+      ? await prisma.quizResult.findFirst({
+          where: {
+            storyId: storyId,
+            userId: userId,
+          },
+          orderBy: {
+            createAt: "desc",
+          },
+          select: {
+            id: true,
+            quizQuestionIdRemain: true,
+            quizType: true,
+            used: true,
+          },
+        })
+      : null;
+    if (quizResult?.quizType === "POST_QUIZ" && quizType === "PRE_QUIZ") {
+      return NextResponse.json(
         {
-          status: 400,
-          headers: { "Content-Type": "application/json" },
+          error:
+            "Can not get pre-quiz questions if post-quiz questions is already used",
         },
+        { status: 403 },
       );
     }
 
-    const quizzes = await prisma.quizQuestion.findMany({
-      where: { storyId: storyId },
-      include: {
-        subparts: true,
+    const { quizzes, subparts } = await getQuizzes({ quizResult, storyId });
+    if (userId) {
+      quizResult = await handleQuizResult({
+        oldQuizResult: quizResult,
+        quizzes,
+        storyId,
+        quizType,
+        userId,
+      });
+    }
+    //any key that have value is undefined, when JSON stringify that key will be removed from obj
+    const quizResponse = quizzes.map((quiz, index) => {
+      const { subheader, questionType, id, maxScore } = quiz;
+      return {
+        sub_header: subheader,
+        question_type: questionType,
+        quiz_question_id: id,
+        max_score: maxScore,
+        ...subparts[index],
+      };
+    });
+    return new NextResponse(
+      JSON.stringify({
+        quizzes: quizResponse,
+        quiz_result_id: quizResult?.id || "",
+      }),
+      {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
       },
-    });
-
-    return new NextResponse(JSON.stringify({ quizzes }), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
+    );
   } catch (error) {
     console.error("Error processing request:", error);
     return new NextResponse(

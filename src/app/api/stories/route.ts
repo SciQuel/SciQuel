@@ -20,7 +20,6 @@ export type Stories = (Story & {
       firstName: string;
       lastName: string;
     };
-    // placeholder need to add storyContent
     contributionType: ContributionType;
   }[];
 })[];
@@ -51,8 +50,8 @@ export async function GET(req: NextRequest) {
     date_to,
     sort_by,
     published,
+    category,
   } = parsedParams.data;
-
   // Can only retrieve unpublished stories if EDITOR
   if (published === false) {
     const session = await getServerSession();
@@ -82,21 +81,22 @@ export async function GET(req: NextRequest) {
               ],
             }
           : {}),
-        staffPick: staff_pick,
-        ...(topic ? { tags: { has: topic } } : {}),
+        published,
+        staffPick: staff_pick ? { isNot: null } : undefined,
+        ...(topic ? { topics: { has: topic } } : {}),
         storyType: type,
+        category: category,
         createdAt: {
           gte: date_from,
           lt: date_to,
         },
-        published,
       },
     };
-
     const stories = await prisma.story.findMany({
       skip: numPagesToSkip * numStoriesPerPage,
       take: numStoriesPerPage,
       include: {
+        staffPick: true,
         storyContributions: {
           select: {
             contributionType: true,
@@ -104,7 +104,7 @@ export async function GET(req: NextRequest) {
           },
         },
       },
-      where: { ...query.where, category: Category.ARTICLE },
+      where: { category: Category.ARTICLE, ...query.where },
       orderBy: {
         updatedAt: "desc",
         ...(sort_by === "newest" ? { updatedAt: "desc" } : {}),
@@ -116,13 +116,11 @@ export async function GET(req: NextRequest) {
       where: query.where,
     });
 
-    return NextResponse.json(
-      {
-        stories,
-        page_number: numPagesToSkip + 1,
-        total_pages: Math.ceil(numStories / numStoriesPerPage),
-      } ?? { stories: [] },
-    );
+    return NextResponse.json({
+      stories,
+      page_number: numPagesToSkip + 1,
+      total_pages: Math.ceil(numStories / numStoriesPerPage),
+    });
   } catch (e) {
     if (e instanceof Prisma.PrismaClientValidationError) {
       console.log(e.message);
@@ -213,41 +211,19 @@ export async function PUT(request: NextRequest) {
 
     const newStory = await prisma.story.create({
       data: {
-        storyType: parsedRequest.data.storyType,
-        category: parsedRequest.data.category,
         title: parsedRequest.data.title,
-        titleColor: parsedRequest.data.titleColor,
-        slug: parsedRequest.data.slug,
         summary: parsedRequest.data.summary,
-        summaryColor: parsedRequest.data.summaryColor,
-        topics: parsedRequest.data.topics,
-        subtopics: {
-          connect: parsedRequest.data.subtopics.map((subtopic) => ({
-            id: subtopic.id,
-          })),
-        },
-        generalSubjects: {
-          connect: parsedRequest.data.generalSubjects.map((subject) => ({
-            id: subject.id,
-          })),
-        },
-        staffPick: parsedRequest.data.staffPick,
-        published: parsedRequest.data.published,
-        thumbnailUrl: parsedRequest.data.imageUrl || "",
+        storyType: StoryType.ESSAY,
+        category: Category.ARTICLE,
+        titleColor: "#ffffff",
+        slug: slug(parsedRequest.data.title),
+        summaryColor: "#ffffff",
+        createdAt: timestamp,
+        publishedAt: timestamp,
+        updatedAt: timestamp,
+        published: false,
+        thumbnailUrl,
         coverCaption: parsedRequest.data.imageCaption,
-        storyContent: {
-          create: {
-            // ! need to run npx prisma generate
-            content: parsedRequest.data.content,
-            footer: parsedRequest.data.footer,
-          },
-          storyContributions: {
-            create: parsedRequest.data.contributions,
-          },
-        },
-        createdAt: new Date(),
-        publishedAt: parsedRequest.data.published ? new Date() : (null as any),
-        updatedAt: new Date(),
       },
     });
 

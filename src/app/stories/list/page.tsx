@@ -25,7 +25,7 @@ export default async function StoriesListPage({
   const { stories, total_pages } = await getStories(params);
 
   // Header text shows ALL TOPICS by default or Topic if specified
-  let headerText = topic ? topic.toUpperCase() : "ALL TOPICS";
+  let headerText = topic ? topic.toUpperCase().replace("_", " ") : "ALL TOPICS";
 
   // Add Staff Pick to header text if user specified staff pick
   if (staff_pick && staff_pick === "true") {
@@ -39,6 +39,7 @@ export default async function StoriesListPage({
           {stories.length > 0 ? (
             <>
               <ArticleList articles={stories} preferHorizontal={true} />
+
               <Pagination total_pages={total_pages} />
             </>
           ) : (

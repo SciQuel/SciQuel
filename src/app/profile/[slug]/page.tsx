@@ -127,7 +127,7 @@ export default async function ProfilePage({ searchParams, params }: Params) {
                     )}/${publishDate.toFormat("dd")}/${article.slug}`;
                   })()}
                   key={article.title}
-                  topic={article.tags[0]}
+                  topic={article.topics[0]}
                   title={article.title}
                   subtitle={article.summary}
                   author={(() => {

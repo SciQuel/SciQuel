@@ -9,10 +9,10 @@ interface Props {
 
 export default function ProfileSidebar({ contributor }: Props) {
   return (
-    <div className="h-dvh -mt-10 flex w-screen flex-1 flex-col items-center bg-[#84B59F] p-6 pt-16 text-left md:min-h-[calc(100vh_-_4rem)] md:w-fit md:max-w-xs">
+    <div className="-mt-10 flex h-dvh w-screen flex-1 flex-col items-center bg-[#84B59F] p-6 pt-16 text-left md:min-h-[calc(100vh_-_4rem)] md:w-fit md:max-w-xs">
       <div className="flex min-h-fit w-fit flex-col gap-2 px-3 md:h-[calc(100vh_-_9rem)] md:w-fit md:px-0">
         <Avatar
-          imageUrl={"/example.png" ?? undefined}
+          imageUrl={contributor.avatarUrl ?? undefined}
           label="Image"
           size="6xl"
           className="h-60 w-60 self-center"

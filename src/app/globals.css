@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: "custom-test";
+  src: url("../../public/fonts/CH_SB_SC_WithoutQ_Kerned_01.otf");
+}
+
 /* :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
@@ -20,51 +25,4 @@ body {
   font-family: Quicksand;
   color: #333333;
   background-color: #ffffff;
-}
-
-@layer components {
-  .custom_input {
-    @apply placeholder:text-sm rounded shadow-sm border px-2 py-2 h-[37px] border-gray-500 focus:outline-none focus:border-sciquelTeal focus:ring-1 focus:ring-sciquelTeal
-  }
-
-  .custom_input_sm {
-    @apply placeholder:text-sm rounded text-sm shadow-sm border px-1 py-1 h-[27px] border-gray-500 focus:outline-none focus:border-sciquelTeal focus:ring-1 focus:ring-sciquelTeal
-  }
-
-  .plus-circle-icon {
-    @apply cursor-pointer text-sciquelSkyblue hover:text-sky-600 
-  }
-
-  .plus-icon {
-    @apply cursor-pointer text-sciquelGreenSheen h-[27px] [&>path]:stroke-[1px] [&>path]:stroke-sciquelGreenSheen
-  }
-
-  .trash-icon {
-    @apply h-[17px] cursor-pointer text-gray-700 hover:text-red-500
-  }
-
-  .tags {
-    @apply flex flex-row pl-3 pr-[9px] pt-[2px] justify-between gap-2 h-[25px] text-center rounded-full text-sm text-slate-100
-  }
-
-  
-  .btn {
-    @apply border border-gray-400 px-3 rounded-md font-semibold
-  }
-
-  .btn-sm {
-    @apply h-8
-  }
-
-  .btn-confirm {
-    @apply bg-teal-600 text-white border-none hover:bg-teal-700
-  }
-
-  .btn-delete {
-    @apply bg-red-500 text-white border-none hover:bg-red-800
-  }
-
-  .btn-cancel {
-    @apply text-gray-600  hover:bg-gray-200
-  }
 }

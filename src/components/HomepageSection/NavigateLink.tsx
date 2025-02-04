@@ -5,9 +5,9 @@ interface Props {
 
 export default function NavigateLink({ text, route }: Props) {
   return (
-    <a href={route} className="text-right">
-      <span>
-        <p className="mr-2 inline-block align-middle text-xl font-medium underline underline-offset-4">
+    <a href={route} className="ms-auto ">
+      <span className="flex flex-row justify-end">
+        <p className="mr-2 flex w-fit align-middle text-xl font-medium underline underline-offset-4">
           {text}
         </p>
         <svg
@@ -16,7 +16,7 @@ export default function NavigateLink({ text, route }: Props) {
           viewBox="0 0 24 24"
           strokeWidth={1.8}
           stroke="currentColor"
-          className="inline-block h-8 w-8 align-middle"
+          className=" block h-8 w-8 align-middle"
         >
           <path
             strokeLinecap="round"

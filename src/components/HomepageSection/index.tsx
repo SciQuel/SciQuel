@@ -10,7 +10,9 @@ export default function HomepageSection({
 }: PropsWithChildren<Props>) {
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-4xl font-[550] text-sciquelHeading">{heading}</h1>
+      <h1 className="font-customTest text-4xl font-[550] text-sciquelHeading">
+        {heading}
+      </h1>
       {children}
     </div>
   );

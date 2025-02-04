@@ -42,6 +42,7 @@ export async function GET(req: NextRequest, { params }: { params: Params }) {
         id,
       },
       include: {
+        staffPick: true,
         storyContributions: {
           select: {
             contributionType: true,
