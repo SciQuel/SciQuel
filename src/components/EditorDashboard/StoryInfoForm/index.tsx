@@ -1,3 +1,5 @@
+"use client";
+
 import { type Contribution } from "@/app/editor/(full-page)/story/info/StoryInfoEditorPageClient";
 import MarkdownEditorStoryInfo from "@/components/EditorDashboard/MarkdownEditorStoryInfo";
 import Trivia from "@/components/EditorDashboard/StoryInfoForm/formComponents/TriviaComponents/Trivia";
@@ -5,9 +7,9 @@ import Form from "@/components/Form";
 import { Popover, Transition } from "@headlessui/react";
 import { PlusCircleIcon, PlusIcon } from "@heroicons/react/20/solid";
 import {
+  StoryTopic,
   type Category,
   type GeneralSubject,
-  type StoryTopic,
   type StoryType,
   type Subtopic,
 } from "@prisma/client";
@@ -15,12 +17,12 @@ import clsx from "clsx";
 import { useRouter } from "next/navigation";
 import {
   Fragment,
+  useEffect,
   useRef,
   useState,
   useTransition,
   type Dispatch,
   type SetStateAction,
-  useEffect
 } from "react";
 import { updateWholeArticle } from "./actions/actions";
 import ArticleContent from "./formComponents/articleContent";
@@ -147,8 +149,6 @@ export default function StoryInfoForm({
   const [isCreateSubjectModalOpen, setIsCreateSubjectModalOpen] =
     useState(false);
 
-    
-    
   const [success, setSuccess] = useState(false);
   const filteredTopicList =
     topicQuery === ""
@@ -317,29 +317,27 @@ export default function StoryInfoForm({
 
   useEffect(() => {
     let extractedTopics: string[] = [];
-  
+
     // Extract every element in initialTopics
-    initialTopics.forEach(topic => {
+    initialTopics?.forEach((topic) => {
       extractedTopics.push(topic.toUpperCase()); // Convert to uppercase for case-insensitive matching
     });
-  
-    setTopicList(prevList =>
-      prevList.map(topic => ({
+
+    setTopicList((prevList) =>
+      prevList.map((topic) => ({
         ...topic,
         checked: extractedTopics.includes(topic.data.name.toUpperCase()), // Compare correctly
-        enabled:extractedTopics.includes(topic.data.name.toUpperCase())
-      }))
+        enabled: extractedTopics.includes(topic.data.name.toUpperCase()),
+      })),
     );
   }, [initialTopics]); // Runs when `initialTopics` changes
-  
-  
 
   // Div outlining what the left half of the page actually looks like
   return (
     <div className="flex flex-col gap-2">
       {/* Success Popup */}
-           {success && (
-        <div className="fixed top-4 right-4 bg-green-500 text-white p-2 rounded shadow-lg">
+      {success && (
+        <div className="fixed right-4 top-4 rounded bg-green-500 p-2 text-white shadow-lg">
           Update successful!
         </div>
       )}
@@ -353,7 +351,7 @@ export default function StoryInfoForm({
           e.preventDefault();
           if (!storyId) {
             return;
-          }          
+          }
           const form = new FormData();
           const topicNames = topics
             .map((topic) => {
@@ -361,7 +359,11 @@ export default function StoryInfoForm({
                 return topic.toUpperCase().replace(/ /g, "_");
                 // Don't know why complier complain about....topic is array with data object.
                 // 1/25/2025 complier got confuse on what type topic.data is
-              } else if (topic && typeof topic === "object" && "data" in topic) {
+              } else if (
+                topic &&
+                typeof topic === "object" &&
+                "data" in topic
+              ) {
                 const name = (topic as { data: { name: string } }).data.name;
                 return name.toUpperCase().replace(/ /g, "_");
               } else {
@@ -370,9 +372,11 @@ export default function StoryInfoForm({
             })
             .filter((name) => name !== null); // Filter out any invalid values
 
-        // Convert to JSON string format
-        const topicString = `[${topicNames.map(name => `"${name}"`).join(", ")}]`;
-        console.log("Final topic string:", topicString); // Debug log
+          // Convert to JSON string format
+          const topicString = `[${topicNames
+            .map((name) => `"${name}"`)
+            .join(", ")}]`;
+          console.log("Final topic string:", topicString); // Debug log
 
           form.append("id", storyId);
           form.append("summary", summary ?? "");
@@ -386,7 +390,7 @@ export default function StoryInfoForm({
           }
 
           form.append("imageCaption", initialCaption ?? "");
-          
+
           form.append("storyType", storyType);
 
           form.append("category", category);
@@ -394,9 +398,9 @@ export default function StoryInfoForm({
           form.append("titleColor", initialTitleColor ?? "#000000");
           form.append("summaryColor", initialSummaryColor ?? "#000000");
           form.append("slug", initialSlug ?? "");
-          
+
           form.append("topics", topicString);
-          
+
           // form.append(
           //   "topics",
           //   `[${initialTopics
@@ -406,7 +410,7 @@ export default function StoryInfoForm({
           //     )
           //     .toString()}]`
           // );
-          console.log("topic",topics);
+          console.log("topic", topics);
 
           if (typeof initialDate === "string") {
             form.append("publishDate", initialDate);
@@ -416,7 +420,7 @@ export default function StoryInfoForm({
 
           form.append("content", initialBody);
           form.append("footer", "");
-          
+
           updateWholeArticle(form)
             .then((result) => {
               console.log(result);
@@ -425,12 +429,11 @@ export default function StoryInfoForm({
               window.location.reload();
               setTimeout(() => setSuccess(false), 3000);
             })
-            
+
             .catch((err) => {
               console.error(err);
             });
-        } 
-      }
+        }}
       >
         {/* STORY TITLE FORM INPUT */}
         <ArticleTitle
@@ -589,8 +592,8 @@ export default function StoryInfoForm({
                           <li>
                             <div className="flex items-center py-2">
                               <input
-                                type="checkbox"                             
-                                checked={topic.checked}  // Controlled by state updates
+                                type="checkbox"
+                                checked={topic.checked} // Controlled by state updates
                                 disabled={topic.disabled} // Dynamically control disabled state
                                 onChange={(event) => {
                                   addTopic(topic.data.id);
