@@ -8,7 +8,9 @@ export default function Footer() {
       <div className="relative">
         <div className=" flex w-full flex-row justify-center gap-4 px-4 pb-4 align-middle xs:justify-between sm:px-10 sm:pt-4">
           <div className="hidden flex-col gap-4 pt-4 xs:flex">
-            <p>Get a weekly dose of accessible science delivered to your inbox.</p>
+            <p>
+              Get a weekly dose of accessible science delivered to your inbox.
+            </p>
             <form className="w-full">
               <input
                 id="email"
