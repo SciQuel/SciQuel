@@ -34,7 +34,7 @@ export default function Footer() {
           </div>
           <div className="flex flex-col items-end pt-4 ">
             <p className="w-full text-center text-lg font-semibold xs:w-auto xs:text-end xs:text-base">
-              Sciquel
+              SciQuel
             </p>
             {/* <div className="flex flex-row">
               <FooterIcon type="instagram" />
