@@ -42,7 +42,7 @@ export default function Footer() {
               <FooterIcon type="youtube" />
               <FooterIcon type="arrow" />
             </div> */}
-            <p>125 Western Ave.</p>
+            <p>125 Western Avenue</p>
             <p>Allston, MA 02163</p>
           </div>
         </div>
