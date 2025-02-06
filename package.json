@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "prettier": "npx prettier --write ./src"
+    "prettier": "npx prettier --write ./src",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
@@ -57,7 +59,15 @@
     "zod-form-data": "^2.0.1"
   },
   "devDependencies": {
+    "@chromatic-com/storybook": "^3.2.4",
     "@ianvs/prettier-plugin-sort-imports": "^4.4.0",
+    "@storybook/addon-essentials": "^8.5.3",
+    "@storybook/addon-interactions": "^8.5.3",
+    "@storybook/addon-onboarding": "^8.5.3",
+    "@storybook/blocks": "^8.5.3",
+    "@storybook/nextjs": "^8.5.3",
+    "@storybook/react": "^8.5.3",
+    "@storybook/test": "^8.5.3",
     "@svgr/webpack": "^8.0.1",
     "@types/bcrypt": "^5.0.0",
     "@types/d3": "^7.4.0",
@@ -75,10 +85,12 @@
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-isaacscript": "^2.6.7",
     "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-storybook": "^0.11.2",
     "prettier": "^2.8.8",
     "prettier-plugin-tailwindcss": "^0.3.0",
     "prisma": "^4.16.2",
     "request": "^2.88.2",
+    "storybook": "^8.5.3",
     "tailwindcss-touch": "^1.0.1",
     "ts-node": "^10.9.1"
   }

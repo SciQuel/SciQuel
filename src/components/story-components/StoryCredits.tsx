@@ -190,7 +190,7 @@ export default function StoryCredits({ story }: Props) {
                 <Avatar
                   key={`author-icons-${icon.icon}-${index}`}
                   imageUrl={icon.icon ? icon.icon : undefined}
-                  label={icon.name[index].slice(0, 1)}
+                  label={icon.name[index]?.slice(0, 1) ?? "T"}
                   className="my-1 me-2  "
                   size="md"
                 />
