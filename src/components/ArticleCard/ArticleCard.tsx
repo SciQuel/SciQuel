@@ -117,7 +117,7 @@ export default function ArticleCard({
                   ? "hidden"
                   : "h-24"
                 : preferHorizontal
-                ? "h-44 w-full sm:h-full sm:w-1/3"
+                ? "h-44 w-full sm:h-auto sm:w-1/3 sm:flex-1"
                 : "h-44",
             )}
           >
