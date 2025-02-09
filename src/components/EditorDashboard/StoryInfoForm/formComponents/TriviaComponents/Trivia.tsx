@@ -60,7 +60,7 @@ export interface Question {
 const Trivia: React.FC = () => {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [nextId, setNextId] = useState(1);
-
+  console.log(questions);
   const addQuestion = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault(); // Prevent form submission
 
@@ -514,3 +514,48 @@ const Trivia: React.FC = () => {
 };
 
 export default Trivia;
+
+// story_id: ObjectId
+// content_category:string,
+// question_type:QuestionType enum
+// max_score:number,
+// subpart:QuizQuestionCreate (section 4),
+// subheader:string
+
+// SELECT_ALL:
+// {
+// 	content_category:string[ ],
+// 	question: string,
+// options: string[ ]
+//     		correct_answers: number[ ]
+//    		explanations: string[ ]
+// }
+
+// COMPLEX_MATCHING:
+// {
+// 	content_categories:string[ ]
+// 	question: string
+//  categories: string[ ]
+//  options: string[ ]
+//  correct_answers: number[ ][ ]
+//  explanations: string[ ]
+// }
+
+// DIRECT_MATCHING:
+// 	{
+// 		content_categories:string[ ]
+// 		question: string
+//    categories: string[ ]
+//    options: string[ ]
+//    correct_answers: number[ ]
+//    explanations: string[ ]
+// 	}
+
+//   MULTIPLE_CHOICE:
+// {
+// 		question: string,
+//    options: string[ ]
+//    correct_answer: number
+//    explanations: string[ ]
+//    content_category:string[ ]
+// }
