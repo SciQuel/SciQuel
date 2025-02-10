@@ -15,12 +15,12 @@ import clsx from "clsx";
 import { useRouter } from "next/navigation";
 import {
   Fragment,
+  useEffect,
   useRef,
   useState,
   useTransition,
   type Dispatch,
   type SetStateAction,
-  useEffect
 } from "react";
 import { updateWholeArticle } from "./actions/actions";
 import ArticleContent from "./formComponents/articleContent";
@@ -64,7 +64,7 @@ interface Props {
   summaryColor?: string;
   setSummaryColor: (value: string) => void;
   topics: StoryTopic[];
-  setTopics: (value: StoryTopic) => void;
+  setTopics: React.Dispatch<React.SetStateAction<StoryTopic[]>>;
   storyType: string;
   setStoryType: (value: string) => void;
   sections: Section[];
@@ -132,7 +132,7 @@ export default function StoryInfoForm({
   const [subtopicQuery, setSubtopicQuery] = useState("");
   const [subjectQuery, setSubjectQuery] = useState("");
 
-  const [topics, setTopics] = useState<StoryTopic[]>([]);
+  const [localTopics, setLocalTopics] = useState<StoryTopic[]>([]);
   const [subtopics, setSubtopics] = useState<Subtopic[]>([]);
   const [subjects, setSubjects] = useState<GeneralSubject[]>([]);
 
@@ -147,8 +147,6 @@ export default function StoryInfoForm({
   const [isCreateSubjectModalOpen, setIsCreateSubjectModalOpen] =
     useState(false);
 
-    
-    
   const [success, setSuccess] = useState(false);
   const filteredTopicList =
     topicQuery === ""
@@ -182,21 +180,54 @@ export default function StoryInfoForm({
 
   //add a topic tag
   const addTopic = (id: any) => {
+    console.log("addTopic called with id:", id);
     setTopicList((prevList) =>
       prevList.map((item: any) => {
         if (item.data.id === id) {
           if (item.checked) {
-            // Uncheck and remove the topic
-            removeTopicTag(id);
+            console.log(`Unchecking topic with id: ${id}`);
+            // Update local state (localTopics holds topic objects)
+            setLocalTopics((prevTopics) => {
+              const updated = prevTopics.filter(
+                (topic: any) => topic.data.id !== id,
+              );
+              console.log("Local topics after removal:", updated);
+              return updated;
+            });
+            // Update parent's state (parent expects a string, e.g. topic name)
+            initialSetTopics((prevTopics) => {
+              const topicName = item.data.name;
+              const updated = prevTopics.filter(
+                (topic: any) => topic !== topicName,
+              );
+              console.log("Parent topics after removal:", updated);
+              return updated;
+            });
             return { ...item, checked: false };
           } else {
-            // Check and add the topic only if it's not already in the topics state
-            setTopics((prevTopics) => {
-              const isAlreadyAdded = prevTopics.some(
-                (topic) => topic.data.id === id,
+            console.log(`Checking topic with id: ${id}`);
+            // Update local state
+            setLocalTopics((prevTopics) => {
+              const isAdded = prevTopics.some(
+                (topic: any) => topic.data.id === id,
               );
-              if (!isAlreadyAdded) {
-                return [...prevTopics, item];
+              if (!isAdded) {
+                const updated = [...prevTopics, item];
+                console.log("Local topics after addition:", updated);
+                return updated;
+              }
+              return prevTopics;
+            });
+            // Update parent's state with the topic's name (or other string identifier)
+            initialSetTopics((prevTopics) => {
+              const topicName = item.data.name;
+              const isAdded = prevTopics.some(
+                (topic: any) => topic === topicName,
+              );
+              if (!isAdded) {
+                const updated = [...prevTopics, topicName];
+                console.log("Parent topics after addition:", updated);
+                return updated;
               }
               return prevTopics;
             });
@@ -246,7 +277,7 @@ export default function StoryInfoForm({
 
   // remove a topic tag
   const removeTopicTag = (id: number) => {
-    setTopics((prevTopics) => {
+    setLocalTopics((prevTopics) => {
       const updatedTopics = prevTopics.filter((item: any) => item.id !== id);
 
       // If no topics remain, reset subtopics and subjects
@@ -316,30 +347,28 @@ export default function StoryInfoForm({
   };
 
   useEffect(() => {
-    let extractedTopics: string[] = [];
-  
+    const extractedTopics: string[] = [];
+
     // Extract every element in initialTopics
-    initialTopics.forEach(topic => {
+    initialTopics.forEach((topic) => {
       extractedTopics.push(topic.toUpperCase()); // Convert to uppercase for case-insensitive matching
     });
-  
-    setTopicList(prevList =>
-      prevList.map(topic => ({
+
+    setTopicList((prevList) =>
+      prevList.map((topic) => ({
         ...topic,
         checked: extractedTopics.includes(topic.data.name.toUpperCase()), // Compare correctly
-        enabled:extractedTopics.includes(topic.data.name.toUpperCase())
-      }))
+        enabled: extractedTopics.includes(topic.data.name.toUpperCase()),
+      })),
     );
   }, [initialTopics]); // Runs when `initialTopics` changes
-  
-  
 
   // Div outlining what the left half of the page actually looks like
   return (
     <div className="flex flex-col gap-2">
       {/* Success Popup */}
-           {success && (
-        <div className="fixed top-4 right-4 bg-green-500 text-white p-2 rounded shadow-lg">
+      {success && (
+        <div className="fixed right-4 top-4 rounded bg-green-500 p-2 text-white shadow-lg">
           Update successful!
         </div>
       )}
@@ -353,15 +382,19 @@ export default function StoryInfoForm({
           e.preventDefault();
           if (!storyId) {
             return;
-          }          
+          }
           const form = new FormData();
-          const topicNames = topics
+          const topicNames = localTopics
             .map((topic) => {
               if (typeof topic === "string") {
                 return topic.toUpperCase().replace(/ /g, "_");
                 // Don't know why complier complain about....topic is array with data object.
                 // 1/25/2025 complier got confuse on what type topic.data is
-              } else if (topic && typeof topic === "object" && "data" in topic) {
+              } else if (
+                topic &&
+                typeof topic === "object" &&
+                "data" in topic
+              ) {
                 const name = (topic as { data: { name: string } }).data.name;
                 return name.toUpperCase().replace(/ /g, "_");
               } else {
@@ -370,9 +403,11 @@ export default function StoryInfoForm({
             })
             .filter((name) => name !== null); // Filter out any invalid values
 
-        // Convert to JSON string format
-        const topicString = `[${topicNames.map(name => `"${name}"`).join(", ")}]`;
-        console.log("Final topic string:", topicString); // Debug log
+          // Convert to JSON string format
+          const topicString = `[${topicNames
+            .map((name) => `"${name}"`)
+            .join(", ")}]`;
+          console.log("Final topic string:", topicString); // Debug log
 
           form.append("id", storyId);
           form.append("summary", summary ?? "");
@@ -386,7 +421,7 @@ export default function StoryInfoForm({
           }
 
           form.append("imageCaption", initialCaption ?? "");
-          
+
           form.append("storyType", storyType);
 
           form.append("category", category);
@@ -394,9 +429,9 @@ export default function StoryInfoForm({
           form.append("titleColor", initialTitleColor ?? "#000000");
           form.append("summaryColor", initialSummaryColor ?? "#000000");
           form.append("slug", initialSlug ?? "");
-          
+
           form.append("topics", topicString);
-          
+
           // form.append(
           //   "topics",
           //   `[${initialTopics
@@ -406,7 +441,7 @@ export default function StoryInfoForm({
           //     )
           //     .toString()}]`
           // );
-          console.log("topic",topics);
+          console.log("topic", localTopics);
 
           if (typeof initialDate === "string") {
             form.append("publishDate", initialDate);
@@ -416,7 +451,7 @@ export default function StoryInfoForm({
 
           form.append("content", initialBody);
           form.append("footer", "");
-          
+
           updateWholeArticle(form)
             .then((result) => {
               console.log(result);
@@ -425,12 +460,11 @@ export default function StoryInfoForm({
               window.location.reload();
               setTimeout(() => setSuccess(false), 3000);
             })
-            
+
             .catch((err) => {
               console.error(err);
             });
-        } 
-      }
+        }}
       >
         {/* STORY TITLE FORM INPUT */}
         <ArticleTitle
@@ -589,10 +623,11 @@ export default function StoryInfoForm({
                           <li>
                             <div className="flex items-center py-2">
                               <input
-                                type="checkbox"                             
-                                checked={topic.checked}  // Controlled by state updates
+                                type="checkbox"
+                                checked={topic.checked} // Controlled by state updates
                                 disabled={topic.disabled} // Dynamically control disabled state
                                 onChange={(event) => {
+                                  console.log("Topic:", topic);
                                   addTopic(topic.data.id);
                                 }}
                                 className="h-4 w-4 cursor-pointer rounded border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600"
@@ -611,7 +646,7 @@ export default function StoryInfoForm({
             </Popover>
           </div>
           <div className="flex flex-row flex-wrap gap-3">
-            {topics.map((topic: any) => (
+            {localTopics.map((topic: any) => (
               <Tags
                 key={topic.data.id}
                 id={topic.data.id}
@@ -834,14 +869,14 @@ export default function StoryInfoForm({
       <NewSubtopic
         isOpen={isCreateSubtopicModalOpen}
         setIsOpen={setIsCreateSubtopicModalOpen}
-        topicList={topics}
+        topicList={localTopics}
         createSubtopic={createSubtopic}
       />
 
       <NewSubject
         isOpen={isCreateSubjectModalOpen}
         setIsOpen={setIsCreateSubjectModalOpen}
-        topicList={topics}
+        topicList={localTopics}
         createSubject={createSubject}
       />
     </div>
