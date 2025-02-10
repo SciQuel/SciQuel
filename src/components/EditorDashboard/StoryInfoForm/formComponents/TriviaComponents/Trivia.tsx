@@ -1,3 +1,4 @@
+import axios from "axios";
 import React, { useState } from "react";
 import ComplexMatchingQuestion from "./ComplexMatchingQuestion";
 import DirectMatchingQuestion from "./DirectMatchingQuestion";
@@ -515,20 +516,24 @@ const Trivia: React.FC = () => {
 
 export default Trivia;
 
+/**
+ * test case here
+ */
+const urlQuiz = "/api/quizzes";
+const storyIdTest = "6488c6f6f5f617c772f6f61a";
 // story_id: ObjectId
-// content_category:string,
 // question_type:QuestionType enum
 // max_score:number,
-// subpart:QuizQuestionCreate (section 4),
+// subpart:QuizQuestionCreate,
 // subheader:string
 
 // SELECT_ALL:
 // {
 // 	content_category:string[ ],
 // 	question: string,
-// options: string[ ]
-//     		correct_answers: number[ ]
-//    		explanations: string[ ]
+//  options: string[ ]
+//  correct_answers: number[ ]
+//  explanations: string[ ]
 // }
 
 // COMPLEX_MATCHING:
@@ -559,3 +564,94 @@ export default Trivia;
 //    explanations: string[ ]
 //    content_category:string[ ]
 // }
+
+// TRUE_FALSE:
+// 	{
+// 		content_category:string[ ]
+// 		questions: string[ ]
+//    correct_answers: bool[ ]
+//    explanations:string[ ]
+// }
+
+/**Fix
+ * content_category and question are different
+ * content_category is a group
+ * question is a child of the group
+ * there are explanations in every type question, the amount is based on type
+ * story_id is required
+ * max_score is optional default is 10
+ * all type question is put in subpart
+ * missing subheader
+ */
+
+/**
+ * Submit multiple choice question type
+ * @param question
+ */
+async function submitMultipleChoice(question: Question) {
+  /**
+   * Missing content_category, explainations
+   * The should be an explain for each choice
+   */
+  const { content, choices, type } = question;
+  const res = await axios.post(urlQuiz, {
+    question_type: type,
+    //optional
+    max_score: 10,
+    subheader: "This is a subheader",
+    subpart: {
+      //content_category is array and should only have 1
+      content_category: ["Content category"],
+      question: content,
+      options: choices?.map((choice) => choice.content),
+      //index of choice that isCorrect:true
+      correct_answer: choices?.findIndex((choice) => choice.isCorrect),
+      explanations: choices?.map(
+        (choice, index) => "Explains for choice " + index,
+      ),
+    },
+  });
+  return res;
+}
+
+/**
+ * Submit select all question type
+ * @param question
+ */
+async function submitSelectAll(question: Question) {
+  /**
+   * Missing content_category, explainations
+   * The should be an explain for each option
+   */
+  const { content, options, type, correct_answers } = question;
+
+  //correct_answers contains optionId
+  const optionIndexChecked = options
+    //convert options to obj array contain id and index
+    ?.map(({ id }, index) => ({ id, index }))
+    //keep option that correct_answers have the option id
+    .filter(({ id, index }) => correct_answers?.includes(id))
+    //convert to index array
+    .map(({ index }) => index);
+
+  const res = await axios.post(urlQuiz, {
+    question_type: type,
+    //optional
+    max_score: 10,
+    subheader: "This is a subheader",
+    subpart: {
+      question: content,
+      //content_category is array and should only have 1
+      content_category: ["Content category"],
+
+      options: options?.map((option) => option.content),
+      //index of option that is checked, order does not matter
+      correct_answers: optionIndexChecked,
+      //explanations for each option
+      explanations: options?.map(
+        (option, index) => "This is a explaination for option " + index,
+      ),
+    },
+  });
+  return res;
+}
