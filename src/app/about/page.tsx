@@ -14,19 +14,16 @@ export default function AboutPage() {
           </p>
           <p>
             Our mission is to benefit society by making scientific knowledge
-            freely accessible. We want to
+            freely accessible. We want to{" "}
             <strong>truly change the world</strong>
             by inspiring people to think and talk about science on a daily
             basis—akin to how we collectively ponder sports or pop culture or
             the weather.
           </p>
           <p>
-            We are
-            <strong>scientists</strong>
-            who know what it’s like to do research; we are
-            <strong>writers</strong>
-            who know what it’s like to write; we are
-            <strong>artists</strong>, <strong>editors</strong>,{" "}
+            We are <strong>scientists</strong> who know what it’s like to do
+            research; we are <strong>writers</strong> who know what it’s like to
+            write; we are <strong>artists</strong>, <strong>editors</strong>,{" "}
             <strong>engineers</strong>, and <strong>web developers</strong> who
             share the value that{" "}
             <strong>
