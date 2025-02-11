@@ -655,3 +655,52 @@ async function submitSelectAll(question: Question) {
   });
   return res;
 }
+
+/**
+ * Submit direct matching question type
+ * @param question
+ */
+async function submitDirectMatching(question: Question) {
+  /**
+   * Missing content_category, explainations
+   * The should be an explain for each option
+   */
+  const { content, options, type, correct_answers } = question;
+
+  //correct_answers contains optionId
+  const optionIndexChecked = options
+    //convert options to obj array contain id and index
+    ?.map(({ id }, index) => ({ id, index }))
+    //keep option that correct_answers have the option id
+    .filter(({ id, index }) => correct_answers?.includes(id))
+    //convert to index array
+    .map(({ index }) => index);
+
+  const res = await axios.post(urlQuiz, {
+    question_type: type,
+    //optional
+    max_score: 10,
+    subpart: {
+      question: content,
+      //content category for each match (for the left side for now)
+      content_category: [
+        "Content category 1",
+        "Content category 2",
+        "Content category 1",
+      ],
+      //the left side
+      categories: ["Category 1", "Category 2", "Category 3"],
+      //the right side
+      options: ["Option 1", "Option 2", "Option 3"],
+      correct_answers: [1, 0, 2],
+      //explaination for each match (for the left side for now)
+      explanations: [
+        "This is a explaination 1",
+        "This is a explaination 2",
+        "This is a explaination 3",
+      ],
+    },
+    subheader: "This is a subheader",
+  });
+  return res;
+}
