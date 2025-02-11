@@ -15,10 +15,9 @@ export default function AboutPage() {
           <p>
             Our mission is to benefit society by making scientific knowledge
             freely accessible. We want to{" "}
-            <strong>truly change the world</strong>
-            by inspiring people to think and talk about science on a daily
-            basis—akin to how we collectively ponder sports or pop culture or
-            the weather.
+            <strong>truly change the world</strong> by inspiring people to think
+            and talk about science on a daily basis—akin to how we collectively
+            ponder sports or pop culture or the weather.
           </p>
           <p>
             We are <strong>scientists</strong> who know what it’s like to do
@@ -28,7 +27,7 @@ export default function AboutPage() {
             share the value that{" "}
             <strong>
               scientific knowledge is best placed in the public domain
-            </strong>
+            </strong>{" "}
             and the vision that society will come to take scientific literacy
             for granted. We believe that science can be taught, no matter how
             complicated, and that knowledge is worth expounding, no matter the
