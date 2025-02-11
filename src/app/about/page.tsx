@@ -42,7 +42,7 @@ export default function AboutPage() {
             join a meaningful cause while exploring what excites you. Whether
             you want to learn more or simply wish to connect with a community of
             like-minded people, reach out to us at{" "}
-            <a href="mailto:team@sciquel.org"> team@sciquel.org</a>!
+            <a href="mailto:team@sciquel.org">team@sciquel.org</a>!
           </p>
         </div>
       </div>
