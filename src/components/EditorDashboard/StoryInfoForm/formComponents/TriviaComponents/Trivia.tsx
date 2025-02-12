@@ -658,6 +658,7 @@ async function submitSelectAll(question: Question) {
 
 /**
  * Submit direct matching question type
+ *
  * @param question
  */
 async function submitDirectMatching(question: Question) {
