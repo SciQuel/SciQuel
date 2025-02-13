@@ -7,13 +7,17 @@ const config: StorybookConfig = {
     "@storybook/addon-essentials",
     "@chromatic-com/storybook",
     "@storybook/addon-interactions",
-    "@storybook/addon-a11y"
+    "@storybook/addon-a11y",
+    "msw-storybook-addon"
   ],
   framework: {
     name: "@storybook/nextjs",
     options: {},
   },
   staticDirs: ["..\\public"],
+  features: {
+    experimentalRSC: true,
+  },
   webpackFinal: async (config) => {
     config.module?.rules?.push({
       test: /\.scss$/,

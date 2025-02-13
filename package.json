@@ -87,6 +87,8 @@
     "eslint-plugin-isaacscript": "^2.6.7",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-storybook": "^0.11.2",
+    "msw": "^2.7.0",
+    "msw-storybook-addon": "^2.0.0",
     "prettier": "^2.8.8",
     "prettier-plugin-tailwindcss": "^0.3.0",
     "prisma": "^4.16.2",
@@ -94,5 +96,10 @@
     "storybook": "^8.5.3",
     "tailwindcss-touch": "^1.0.1",
     "ts-node": "^10.9.1"
+  },
+  "msw": {
+    "workerDirectory": [
+      "public"
+    ]
   }
 }
