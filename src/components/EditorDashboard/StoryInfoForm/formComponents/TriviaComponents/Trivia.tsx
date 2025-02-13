@@ -747,8 +747,6 @@ async function submitTrueFalse(question: Question) {
    * The should be an explain for each option
    */
   const { content, trueOrFalseQuestions, type } = question;
-
-  // correct_answers contains optionId
   const res = await axios.post(urlQuiz, {
     question_type: "TRUE_FALSE",
     max_score: 10,
@@ -758,13 +756,10 @@ async function submitTrueFalse(question: Question) {
         (value, index) => "This is a content_category for question " + index,
       ),
       questions: trueOrFalseQuestions?.map((value) => value.content),
-      explanations: [
-        ,
-        "This is a explaination 2",
-        "This is a explaination 3",
-        "This is a explaination 4",
-      ],
-      correct_answers: [true, false, true, false],
+      explanations: trueOrFalseQuestions?.map(
+        (value, index) => "This is an explanation for question " + index,
+      ),
+      correct_answers: trueOrFalseQuestions?.map((value) => value.isTrue),
     },
     subheader: "This is a subheader",
   });
