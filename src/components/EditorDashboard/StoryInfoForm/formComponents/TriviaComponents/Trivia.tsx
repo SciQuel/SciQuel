@@ -666,16 +666,9 @@ async function submitDirectMatching(question: Question) {
    * Missing content_category, explainations
    * The should be an explain for each option
    */
-  const { content, options, type, correct_answers } = question;
+  const { content, pairs, type } = question;
 
   //correct_answers contains optionId
-  const optionIndexChecked = options
-    //convert options to obj array contain id and index
-    ?.map(({ id }, index) => ({ id, index }))
-    //keep option that correct_answers have the option id
-    .filter(({ id, index }) => correct_answers?.includes(id))
-    //convert to index array
-    .map(({ index }) => index);
 
   const res = await axios.post(urlQuiz, {
     question_type: type,
@@ -684,22 +677,94 @@ async function submitDirectMatching(question: Question) {
     subpart: {
       question: content,
       //content category for each match (for the left side for now)
+      //example for content_category
+      content_category: pairs?.map(
+        (val, index) => "This is an content_category for pair " + index,
+      ),
+      //the left side
+      categories: pairs?.map((pair) => pair.left),
+      //the right side
+      options: pairs?.map((pair) => pair.right),
+      //need to figure out how to store the correct ansswers
+      correct_answers: [1, 0, 2], //not correct
+      //explaination for each match (for the left side for now)
+      //example for explantion
+      explanations: pairs?.map(
+        (val, index) => "This is an explantation for pair " + index,
+      ),
+    },
+    subheader: "This is a subheader",
+  });
+  return res;
+}
+
+/**
+ * Submit complex matching question type
+ *
+ * @param question
+ */
+async function submitComplexMatching(question: Question) {
+  /**
+   * Missing content_category, explainations
+   * The should be an explain for each option
+   */
+  const { content, pairs, type } = question;
+
+  //correct_answers contains optionId
+  const res = await axios.post(urlQuiz, {
+    question_type: "COMPLEX_MATCHING",
+    max_score: 10,
+    subpart: {
       content_category: [
         "Content category 1",
         "Content category 2",
         "Content category 1",
       ],
-      //the left side
+      question: "This is a question",
       categories: ["Category 1", "Category 2", "Category 3"],
-      //the right side
-      options: ["Option 1", "Option 2", "Option 3"],
-      correct_answers: [1, 0, 2],
-      //explaination for each match (for the left side for now)
+      options: ["Option 1", "Option 2", "Option 3", "Option 4"],
+      correct_answers: [[0], [1], [2]],
       explanations: [
         "This is a explaination 1",
         "This is a explaination 2",
         "This is a explaination 3",
+        "This is a explaination for place holder",
       ],
+    },
+    subheader: "This is a subheader",
+  });
+  return res;
+}
+
+/**
+ * Submit true false question type
+ *
+ * @param question
+ */
+async function submitTrueFalse(question: Question) {
+  /**
+   * Missing content_category, explainations
+   * The should be an explain for each option
+   */
+  const { content, trueOrFalseQuestions, type } = question;
+
+  // correct_answers contains optionId
+  const res = await axios.post(urlQuiz, {
+    question_type: "TRUE_FALSE",
+    max_score: 10,
+    subpart: {
+      // content_category for each question
+      content_category: trueOrFalseQuestions?.map(
+        (value, index) => "This is a content_category for question " + index,
+      ),
+      questions: trueOrFalseQuestions?.map((value) => value.content),
+      explanations: [
+        ,
+        "This is a explaination 2",
+        "This is a explaination 3",
+        "This is a explaination 4",
+      ],
+      correct_answers: [true, false, true, false],
     },
     subheader: "This is a subheader",
   });
