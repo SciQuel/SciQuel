@@ -595,6 +595,7 @@ async function submitMultipleChoice(question: Question) {
    */
   const { content, choices, type } = question;
   const res = await axios.post(urlQuiz, {
+    story_id: storyIdTest,
     question_type: type,
     //optional
     max_score: 10,
@@ -635,6 +636,7 @@ async function submitSelectAll(question: Question) {
     .map(({ index }) => index);
 
   const res = await axios.post(urlQuiz, {
+    story_id: storyIdTest,
     question_type: type,
     //optional
     max_score: 10,
@@ -671,6 +673,7 @@ async function submitDirectMatching(question: Question) {
   //correct_answers contains optionId
 
   const res = await axios.post(urlQuiz, {
+    story_id: storyIdTest,
     question_type: type,
     //optional
     max_score: 10,
@@ -712,6 +715,7 @@ async function submitComplexMatching(question: Question) {
 
   //correct_answers contains optionId
   const res = await axios.post(urlQuiz, {
+    story_id: storyIdTest,
     question_type: "COMPLEX_MATCHING",
     max_score: 10,
     subpart: {
@@ -748,6 +752,7 @@ async function submitTrueFalse(question: Question) {
    */
   const { content, trueOrFalseQuestions, type } = question;
   const res = await axios.post(urlQuiz, {
+    story_id: storyIdTest,
     question_type: "TRUE_FALSE",
     max_score: 10,
     subpart: {
