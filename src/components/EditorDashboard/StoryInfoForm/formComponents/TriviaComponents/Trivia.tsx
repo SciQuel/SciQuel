@@ -61,7 +61,6 @@ export interface Question {
 const Trivia: React.FC = () => {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [nextId, setNextId] = useState(1);
-  console.log(questions);
   const addQuestion = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault(); // Prevent form submission
 
@@ -502,7 +501,7 @@ const Trivia: React.FC = () => {
             />
           )}
           <button
-            onClick={() => submitQuizMap(question)}
+            onClick={(e) => submitQuizMap(question, e)}
             className="mt-4 rounded bg-sciquelTeal px-3 py-2 text-sm text-white"
           >
             Save quiz question
@@ -525,19 +524,29 @@ export default Trivia;
 /**
  * test case here
  */
-function submitQuizMap(question: Question) {
+async function submitQuizMap(
+  question: Question,
+  e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+) {
+  e.preventDefault();
+  let res = {};
   switch (question.type) {
     case "MULTIPLE_CHOICE":
-      return submitMultipleChoice(question);
+      res = await submitMultipleChoice(question);
+      break;
     case "SELECT_ALL":
-      return submitSelectAll(question);
+      res = await submitSelectAll(question);
+      break;
     case "DIRECT_MATCHING":
-      return submitDirectMatching(question);
+      res = await submitDirectMatching(question);
+      break;
     case "COMPLEX_MATCHING":
-      return submitComplexMatching(question);
+      res = await submitComplexMatching(question);
+      break;
     case "TRUE_FALSE":
-      return submitTrueFalse(question);
+      res = await submitTrueFalse(question);
   }
+  console.log(res);
 }
 const urlQuiz = "/api/quizzes/edit";
 const storyIdTest = "6488c6f6f5f617c772f6f61a";
@@ -613,6 +622,7 @@ async function submitMultipleChoice(question: Question) {
    * Missing content_category, explainations
    * The should be an explain for each choice
    * add subheader
+   * add content
    */
   const { content, choices, type } = question;
   const res = await axios.post(urlQuiz, {
@@ -646,6 +656,7 @@ async function submitSelectAll(question: Question) {
    * Missing content_category, explainations
    * The should be an explain for each option
    * add subheader
+   * add content
    */
   const { content, options, type, correct_answers } = question;
 
@@ -696,6 +707,7 @@ async function submitDirectMatching(question: Question) {
    * Missing content_category, explainations
    * The should be an explain for each option
    * add subheader
+   * add content
    */
 
   const res = await axios.post(urlQuiz, {
@@ -714,6 +726,8 @@ async function submitDirectMatching(question: Question) {
       categories: pairs?.map((pair) => pair.left),
       //the right side
       options: pairs?.map((pair) => pair.right),
+      //number is the index of the right side
+      //For example: [1,0,2] means the first pair is 1, the second pair is 0, the third pair is 2
       //need to figure out how to store the correct ansswers
       correct_answers: [1, 0, 2], //not correct
       //explaination for each match (for the left side for now)
@@ -736,6 +750,7 @@ async function submitComplexMatching(question: Question) {
   /**
    * Missing content_category, explainations
    * The should be an explain for each option
+   * add content
    * add subheader
    */
   const { categories, categoryItems, content } = question;
@@ -791,10 +806,10 @@ async function submitTrueFalse(question: Question) {
    * Missing content_category, explainations
    * The should be an explain for each option
    */
-  const { content, trueOrFalseQuestions, type } = question;
+  const { trueOrFalseQuestions, type } = question;
   const res = await axios.post(urlQuiz, {
     story_id: storyIdTest,
-    question_type: "TRUE_FALSE",
+    question_type: type,
     max_score: 10,
     subpart: {
       // content_category for each question
