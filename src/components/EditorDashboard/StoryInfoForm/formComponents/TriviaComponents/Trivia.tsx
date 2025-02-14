@@ -501,6 +501,12 @@ const Trivia: React.FC = () => {
               updateOption={updateOption}
             />
           )}
+          <button
+            onClick={() => submitQuizMap(question)}
+            className="mt-4 rounded bg-sciquelTeal px-3 py-2 text-sm text-white"
+          >
+            Save quiz question
+          </button>
         </div>
       ))}
       <button
@@ -519,7 +525,21 @@ export default Trivia;
 /**
  * test case here
  */
-const urlQuiz = "/api/quizzes";
+function submitQuizMap(question: Question) {
+  switch (question.type) {
+    case "MULTIPLE_CHOICE":
+      return submitMultipleChoice(question);
+    case "SELECT_ALL":
+      return submitSelectAll(question);
+    case "DIRECT_MATCHING":
+      return submitDirectMatching(question);
+    case "COMPLEX_MATCHING":
+      return submitComplexMatching(question);
+    case "TRUE_FALSE":
+      return submitTrueFalse(question);
+  }
+}
+const urlQuiz = "/api/quizzes/edit";
 const storyIdTest = "6488c6f6f5f617c772f6f61a";
 // story_id: ObjectId
 // question_type:QuestionType enum
@@ -592,6 +612,7 @@ async function submitMultipleChoice(question: Question) {
   /**
    * Missing content_category, explainations
    * The should be an explain for each choice
+   * add subheader
    */
   const { content, choices, type } = question;
   const res = await axios.post(urlQuiz, {
@@ -607,6 +628,7 @@ async function submitMultipleChoice(question: Question) {
       options: choices?.map((choice) => choice.content),
       //index of choice that isCorrect:true
       correct_answer: choices?.findIndex((choice) => choice.isCorrect),
+      //explanations for each choice
       explanations: choices?.map(
         (choice, index) => "Explains for choice " + index,
       ),
@@ -623,6 +645,7 @@ async function submitSelectAll(question: Question) {
   /**
    * Missing content_category, explainations
    * The should be an explain for each option
+   * add subheader
    */
   const { content, options, type, correct_answers } = question;
 
@@ -669,8 +692,11 @@ async function submitDirectMatching(question: Question) {
    * The should be an explain for each option
    */
   const { content, pairs, type } = question;
-
-  //correct_answers contains optionId
+  /**
+   * Missing content_category, explainations
+   * The should be an explain for each option
+   * add subheader
+   */
 
   const res = await axios.post(urlQuiz, {
     story_id: storyIdTest,
@@ -691,7 +717,7 @@ async function submitDirectMatching(question: Question) {
       //need to figure out how to store the correct ansswers
       correct_answers: [1, 0, 2], //not correct
       //explaination for each match (for the left side for now)
-      //example for explantion
+      //example for explantion for each pair (left side)
       explanations: pairs?.map(
         (val, index) => "This is an explantation for pair " + index,
       ),
@@ -710,29 +736,44 @@ async function submitComplexMatching(question: Question) {
   /**
    * Missing content_category, explainations
    * The should be an explain for each option
+   * add subheader
    */
-  const { content, pairs, type } = question;
-
+  const { categories, categoryItems, content } = question;
+  //create a map of category id to item index
+  const categoriesIdMap =
+    categories?.reduce<{ [key: number]: number[] }>((prev, { id }) => {
+      prev[id] = [];
+      return prev;
+    }, {}) ?? {};
+  //insert index of item to the catedoryIdMap
+  categoryItems?.forEach(({ categoryId }, index) => {
+    categoriesIdMap[categoryId].push(index);
+  });
+  //convert it to ans
+  const correct_answers =
+    categories?.map(({ id }) => categoriesIdMap[id]) ?? [];
   //correct_answers contains optionId
   const res = await axios.post(urlQuiz, {
     story_id: storyIdTest,
     question_type: "COMPLEX_MATCHING",
     max_score: 10,
     subpart: {
-      content_category: [
-        "Content category 1",
-        "Content category 2",
-        "Content category 1",
-      ],
-      question: "This is a question",
-      categories: ["Category 1", "Category 2", "Category 3"],
-      options: ["Option 1", "Option 2", "Option 3", "Option 4"],
-      correct_answers: [[0], [1], [2]],
+      //content_category for each match (left side)
+      content_category: categories?.map(
+        (val, index) => "This is an content_category for category " + index,
+      ),
+      question: content,
+      categories: categories?.map(({ name }) => name),
+      options: categoryItems?.map(({ content }) => content),
+      //index from the categoryItems that should belong to the category position
+      //Example: [[1,2],[0]] means category 1 has item 1 and 2, category 2 has item 0
+      correct_answers: correct_answers,
+      //explanation for each match (left side) plus the placeholder options
       explanations: [
-        "This is a explaination 1",
-        "This is a explaination 2",
-        "This is a explaination 3",
-        "This is a explaination for place holder",
+        ...(categories?.map(
+          (val, index) => "This is an explanations for category " + index,
+        ) || []),
+        "This is an explanation for the options place holder",
       ],
     },
     subheader: "This is a subheader",
