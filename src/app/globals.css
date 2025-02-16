@@ -26,3 +26,11 @@ body {
   color: #333333;
   background-color: #ffffff;
 }
+
+.topic-tag {
+  transition: background-color 0.2s ease-in-out, filter 0.2s ease-in-out;
+}
+
+.topic-tag:hover {
+  filter: brightness(75%);
+}

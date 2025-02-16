@@ -60,7 +60,7 @@ export default function ArticleCard({
             {/* Article Card Header */}
             {!mini || !preferHorizontal ? (
               <div className="flex w-full flex-row flex-wrap justify-between">
-                <TopicTag name={topic} />
+                <TopicTag name={topic} clickable={false} />
                 <div className="">
                   <p
                     className={clsx(

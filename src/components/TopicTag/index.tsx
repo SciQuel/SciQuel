@@ -1,7 +1,9 @@
 import { type StoryTopic } from "@prisma/client";
+import Link from "next/link";
 
 interface Props {
   name: StoryTopic;
+  clickable?: boolean;
 }
 
 const topicTagColors: Record<StoryTopic, string> = {
@@ -22,11 +24,22 @@ const topicTagColors: Record<StoryTopic, string> = {
   TECHNOLOGY: "#4E413F",
 } as const;
 
-export default function TopicTag({ name }: Props) {
-  return (
+//TopicTag can now be passed in an optional clickable arguement
+export default function TopicTag({ name, clickable = true }: Props) {
+  return clickable ? (
+    <Link href={`/stories/topics/${name}`}>
+      <span
+        className="topic-tag flex w-fit items-center rounded-full px-3 py-1"
+        style={{ backgroundColor: topicTagColors[name] }}
+      >
+        <p className="m-0 text-xs font-medium text-white">
+          {name?.replace("_", " ").toLowerCase()}
+        </p>
+      </span>
+    </Link>
+  ) : (
     <span
       className="flex w-fit items-center rounded-full px-3 py-1"
-      // Tailwind compilation only supports style, not interpolated arbitrary values
       style={{ backgroundColor: topicTagColors[name] }}
     >
       <p className="m-0 text-xs font-medium text-white">
