@@ -194,11 +194,11 @@ export default function StoryInfoForm({
               console.log("Local topics after removal:", updated);
               return updated;
             });
-            // Update parent's state (parent expects a string, e.g. topic name)
+            // Update parent's state (convert to uppercase for consistency)
             initialSetTopics((prevTopics) => {
-              const topicName = item.data.name;
+              const topicNameUpper = item.data.name.toUpperCase();
               const updated = prevTopics.filter(
-                (topic: any) => topic !== topicName,
+                (topic: any) => topic.toUpperCase() !== topicNameUpper,
               );
               console.log("Parent topics after removal:", updated);
               return updated;
@@ -218,14 +218,14 @@ export default function StoryInfoForm({
               }
               return prevTopics;
             });
-            // Update parent's state with the topic's name (or other string identifier)
+            // Update parent's state with case-insensitive check
             initialSetTopics((prevTopics) => {
-              const topicName = item.data.name;
+              const topicNameUpper = item.data.name.toUpperCase();
               const isAdded = prevTopics.some(
-                (topic: any) => topic === topicName,
+                (topic: any) => topic.toUpperCase() === topicNameUpper,
               );
               if (!isAdded) {
-                const updated = [...prevTopics, topicName];
+                const updated = [...prevTopics, topicNameUpper];
                 console.log("Parent topics after addition:", updated);
                 return updated;
               }
