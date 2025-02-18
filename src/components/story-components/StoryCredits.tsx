@@ -64,10 +64,10 @@ export default function StoryCredits({ story }: Props) {
           } else if (
             headerRef.current &&
             headerRef.current.clientHeight +
-              state +
-              Math.max(state - 23, 14) +
-              32 <
-              window.innerHeight * 0.9 - 90 &&
+            state +
+            Math.max(state - 23, 14) +
+            32 <
+            window.innerHeight * 0.9 - 90 &&
             state < 72
           ) {
             return state + 2;
@@ -190,7 +190,7 @@ export default function StoryCredits({ story }: Props) {
                 <Avatar
                   key={`author-icons-${icon.icon}-${index}`}
                   imageUrl={icon.icon ? icon.icon : undefined}
-                  label={icon.name[index].slice(0, 1)}
+                  label={icon.name[index]?.slice(0, 1)}
                   className="my-1 me-2  "
                   size="md"
                 />
@@ -200,8 +200,8 @@ export default function StoryCredits({ story }: Props) {
                   key as "AUTHOR" | "ANIMATOR" | "ILLUSTRATOR"
                 ]
                   ? contributorPrefixMap[
-                      key as "AUTHOR" | "ANIMATOR" | "ILLUSTRATOR"
-                    ].prefix
+                    key as "AUTHOR" | "ANIMATOR" | "ILLUSTRATOR"
+                  ].prefix
                   : "by "}
                 {contributorMap[key].slice(0, -1).map((author) => {
                   if (contributorMap[key].length > 2) {
@@ -299,13 +299,13 @@ export default function StoryCredits({ story }: Props) {
           <p className="mr-1 ">
             {story.category
               ? story.category.slice(0, 1) +
-                story.category.slice(1).toLowerCase()
+              story.category.slice(1).toLowerCase()
               : ""}{" "}
             |{" "}
             {story.storyType
               ? story.storyType.slice(0, 1) +
-                story.storyType.slice(1).toLowerCase() +
-                " | "
+              story.storyType.slice(1).toLowerCase() +
+              " | "
               : ""}
           </p>
           {story.topics.map((item: StoryTopic, index: number) => {
@@ -324,9 +324,9 @@ export default function StoryCredits({ story }: Props) {
           )}
           {story.updatedAt.toString() != story.publishedAt.toString()
             ? " | " +
-              DateTime.fromJSDate(story.updatedAt).toFormat(
-                "LLLL d',' y',' t ZZZZ",
-              )
+            DateTime.fromJSDate(story.updatedAt).toFormat(
+              "LLLL d',' y',' t ZZZZ",
+            )
             : ""}
         </p>
       </div>
@@ -385,13 +385,13 @@ export default function StoryCredits({ story }: Props) {
             <p className="mr-1  ">
               {story.category
                 ? story.category.slice(0, 1) +
-                  story.category.slice(1).toLowerCase()
+                story.category.slice(1).toLowerCase()
                 : ""}{" "}
               |{" "}
               {story.storyType
                 ? story.storyType.slice(0, 1) +
-                  story.storyType.slice(1).toLowerCase() +
-                  " |"
+                story.storyType.slice(1).toLowerCase() +
+                " |"
                 : ""}
             </p>
             {story.topics.map((item: StoryTopic, index: number) => {
@@ -406,9 +406,9 @@ export default function StoryCredits({ story }: Props) {
             )}
             {story.updatedAt.toString() != story.publishedAt.toString()
               ? " | " +
-                DateTime.fromJSDate(story.updatedAt).toFormat(
-                  "LLLL d',' y',' t ZZZZ",
-                )
+              DateTime.fromJSDate(story.updatedAt).toFormat(
+                "LLLL d',' y',' t ZZZZ",
+              )
               : ""}
           </p>
         </div>

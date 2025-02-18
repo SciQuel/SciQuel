@@ -22,12 +22,14 @@ export default function StoryLargeImage({
   useEffect(() => {
     // Check if the margin is small enough to open the popup
     const checkMargin = () => {
-      if (!imageContainerRef.current?.parentElement) return;
+      if (
+        !imageContainerRef.current ||
+        !imageContainerRef.current?.parentElement
+      )
+        return;
       const parentElementStyle = window.getComputedStyle(
         imageContainerRef.current?.parentElement,
       );
-
-      console.log(parentElementStyle);
 
       const marginLeft = parseInt(
         parentElementStyle.getPropertyValue("margin-left"),
@@ -38,13 +40,9 @@ export default function StoryLargeImage({
         10,
       );
 
-      console.log(marginLeft, marginRight);
-
-      console.log(marginLeft <= 8 && marginLeft > 0);
-
       if (
-        (marginLeft <= 8 && marginLeft > 0) ||
-        (marginRight <= 8 && marginRight > 0)
+        (marginLeft <= 10 && marginLeft > 0) ||
+        (marginRight <= 10 && marginRight > 0)
       ) {
         setSmallMargin(true);
       } else {
