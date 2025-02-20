@@ -104,7 +104,7 @@ const SavedPage = ({ brainedStories, bookmarkData, definitions }: Props) => {
   };
 
   return (
-    <div className="flex h-screen  flex-col ">
+    <div className="flex h-full flex-col ">
       <div className=" mt-5 w-full  ">
         <h1 className="mb-1 text-xl font-bold"> Saved </h1>
         <div className="flex ">

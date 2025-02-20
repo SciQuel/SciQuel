@@ -303,7 +303,7 @@ export default function Sidebar() {
   return (
     <div>
       <div
-        className="z-10 h-screen gap-4 gap-y-8 bg-[#EDF4F4] px-5 pt-1.5 pt-6 text-center text-xl dark:text-white md:sticky md:w-56 
+        className="z-10 h-full gap-4 gap-y-8 bg-[#EDF4F4] px-5 pt-1.5 pt-6 text-center text-xl dark:text-white md:sticky md:w-56 
                 md:flex-col md:gap-y-2 md:text-left"
       >
         <div className="flex h-4/5 flex-col justify-between text-xl text-[#1A6768]">

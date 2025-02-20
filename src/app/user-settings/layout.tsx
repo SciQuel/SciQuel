@@ -15,8 +15,8 @@ export default function Layout(props: { children: React.ReactNode }) {
     );
   }
   return (
-    <section>
-      <div className="flex min-h-screen bg-white dark:bg-sciquelDarkText dark:text-white">
+    <section className="h-full">
+      <div className="flex  h-[calc(100dvh-100px)] bg-white dark:bg-sciquelDarkText dark:text-white">
         <Sidebar />
         {props.children}
       </div>

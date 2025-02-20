@@ -83,7 +83,7 @@ export default async function ReadingHistory() {
   }
 
   return (
-    <div className=" h-screen flex-grow overflow-y-auto pr-36 ">
+    <div className=" h-full flex-grow pr-36 ">
       <h2 className="mb-10 ml-8 mt-8 text-3xl font-bold "> Reading History </h2>
       <ReadingDropDownContainer
         pastWeekReadings={pastWeekReadings}

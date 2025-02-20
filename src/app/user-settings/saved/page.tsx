@@ -81,7 +81,7 @@ export default async function SavedPaged() {
   BrainedStories = convertDatesInStories(BrainedStories);
 
   return (
-    <div className="mx-10 w-full">
+    <div className="mx-10 h-full w-full">
       <SavedPage
         brainedStories={BrainedStories}
         bookmarkData={bookMarkedStories}
