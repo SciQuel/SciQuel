@@ -5,7 +5,7 @@ import { ContributorModel } from "./models/contributors";
 import { StoryModel } from "./models/story";
 import { StoryContributionModel } from "./models/storyContributions";
 
-const db = factory({
+export const db = factory({
   story: { ...StoryModel },
   contributor: {
     ...ContributorModel,
@@ -60,13 +60,13 @@ interface TestStoryContribution {
   bio: string;
   contributor?: TestContributor;
 }
-type TestStory = Story & {
+export type TestStory = Story & {
   storyContributions: TestStoryContribution[];
 };
 
-export function getStories(numStories: number) {
+export function getStories(numStories: number, createIfNonexistent = true) {
   const storiesCount = db.story.count();
-  if (storiesCount < numStories) {
+  if (storiesCount < numStories && createIfNonexistent) {
     createStories(numStories - storiesCount);
   }
 
