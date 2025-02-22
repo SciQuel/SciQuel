@@ -1,16 +1,23 @@
 import env from "@/lib/env";
 import { type Meta, type StoryObj } from "@storybook/react";
 import { http, HttpResponse } from "msw";
+import * as NextAuth from "next-auth";
+import { createMock } from "storybook-addon-module-mock";
 import { reset } from "../../mocks/data.mock";
 import {
   createStories,
   getStories,
 } from "../../mocks/functions/storyFunctions";
+import RootLayout from "./layout";
 import Home from "./page";
 
 const meta: Meta<typeof Home> = {
   component: Home,
-  title: "Home Page",
+  // decorators: (Story) => (
+  //   <RootLayout>
+  //     <Story />
+  //   </RootLayout>
+  // ),
 };
 
 export default meta;
@@ -36,6 +43,19 @@ export const MainTest: Story = {
         }),
       ],
     },
+    // moduleMock: {
+    //   authMock: () => {
+    //     const mock = createMock(NextAuth, "getServerSession");
+    //     mock.mockImplementation(() => {
+    //       return new Promise((resolve) => {
+    //         setTimeout(() => {
+    //           resolve(null);
+    //         }, 100);
+    //       });
+    //     });
+    //     return [mock];
+    //   },
+    // },
   },
 };
 
@@ -51,6 +71,7 @@ export const VariableStoryCount: Story = {
     },
   ],
   parameters: {
+    ...MainTest.parameters,
     msw: {
       handlers: [
         http.get(`${env.NEXT_PUBLIC_SITE_URL}/api/stories`, () => {

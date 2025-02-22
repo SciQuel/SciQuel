@@ -18,6 +18,10 @@ const preview: Preview = {
     msw: {
       handlers: [StoriesMock],
     },
+
+    nextjs: {
+      appDirectory: true,
+    },
   },
 };
 

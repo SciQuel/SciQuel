@@ -1,4 +1,4 @@
-import { type Category, type Story } from "@prisma/client";
+import { type Category, type Story, type StoryTopic } from "@prisma/client";
 import { db } from "../data.mock";
 
 export function createStories(numStories: number) {
@@ -15,6 +15,41 @@ export function createStories(numStories: number) {
         story: story,
         contributor: author2,
       });
+    }
+  }
+}
+
+export interface SpecificStoryCreateData {
+  topics?: StoryTopic[];
+}
+export function createSpecificStories(
+  storyData: SpecificStoryCreateData = {},
+  numStories = 1,
+) {
+  if (Object.keys(storyData).length == 0) {
+    createStories(numStories);
+  } else {
+    const author1 = db.contributor.create();
+    const author2 = db.contributor.create();
+
+    for (let i = 0; i < numStories; i++) {
+      const story = db.story.create({
+        ...(storyData.topics
+          ? {
+              topics: storyData.topics,
+            }
+          : {}),
+      });
+      db.storyContribution.create({
+        story: story,
+        contributor: author1,
+      });
+      if (i % 2 == 0) {
+        db.storyContribution.create({
+          story: story,
+          contributor: author2,
+        });
+      }
     }
   }
 }
