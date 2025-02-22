@@ -1,6 +1,7 @@
 import env from "@/lib/env";
 import { http, HttpResponse } from "msw";
-import { createStories, db, type TestStory } from "../../../../mocks/data.mock";
+import { db } from "../../../../mocks/data.mock";
+import { type TestStory } from "../../../../mocks/functions/storyFunctions";
 import { getStorySchema } from "./schema";
 
 export const StoriesMock = http.get(
@@ -50,12 +51,6 @@ export const StoriesMock = http.get(
       },
     });
 
-    const neededTotal = numStoriesPerPage * (numPagesToSkip + 1);
-
-    if (total < neededTotal) {
-      createStories(neededTotal - total);
-    }
-
     const storiesRaw = db.story.findMany({
       where: {
         ...(keyword ? { title: { contains: keyword } } : {}),
@@ -96,7 +91,7 @@ export const StoriesMock = http.get(
     return HttpResponse.json({
       stories: storiesMapped,
       page_number: numPagesToSkip + 1,
-      total_pages: Math.ceil(Math.max(neededTotal, total) / numStoriesPerPage),
+      total_pages: Math.ceil(total / numStoriesPerPage),
     });
   },
 );

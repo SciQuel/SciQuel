@@ -1,7 +1,11 @@
 import env from "@/lib/env";
 import { type Meta, type StoryObj } from "@storybook/react";
 import { http, HttpResponse } from "msw";
-import { createStories, getStories, reset } from "../../mocks/data.mock";
+import { reset } from "../../mocks/data.mock";
+import {
+  createStories,
+  getStories,
+} from "../../mocks/functions/storyFunctions";
 import Home from "./page";
 
 const meta: Meta<typeof Home> = {
