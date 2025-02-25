@@ -104,5 +104,16 @@
     "workerDirectory": [
       "public"
     ]
+  },
+  "imports": {
+    "#app/layoutFunctions": {
+      "storybook": "./src/app/layoutFunctions.mock.ts",
+      "default": "./src/app/layoutFunctions.ts"
+    },
+    "#*": [
+      "./*",
+      "./*.ts",
+      "./*.tsx"
+    ]
   }
 }
