@@ -13,7 +13,7 @@ export default function AboutPage() {
             not-always-technical audience, through the lens of scientists.
           </p>
           <p>
-            Our mission is to contribute to and benefit society by making
+            Our mission is to benefit and contribute to society by making
             scientific knowledge freely accessible. We want to{" "}
             <strong>truly change the world</strong> by inspiring people to think
             and talk about science on a daily basis—akin to how we collectively
