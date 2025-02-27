@@ -310,9 +310,9 @@ model QuizQuestion {
   maxScore     Int
   subpartId    String       @db.ObjectId
   createAt     DateTime     @default(now())
-
-  deleted Boolean @default(false)
-  grade   Grade[]
+  quizzes_id   String[]     @db.ObjectId
+  deleted      Boolean      @default(false)
+  grade        Grade[]
 
   @@unique([subpartId])
   @@index([storyId, deleted])
