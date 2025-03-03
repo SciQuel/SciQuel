@@ -45,18 +45,9 @@ const StoryImagePopup = ({
   } | null>(null);
   const [isImageReady, setIsImageReady] = useState(false);
   const imageRef = useRef<HTMLImageElement>(null);
+  const wasDragged = useRef(false);
 
-  /* need to resize images while keeping aspect ratio
-     going to make max height 750px and max width 700px
-     we want to get natural image height and natural image width
-     the aspect ratio would be width/height
-     if image is more than 750px tall or wider than 700px resize down
-     if image is 500 or less each try to resize up
-     if resizing would not maintain aspect ratio without going over maxes, keep default */
-
-  // Function to resize the image while maintaining the aspect ratio
   const resizeImage = () => {
-    //max sizes
     const MAX_WIDTH = isSmallScreen
       ? window.innerWidth * 0.95
       : isMediumScreen
@@ -77,7 +68,6 @@ const StoryImagePopup = ({
       let newHeight = height;
 
       if (height > MAX_HEIGHT || width > MAX_WIDTH) {
-        // Resize down
         const heightRatio = MAX_HEIGHT / height;
         const widthRatio = MAX_WIDTH / width;
         const resizeRatio = Math.min(heightRatio, widthRatio);
@@ -85,23 +75,12 @@ const StoryImagePopup = ({
         newWidth = width * resizeRatio;
         newHeight = height * resizeRatio;
       } else if (width <= MIN_SIZE || height <= MIN_SIZE) {
-        // Resize up if smaller than MIN_SIZE
         const widthRatio = MAX_WIDTH / width;
         const heightRatio = MAX_HEIGHT / height;
         const resizeRatio = Math.min(widthRatio, heightRatio);
 
         newWidth = width * resizeRatio;
         newHeight = height * resizeRatio;
-      }
-
-      // Make sure it fits within the max constraints
-      if (newWidth > MAX_WIDTH) {
-        newWidth = MAX_WIDTH;
-        newHeight = (height / width) * newWidth;
-      }
-      if (newHeight > MAX_HEIGHT) {
-        newHeight = MAX_HEIGHT;
-        newWidth = (width / height) * newHeight;
       }
 
       const commonWidth = Math.min(newWidth, MAX_WIDTH);
@@ -112,17 +91,23 @@ const StoryImagePopup = ({
     }
   };
 
-  //check if user is on mobile device on mount
   useEffect(() => {
-    //disable overflow
     document.body.style.overflow = "hidden";
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setIsClicked(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
 
     return () => {
       document.body.style.overflow = "scroll";
+      window.removeEventListener("keydown", handleKeyDown);
     };
-  }, []);
+  }, [setIsClicked]);
 
-  //functions is attached to window resize event listener,
   const handleResize = () => {
     resizeImage();
     setisSmallScreen(window.innerWidth <= 768);
@@ -132,7 +117,7 @@ const StoryImagePopup = ({
   const handleImageLoad = () => {
     resizeImage();
   };
-  // Use layout effect to handle resizing and centering calculations before the browser paints
+
   useLayoutEffect(() => {
     window.addEventListener("resize", handleResize);
 
@@ -140,11 +125,10 @@ const StoryImagePopup = ({
       imageRef.current.addEventListener("load", handleImageLoad);
     }
 
-    // Initial calls to have correct layout on mount
     if (imageRef.current && imageRef.current.complete) {
       handleImageLoad();
     }
-    // Cleanup function to remove event listeners
+
     return () => {
       window.removeEventListener("resize", handleResize);
       if (imageRef.current) {
@@ -153,26 +137,15 @@ const StoryImagePopup = ({
     };
   }, [imageRef, isMediumScreen, isSmallScreen]);
 
-  // Handle image click to toggle zoom levels
   const handlePopUpImageClick = () => {
-    //remove invisible item so item can look centered if it is not already
-
-    if (!isMobile) {
-      if (scaleLevel === 3) {
-        setScaleLevel(1);
-        setImageClicked(false);
-        return;
-      }
-      if (!imageClicked) {
-        setImageClicked(true);
-      } else {
-        setScaleLevel((prevScaleLevel) => prevScaleLevel + 2);
-      }
+    if (!isMobile && !wasDragged.current) {
+      setScaleLevel(3);
+      setImageClicked(true);
     }
+    wasDragged.current = false; // Reset wasDragged after click
   };
 
   const handleOutsideClick = (e: MouseEvent<HTMLDivElement>) => {
-    console.log(isClicked);
     const divTarget = e.target as HTMLDivElement;
     if (isClicked) {
       if (
@@ -186,30 +159,52 @@ const StoryImagePopup = ({
     }
   };
 
-  // Handle image drag to update transform origin
-  const handleImageDrag = (e: MouseEvent<HTMLImageElement>) => {
-    if (!dragging) setDragging(true);
-    const divTarget = e.target as HTMLImageElement;
-    const x = e.clientX - divTarget.offsetLeft;
-    const y = e.clientY - divTarget.offsetTop;
-    setTransformOriginPosition({ x, y });
+  const handleMouseDown = (e: MouseEvent<HTMLImageElement>) => {
+    if (imageClicked) {
+      setDragging(true);
+      wasDragged.current = false; // Reset wasDragged on mouse down
+      const divTarget = e.target as HTMLImageElement;
+      const x = e.clientX - divTarget.offsetLeft;
+      const y = e.clientY - divTarget.offsetTop;
+      setTransformOriginPosition({ x, y });
+    }
   };
 
-  // Logic to retrieve transform styles
+  const handleMouseMove = (e: MouseEvent<HTMLImageElement>) => {
+    if (dragging) {
+      wasDragged.current = true; // Set wasDragged to true on mouse move
+      const divTarget = e.target as HTMLImageElement;
+      const x = e.clientX - divTarget.offsetLeft;
+      const y = e.clientY - divTarget.offsetTop;
+      setTransformOriginPosition({ x, y });
+    }
+  };
+
+  const handleMouseUp = () => {
+    if (dragging) {
+      setDragging(false);
+      setScaleLevel(1);
+      setTransformOriginPosition({ x: null, y: null });
+
+      // Delay setting imageClicked to false to avoid immediate onClick
+      setTimeout(() => {
+        setImageClicked(false);
+      }, 0);
+    }
+  };
+
   const transformOriginValue =
     transformOriginPosition.x !== null
       ? `${transformOriginPosition.x}px ${transformOriginPosition.y}px`
       : "center center";
   const transformValue = imageClicked ? `scale(${scaleLevel})` : "none";
 
-  // CSS styles that control the cursor for image, and the scale origin and value
-
-  const imageTrasnform = {
+  const imageTransform = {
     transformOrigin: transformOriginValue,
     transform: transformValue,
   };
   const imageStyles = {
-    cursor: isMobile ? "default" : scaleLevel === 1 ? "zoom-in" : "zoom-out",
+    cursor: imageClicked ? (dragging ? "grabbing" : "grab") : "zoom-in",
     display: isImageReady ? "block" : "none",
   };
 
@@ -218,21 +213,18 @@ const StoryImagePopup = ({
       className={`fixed left-1/2 top-1/2  z-50 flex h-[100dvh] w-screen -translate-x-1/2 -translate-y-1/2 transform flex-col justify-center overflow-hidden bg-white py-3    hover:cursor-pointer`}
       onClick={handleOutsideClick}
     >
-      {/* container for content */}
       <div
         className={`z-0 mx-7 flex h-full max-h-full w-auto flex-col  items-center justify-center  sm:py-5 lg:flex-row lg:py-0     ${imageClicked && "justify-center"
           }`}
       >
-        {/* Invisible item that will help format the image to look centered completely, shows only on large screen */}
         {!imageClicked && (
           <div className="  invisible hidden h-[100px] flex-grow basis-[10px] bg-black lg:mx-5 lg:block">
             {" "}
           </div>
         )}
 
-        {/* Image container */}
         <div
-          className="bg-red flex max-h-[100%] max-w-full justify-center  h-md:max-h-full   "
+          className="bg-red h-md:max-h-full flex max-h-[100%] max-w-full  justify-center   "
           style={{
             width: imageDimensions?.width,
             height: imageDimensions?.height,
@@ -243,15 +235,17 @@ const StoryImagePopup = ({
             className={`max-h-full max-w-full object-contain `}
             ref={imageRef}
             onClick={handlePopUpImageClick}
-            onMouseMove={handleImageDrag}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onDragStart={(e) => e.preventDefault()}
             alt={alt}
-            style={{ ...imageStyles, ...imageTrasnform }}
+            style={{ ...imageStyles, ...imageTransform }}
           />
         </div>
 
         <p
-          className={`px-auto mx-5  flex-shrink basis-0 cursor-default break-words  text-left  lg:mx-5 lg:w-auto  lg:flex-grow  lg:text-lg  ${imageClicked ? "hidden" : ""
-            }
+          className={`px-auto mx-5  flex-shrink basis-0 cursor-text break-words  text-left  lg:mx-5 lg:w-auto  lg:flex-grow  lg:text-lg  ${imageClicked ? "hidden" : ""
             }`}
           ref={captionRef}
         >
