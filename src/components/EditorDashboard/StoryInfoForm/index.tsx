@@ -180,63 +180,64 @@ export default function StoryInfoForm({
 
   //add a topic tag
   const addTopic = (id: any) => {
-    console.log("addTopic called with id:", id);
     setTopicList((prevList) =>
       prevList.map((item: any) => {
         if (item.data.id === id) {
           if (item.checked) {
-            console.log(`Unchecking topic with id: ${id}`);
-            // Update local state (localTopics holds topic objects)
             setLocalTopics((prevTopics) => {
               const updated = prevTopics.filter(
-                (topic: any) => topic.data.id !== id,
+                (topic: any) => topic.id !== id,
               );
-              console.log("Local topics after removal:", updated);
+
               return updated;
             });
-            // Update parent's state (convert to uppercase for consistency)
+
             initialSetTopics((prevTopics) => {
-              const topicNameUpper = item.data.name.toUpperCase();
               const updated = prevTopics.filter(
-                (topic: any) => topic.toUpperCase() !== topicNameUpper,
+                (topic: any) => topic !== item.data.name.toUpperCase(),
               );
-              console.log("Parent topics after removal:", updated);
+
               return updated;
             });
+
             return { ...item, checked: false };
           } else {
-            console.log(`Checking topic with id: ${id}`);
-            // Update local state
             setLocalTopics((prevTopics) => {
-              const isAdded = prevTopics.some(
-                (topic: any) => topic.data.id === id,
-              );
-              if (!isAdded) {
-                const updated = [...prevTopics, item];
-                console.log("Local topics after addition:", updated);
-                return updated;
+              if (prevTopics.some((topic: any) => topic.id === id)) {
+                return prevTopics;
               }
-              return prevTopics;
+
+              const newTopic = {
+                id: item.data.id,
+                name: item.data.name,
+                color: item.data.color,
+              };
+
+              const updated = [...prevTopics, newTopic];
+
+              return updated;
             });
-            // Update parent's state with case-insensitive check
+
             initialSetTopics((prevTopics) => {
-              const topicNameUpper = item.data.name.toUpperCase();
-              const isAdded = prevTopics.some(
-                (topic: any) => topic.toUpperCase() === topicNameUpper,
-              );
-              if (!isAdded) {
-                const updated = [...prevTopics, topicNameUpper];
-                console.log("Parent topics after addition:", updated);
-                return updated;
+              if (prevTopics.includes(item.data.name.toUpperCase())) {
+                return prevTopics;
               }
-              return prevTopics;
+
+              const updated = Array.from(
+                new Set([...prevTopics, item.data.name.toUpperCase()]),
+              );
+
+              return updated;
             });
+
             return { ...item, checked: true };
           }
         }
         return item;
       }),
     );
+
+    console.log("🔄 Finished processing addTopic.");
   };
 
   // add a subtopic tag
@@ -347,21 +348,43 @@ export default function StoryInfoForm({
   };
 
   useEffect(() => {
-    const extractedTopics: string[] = [];
+    console.log("🔄 Running useEffect for initialTopics update");
 
-    // Extract every element in initialTopics
-    initialTopics.forEach((topic) => {
-      extractedTopics.push(topic.toUpperCase()); // Convert to uppercase for case-insensitive matching
+    const extractedTopics: string[] = initialTopics.map((topic) =>
+      topic.toUpperCase(),
+    );
+
+    setTopicList((prevList) => {
+      return prevList.map((topic) => {
+        const isChecked = extractedTopics.includes(
+          topic.data.name.toUpperCase(),
+        );
+
+        return {
+          ...topic,
+          checked: isChecked,
+          enabled: isChecked,
+        };
+      });
     });
 
-    setTopicList((prevList) =>
-      prevList.map((topic) => ({
-        ...topic,
-        checked: extractedTopics.includes(topic.data.name.toUpperCase()), // Compare correctly
-        enabled: extractedTopics.includes(topic.data.name.toUpperCase()),
-      })),
-    );
-  }, [initialTopics]); // Runs when `initialTopics` changes
+    setLocalTopics((prevTopics) => {
+      const updatedLocalTopics = prevTopics.filter((topic) =>
+        extractedTopics.includes(topic.name.toUpperCase()),
+      );
+
+      return updatedLocalTopics;
+    });
+
+    setTopicList((prevList) => {
+      return prevList.map((topic) => {
+        if (extractedTopics.includes(topic.data.name.toUpperCase())) {
+          addTopic(topic.data.id);
+        }
+        return topic;
+      });
+    });
+  }, []); // Runs when `initialTopics` changes
 
   // Div outlining what the left half of the page actually looks like
   return (
@@ -627,8 +650,10 @@ export default function StoryInfoForm({
                                 checked={topic.checked} // Controlled by state updates
                                 disabled={topic.disabled} // Dynamically control disabled state
                                 onChange={(event) => {
-                                  console.log("Topic:", topic);
-                                  addTopic(topic.data.id);
+                                  if (event.target.checked) {
+                                    console.log("Adding topic:", topic);
+                                    addTopic(topic.data.id);
+                                  }
                                 }}
                                 className="h-4 w-4 cursor-pointer rounded border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600"
                               />
@@ -648,10 +673,10 @@ export default function StoryInfoForm({
           <div className="flex flex-row flex-wrap gap-3">
             {localTopics.map((topic: any) => (
               <Tags
-                key={topic.data.id}
-                id={topic.data.id}
-                name={topic.data.name}
-                color={topic.data.color}
+                key={topic.id}
+                id={topic.id}
+                name={topic.name}
+                color={topic.color}
                 removeTag={removeTopicTag}
               />
             ))}
