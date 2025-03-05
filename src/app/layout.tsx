@@ -1,7 +1,6 @@
 import "./globals.css";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
-import { authOptions } from "@/lib/auth";
 import { layoutGetServerSession } from "#app/layoutFunctions";
 import clsx from "clsx";
 import {
@@ -64,23 +63,23 @@ export default async function RootLayout({
           "flex min-h-screen flex-col",
         )}
       >
-        {/* <AuthProvider session={session}> */}
-        <a
-          href="#main"
-          className="skip center absolute overflow-hidden outline focus:static "
-        >
-          Skip to main content
-        </a>
-        <div className=" min-h-screen">
-          {/* <Header></Header> */}
+        <AuthProvider session={session}>
+          <a
+            href="#main"
+            className="skip center absolute overflow-hidden outline focus:static "
+          >
+            Skip to main content
+          </a>
+          <div className=" min-h-screen">
+            <Header></Header>
 
-          <main className="pt-36 font-quicksand xs:pt-24 sm:pt-10" id="main">
-            {children}
-          </main>
-        </div>
+            <main className="pt-36 font-quicksand xs:pt-24 sm:pt-10" id="main">
+              {children}
+            </main>
+          </div>
 
-        {/* <Footer />
-        </AuthProvider> */}
+          <Footer />
+        </AuthProvider>
       </body>
     </html>
   );

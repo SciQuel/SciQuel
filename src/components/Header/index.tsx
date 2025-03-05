@@ -13,17 +13,17 @@ import SideBar from "./SideBar/SideBar";
 
 export default function Header() {
   const [searchQuery, setSearchQuery] = useState("");
-  const router = useRouter();
+  // const router = useRouter();
   // const pathname = usePathname();
 
   const onSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const encodedSearchQuery = encodeURI(searchQuery);
-    if (encodedSearchQuery !== "") {
-      router.push(`/search?keyword=${encodedSearchQuery}`);
-    } else {
-      router.push(`/search`);
-    }
+    // const encodedSearchQuery = encodeURI(searchQuery);
+    // if (encodedSearchQuery !== "") {
+    //   router.push(`/search?keyword=${encodedSearchQuery}`);
+    // } else {
+    //   router.push(`/search`);
+    // }
   };
 
   return (
@@ -33,8 +33,8 @@ export default function Header() {
           className="pointer-events-none absolute top-0 flex h-16 w-full items-center justify-end px-6 py-2
          text-xl font-thin leading-[2rem] sm:px-10 md:justify-center"
         >
+          <SciquelLogo className="h-8 w-auto fill-white sm:h-10" />
           <Link className=" pointer-events-auto" href="/">
-            <SciquelLogo className="h-8 w-auto fill-white sm:h-10" />
             <span className="sr-only">Go to home page</span>
           </Link>
         </div>
@@ -65,7 +65,7 @@ export default function Header() {
         ) : (
           <MainSubHeader />
         )} */}
-      <MainSubHeader />
+      {/* <MainSubHeader /> */}
     </header>
   );
 }

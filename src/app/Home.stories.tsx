@@ -1,5 +1,7 @@
 import env from "@/lib/env";
+import { withActions } from "@storybook/addon-actions/decorator";
 import { type Meta, type StoryObj } from "@storybook/react";
+import { fn } from "@storybook/test";
 import { http, HttpResponse } from "msw";
 import { reset } from "../../mocks/data.mock";
 import {
@@ -17,6 +19,13 @@ const meta: Meta<typeof Home> = {
       <Story />
     </RootLayout>
   ),
+
+  parameters: {
+    nextjs: {
+      appDirectory: true,
+    },
+    actions: { argTypesRegex: null },
+  },
   beforeEach: () => {
     layoutGetServerSession.mockClear();
     layoutGetServerSession.mockImplementation(() => {
@@ -35,7 +44,6 @@ export default meta;
 type Story = StoryObj<typeof Home>;
 
 export const MainTest: Story = {
-  args: {},
   loaders: [
     () => {
       reset(123);
