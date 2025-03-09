@@ -74,7 +74,6 @@ const config: StorybookConfig = {
       config.module.rules = configRules;
     }
 
-    console.log(config.module?.rules);
     return config;
   },
 };

@@ -1,5 +1,6 @@
-import "./globals.css";
-import RootLayoutBody from "@/components/layout-components/RootBody/RootBody";
+import "@/app/globals.css";
+import Footer from "@/components/Footer";
+import Header from "@/components/Header";
 import { layoutGetServerSession } from "#app/layoutFunctions";
 import clsx from "clsx";
 import {
@@ -8,6 +9,7 @@ import {
   Quicksand,
   Source_Serif_4,
 } from "next/font/google";
+import AuthProvider from "../../../app/AuthProvider";
 
 export const metadata = {
   title: "SciQuel",
@@ -41,7 +43,7 @@ const besley = Besley({
   variable: "--font-besley",
 });
 
-export default async function RootLayout({
+export default async function RootLayoutBody({
   children,
 }: {
   children: React.ReactNode;
@@ -49,20 +51,34 @@ export default async function RootLayout({
   const session = await layoutGetServerSession();
   console.log("in layout: ", session);
   return (
-    <html lang="en">
-      <body
-        className={clsx(
-          quicksand.variable,
-          besley.className,
+    <div
+      className={clsx(
+        quicksand.variable,
+        besley.className,
 
-          alegreyaSansSC.variable,
-          sourceSerif4.variable,
+        alegreyaSansSC.variable,
+        sourceSerif4.variable,
 
-          "flex min-h-screen flex-col",
-        )}
-      >
-        <RootLayoutBody>{children}</RootLayoutBody>
-      </body>
-    </html>
+        "m-0 flex min-h-screen flex-col p-0",
+      )}
+    >
+      <AuthProvider session={session}>
+        <a
+          href="#main"
+          className="skip center absolute overflow-hidden outline focus:static "
+        >
+          Skip to main content
+        </a>
+        <div className=" min-h-screen">
+          <Header></Header>
+
+          <main className="pt-36 font-quicksand xs:pt-24 sm:pt-10" id="main">
+            {children}
+          </main>
+        </div>
+
+        <Footer />
+      </AuthProvider>{" "}
+    </div>
   );
 }

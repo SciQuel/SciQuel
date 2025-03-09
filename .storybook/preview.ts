@@ -3,11 +3,12 @@ import { initialize, mswLoader } from "msw-storybook-addon";
 import { StoriesMock } from "../src/app/api/stories/mock";
 import "../src/app/globals.css";
 
-initialize({ onUnhandledRequest: "warn" });
+initialize({ onUnhandledRequest: "bypass" });
 
 const preview: Preview = {
   loaders: [mswLoader],
   parameters: {
+    layout: "fullscreen",
     controls: {
       matchers: {
         color: /(background|color)$/i,
