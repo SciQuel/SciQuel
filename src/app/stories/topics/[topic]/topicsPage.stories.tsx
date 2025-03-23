@@ -36,7 +36,32 @@ type PagePropsAndCustomArgs = ComponentProps<typeof StoryTopicPage> & {
 
 const meta: Meta<PagePropsAndCustomArgs> = {
   component: StoryTopicPage,
-  argTypes: {},
+  argTypes: {
+    params: {
+      options: [...topics, "BioLoGy", "random-text"],
+      mapping: {
+        ...topics.reduce(
+          (accumulator, currentVal) => {
+            accumulator[currentVal] = {
+              topic: currentVal,
+            };
+            return accumulator;
+          },
+          {} as {
+            [topicName: string]: {
+              topic: string;
+            };
+          },
+        ),
+        BioLoGy: {
+          topic: "BioLoGy",
+        },
+        "random-text": {
+          topic: "random-text",
+        },
+      },
+    },
+  },
   decorators: (Story) => (
     <RootLayoutBody>
       <Story />

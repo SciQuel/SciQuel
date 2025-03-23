@@ -2,7 +2,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import SciquelLogo from "../../../public/assets/images/logoWithNameOnSide.svg";
 import MainSubHeader from "./MainSubHeader";
@@ -13,17 +13,17 @@ import SideBar from "./SideBar/SideBar";
 
 export default function Header() {
   const [searchQuery, setSearchQuery] = useState("");
-  // const router = useRouter();
-  // const pathname = usePathname();
+  const router = useRouter();
+  const pathname = usePathname();
 
   const onSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // const encodedSearchQuery = encodeURI(searchQuery);
-    // if (encodedSearchQuery !== "") {
-    //   router.push(`/search?keyword=${encodedSearchQuery}`);
-    // } else {
-    //   router.push(`/search`);
-    // }
+    const encodedSearchQuery = encodeURI(searchQuery);
+    if (encodedSearchQuery !== "") {
+      router.push(`/search?keyword=${encodedSearchQuery}`);
+    } else {
+      router.push(`/search`);
+    }
   };
 
   return (
@@ -60,12 +60,7 @@ export default function Header() {
           {/* <ProfileButton /> */}
         </div>
       </div>
-      {/* {pathname.split("/")[1] === "stories" ? (
-          <SeriesSubHeader />
-        ) : (
-          <MainSubHeader />
-        )} */}
-      {/* <MainSubHeader /> */}
+      <MainSubHeader />
     </header>
   );
 }
