@@ -96,3 +96,12 @@ export const MainStory: Story = {
     },
   ],
 };
+
+export const PhoneScreen: Story = {
+  ...MainStory,
+  parameters: {
+    viewport: {
+      defaultViewport: "iphonex",
+    },
+  },
+};

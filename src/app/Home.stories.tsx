@@ -93,3 +93,13 @@ export const VariableStoryCount: Story = {
     },
   },
 };
+
+export const PhoneScreen: Story = {
+  ...VariableStoryCount,
+  parameters: {
+    ...VariableStoryCount.parameters,
+    viewport: {
+      defaultViewport: "iphonex",
+    },
+  },
+};

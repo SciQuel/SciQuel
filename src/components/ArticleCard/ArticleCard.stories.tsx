@@ -64,6 +64,15 @@ export const VerticalRow: Story = {
   ),
 };
 
+export const VerticalMobile: Story = {
+  ...VerticalRow,
+  parameters: {
+    viewport: {
+      defaultViewport: "iphonex",
+    },
+  },
+};
+
 export const PreferHorizontal: Story = {
   args: {
     ...defaultArgs,
@@ -98,4 +107,13 @@ export const PreferHorizontalColumn: Story = {
       />
     </div>
   ),
+};
+
+export const PreferHorizontalMobile: Story = {
+  ...PreferHorizontalColumn,
+  parameters: {
+    viewport: {
+      defaultViewport: "iphonex",
+    },
+  },
 };
