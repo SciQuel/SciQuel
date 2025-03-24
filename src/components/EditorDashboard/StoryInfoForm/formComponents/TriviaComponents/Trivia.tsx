@@ -17,17 +17,20 @@ export interface MatchingPair {
   left: string;
   right: string;
   color?: string;
+  explanation?: string;
 }
 
 export interface TrueOrFalseQuestion {
   id: number;
   content: string;
   isTrue: boolean;
+  explanation?: string;
 }
 
 export interface MatchingCategory {
   id: number;
   name: string;
+  explanation: string;
   items: { id: number; content: string }[];
 }
 
@@ -48,6 +51,7 @@ export interface Question {
   id: number;
   type: QuestionType;
   content: string;
+  explanation?: string;
   choices?: Choice[];
   pairs?: MatchingPair[];
   trueOrFalseQuestions?: TrueOrFalseQuestion[];
@@ -175,7 +179,7 @@ const Trivia: React.FC = () => {
               ...q,
               categories: [
                 ...(q.categories || []),
-                { id: nextId, name: "", items: [] },
+                { id: nextId, name: "", items: [], explanation: "" },
               ],
             }
           : q,
@@ -425,105 +429,146 @@ const Trivia: React.FC = () => {
     );
   };
 
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
   return (
     <div className="container mx-auto py-4">
-      <h1 className="text-l">Trivia Questions</h1>
-      {questions.map((question) => (
-        <div key={question.id} className="mt-4">
-          <select
-            value={question.type}
-            onChange={(e) =>
-              updateQuestion(question.id, {
-                type: e.target.value as QuestionType,
-              })
-            }
-            className="mr-2 rounded border p-2"
-          >
-            <option value="MULTIPLE_CHOICE">Multiple Choice</option>
-            <option value="TRUE_FALSE">True or False</option>
-            <option value="DIRECT_MATCHING">Matching</option>
-            <option value="COMPLEX_MATCHING">Multiple Matching</option>
-            <option value="SELECT_ALL">Select All</option>
-          </select>
+      <h1
+        className="text-l flex cursor-pointer items-center gap-1" // Changed ml-2 to gap-1 for consistent spacing
+        onClick={() => setIsCollapsed(!isCollapsed)}
+      >
+        Trivia Questions
+        <span className="inline-flex h-8 w-8 items-center justify-center">
+          {" "}
+          {/* Increased size to h-8 w-8 */}
+          {isCollapsed ? (
+            <svg
+              className="h-full w-full" // Slightly smaller than container for padding
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <path d="M9 18l6-6-6-6" />
+            </svg>
+          ) : (
+            <svg
+              className="h-full w-full"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <path d="M6 9l6 6 6-6" />
+            </svg>
+          )}
+        </span>
+      </h1>
+      {!isCollapsed && (
+        <div>
+          {questions.map((question) => (
+            <div key={question.id} className="mt-4">
+              <select
+                value={question.type}
+                onChange={(e) =>
+                  updateQuestion(question.id, {
+                    type: e.target.value as QuestionType,
+                  })
+                }
+                className="mr-2 rounded border p-2"
+              >
+                <option value="MULTIPLE_CHOICE">Multiple Choice</option>
+                <option value="TRUE_FALSE">True or False</option>
+                <option value="DIRECT_MATCHING">Matching</option>
+                <option value="COMPLEX_MATCHING">Multiple Matching</option>
+                <option value="SELECT_ALL">Select All</option>
+              </select>
+              <button
+                type="button"
+                onClick={() => deleteQuestion(question.id)}
+                className="px-2 py-2 text-black"
+              >
+                &times;
+              </button>
+              {question.type === "MULTIPLE_CHOICE" && (
+                <MultipleChoiceQuestion
+                  question={question}
+                  updateQuestion={updateQuestion}
+                  addChoice={addChoice}
+                  deleteChoice={deleteChoice}
+                  updateChoice={updateChoice}
+                />
+              )}
+              {question.type === "TRUE_FALSE" && (
+                <TrueOrFalseQuestion
+                  question={question}
+                  updateQuestion={updateQuestion}
+                  addTrueOrFalseQuestion={addTrueOrFalseQuestion}
+                  deleteTrueOrFalseQuestion={deleteTrueOrFalseQuestion}
+                />
+              )}
+              {question.type === "DIRECT_MATCHING" && (
+                <DirectMatchingQuestion
+                  question={question}
+                  updateQuestion={updateQuestion}
+                  addPair={addPair}
+                  deletePair={deletePair}
+                  updatePair={updatePair}
+                />
+              )}
+              {question.type === "COMPLEX_MATCHING" && (
+                <ComplexMatchingQuestion
+                  question={question}
+                  updateQuestion={updateQuestion}
+                  addCategory={addCategory}
+                  deleteCategory={deleteCategory}
+                  updateCategory={updateCategory}
+                  addItemToCategory={addItemToCategory}
+                  updateItemInCategory={UpdateItemInCategory}
+                  deleteItemFromCategory={deleteItemFromCategory}
+                  positionSwap={positionSwapCatItems}
+                />
+              )}
+              {question.type === "SELECT_ALL" && (
+                <SelectAllQuestion
+                  question={question}
+                  updateQuestion={updateQuestion}
+                  addOption={addOption}
+                  deleteOption={deleteOption}
+                  updateOption={updateOption}
+                />
+              )}
+              {/* Right Side: Explanation Box */}
+              {/* <div className="mt-4">
+              <textarea
+                value={question.explanation || ""}
+                onChange={(e) =>
+                  updateQuestion(question.id, { explanation: e.target.value })
+                }
+                className="w-full p-2 border rounded"
+                placeholder="Enter explanation here"
+              />
+            </div> */}
+              <button
+                onClick={(e) => submitQuizMap(question, e)}
+                className="mt-4 rounded bg-sciquelTeal px-3 py-2 text-sm text-white"
+              >
+                Save quiz question
+              </button>
+            </div>
+          ))}
           <button
             type="button"
-            onClick={() => deleteQuestion(question.id)}
-            className="px-2 py-2 text-black"
-          >
-            &times;
-          </button>
-          {question.type === "MULTIPLE_CHOICE" && (
-            <MultipleChoiceQuestion
-              question={question}
-              updateQuestion={updateQuestion}
-              addChoice={addChoice}
-              deleteChoice={deleteChoice}
-              updateChoice={updateChoice}
-            />
-          )}
-          {question.type === "TRUE_FALSE" && (
-            <TrueOrFalseQuestion
-              question={question}
-              updateQuestion={updateQuestion}
-              addTrueOrFalseQuestion={addTrueOrFalseQuestion}
-              deleteTrueOrFalseQuestion={deleteTrueOrFalseQuestion}
-            />
-          )}
-          {question.type === "DIRECT_MATCHING" && (
-            <DirectMatchingQuestion
-              question={question}
-              updateQuestion={updateQuestion}
-              addPair={addPair}
-              deletePair={deletePair}
-              updatePair={updatePair}
-            />
-          )}
-          {question.type === "COMPLEX_MATCHING" && (
-            <ComplexMatchingQuestion
-              question={question}
-              updateQuestion={updateQuestion}
-              addCategory={addCategory}
-              deleteCategory={deleteCategory}
-              updateCategory={updateCategory}
-              addItemToCategory={addItemToCategory}
-              updateItemInCategory={UpdateItemInCategory}
-              deleteItemFromCategory={deleteItemFromCategory}
-              positionSwap={positionSwapCatItems}
-            />
-          )}
-          {question.type === "SELECT_ALL" && (
-            <SelectAllQuestion
-              question={question}
-              updateQuestion={updateQuestion}
-              addOption={addOption}
-              deleteOption={deleteOption}
-              updateOption={updateOption}
-            />
-          )}
-          <button
-            onClick={(e) => submitQuizMap(question, e)}
+            onClick={addQuestion}
             className="mt-4 rounded bg-sciquelTeal px-3 py-2 text-sm text-white"
           >
-            Save quiz question
+            Add Question
           </button>
         </div>
-      ))}
-      <button
-        type="button"
-        onClick={addQuestion}
-        className="mt-4 rounded bg-sciquelTeal px-3 py-2 text-sm text-white"
-      >
-        Add Question
-      </button>
+      )}
     </div>
   );
 };
 
 export default Trivia;
 
-/**
- * test case here
- */
+/** test case here */
 async function submitQuizMap(
   question: Question,
   e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
@@ -602,26 +647,21 @@ const storyIdTest = "6488c6f6f5f617c772f6f61a";
 //    explanations:string[ ]
 // }
 
-/**Fix
- * content_category and question are different
- * content_category is a group
- * question is a child of the group
- * there are explanations in every type question, the amount is based on type
- * story_id is required
- * max_score is optional default is 10
- * all type question is put in subpart
- * missing subheader
+/**
+ * *Fix content_category and question are different content_category is a group question is a child
+ * of the group there are explanations in every type question, the amount is based on type story_id
+ * is required max_score is optional default is 10 all type question is put in subpart missing
+ * subheader
  */
 
 /**
  * Submit multiple choice question type
+ *
  * @param question
  */
 async function submitMultipleChoice(question: Question) {
   /**
-   * Missing content_category, explainations
-   * The should be an explain for each choice
-   * add subheader
+   * Missing content_category, explainations The should be an explain for each choice add subheader
    * add content
    */
   const { content, choices, type } = question;
@@ -649,13 +689,12 @@ async function submitMultipleChoice(question: Question) {
 
 /**
  * Submit select all question type
+ *
  * @param question
  */
 async function submitSelectAll(question: Question) {
   /**
-   * Missing content_category, explainations
-   * The should be an explain for each option
-   * add subheader
+   * Missing content_category, explainations The should be an explain for each option add subheader
    * add content
    */
   const { content, options, type, correct_answers } = question;
@@ -698,15 +737,10 @@ async function submitSelectAll(question: Question) {
  * @param question
  */
 async function submitDirectMatching(question: Question) {
-  /**
-   * Missing content_category, explainations
-   * The should be an explain for each option
-   */
+  /** Missing content_category, explainations The should be an explain for each option */
   const { content, pairs, type } = question;
   /**
-   * Missing content_category, explainations
-   * The should be an explain for each option
-   * add subheader
+   * Missing content_category, explainations The should be an explain for each option add subheader
    * add content
    */
 
@@ -748,9 +782,7 @@ async function submitDirectMatching(question: Question) {
  */
 async function submitComplexMatching(question: Question) {
   /**
-   * Missing content_category, explainations
-   * The should be an explain for each option
-   * add content
+   * Missing content_category, explainations The should be an explain for each option add content
    * add subheader
    */
   const { categories, categoryItems, content } = question;
@@ -802,10 +834,7 @@ async function submitComplexMatching(question: Question) {
  * @param question
  */
 async function submitTrueFalse(question: Question) {
-  /**
-   * Missing content_category, explainations
-   * The should be an explain for each option
-   */
+  /** Missing content_category, explainations The should be an explain for each option */
   const { trueOrFalseQuestions, type } = question;
   const res = await axios.post(urlQuiz, {
     story_id: storyIdTest,

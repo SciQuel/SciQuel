@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { type Choice, type Question } from "./Trivia";
 
 interface MultipleChoiceQuestionProps {
@@ -13,6 +13,22 @@ interface MultipleChoiceQuestionProps {
   ) => void;
 }
 
+// Reusable custom hook for auto-resizing textarea
+const useAutoResizeTextarea = (value: string) => {
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    if (textareaRef.current) {
+      // Reset height to get accurate scrollHeight
+      textareaRef.current.style.height = "auto";
+      // Set new height based on content
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+    }
+  }, [value]);
+
+  return textareaRef;
+};
+
 const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
   question,
   updateQuestion,
@@ -20,8 +36,16 @@ const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
   deleteChoice,
   updateChoice,
 }) => {
+  const explanationTextareaRef = useAutoResizeTextarea(
+    question.explanation || "",
+  );
+
   const handleQuestionChange = (content: string) => {
     updateQuestion(question.id, { content });
+  };
+
+  const handleExplanationChange = (explanation: string) => {
+    updateQuestion(question.id, { explanation });
   };
 
   const handleChoiceChange = (choiceId: number, content: string) => {
@@ -78,6 +102,15 @@ const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
       >
         Add Choice
       </button>
+      {/* Explanation textarea with auto-resize */}
+      <textarea
+        ref={explanationTextareaRef}
+        value={question.explanation || ""}
+        onChange={(e) => handleExplanationChange(e.target.value)}
+        className="mt-2 w-full resize-none overflow-hidden rounded border p-2"
+        placeholder="Enter explanation..."
+        rows={1}
+      />
     </div>
   );
 };

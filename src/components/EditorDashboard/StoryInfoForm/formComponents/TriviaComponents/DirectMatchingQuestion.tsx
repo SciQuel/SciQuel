@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { type MatchingPair } from "./Trivia";
 
 interface DirectMatchingQuestionProps {
@@ -19,16 +19,16 @@ interface DirectMatchingQuestionProps {
 }
 
 const pastelColors = [
-  "#FFB3BA",
-  "#FFDFBA",
-  "#FFFFBA",
-  "#BAFFC9",
-  "#BAE1FF",
-  "#FFB3E1",
-  "#D4BAFF",
-  "#FFDACB",
-  "#FFB3E5",
-  "#BAFFD1",
+  "#E6999F",
+  "#E6C49E",
+  "#E6E699",
+  "#99E6A8",
+  "#99C8E6",
+  "#E699C4",
+  "#B8A0E6",
+  "#E6BFAE",
+  "#E699C7",
+  "#99E6B1",
 ];
 
 const DirectMatchingQuestion: React.FC<DirectMatchingQuestionProps> = ({
@@ -39,22 +39,32 @@ const DirectMatchingQuestion: React.FC<DirectMatchingQuestionProps> = ({
   updatePair,
 }) => {
   const [rightSideOrder, setRightSideOrder] = useState<
-    { id: number; right: string; color: string }[]
+    { id: number; right: string; color: string; number: number }[]
   >([]);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const textareaRefs = useRef<(HTMLTextAreaElement | null)[]>([]);
 
-  // Sync the rightSideOrder with pairs, but only if pairs change and not when adding new ones
   useEffect(() => {
-    const updatedOrder = (question.pairs || []).map((pair) => ({
+    const updatedOrder = (question.pairs || []).map((pair, index) => ({
       id: pair.id,
       right: pair.right,
       color: pair.color ?? "transparent",
+      number: index + 1,
     }));
 
-    // Ensure the right side order is maintained if already exists
     if (rightSideOrder.length !== updatedOrder.length) {
       setRightSideOrder(updatedOrder);
     }
+  }, [question.pairs]);
+
+  // Auto-resize textareas when content changes
+  useEffect(() => {
+    textareaRefs.current.forEach((textarea) => {
+      if (textarea) {
+        textarea.style.height = "auto";
+        textarea.style.height = `${textarea.scrollHeight}px`;
+      }
+    });
   }, [question.pairs]);
 
   const handleDragStart = (index: number) => {
@@ -65,18 +75,16 @@ const DirectMatchingQuestion: React.FC<DirectMatchingQuestionProps> = ({
     if (draggedIndex === null || draggedIndex === index) return;
 
     const updatedRightSideOrder = [...rightSideOrder];
-    // Swap the two items directly
     const temp = updatedRightSideOrder[index];
     updatedRightSideOrder[index] = updatedRightSideOrder[draggedIndex];
     updatedRightSideOrder[draggedIndex] = temp;
 
-    // Update the order after swap
     setRightSideOrder(updatedRightSideOrder);
     setDraggedIndex(null);
   };
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault(); // Necessary to allow the drop event to fire
+    e.preventDefault();
   };
 
   const handleRightSideChange = (index: number, value: string) => {
@@ -89,6 +97,19 @@ const DirectMatchingQuestion: React.FC<DirectMatchingQuestionProps> = ({
     updatePair(question.id, pairId, { left: value });
   };
 
+  const handleExplanationChange = (
+    pairId: number,
+    e: React.ChangeEvent<HTMLTextAreaElement>,
+  ) => {
+    const explanation = e.target.value;
+    updatePair(question.id, pairId, { explanation });
+
+    // Auto-resize the textarea
+    const textarea = e.target;
+    textarea.style.height = "auto";
+    textarea.style.height = `${textarea.scrollHeight}px`;
+  };
+
   const getNextAvailableColor = () => {
     const usedColors = (question.pairs || []).map((pair) => pair.color);
     return (
@@ -99,19 +120,26 @@ const DirectMatchingQuestion: React.FC<DirectMatchingQuestionProps> = ({
 
   const handleAddPair = () => {
     const newColor = getNextAvailableColor();
-    const newPair = { id: Date.now(), left: "", right: "", color: newColor };
+    const newPair = {
+      id: Date.now(),
+      left: "",
+      right: "",
+      color: newColor,
+      explanation: "",
+    };
 
-    // Add new pair in the state
     addPair(question.id);
-
-    // Append new pair to the question's pairs and rightSideOrder
     const updatedPairs = [...(question.pairs || []), newPair];
     updateQuestion(question.id, { pairs: updatedPairs });
 
-    // Append to the right side order without resetting it
     setRightSideOrder((prevOrder) => [
       ...prevOrder,
-      { id: newPair.id, right: "", color: newColor },
+      {
+        id: newPair.id,
+        right: "",
+        color: newColor,
+        number: prevOrder.length + 1,
+      },
     ]);
   };
 
@@ -122,16 +150,23 @@ const DirectMatchingQuestion: React.FC<DirectMatchingQuestionProps> = ({
       <div className="flex">
         {/* Left Side (Editable) */}
         <div className="left-side w-1/2 pr-2">
-          {(question.pairs || []).map((pair) => (
+          {(question.pairs || []).map((pair, index) => (
             <div key={pair.id} className="pair-row mb-2 flex items-center">
-              <input
-                type="text"
-                value={pair.left}
-                onChange={(e) => handleLeftSideChange(pair.id, e.target.value)}
-                className="w-full rounded border border-gray-300 p-2"
-                placeholder="Left side"
-                style={{ backgroundColor: pair.color }} // Apply color to left side
-              />
+              <div className="relative w-full">
+                <input
+                  type="text"
+                  value={pair.left}
+                  onChange={(e) =>
+                    handleLeftSideChange(pair.id, e.target.value)
+                  }
+                  className="w-full rounded border-4 border-gray-300 p-2 pl-10"
+                  placeholder="Left side"
+                  style={{ borderColor: pair.color, borderWidth: "3px" }}
+                />
+                <div className="absolute left-2 top-1/2 -translate-y-1/2 transform text-sm font-bold">
+                  {index + 1}
+                </div>
+              </div>
             </div>
           ))}
         </div>
@@ -144,19 +179,27 @@ const DirectMatchingQuestion: React.FC<DirectMatchingQuestionProps> = ({
               className="pair-row mb-2 flex items-center"
               draggable
               onDragStart={() => handleDragStart(index)}
-              onDragOver={handleDragOver} // Ensure onDragOver allows dropping
-              onDrop={() => handleDrop(index)} // Trigger drop handler
+              onDragOver={handleDragOver}
+              onDrop={() => handleDrop(index)}
               style={{ cursor: "move" }}
             >
-              <input
-                type="text"
-                value={rightPair.right}
-                onChange={(e) => handleRightSideChange(index, e.target.value)}
-                className="w-full rounded border border-gray-300 p-2"
-                placeholder="Right side"
-                style={{ backgroundColor: rightPair.color, cursor: "move" }} // Apply color to right side
-              />
-              {/* Delete Button */}
+              <div className="relative w-full">
+                <input
+                  type="text"
+                  value={rightPair.right}
+                  onChange={(e) => handleRightSideChange(index, e.target.value)}
+                  className="w-full rounded border-4 border-gray-300 p-2 pl-10"
+                  placeholder="Right side"
+                  style={{
+                    borderColor: rightPair.color,
+                    borderWidth: "3px",
+                    cursor: "move",
+                  }}
+                />
+                <div className="absolute left-2 top-1/2 -translate-y-1/2 transform text-sm font-bold">
+                  {rightPair.number}
+                </div>
+              </div>
               <button
                 type="button"
                 onClick={() =>
@@ -170,6 +213,30 @@ const DirectMatchingQuestion: React.FC<DirectMatchingQuestionProps> = ({
             </div>
           ))}
         </div>
+      </div>
+
+      {/* Explanation Boxes */}
+      <div className="mt-4">
+        {(question.pairs || []).map((pair, index) => (
+          <div key={pair.id} className="mb-2">
+            <div className="flex items-center">
+              <div className="mr-2 flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 text-sm font-bold">
+                {index + 1}
+              </div>
+              <textarea
+                ref={(el) => {
+                  textareaRefs.current[index] = el;
+                }}
+                value={pair.explanation || ""}
+                onChange={(e) => handleExplanationChange(pair.id, e)}
+                className="w-full overflow-hidden rounded border p-2"
+                placeholder="Enter explanation..."
+                rows={1}
+                style={{ resize: "none" }}
+              />
+            </div>
+          </div>
+        ))}
       </div>
 
       <div className="mt-4 flex justify-start space-x-2">

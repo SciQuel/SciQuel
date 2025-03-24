@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { type MatchingCategory, type Question } from "./Trivia";
 
 interface ComplexMatchingQuestionProps {
@@ -32,12 +32,31 @@ const ComplexMatchingQuestion: React.FC<ComplexMatchingQuestionProps> = ({
   updateCategory,
   addItemToCategory,
   updateItemInCategory,
+  deleteItemFromCategory,
   positionSwap,
 }) => {
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const textareaRefs = useRef<Record<number, HTMLTextAreaElement | null>>({});
+
+  // Auto-resize effect
+  useEffect(() => {
+    Object.values(textareaRefs.current).forEach((textarea) => {
+      if (textarea) {
+        textarea.style.height = "auto";
+        textarea.style.height = `${textarea.scrollHeight}px`;
+      }
+    });
+  }, [question.categories]);
 
   const handleCategoryNameChange = (categoryId: number, name: string) => {
     updateCategory(question.id, categoryId, { name });
+  };
+
+  const handleCategoryExplanationChange = (
+    categoryId: number,
+    explanation: string,
+  ) => {
+    updateCategory(question.id, categoryId, { explanation });
   };
 
   const handleItemContentChange = (itemId: number, content: string) => {
@@ -60,13 +79,19 @@ const ComplexMatchingQuestion: React.FC<ComplexMatchingQuestionProps> = ({
   ];
 
   const getCategoryColor = (categoryId: number | null) => {
-    if (!categoryId) return "#CCCCCC"; // Default color for uncategorized items
+    if (!categoryId) return "#CCCCCC";
     const categoryIndex = question.categories?.findIndex(
       (category) => category.id === categoryId,
     );
     return categoryIndex !== undefined && categoryIndex >= 0
       ? defaultColors[categoryIndex % defaultColors.length]
       : "#CCCCCC";
+  };
+
+  const handleDeleteItem = (itemId: number, categoryId: number | null) => {
+    if (categoryId !== null) {
+      deleteItemFromCategory(question.id, categoryId, itemId);
+    }
   };
 
   return (
@@ -88,7 +113,7 @@ const ComplexMatchingQuestion: React.FC<ComplexMatchingQuestionProps> = ({
                 placeholder="Enter category"
                 style={{
                   borderColor: defaultColors[index % defaultColors.length],
-                  outline: " none",
+                  outline: "none",
                   borderWidth: "3px",
                 }}
               />
@@ -100,6 +125,18 @@ const ComplexMatchingQuestion: React.FC<ComplexMatchingQuestionProps> = ({
                 &times;
               </button>
             </div>
+            <textarea
+              ref={(el) => {
+                textareaRefs.current[category.id] = el;
+              }}
+              value={category.explanation || ""}
+              onChange={(e) =>
+                handleCategoryExplanationChange(category.id, e.target.value)
+              }
+              className="mt-2 w-full resize-none overflow-hidden rounded border p-2"
+              placeholder="Enter explanation for this category..."
+              rows={1}
+            />
           </div>
         ))}
         <button
@@ -109,7 +146,6 @@ const ComplexMatchingQuestion: React.FC<ComplexMatchingQuestionProps> = ({
           style={{
             borderColor: "#00C0A1",
             color: "#00C0A1",
-            marginTop: "15px",
           }}
         >
           + Add Category
@@ -118,10 +154,7 @@ const ComplexMatchingQuestion: React.FC<ComplexMatchingQuestionProps> = ({
 
       {/* Word Bank Section */}
       <div className="word-bank mt-6">
-        <h3 className="text-lg font-semibold" style={{ marginBottom: "15px" }}>
-          Word Bank
-        </h3>
-
+        <h3 className="mb-4 text-lg font-semibold">Word Bank</h3>
         <div className="grid grid-cols-3 gap-5">
           {question.categoryItems?.map((item, index) => {
             const categoryColor = getCategoryColor(item.categoryId);
@@ -133,43 +166,51 @@ const ComplexMatchingQuestion: React.FC<ComplexMatchingQuestionProps> = ({
             return (
               <div
                 key={item.id}
+                className="flex items-center"
                 draggable
                 onDragOver={handleDragOver}
                 onDragStart={() => setDraggedIndex(index)}
                 onDrop={() => {
-                  if (draggedIndex !== null)
+                  if (draggedIndex !== null) {
                     positionSwap(question.id, draggedIndex, index);
-                }}
-                className="rounded border p-2"
-                style={{
-                  borderColor: categoryColor,
-                  borderWidth: "3px",
+                  }
                 }}
               >
-                {/* Display the category index for the word */}
-                <div className="flex items-center">
-                  <span className="mr-2 font-semibold text-gray-500">
-                    {categoryIndex >= 0 ? categoryIndex + 1 : "?"}.
-                  </span>
-                  <input
-                    type="text"
-                    value={item.content || ""}
-                    onChange={(e) =>
-                      handleItemContentChange(item.id, e.target.value)
-                    }
-                    className="w-full border-none bg-transparent text-center"
-                    placeholder="Enter word"
-                    style={{
-                      outline: "none", // removes the focus outline
-                      marginLeft: "-20px",
-                    }}
-                  />
+                <div
+                  className="flex-1 rounded border p-2"
+                  style={{
+                    borderColor: categoryColor,
+                    borderWidth: "3px",
+                  }}
+                >
+                  <div className="flex items-center justify-center">
+                    <span className="mr-2 font-semibold text-gray-500">
+                      {categoryIndex >= 0 ? categoryIndex + 1 : "?"}.
+                    </span>
+                    <input
+                      type="text"
+                      value={item.content || ""}
+                      onChange={(e) =>
+                        handleItemContentChange(item.id, e.target.value)
+                      }
+                      className="w-full border-none bg-transparent text-center"
+                      placeholder="Enter word"
+                      style={{ outline: "none" }}
+                    />
+                  </div>
                 </div>
+                <button
+                  type="button"
+                  onClick={() => handleDeleteItem(item.id, item.categoryId)}
+                  className="ml-2 text-black"
+                  style={{ cursor: "pointer" }}
+                >
+                  &times;
+                </button>
               </div>
             );
           })}
         </div>
-
         <div className="mt-2 flex flex-wrap gap-4">
           {question.categories?.map((category, index) => (
             <button
@@ -180,7 +221,6 @@ const ComplexMatchingQuestion: React.FC<ComplexMatchingQuestionProps> = ({
               style={{
                 borderColor: defaultColors[index % defaultColors.length],
                 color: defaultColors[index % defaultColors.length],
-                marginTop: "5px",
               }}
             >
               + Add Word to {index + 1}

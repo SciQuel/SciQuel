@@ -809,6 +809,7 @@ export default function StoryInfoForm({
               />
             ))}
           </div>
+          <Trivia />
         </div>
         {/* Real-time validation messages */}
         <div className="mb-3 text-sm text-red-500">
@@ -817,7 +818,6 @@ export default function StoryInfoForm({
           {initialImage === null && <p>An image is required.</p>}
           {loading && <p>Loading... Please wait.</p>}
         </div>
-        <Trivia></Trivia>
         <button
           type="submit"
           className="my-5 select-none rounded-md bg-teal-600 px-2 py-1 font-semibold text-white disabled:pointer-events-none disabled:opacity-50"
