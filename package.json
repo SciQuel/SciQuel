@@ -14,12 +14,12 @@
   },
   "dependencies": {
     "@floating-ui/react": "^0.24.8",
-    "@google-cloud/storage": "^6.12.0",
+    "@google-cloud/storage": "^7.15.2",
     "@monaco-editor/react": "^4.5.1",
     "@prisma/client": "^4.16.2",
     "@tailwindcss/container-queries": "^0.1.1",
     "autoprefixer": "^10.4.20",
-    "axios": "^1.7.9",
+    "axios": "^1.8.4",
     "bcrypt": "^5.1.0",
     "clsx": "^1.2.1",
     "d3": "^7.8.5",
@@ -78,7 +78,6 @@
     "prettier": "^2.8.8",
     "prettier-plugin-tailwindcss": "^0.3.0",
     "prisma": "^4.16.2",
-    "request": "^2.88.2",
     "tailwindcss-touch": "^1.0.1",
     "ts-node": "^10.9.1"
   }
