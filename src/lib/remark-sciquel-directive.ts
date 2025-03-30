@@ -27,12 +27,8 @@ const mapDirectiveNode: MapFunction<Node> = (node: Node<Data>) => {
     return node;
   }
 
-  const typedNode = node;
-  if (allowedDirectives.includes(typedNode.name)) {
-    const { properties, tagName } = h(
-      typedNode.name,
-      typedNode.attributes ?? {},
-    );
+  if (allowedDirectives.includes(node.name)) {
+    const { properties, tagName } = h(node.name, node.attributes ?? {});
     return {
       ...node,
       data: {
