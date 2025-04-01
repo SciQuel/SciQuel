@@ -106,6 +106,11 @@ model Story {
   comments        Comment[]
   staffPick       StaffPick?
   StaffPickRecord StaffPickRecord[]
+  Subtopic        Subtopic[]
+  GeneralSubject  GeneralSubject[]
+  subtopicIds     String[]          @db.ObjectId
+  subjectTypeIds  String[]          @db.ObjectId
+  currentVersion  Int               @default(1) // Current version of the story
 }
 
 model StoryContribution {
@@ -122,7 +127,9 @@ model StoryContribution {
   otherContributorCredit String?
   contributorByline      String?
 
-  bio String?
+  bio            String?
+  StoryHistory   StoryHistory? @relation(fields: [storyHistoryId], references: [id])
+  storyHistoryId String?       @db.ObjectId
 }
 
 model Contributor {
@@ -187,11 +194,12 @@ model StoryContent {
   story   Story  @relation(fields: [storyId], references: [id], onDelete: Cascade)
   storyId String @db.ObjectId
 
-  content        String
-  coverImgCredit String?
-  footer         String?
+  content String
+  footer  String?
 
-  createdAt DateTime
+  createdAt      DateTime
+  StoryHistory   StoryHistory? @relation(fields: [storyHistoryId], references: [id])
+  storyHistoryId String?       @db.ObjectId
 }
 
 model PageView {
@@ -243,6 +251,16 @@ model QuizResult {
   @@index([createAt])
   @@index([storyId, userId, createAt])
   @@index([userId])
+}
+
+model Subtopic {
+  id             String        @id @default(auto()) @map("_id") @db.ObjectId
+  name           String        @unique
+  Story          Story?        @relation(fields: [storyId], references: [id])
+  storyId        String?       @db.ObjectId
+  // SubtopicOnStory SubtopicOnStory[]
+  StoryHistory   StoryHistory? @relation(fields: [storyHistoryId], references: [id])
+  storyHistoryId String?       @db.ObjectId
 }
 
 model Bookmark {
@@ -311,8 +329,11 @@ model QuizQuestion {
   subpartId    String       @db.ObjectId
   createAt     DateTime     @default(now())
   quizzes_id   String[]     @db.ObjectId
-  deleted      Boolean      @default(false)
-  grade        Grade[]
+
+  deleted        Boolean       @default(false)
+  grade          Grade[]
+  StoryHistory   StoryHistory? @relation(fields: [storyHistoryId], references: [id])
+  storyHistoryId String?       @db.ObjectId
 
   @@unique([subpartId])
   @@index([storyId, deleted])
@@ -491,4 +512,56 @@ model StaffPickRecord {
 
   @@index([storyId])
   @@index([staffId])
+}
+
+model GeneralSubject {
+  id             String        @id @default(auto()) @map("_id") @db.ObjectId
+  name           String        @unique
+  Story          Story?        @relation(fields: [storyId], references: [id])
+  storyId        String?       @db.ObjectId
+  // GeneralSubjectOnStory GeneralSubjectOnStory[]
+  StoryHistory   StoryHistory? @relation(fields: [storyHistoryId], references: [id])
+  storyHistoryId String?       @db.ObjectId
+}
+
+model StoryHistory {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  storyId String @db.ObjectId
+  version Int
+
+  storyType StoryType
+  category  Category
+
+  image    String?
+  imageUrl String?
+
+  title      String
+  titleColor String
+
+  slug String // Title slug for URL conforming to RFC 3986
+
+  summary      String
+  summaryColor String
+
+  topics          StoryTopic[]
+  subtopics       Subtopic[]
+  generalSubjects GeneralSubject[]
+
+  storyContributions StoryContribution[]
+  storyContent       StoryContent[]
+
+  published   Boolean
+  createdAt   DateTime
+  publishedAt DateTime?
+  updatedAt   DateTime
+
+  staffPick Boolean?
+
+  thumbnailUrl String
+  coverCaption String @default("")
+
+  quizzes QuizQuestion[]
+
+  subtopicIds    String[] @db.ObjectId
+  subjectTypeIds String[] @db.ObjectId
 }
