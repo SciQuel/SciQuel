@@ -81,7 +81,7 @@ const SocialMediaPopup = forwardRef(
               `${
                 show
                   ? "translate-y-0"
-                  : "max-h-0 translate-y-full opacity-0 sm:-translate-y-0"
+                  : "max-h-0 max-w-0 translate-y-full opacity-0 sm:-translate-y-0"
               }  absolute bottom-0 z-[19] flex w-screen flex-col pt-0 transition-transform duration-500 ` +
               ` sm:relative sm:px-0 md:w-[768px] md:pl-0 md:pr-0 xl:relative  xl:h-fit xl:w-fit `
             }

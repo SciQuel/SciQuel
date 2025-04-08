@@ -1,10 +1,18 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable @next/next/no-img-element */
+'use client";';
+
+import { read } from "fs";
+import SocialMediaPopup from "@/components/story-components/SocialMediaPopup";
+import { Share } from "next/font/google";
+import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
 import Bookmark from "../../../../public/assets/images/bookmark-final.svg";
 import Lightbulb from "../../../../public/assets/images/oi-lightbulb.svg";
-import Share from "../../../../public/assets/images/oi-share-alt.svg";
+import shareIcon from "../../../../public/assets/images/story-share.png";
 import { type ReadingHistory as ReadingHistoryType } from "../../../app/user-settings/actions/getReadingHistory";
+import ShareDropDown from "./ShareDropDown";
 
 interface Props {
   data: ReadingHistoryType;
@@ -21,27 +29,45 @@ const DropDownContent: React.FC<Props> = ({
   handleBrainClick,
   handleBookmarkClick,
 }) => {
+  const [activeSharePopup, setActiveSharePopup] = useState<number | "">("");
+  const popupRef = useRef<HTMLDivElement | null>(null);
+
+  const handleShareClick = (storyId: number) => {
+    setActiveSharePopup(storyId);
+  };
+
+  useEffect(() => {
+    const handleOutsideClick = (e: MouseEvent) => {
+      if (popupRef.current && !popupRef.current.contains(e.target)) {
+        setActiveSharePopup("");
+      }
+    };
+    document.addEventListener("click", handleOutsideClick);
+    return () => document.removeEventListener("click", handleOutsideClick);
+  }, [activeSharePopup]);
   return (
     <>
-      <ul className="  scrollbar-cyan mb-2 max-h-[500px] overflow-y-scroll">
+      <ul className=" scrollbar-cyan  mb-2 max-h-[500px] overflow-scroll">
         {data?.length === 0 && (
           <p className="text-md font-bold"> No Readings </p>
         )}
         {data?.map((reading) => (
-          <li className="mb-5" key={crypto.randomUUID()}>
-            <div className="flex  items-center gap-7">
+          <li className="relative mb-5" key={crypto.randomUUID()}>
+            <div className="flex items-center gap-7">
               <img
                 src={reading?.story?.thumbnailUrl}
                 alt={`Thumbnail of ${reading.story.title}`}
                 className="h-20 w-20 rounded-md object-cover"
               />
-              <div>
+              <div className=" flex-grow basis-0">
                 <Link
                   href={`/stories/${new Date(
                     reading.createdAt,
-                  ).getUTCFullYear()}/${new Date(reading.createdAt).getUTCMonth() + 1
-                    }/${new Date(reading.createdAt).getUTCDate()}/${reading.story.slug
-                    }`}
+                  ).getUTCFullYear()}/${
+                    new Date(reading.createdAt).getUTCMonth() + 1
+                  }/${new Date(reading.createdAt).getUTCDate()}/${
+                    reading.story.slug
+                  }`}
                 >
                   <p className="font-bold">{reading.story.title}</p>
                 </Link>
@@ -50,32 +76,51 @@ const DropDownContent: React.FC<Props> = ({
               </div>
 
               {/* Icons */}
-              <div className="ml-auto mr-5 flex items-center ">
-
-                <Bookmark
-                  fill={`${bookMarkedReadingsIds.includes(reading.story.id)
-                    ? "yellow"
-                    : "none"
+              <div className="relative flex flex-col">
+                <div className="relative ml-auto mr-5 flex items-center ">
+                  <Bookmark
+                    fill={`${
+                      bookMarkedReadingsIds.includes(reading.story.id)
+                        ? "yellow"
+                        : "none"
                     }`}
-                  width="50px"
-                  height="20px"
-                  role='button'
-                  onClick={() => handleBookmarkClick(reading.story.id)}
-                />
+                    width="50px"
+                    height="20px"
+                    role="button"
+                    onClick={() => handleBookmarkClick(reading.story.id)}
+                  />
 
-                <Lightbulb
-                  role="button"
-                  onClick={() => handleBrainClick(reading.story.id)}
-                  width={`${brainedReadingIds.includes(reading.story.id)
-                    ? "30px"
-                    : "20px"
+                  <Lightbulb
+                    role="button"
+                    onClick={() => handleBrainClick(reading.story.id)}
+                    width={`${
+                      brainedReadingIds.includes(reading.story.id)
+                        ? "30px"
+                        : "20px"
                     }`}
-                  height="20px"
-                />
-
-                <button className="cursor-pointer">
-                  <Share width="50px" height="20px" />
-                </button>
+                    height="20px"
+                  />
+                  <div className=" relative flex items-center justify-center bg-red-50">
+                    <button
+                      onClick={() => handleShareClick(reading.id)}
+                      className=""
+                    >
+                      <Image
+                        src={shareIcon}
+                        alt="share a link to this story"
+                        width={45}
+                        height={45}
+                        className="h-5 w-5"
+                      />
+                      <span className="sr-only">
+                        share a link to this story
+                      </span>
+                    </button>
+                  </div>
+                </div>
+                {activeSharePopup === reading.id && (
+                  <ShareDropDown popupRef={popupRef} />
+                )}
               </div>
             </div>
           </li>
