@@ -8,6 +8,7 @@ import MultipChoice from "../Quiz/MulitpleChoice";
 import MultipMatch from "../Quiz/MultipleMatch";
 import OneMatch from "../Quiz/OneMatch";
 import ProgBar from "../Quiz/ProgressBar";
+import Result from "../Quiz/Results";
 import SelectAll from "../Quiz/SelectAll";
 import TrueFalse from "../Quiz/TrueFalse";
 
