@@ -118,8 +118,26 @@ export default function OneMatch({
                 draggable={!disable}
                 data-draggable="item"
                 option-key={item}
+                style={{
+                  backgroundColor:
+                    dirresult[index] === true
+                      ? "#A2C9A8"
+                      : dirresult[index] === false
+                      ? "rgba(231, 149, 149, 1)"
+                      : "white",
+                }}
               >
-                <div className="image-holder flex h-full w-[35%] max-w-[50px] items-center justify-center rounded-bl-[4px] rounded-tl-[4px] bg-[#e6e6fa] px-2 transition duration-300 ease-in-out">
+                <div
+                  className="image-holder flex h-full w-[35%] max-w-[50px] items-center justify-center rounded-bl-[4px] rounded-tl-[4px] bg-[#e6e6fa] px-2 transition duration-300 ease-in-out"
+                  style={{
+                    backgroundColor:
+                      dirresult[index] === true
+                        ? "#B5D4B9"
+                        : dirresult[index] === false
+                        ? "#ecaaaa"
+                        : "#e6e6fa",
+                  }}
+                >
                   {dirresult[index] === true ? (
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -128,6 +146,9 @@ export default function OneMatch({
                       stroke-width="1.5"
                       stroke="currentColor"
                       className="h-6 w-6"
+                      style={{
+                        color: "#437E64",
+                      }}
                     >
                       <path
                         stroke-linecap="round"
@@ -143,6 +164,9 @@ export default function OneMatch({
                       stroke-width="1.5"
                       stroke="currentColor"
                       className="h-6 w-6"
+                      style={{
+                        color: "#B85D5D",
+                      }}
                     >
                       <path
                         stroke-linecap="round"
@@ -173,18 +197,49 @@ export default function OneMatch({
       {responed?.results?.map((res) => (
         <div className="col my-2 text-center">
           <div>
-            <div className="modal-content border-light w-full border">
-              <div
-                className="modal-body"
-                style={{
-                  background: "linear-gradient(to right,#A3C9A8 1%,#F8F8FF 1%)",
-                }}
-              >
-                <p className="p-4 text-left" style={{ color: "#437E64" }}>
-                  {res.explanation}
-                </p>
+            {res.correct[0] === true ? (
+              <div className="modal-content w-full border border-none">
+                <div
+                  className="modal-body"
+                  style={{
+                    background: "linear-gradient(to right,#A3C9A8 1%,white 1%)",
+                  }}
+                >
+                  <p
+                    className="p-4 text-left font-bold"
+                    style={{ color: "#437E64" }}
+                  >
+                    Correct.{" "}
+                    <span className="font-normal " style={{ color: "black" }}>
+                      {res.explanation}
+                    </span>
+                  </p>
+                </div>
               </div>
-            </div>
+            ) : res.correct[0] === false ? (
+              <div className="modal-content w-full border border-none">
+                <div
+                  className="modal-body"
+                  style={{
+                    background: "linear-gradient(to right,#E79595 1%,white 1%)",
+                  }}
+                >
+                  <p
+                    className="p-4 text-left font-bold "
+                    style={{ color: "#D06363" }}
+                  >
+                    Incorrect.{" "}
+                    <span className="font-normal " style={{ color: "black" }}>
+                      {res.explanation}
+                    </span>
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <p className="p-4 text-left" style={{ color: "#437E64" }}>
+                {res.explanation}
+              </p>
+            )}
           </div>
         </div>
       ))}

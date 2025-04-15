@@ -79,24 +79,45 @@ export default function TrueFalse({
                     : "rgb(229 231 235)",
               }}
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={2}
-                stroke="currentColor"
-                className="h-auto w-auto"
-                style={{
-                  color: "#5F8E79",
-                  display: index + "T" === numIndex[index] ? "block" : "none",
-                }}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="m4.5 12.75 6 6 9-13.5"
-                />
-              </svg>
+              {responed && responed.results[index]?.correct[0] === false ? (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  className="h-auto w-auto"
+                  style={{
+                    color: "#B85D5D",
+                    display: index + "T" === numIndex[index] ? "block" : "none",
+                  }}
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M6 18 18 6M6 6l12 12"
+                  />
+                </svg>
+              ) : (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={2}
+                  stroke="currentColor"
+                  className="h-auto w-auto"
+                  style={{
+                    color: "#5F8E79",
+                    display: index + "T" === numIndex[index] ? "block" : "none",
+                  }}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="m4.5 12.75 6 6 9-13.5"
+                  />
+                </svg>
+              )}
             </button>
 
             <button
@@ -118,24 +139,45 @@ export default function TrueFalse({
                     : "rgb(229 231 235)",
               }}
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={2}
-                stroke="currentColor"
-                className="h-auto w-auto"
-                style={{
-                  color: "#5F8E79",
-                  display: index + "F" === numIndex[index] ? "block" : "none",
-                }}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="m4.5 12.75 6 6 9-13.5"
-                />
-              </svg>
+              {responed && responed.results[index]?.correct[0] === false ? (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  className="h-auto w-auto"
+                  style={{
+                    color: "#B85D5D",
+                    display: index + "F" === numIndex[index] ? "block" : "none",
+                  }}
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M6 18 18 6M6 6l12 12"
+                  />
+                </svg>
+              ) : (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={2}
+                  stroke="currentColor"
+                  className="h-auto w-auto"
+                  style={{
+                    color: "#5F8E79",
+                    display: index + "F" === numIndex[index] ? "block" : "none",
+                  }}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="m4.5 12.75 6 6 9-13.5"
+                  />
+                </svg>
+              )}
             </button>
           </div>
         ))}
@@ -147,47 +189,51 @@ export default function TrueFalse({
             explanation: string | null | undefined;
           }) =>
             res.correct[0] === true ? (
-              <div className="modal-content border-light w-full border">
+              <div className="modal-content my-2 w-full border border-none">
                 <div
                   className="modal-body"
                   style={{
-                    background:
-                      "linear-gradient(to right,#A3C9A8 1%,#F8F8FF 1%)",
+                    background: "linear-gradient(to right,#A3C9A8 1%,white 1%)",
                   }}
                 >
-                  <p className="p-2 text-left" style={{ color: "#437E64" }}>
-                    Correct. {res.explanation}
+                  <p
+                    className="p-2 text-left font-bold"
+                    style={{ color: "#437E64" }}
+                  >
+                    Correct.
+                    <span className="font-normal " style={{ color: "black" }}>
+                      {res.explanation}
+                    </span>
                     <br />
-                    <p
-                      className="text-right text-sm"
-                      style={{ color: "#424242" }}
-                    >
-                      You and 87.6% of SciQuel readers answered this question
-                      correctly. Great job!
-                    </p>
                   </p>
                 </div>
+                <p className="text-right text-sm" style={{ color: "#424242" }}>
+                  You and 87.6% of SciQuel readers answered this question
+                  correctly. Great job!
+                </p>
               </div>
             ) : res.correct[0] === false ? (
-              <div className="modal-content border-light w-full border ">
+              <div className="modal-content my-2 w-full  border border-none ">
                 <div
                   className="modal-body "
                   style={{
-                    background:
-                      "linear-gradient(to right,#E79595 1%,#F8F8FF 1%)",
+                    background: "linear-gradient(to right,#E79595 1%,white 1%)",
                   }}
                 >
-                  <p className="p-2 text-left" style={{ color: "#D06363" }}>
-                    Incorrect. {res.explanation}
+                  <p
+                    className="p-2 text-left font-bold"
+                    style={{ color: "#D06363" }}
+                  >
+                    Incorrect.
+                    <span className="font-normal " style={{ color: "black" }}>
+                      {res.explanation}
+                    </span>
                     <br />
-                    <p
-                      className="text-right text-sm"
-                      style={{ color: "#424242" }}
-                    >
-                      87.6% of SciQuel readers answered this question correctly.
-                    </p>
                   </p>
                 </div>
+                <p className="text-right text-sm" style={{ color: "#424242" }}>
+                  87.6% of SciQuel readers answered this question correctly.
+                </p>
               </div>
             ) : null,
         )}

@@ -105,9 +105,23 @@ export default function MultipleMatch({
         <div className="grid w-full  grid-cols-3 justify-stretch gap-4 ">
           {catList.map((cat, colIndex) => {
             const fullCat = categories[cat];
+
             return (
               <div className="quiz-col  sm-mm:w-[120px] xsm-qz:w-[110px] xsm-mm:w-[100px]  my-3.5 flex h-full basis-[30%] flex-col gap-4">
-                <div className="multiple-match-statement xsm-qz:inline-block  xsm-mm:text-[16px] flex w-full flex-wrap items-center justify-center hyphens-auto break-words rounded-[4px] border border-black bg-white p-3 text-center text-[18px]">
+                <div
+                  className="multiple-match-statement xsm-qz:inline-block  xsm-mm:text-[16px] flex w-full flex-wrap items-center justify-center hyphens-auto break-words rounded-[4px] border border-black bg-white p-3 text-center text-[18px]"
+                  style={{
+                    backgroundColor:
+                      responed === undefined
+                        ? "white"
+                        : trueResult[colIndex] ===
+                          responed?.correct_option_counts[colIndex]
+                        ? "#A3C9A8"
+                        : trueResult[colIndex] === 0
+                        ? "#E79595"
+                        : "#F2C705",
+                  }}
+                >
                   {fullCat}
                 </div>
                 <div
@@ -201,6 +215,17 @@ export default function MultipleMatch({
                         key={"item" + fullOp + result.length}
                         className="multiple-match-answer-choice-holder min-w-100 relative box-border flex  w-full cursor-move items-center justify-end break-words rounded-[4px] border border-black bg-white text-center text-[18px] transition duration-300 ease-in-out "
                         data-draggable="item"
+                        style={{
+                          backgroundColor:
+                            responed === undefined
+                              ? "white"
+                              : trueResult[colIndex] ===
+                                responed?.correct_option_counts[colIndex]
+                              ? "#A3C9A8"
+                              : trueResult[colIndex] === 0
+                              ? "#E79595"
+                              : "#F2C705",
+                        }}
                         draggable={!disable}
                         onDragStart={(e) => {
                           console.log("drag start");
@@ -257,7 +282,20 @@ export default function MultipleMatch({
                         }}
                       >
                         {/* correctness icon */}
-                        <div className="image-holder absolute inset-0 flex h-full w-[35%] max-w-[50px] grow items-center justify-center rounded-bl-[4px] rounded-tl-[4px] bg-[#e6e6fa] px-2 transition duration-300 ease-in-out">
+                        <div
+                          className="image-holder absolute inset-0 flex h-full w-[35%] max-w-[50px] grow items-center justify-center rounded-bl-[4px] rounded-tl-[4px] bg-[#e6e6fa] px-2 transition duration-300 ease-in-out"
+                          style={{
+                            backgroundColor:
+                              responed === undefined
+                                ? "white"
+                                : trueResult[colIndex] ===
+                                  responed?.correct_option_counts[colIndex]
+                                ? "#A3C9A8"
+                                : trueResult[colIndex] === 0
+                                ? "#E79595"
+                                : "#CE821A",
+                          }}
+                        >
                           {result[op] === true ? (
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
@@ -352,11 +390,28 @@ export default function MultipleMatch({
                   }}
                 >
                   <div className="image-holder absolute inset-0 flex h-full w-[35%] max-w-[50px] grow items-center justify-center rounded-bl-[4px] rounded-tl-[4px] bg-[#e6e6fa] px-2 transition duration-300 ease-in-out">
-                    <span className="hamburger-menu flex h-4 w-6 flex-col justify-between rounded-[4px] border-none">
-                      <span className="hamburger-line h-0.5 w-full bg-black"></span>
-                      <span className="hamburger-line h-0.5 w-full bg-black"></span>
-                      <span className="hamburger-line h-0.5 w-full bg-black"></span>
-                    </span>
+                    {responed != null ? (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="1.5"
+                        stroke="currentColor"
+                        className="h-6 w-6"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M6 18 18 6M6 6l12 12"
+                        />
+                      </svg>
+                    ) : (
+                      <span className="hamburger-menu flex h-4 w-6 flex-col justify-between rounded-[4px] border-none">
+                        <span className="hamburger-line h-0.5 w-full bg-black"></span>
+                        <span className="hamburger-line h-0.5 w-full bg-black"></span>
+                        <span className="hamburger-line h-0.5 w-full bg-black"></span>
+                      </span>
+                    )}
                   </div>
                   <div
                     className="match-text align-self-center justify-right md-qz:inline-block sm-mm:w-[65%] xsm-mm:w-[73%] xsm-mm:text-[16px] m-auto flex w-[72%] max-w-full items-center justify-end justify-self-end hyphens-auto break-words p-3"
@@ -378,19 +433,19 @@ export default function MultipleMatch({
       {responed?.results?.map((res, index: number) => (
         <div className="col my-2 text-center">
           <div>
-            <div className="modal-content border-light w-full border">
+            <div className="modal-content  w-full border border-none">
               <div
                 className="modal-body"
                 style={{
                   background:
                     trueResult[index] === responed.correct_option_counts[index]!
-                      ? "linear-gradient(to right,#A3C9A8 1%,#F8F8FF 1%)"
+                      ? "linear-gradient(to right,#A3C9A8 1%,white 1%)"
                       : trueResult[index] === 0
-                      ? "linear-gradient(to right,#F2D49A 1%,#F8F8FF 1%)"
-                      : "linear-gradient(to right,#FFFF00 1%,#F8F8FF 1%)",
+                      ? "linear-gradient(to right,#E79595 1%,white 1%)"
+                      : "linear-gradient(to right,#F2C705 1%,white 1%)",
                 }}
               >
-                <p className="p-4 text-left" style={{ color: "#437E64" }}>
+                <p className="p-4 text-left" style={{ color: "black" }}>
                   {res.explanation}
                 </p>
               </div>

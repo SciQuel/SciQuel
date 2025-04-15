@@ -89,7 +89,10 @@ export default function SelectAll({
                   viewBox="0 0 24 24"
                   stroke-width="1.5"
                   stroke="currentColor"
-                  className="h-6 w-6"
+                  className="h-8 w-8"
+                  style={{
+                    color: "#437E64",
+                  }}
                 >
                   <path
                     stroke-linecap="round"
@@ -106,7 +109,10 @@ export default function SelectAll({
                   viewBox="0 0 24 24"
                   stroke-width="1.5"
                   stroke="currentColor"
-                  className="h-6 w-6"
+                  className="h-8 w-8"
+                  style={{
+                    color: "#B85D5D",
+                  }}
                 >
                   <path
                     stroke-linecap="round"
@@ -126,15 +132,17 @@ export default function SelectAll({
         <div className="col my-2 text-center">
           {responed && responed.score === 10 ? (
             <div>
-              <div className="modal-content border-light w-full border">
+              <div className="modal-content  w-full border border-none">
                 <div
                   className="modal-body"
                   style={{
-                    background:
-                      "linear-gradient(to right,#A3C9A8 1%,#F8F8FF 1%)",
+                    background: "linear-gradient(to right,#A3C9A8 1%,white 1%)",
                   }}
                 >
-                  <p className="p-4 text-left" style={{ color: "#437E64" }}>
+                  <p
+                    className="p-4 text-left font-bold"
+                    style={{ color: "#437E64" }}
+                  >
                     Correct.
                   </p>
                 </div>
@@ -146,15 +154,18 @@ export default function SelectAll({
             </div>
           ) : responed && responed.score === 0 ? (
             <div>
-              <div className="modal-content border-light w-full border">
+              <div className="modal-content  w-full border border-none">
                 <div
                   className="modal-body"
                   style={{
                     background:
-                      "linear-gradient(to right, #E79595 1%,#F8F8FF 1%)",
+                      "linear-gradient(to right, #E79595 1%,white 1%)",
                   }}
                 >
-                  <p className="p-4 text-left" style={{ color: "#D06363" }}>
+                  <p
+                    className="p-4 text-left font-bold"
+                    style={{ color: "#D06363" }}
+                  >
                     Incorrect.
                   </p>
                 </div>
@@ -165,15 +176,18 @@ export default function SelectAll({
             </div>
           ) : responed && responed.score > 0 && responed.score < 10 ? (
             <div>
-              <div className="modal-content border-light w-full border">
+              <div className="modal-content  w-full border border-none">
                 <div
                   className="modal-body"
                   style={{
                     background:
-                      "linear-gradient(to right, #F2D49A 1%,#F8F8FF 1%)",
+                      "linear-gradient(to right, #F2C705 1%,white 1%)",
                   }}
                 >
-                  <p className="p-4 text-left" style={{ color: "#F2D49A" }}>
+                  <p
+                    className="p-4 text-left font-bold"
+                    style={{ color: "#F2C705" }}
+                  >
                     Partially Correct.
                   </p>
                 </div>

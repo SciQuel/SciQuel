@@ -73,7 +73,10 @@ export default function MultipleChoice({
                 viewBox="0 0 24 24"
                 stroke-width="1.5"
                 stroke="currentColor"
-                className="h-6 w-6"
+                className="h-8 w-8"
+                style={{
+                  color: "#437E64",
+                }}
               >
                 <path
                   stroke-linecap="round"
@@ -90,7 +93,10 @@ export default function MultipleChoice({
                 viewBox="0 0 24 24"
                 stroke-width="1.5"
                 stroke="currentColor"
-                className="h-6 w-6"
+                className="h-8 w-8"
+                style={{
+                  color: "#B85D5D",
+                }}
               >
                 <path
                   stroke-linecap="round"
@@ -106,28 +112,40 @@ export default function MultipleChoice({
       {responed && (
         <div className="col my-2 text-center">
           {responed.results[0]?.correct[0] === true ? (
-            <div className="modal-content border-light w-full border">
+            <div className="modal-content w-full border border-none">
               <div
                 className="modal-body"
                 style={{
-                  background: "linear-gradient(to right,#A3C9A8 1%,#F8F8FF 1%)",
+                  background: "linear-gradient(to right,#A3C9A8 1%,white 1%)",
                 }}
               >
-                <p className="p-4 text-left" style={{ color: "#437E64" }}>
-                  Correct. {responed.results[0]?.explanation}
+                <p
+                  className="p-4 text-left font-bold"
+                  style={{ color: "#437E64" }}
+                >
+                  Correct.
+                  <span className="font-normal text-black">
+                    {responed.results[0]?.explanation}
+                  </span>
                 </p>
               </div>
             </div>
           ) : (
-            <div className="modal-content border-light w-full border">
+            <div className="modal-content w-full border border-none">
               <div
                 className="modal-body"
                 style={{
-                  background: "linear-gradient(to right,#E79595 1%,#F8F8FF 1%)",
+                  background: "linear-gradient(to right,#E79595 1%,white 1%)",
                 }}
               >
-                <p className="p-4 text-left" style={{ color: "#D06363" }}>
-                  Incorrect. {responed.results[0]?.explanation}
+                <p
+                  className="p-4 text-left font-bold"
+                  style={{ color: "#D06363" }}
+                >
+                  Incorrect.{" "}
+                  <span className="font-normal text-black">
+                    {responed.results[0]?.explanation}
+                  </span>
                 </p>
               </div>
             </div>
