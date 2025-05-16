@@ -22,8 +22,7 @@ export default async function ReadingHistory() {
       story: {
         storyType: "DIGEST",
         category: "ARTICLE",
-        title:
-          "The Wonders of Astronomy lorem ipsum dolor sit amet fgfdgfdg fdgfdgdf gfdgdfgfdg fdgfdgfdgfdgdfgfdgdfgfdgdf gfdgfdgfd gfdgfdgdfgdf gdfgfdgfdg fdgfdgfdgfdgdfgfdg",
+        title: "Test title",
         titleColor: "#FF5733",
         slug: "the-wonders-of-astronomy",
         summary: "Explore the vast universe and its mysteries.",
@@ -46,9 +45,7 @@ export default async function ReadingHistory() {
       story: {
         storyType: "ESSAY",
         category: "PODCAST",
-        title:
-          "The Future of Technology fhfsdhfsdhfshfshfs hfshfshfdshfhfshfs hfshfsdhfsd hfshfshfshsf hfshfshsf hfshshsh shdshdshdshd shsdhdshsdhdshsdh hdshdhssdhfsd hfdhfshfshsf",
-        titleColor: "#33FF57",
+        title: "Test Title",
         slug: "the-future-of-technology",
         summary: "A deep dive into emerging technologies.",
         summaryColor: "#39C7C7",
@@ -195,7 +192,7 @@ export default async function ReadingHistory() {
   console.log("readings", data);
 
   return (
-    <div className=" h-full flex-grow pr-36 ">
+    <div className=" flex w-full flex-col pr-36 ">
       <h2 className="mb-10 ml-8 mt-8 text-3xl font-bold "> Reading History </h2>
       <ReadingDropDownContainer
         pastWeekReadings={pastWeekReadings}

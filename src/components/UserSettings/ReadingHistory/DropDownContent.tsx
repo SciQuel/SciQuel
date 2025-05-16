@@ -2,9 +2,6 @@
 /* eslint-disable @next/next/no-img-element */
 'use client";';
 
-import { read } from "fs";
-import SocialMediaPopup from "@/components/story-components/SocialMediaPopup";
-import { Share } from "next/font/google";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
@@ -47,7 +44,7 @@ const DropDownContent: React.FC<Props> = ({
   }, [activeSharePopup]);
   return (
     <>
-      <ul className=" scrollbar-cyan  mb-2 max-h-[500px] overflow-scroll">
+      <ul className=" scrollbar-cyan mb-2 overflow-x-visible overflow-y-scroll">
         {data?.length === 0 && (
           <p className="text-md font-bold"> No Readings </p>
         )}
@@ -93,25 +90,15 @@ const DropDownContent: React.FC<Props> = ({
                   <Lightbulb
                     role="button"
                     onClick={() => handleBrainClick(reading.story.id)}
-                    width={`${
-                      brainedReadingIds.includes(reading.story.id)
-                        ? "30px"
-                        : "20px"
-                    }`}
+                    width={`${brainedReadingIds.includes(reading.story.id)}`}
                     height="20px"
                   />
-                  <div className=" relative flex items-center justify-center bg-red-50">
+                  <div className=" relative flex items-center justify-center">
                     <button
                       onClick={() => handleShareClick(reading.id)}
                       className=""
                     >
-                      <Image
-                        src={shareIcon}
-                        alt="share a link to this story"
-                        width={45}
-                        height={45}
-                        className="h-5 w-5"
-                      />
+                      <Image src={shareIcon} alt="share a link to this story" />
                       <span className="sr-only">
                         share a link to this story
                       </span>

@@ -30,7 +30,7 @@ const ReadingDropDownContainer: React.FC<Props> = ({
     }
   };
   return (
-    <div className="ml-20 flex h-full flex-col gap-5  ">
+    <div className="z-[1000] ml-20 flex max-h-full w-full flex-grow flex-col gap-5 overflow-hidden ">
       <ReadingDropDown
         title={"Today"}
         data={todayReadings}
