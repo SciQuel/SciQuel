@@ -7,7 +7,10 @@ import {
   useState,
   type PropsWithChildren,
 } from "react";
-import { deepCloneDict, DictionaryContext } from "./DictionaryContext";
+import {
+  deepCloneDict,
+  DictionaryContext,
+} from "../dictionary/DictionaryContext";
 
 export default function DictionarySentence({ children }: PropsWithChildren) {
   const fullDictionary = useContext(DictionaryContext);

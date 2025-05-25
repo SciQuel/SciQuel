@@ -14,7 +14,7 @@ export default async function DictionaryList({ definitions }: Props) {
           <li
             key={definition.id}
             className={`min-w-full flex-1 rounded-lg border
-          border-slate-600 p-4 md:min-w-[45%] lg:min-w-[28%]`}
+          border-slate-600 p-4`}
           >
             <DictionaryListItem definition={definition} />
           </li>

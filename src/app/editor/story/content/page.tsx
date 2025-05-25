@@ -15,12 +15,20 @@ export default async function StoryContentEditorPage({
   const story = id
     ? await prisma.story.findUnique({
         where: { id },
-        include: { storyContent: true },
+        include: { storyContent: true, definitions: true },
       })
     : null;
   if (!story) {
     return redirect("/editor/dashboard");
   }
+
+  const dictWords = story.definitions.reduce((accumulator, current) => {
+    if (current.word) {
+      accumulator.push(current.word);
+    }
+
+    return accumulator;
+  }, [] as string[]);
 
   const latestRevision = story.storyContent.reduce<StoryContent | null>(
     (acc, current) => {
@@ -35,6 +43,10 @@ export default async function StoryContentEditorPage({
     null,
   );
   return (
-    <MarkdownEditor initialValue={latestRevision?.content} id={story.id} />
+    <MarkdownEditor
+      dictionaryWords={dictWords}
+      initialValue={latestRevision?.content}
+      id={story.id}
+    />
   );
 }

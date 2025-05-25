@@ -34,9 +34,14 @@ const inter = Inter({ subsets: ["latin"] });
 interface Props {
   initialValue?: string;
   id: string;
+  dictionaryWords: string[];
 }
 
-export default function MarkdownEditor({ initialValue, id }: Props) {
+export default function MarkdownEditor({
+  initialValue,
+  id,
+  dictionaryWords,
+}: Props) {
   const router = useRouter();
   const [dirty, setDirty] = useState(false);
   const [value, setValue] = useState(initialValue ?? "");
@@ -123,6 +128,7 @@ export default function MarkdownEditor({ initialValue, id }: Props) {
     <div className="flex h-full min-h-screen grow flex-row">
       <div className={clsx("flex w-1/2 flex-col border-r", inter.className)}>
         <Toolbar
+          dictionaryWords={dictionaryWords}
           editor={editor}
           onSubmit={handleEditorSubmit}
           loading={loading}

@@ -1,4 +1,4 @@
-import DefinitionsDisplay from "@/components/EditorDashboard//DefinitionsDisplay/DefinitionsDisplay";
+import DefinitionsDisplay from "@/components/EditorDashboard/DefinitionsDisplay/DefinitionsDisplay";
 import DictionaryForm from "@/components/EditorDashboard/DictionaryForm/DictionaryForm";
 import StoryInfoForm from "@/components/EditorDashboard/StoryInfoForm";
 import prisma from "@/lib/prisma";
