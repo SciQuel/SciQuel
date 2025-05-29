@@ -2,6 +2,8 @@
 
 import { type editor } from "monaco-editor";
 import bold from "./actions/bold";
+import dictionarySentence from "./actions/dictionarySentence";
+import dictionaryWord from "./actions/dictionaryWord";
 import heading from "./actions/heading";
 import image from "./actions/image";
 import italic from "./actions/italic";
@@ -20,9 +22,16 @@ interface Props {
   onSubmit?: () => void;
   loading: boolean;
   storyId: string;
+  dictionaryWords: string[];
 }
 
-export default function Toolbar({ editor, onSubmit, loading, storyId }: Props) {
+export default function Toolbar({
+  editor,
+  onSubmit,
+  loading,
+  storyId,
+  dictionaryWords,
+}: Props) {
   const ToolbarEditFooterButton = withDialog({
     disabled: editor === null || loading,
     tooltip: "Edit Story Footer",
@@ -121,6 +130,34 @@ export default function Toolbar({ editor, onSubmit, loading, storyId }: Props) {
           </div>
         </ToolbarButton>
         <ToolbarRule />
+        <ToolbarButton
+          disabled={editor === null || loading}
+          onClick={() => {
+            if (editor) {
+              dictionarySentence(editor);
+            }
+          }}
+        >
+          Dict. Sentence
+        </ToolbarButton>
+        <ToolbarRule />
+        <ToolbarDropdown
+          disabled={editor === null || loading}
+          dropdownItems={dictionaryWords.map((dictWord) => {
+            return {
+              label: dictWord,
+              onClick: () => {
+                if (editor) {
+                  dictionaryWord(editor, dictWord);
+                }
+              },
+            };
+          })}
+        >
+          Dict. Words
+        </ToolbarDropdown>
+        <ToolbarRule />
+
         <ToolbarEditFooterButton />
       </div>
       <div className="flex h-full items-center px-2">
