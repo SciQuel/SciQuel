@@ -22,14 +22,6 @@ export default async function StoryContentEditorPage({
     return redirect("/editor/dashboard");
   }
 
-  const dictWords = story.definitions.reduce((accumulator, current) => {
-    if (current.word) {
-      accumulator.push(current.word);
-    }
-
-    return accumulator;
-  }, [] as string[]);
-
   const latestRevision = story.storyContent.reduce<StoryContent | null>(
     (acc, current) => {
       if (acc === null) {
@@ -44,7 +36,7 @@ export default async function StoryContentEditorPage({
   );
   return (
     <MarkdownEditor
-      dictionaryWords={dictWords}
+      dictionaryWords={story.definitions}
       initialValue={latestRevision?.content}
       id={story.id}
     />
