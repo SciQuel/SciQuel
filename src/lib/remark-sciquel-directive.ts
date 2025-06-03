@@ -1,5 +1,4 @@
 import { h } from "hastscript";
-import { type Data } from "mdast";
 import { type Directives as DirectiveNode } from "mdast-util-directive";
 import { type Plugin, type Transformer } from "unified";
 import { type Node } from "unist";
@@ -22,7 +21,7 @@ const allowedDirectives = [
   "end-icon",
 ];
 
-const mapDirectiveNode: MapFunction<Node> = (node: Node<Data>) => {
+const mapDirectiveNode: MapFunction<Node> = (node: Node) => {
   if (!isDirectiveNode(node)) {
     return node;
   }
