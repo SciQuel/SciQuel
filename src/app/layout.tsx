@@ -4,7 +4,12 @@ import Header from "@/components/Header";
 import { authOptions } from "@/lib/auth";
 import clsx from "clsx";
 import { getServerSession } from "next-auth";
-import { Alegreya_Sans_SC, Quicksand, Source_Serif_4 } from "next/font/google";
+import {
+  Alegreya_Sans_SC,
+  Besley,
+  Quicksand,
+  Source_Serif_4,
+} from "next/font/google";
 import AuthProvider from "./AuthProvider";
 
 export const metadata = {
@@ -16,6 +21,7 @@ const quicksand = Quicksand({
   subsets: ["latin"],
   display: "swap",
   weight: "variable",
+  variable: "--font-quicksand",
 });
 
 const alegreyaSansSC = Alegreya_Sans_SC({
@@ -32,6 +38,12 @@ const sourceSerif4 = Source_Serif_4({
   display: "swap",
 });
 
+const besley = Besley({
+  weight: "variable",
+  subsets: ["latin"],
+  variable: "--font-besley",
+});
+
 export default async function RootLayout({
   children,
 }: {
@@ -42,9 +54,12 @@ export default async function RootLayout({
     <html lang="en">
       <body
         className={clsx(
-          quicksand.className,
+          quicksand.variable,
+          besley.className,
+
           alegreyaSansSC.variable,
           sourceSerif4.variable,
+
           "flex min-h-screen flex-col",
         )}
       >
@@ -55,9 +70,10 @@ export default async function RootLayout({
           >
             Skip to main content
           </a>
-          <div>
+          <div className=" min-h-screen">
             <Header></Header>
-            <main className="min-h-[calc(100dvh-100px)] pt-10" id="main">
+
+            <main className="pt-36 font-quicksand xs:pt-24 sm:pt-10" id="main">
               {children}
             </main>
           </div>

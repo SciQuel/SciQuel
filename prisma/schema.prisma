@@ -102,7 +102,8 @@ model Story {
   createdAt       DateTime
   publishedAt     DateTime
   updatedAt       DateTime
-  quizQuestions   QuizQuestion[]
+  quizzes         Quiz[]
+  comments        Comment[]
   staffPick       StaffPick?
   StaffPickRecord StaffPickRecord[]
   pageViews       PageView[]
@@ -158,14 +159,17 @@ model User {
 
   authVerifications AuthVerification[]
 
-  roles   UserRole[]   @default([])
-  quizzes QuizRecord[]
+  roles    UserRole[] @default([])
+  quizzes  Quiz[]
+  comments Comment[]
 
   contactUpdates       ContactMessage[]
   firstQuizRecord      Json?
   mostRecentQuizRecord Json?
-  StaffPickRecord      StaffPickRecord[]
-  pageViews            PageView[]
+
+  commentLikes    CommentLike[]
+  StaffPickRecord StaffPickRecord[]
+  pageViews       PageView[]
 }
 
 model AuthVerification {
@@ -185,8 +189,9 @@ model StoryContent {
   story   Story  @relation(fields: [storyId], references: [id], onDelete: Cascade)
   storyId String @db.ObjectId
 
-  content String
-  footer  String?
+  content        String
+  coverImgCredit String?
+  footer         String?
 
   createdAt DateTime
 }
@@ -364,44 +369,21 @@ model UserResponseSubpart {
   @@index([userId, quizQuestionId])
 }
 
-model QuestionAnswerFirstTime {
-  id             String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId         String?  @db.ObjectId
-  quizQuestionId String   @db.ObjectId
-  correct        Boolean
-  createAt       DateTime @default(now())
-
-  @@index([userId, quizQuestionId])
-  @@index([quizQuestionId])
-  @@index([quizQuestionId, correct])
+model UserResponse {
+  id               String            @id @default(auto()) @map("_id") @db.ObjectId
+  storyId          String
+  questionType     QuestionType
+  userId           String            @db.ObjectId
+  quizQuestionId   String            @db.ObjectId
+  responseSubparts ResponseSubpart[]
 }
 
-model StoryQuizScoreFirstTime {
-  id                 String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId             String?  @db.ObjectId
-  storyId            String   @db.ObjectId
-  totalCorrectAnswer Int
-  createAt           DateTime @default(now())
-
-  @@index([userId, storyId])
-  @@index([storyId, totalCorrectAnswer])
-  @@index([storyId])
-}
-
-model Grade {
-  id                    String              @id @default(auto()) @map("_id") @db.ObjectId
-  userId                String?             @db.ObjectId
-  userResponseSubpartId String              @db.ObjectId
-  UserResponseSubpart   UserResponseSubpart @relation(fields: [userResponseSubpartId], references: [id])
-  quizQuestionId        String              @db.ObjectId
-  totalScore            Int
-  maxScore              Int
-  quizRecord            QuizRecord?         @relation(fields: [quizRecordId], references: [id])
-  quizRecordId          String?             @db.ObjectId
-
-  @@unique([userResponseSubpartId])
-  @@index([quizRecordId])
-  @@index([userId, quizQuestionId])
+model ResponseSubpart {
+  id             String        @id @default(auto()) @map("_id") @db.ObjectId
+  subpartId      String        @db.ObjectId
+  subpartUserAns String[]
+  UserResponse   UserResponse? @relation(fields: [userResponseId], references: [id])
+  userResponseId String?       @db.ObjectId
 }
 
 model QuizQuestionRecord {
@@ -413,6 +395,38 @@ model QuizQuestionRecord {
 
   @@index([quizQuestionId])
   @@index([createAt])
+}
+
+model Comment {
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  content         String
+  likeNum         Int       @default(0)
+  quote           String?
+  parentCommentId String?   @db.ObjectId
+  parentComment   Comment?  @relation("CommentReplies", fields: [parentCommentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  replies         Comment[] @relation("CommentReplies")
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @db.ObjectId
+
+  story   Story  @relation(fields: [storyId], references: [id], onDelete: NoAction)
+  storyId String @db.ObjectId
+
+  likes CommentLike[]
+  read  Boolean       @default(false)
+}
+
+model CommentLike {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  comment   Comment  @relation(fields: [commentId], references: [id])
+  commentId String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String   @db.ObjectId
+  createdAt DateTime @default(now())
+
+  @@unique([commentId, userId])
 }
 
 model StaffPick {

@@ -72,7 +72,7 @@ const SocialMediaPopup = forwardRef(
     ${show ? "opacity-1" : "max-h-0 max-w-0 opacity-0 sm:-translate-y-2"}  
     fixed bottom-0 left-0 z-[19] h-screen w-screen items-end overflow-hidden bg-neutral-800/75 transition-all` +
             ` sm:static sm:top-0 sm:ml-[-4.75rem] sm:mt-2 sm:h-fit sm:w-fit sm:items-start sm:justify-center sm:bg-transparent` +
-            ` xl:-mt-20 xl:ml-8 xl:w-fit xl:px-8`
+            ` xl:-mt-20 xl:ml-0 xl:w-fit xl:px-8`
           }
         >
           <div
@@ -90,11 +90,11 @@ const SocialMediaPopup = forwardRef(
               {/* this is the arrow, created from a rotated div */}
             </div>
             <div
-              className={`relative flex w-full flex-col-reverse sm:p-2 xl:left-8 xl:flex-row xl:px-0 xl:py-2`}
+              className={`relative flex w-full flex-col-reverse sm:p-2 xl:left-8 xl:flex-row xl:px-0 xl:py-3`}
             >
               {/* button + side-popout container */}
               <div
-                className={`pointer-events-auto  relative m-0 flex flex-row border-x-2 border-sciquelCardBorder bg-sciquelCardBg py-1 pb-4 sm:rounded-b-xl sm:border-b-2 sm:pb-2 md:px-1 lg:h-fit xl:top-2 xl:w-max xl:flex-col xl:gap-1 xl:rounded-xl xl:border-2 xl:px-0 xl:pt-2`}
+                className={`pointer-events-auto relative m-0 flex flex-row flex-wrap border-x-2 border-sciquelCardBorder bg-sciquelCardBg px-1 py-1 pb-4 sm:flex-nowrap sm:rounded-b-xl sm:border-b-2 sm:pb-2  lg:h-fit xl:top-2 xl:w-max xl:flex-col xl:gap-1 xl:rounded-xl xl:border-2 xl:px-0 xl:pt-2`}
               >
                 {/* buttons container */}
                 <button

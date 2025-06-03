@@ -82,9 +82,9 @@ export default function ArticleCard({
             {/* Article Content */}
             <div className="flex grow flex-col">
               <div>
-                <h1
+                <h2
                   className={clsx(
-                    "line-clamp-2 font-alegreyaSansSC font-medium",
+                    "line-clamp-2 font-customTest font-medium",
                     mini
                       ? preferHorizontal
                         ? "text-lg leading-tight"
@@ -93,7 +93,7 @@ export default function ArticleCard({
                   )}
                 >
                   {title}
-                </h1>
+                </h2>
               </div>
               <div className="flex items-center">
                 <p

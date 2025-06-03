@@ -321,7 +321,7 @@ export default function ShareLinks() {
             setShowOptions("share");
           }
         }}
-        className={`pointer-events-auto absolute left-[4rem] flex h-fit w-fit flex-col  xl:left-[calc(100%_-_4.3rem)]  xl:top-[3.5rem]  xl:items-start `}
+        className={`pointer-events-auto absolute left-[4rem] flex h-fit w-fit flex-col  xl:left-[calc(100%_-_5rem)]  xl:top-[3.5rem]  xl:items-start `}
       >
         <button
           type="button"

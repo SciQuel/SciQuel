@@ -13,7 +13,8 @@ import StoryParagraph from "@/components/story-components/markdown/StoryParagrap
 import StoryPre from "@/components/story-components/markdown/StoryPre";
 import StoryUl from "@/components/story-components/markdown/StoryUl";
 import remarkSciquelDirective from "@/lib/remark-sciquel-directive";
-import { createElement, Fragment, type HTMLProps } from "react";
+import { type HTMLProps } from "react";
+import production from "react/jsx-runtime";
 import rehypeReact from "rehype-react";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import remarkDirective from "remark-directive";
@@ -33,7 +34,12 @@ export async function generateMarkdown(content: string) {
     .use(remarkSciquelDirective)
     .use(
       remarkRetext,
-      unified().use(retextEnglish).use(retextWordCount, wordStats),
+      // https://github.com/remarkjs/remark-retext/issues/17
+      // ignore the questionable typing here
+      // seems to be a known problem
+      unified()
+        .use(retextEnglish)
+        .use(retextWordCount, wordStats) as unknown as boolean,
     )
     .use(remarkRehype)
     .use(rehypeSanitize, {
@@ -52,8 +58,9 @@ export async function generateMarkdown(content: string) {
       ],
     })
     .use(rehypeReact, {
-      createElement,
-      Fragment,
+      Fragment: production.Fragment,
+      jsx: production.jsx,
+      jsxs: production.jsxs,
       components: {
         p: (props: HTMLProps<HTMLParagraphElement>) => (
           <StoryParagraph>{props.children}</StoryParagraph>
