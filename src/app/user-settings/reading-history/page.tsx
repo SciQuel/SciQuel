@@ -158,20 +158,21 @@ export default async function ReadingHistory() {
     }
   };
 
-  const [BrainedReadingIds, BookmarkedReadingsIds] = await Promise.all([
-    getBrainedReadingsIds(),
-    getBookMarkedReadingsIds(),
-    // getReadingHistory() as Promise<ReadingHistoryType>,
-  ]);
+  const [BrainedReadingIds, BookmarkedReadingsIds, readingHistory] =
+    await Promise.all([
+      getBrainedReadingsIds(),
+      getBookMarkedReadingsIds(),
+      getReadingHistory() as Promise<ReadingHistoryType>,
+    ]);
 
   //initalize arrays for certain readings, fix to contain just on arr of objects instead of seperate lists
   const todayReadings: ReadingHistoryType & { diffInDays: number }[] = [];
   const yesterdayReadings: ReadingHistoryType & { diffInDays: number }[] = [];
   const pastWeekReadings: ReadingHistoryType & { diffInDays: number }[] = [];
 
-  for (const reading of data) {
+  for (const reading of readingHistory) {
     //find the differnce in days from the read date
-    const readDate = new Date(reading.story.createdAt).getTime();
+    const readDate = new Date(reading.createdAt).getTime();
     const todayDate = new Date().getTime();
     const diffInMilliseconds = todayDate - readDate;
     const diffInDays = Math.floor(diffInMilliseconds / (1000 * 60 * 60 * 24));
@@ -186,10 +187,10 @@ export default async function ReadingHistory() {
     }
   }
 
-  console.log("todayReadings", todayReadings);
-  console.log("yesterdayReadings", yesterdayReadings);
-  console.log("pastWeekReadings", pastWeekReadings);
-  console.log("readings", data);
+  // console.log("todayReadings", todayReadings);
+  // console.log("yesterdayReadings", yesterdayReadings);
+  // console.log("pastWeekReadings", pastWeekReadings);
+  // console.log("readings", data);
 
   return (
     <div className=" flex w-full flex-col pr-36 ">
