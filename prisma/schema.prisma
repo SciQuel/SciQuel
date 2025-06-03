@@ -102,11 +102,12 @@ model Story {
   createdAt       DateTime
   publishedAt     DateTime
   updatedAt       DateTime
-  quizzes         Quiz[]
   comments        Comment[]
   staffPick       StaffPick?
   StaffPickRecord StaffPickRecord[]
-  pageViews       PageView[]
+
+  quizQuestions QuizQuestion[]
+  pageViews     PageView[]
 }
 
 model StoryContribution {
@@ -159,8 +160,8 @@ model User {
 
   authVerifications AuthVerification[]
 
-  roles    UserRole[] @default([])
-  quizzes  Quiz[]
+  roles    UserRole[]   @default([])
+  quizzes  QuizRecord[]
   comments Comment[]
 
   contactUpdates       ContactMessage[]
@@ -243,6 +244,22 @@ model QuizRecord {
   @@index([createAt])
   @@index([storyId, userId])
   @@index([userId])
+}
+
+model Grade {
+  id                    String              @id @default(auto()) @map("_id") @db.ObjectId
+  userId                String?             @db.ObjectId
+  userResponseSubpartId String              @db.ObjectId
+  UserResponseSubpart   UserResponseSubpart @relation(fields: [userResponseSubpartId], references: [id])
+  quizQuestionId        String              @db.ObjectId
+  totalScore            Int
+  maxScore              Int
+  quizRecord            QuizRecord?         @relation(fields: [quizRecordId], references: [id])
+  quizRecordId          String?             @db.ObjectId
+
+  @@unique([userResponseSubpartId])
+  @@index([quizRecordId])
+  @@index([userId, quizQuestionId])
 }
 
 model Bookmark {
