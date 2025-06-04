@@ -1,6 +1,7 @@
 "use server";
 
 import { randomUUID } from "crypto";
+import { tagUser } from "@/lib/cache";
 import { bucket, bucketUrlPrefix } from "@/lib/gcs";
 import prisma from "@/lib/prisma";
 import { getServerSession } from "next-auth";
@@ -72,7 +73,7 @@ export async function replaceContributorImage(form: FormData) {
       },
     });
 
-    revalidateTag(`contributor-${contributor.contributorSlug}`);
+    revalidateTag(tagUser(contributorId));
 
     return { newAvatarUrl: newContributor.avatarUrl };
   } catch (err) {
@@ -112,7 +113,7 @@ export async function updateContributorTextFields(
         bio: bio,
       },
     });
-    revalidateTag(`contributor-${slug}`);
+    revalidateTag(tagUser(contributorId));
     return { contributor: newContributorInfo as ContributorResult };
   } catch (err) {
     return { error: "unknown server error" };

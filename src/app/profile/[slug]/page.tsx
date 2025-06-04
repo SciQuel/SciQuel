@@ -4,7 +4,9 @@ import HomepageSection from "@/components/HomepageSection";
 import ProfileButton from "@/components/profile-page/ProfileButtons";
 import ProfileSidebar from "@/components/profile-page/ProfileSidebar";
 import Pagination from "@/components/StoriesList/Pagination";
+import { tagUser } from "@/lib/cache";
 import env from "@/lib/env";
+import prisma from "@/lib/prisma";
 import { DateTime } from "luxon";
 import { notFound } from "next/navigation";
 
@@ -37,6 +39,28 @@ function parseStaffPick(category: string | undefined) {
 }
 
 async function getArticles(slug: string, page: number, staffPick: boolean) {
+  let contributorId = "";
+
+  try {
+    const contributorFull = await prisma.contributor.findUnique({
+      where: {
+        contributorSlug: slug,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    if (!contributorFull) {
+      return null;
+    }
+
+    contributorId = contributorFull.id;
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+
   if (staffPick) {
     try {
       const res = await fetch(
@@ -45,6 +69,11 @@ async function getArticles(slug: string, page: number, staffPick: boolean) {
         }/api/contributor?contributorSlug=${slug}&staffPick=True&pageNum=${
           page - 1
         }`,
+        {
+          next: {
+            tags: [tagUser(contributorId)],
+          },
+        },
       );
       if (res.ok) {
         const raw = (await res.json()) as GetContributionResult;
@@ -66,7 +95,7 @@ async function getArticles(slug: string, page: number, staffPick: boolean) {
         }/api/contributor?contributorSlug=${slug}&pageNum=${page - 1}`,
         {
           next: {
-            tags: [`contributor-${slug}`],
+            tags: [tagUser(contributorId)],
           },
         },
       );
