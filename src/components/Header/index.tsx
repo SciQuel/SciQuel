@@ -1,7 +1,5 @@
 /* eslint-disable isaacscript/complete-sentences-jsdoc */
 
-import Link from "next/link";
-import SciquelLogo from "../../../public/assets/images/logoWithNameOnSide.svg";
 import LogoLink from "./LogoLink/LogoLink";
 import MainSubHeader from "./MainSubHeader";
 import SearchBar from "./SearchBar/SearchBar";
@@ -11,8 +9,6 @@ import SideBar from "./SideBar/SideBar";
 import TempProfileHeading from "./TempProfile/TempProfile";
 
 export default function Header() {
-  // const pathname = usePathname();
-
   return (
     <header className=" sticky top-0 z-20 flex h-16 w-screen flex-col font-quicksand text-white ">
       <div className="absolute z-20 h-16  w-full bg-sciquelTeal">
