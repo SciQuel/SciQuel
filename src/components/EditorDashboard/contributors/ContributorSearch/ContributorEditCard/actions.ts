@@ -4,6 +4,7 @@ import { randomUUID } from "crypto";
 import { bucket, bucketUrlPrefix } from "@/lib/gcs";
 import prisma from "@/lib/prisma";
 import { getServerSession } from "next-auth";
+import { revalidateTag } from "next/cache";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { type ContributorResult } from "../actions";
@@ -71,6 +72,8 @@ export async function replaceContributorImage(form: FormData) {
       },
     });
 
+    revalidateTag(`contributor-${contributor.contributorSlug}`);
+
     return { newAvatarUrl: newContributor.avatarUrl };
   } catch (err) {
     console.error(err);
@@ -109,7 +112,7 @@ export async function updateContributorTextFields(
         bio: bio,
       },
     });
-
+    revalidateTag(`contributor-${slug}`);
     return { contributor: newContributorInfo as ContributorResult };
   } catch (err) {
     return { error: "unknown server error" };

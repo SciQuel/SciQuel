@@ -64,6 +64,11 @@ async function getArticles(slug: string, page: number, staffPick: boolean) {
         `${
           env.NEXT_PUBLIC_SITE_URL
         }/api/contributor?contributorSlug=${slug}&pageNum=${page - 1}`,
+        {
+          next: {
+            tags: [`contributor-${slug}`],
+          },
+        },
       );
       if (res.ok) {
         const raw = (await res.json()) as GetContributionResult;
