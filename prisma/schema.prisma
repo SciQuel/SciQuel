@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -103,6 +100,7 @@ model Story {
   publishedAt     DateTime
   updatedAt       DateTime
   quizzes         Quiz[]
+  definitions     DictionaryDefinition[]
   comments        Comment[]
   staffPick       StaffPick?
   StaffPickRecord StaffPickRecord[]
@@ -240,6 +238,24 @@ model Bookmark {
   createdAt DateTime @default(now())
 
   @@unique([userId, storyId])
+}
+
+model DictionaryDefinition {
+  id                   String   @id @default(auto()) @map("_id") @db.ObjectId
+  word                 String   @unique
+  definition           String
+  exampleSentences     String[]
+  alternativeSpellings String[]
+  storyId              String   @db.ObjectId
+  story                Story    @relation(fields: [storyId], references: [id])
+
+  // db fields for cloud storage url referencing audio files
+  wordAudioUrl       String?
+  definitionAudioUrl String?
+  useAudioUrl        String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 // feedback schema
