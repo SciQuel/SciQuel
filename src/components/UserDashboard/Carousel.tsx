@@ -1,17 +1,19 @@
 "use client";
 
+import { type ReadingHistory } from "@/app/user-settings/actions/getReadingHistory";
+import Image from "next/image";
 import { useEffect, useState } from "react";
-import { type Reading } from "./GreetingCard";
-import { NextButton } from "./NextButton";
-import { PrevButton } from "./PrevButton";
+import { NextButton } from "../UserSettings/NextButton";
+import { PrevButton } from "../UserSettings/PrevButton";
 import ReadButton from "./ReadButton";
 
+//left over from old greeting on user dashboard just in case it is necessary in the future
 export default function Carousel({
   stories,
   autoSlide = false,
   autoSlideInterval = 3000,
 }: {
-  stories: Reading[];
+  stories: ReadingHistory[];
   autoSlide?: boolean;
   autoSlideInterval?: number;
 }) {
@@ -47,9 +49,11 @@ export default function Carousel({
           style={{ transform: `translateX(-${readingHistoryIndex * 100}%)` }}
         >
           {stories.map((story, idx) => (
-            <img
+            <Image
               key={idx}
-              src={story.thumbnailUrl}
+              width={`${100}`}
+              height={`${100}`}
+              src={story.story.thumbnailUrl}
               alt="article image"
               className="h-full w-full flex-none"
             />
@@ -59,20 +63,31 @@ export default function Carousel({
       </div>
       <div className="flex justify-between bg-white px-6 py-4">
         <div className="h-fit basis-5/6">
-          <p className="line-clamp-1 text-xl font-semibold">
-            {stories[readingHistoryIndex].title}
-          </p>
+          {stories.length > 0 && readingHistoryIndex < stories.length && (
+            <p className="line-clamp-1 text-xl font-semibold">
+              {stories[readingHistoryIndex].story.title}
+            </p>
+          )}
           <p>
             by{" "}
             <span className="text-[#69A297]">
-              {
-                stories[readingHistoryIndex].storyContributions[0].contributor
-                  .firstName
-              }{" "}
-              {
-                stories[readingHistoryIndex].storyContributions[0].contributor
-                  .lastName
-              }
+              {stories.length > 0 &&
+                stories[readingHistoryIndex].story.storyContributions &&
+                stories[readingHistoryIndex].story.storyContributions.length >
+                  0 &&
+                stories[readingHistoryIndex].story.storyContributions[0]
+                  .contributor && (
+                  <>
+                    {
+                      stories[readingHistoryIndex].story.storyContributions[0]
+                        .contributor.firstName
+                    }{" "}
+                    {
+                      stories[readingHistoryIndex].story.storyContributions[0]
+                        .contributor.lastName
+                    }
+                  </>
+                )}
             </span>
           </p>
         </div>

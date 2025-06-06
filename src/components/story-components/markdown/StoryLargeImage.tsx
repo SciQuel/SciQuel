@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import {
   useContext,
   useEffect,
@@ -137,12 +138,14 @@ export default function StoryLargeImage({
         className="mx-auto table w-full gap-8 p-8 lg:w-min lg:p-0"
         ref={figureRef}
       >
-        <img
+        <Image
           src={src}
+          width={`${100}`}
+          height={`${100}`}
           className={`${
             isPrintMode ? "md:max-w-[768px]" : "lg:max-w-[1000px]"
           } max-w-screen mx-auto max-h-[900px] w-auto`}
-          alt={alt}
+          alt={alt || "large image"}
         />
         <figcaption className="mt-2 table-caption w-full caption-bottom px-8 font-sourceSerif4 text-base lg:px-0">
           {children}

@@ -9,7 +9,7 @@ export default async function LoginPage({ children }: PropsWithChildren) {
     redirect("/", RedirectType.push);
   }
   return (
-    <div className="flex grow flex-row">
+    <div className="h-screen grow flex-row">
       <div className="w-5/12 bg-gradient-to-t from-[#b5bce6] to-[#aeefd0]" />
       <div className="flex grow items-center justify-center">
         <div className="w-5/12 max-w-[26rem]">{children}</div>

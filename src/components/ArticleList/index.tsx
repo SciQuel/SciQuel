@@ -7,12 +7,15 @@ interface Props {
   mini?: boolean;
   articles: Stories;
   preferHorizontal?: boolean;
+  hoverEffect?: boolean
+
 }
 
 export default function ArticleList({
   articles,
   mini = false,
   preferHorizontal = false,
+  hoverEffect = true
 }: Props) {
   return (
     <div
@@ -22,8 +25,8 @@ export default function ArticleList({
             ? "grid grid-cols-1 gap-5"
             : "grid grid-cols-1 gap-8 lg:grid-cols-2 2xl:grid-cols-3"
           : preferHorizontal
-          ? "grid grid-cols-1 gap-10"
-          : "grid grid-cols-1 gap-10 md:grid-cols-2 xl:grid-cols-3",
+            ? "grid grid-cols-1 gap-10"
+            : "grid grid-cols-1 gap-10 md:grid-cols-2 xl:grid-cols-3",
       )}
     >
       {articles.map((article) => (
@@ -37,9 +40,10 @@ export default function ArticleList({
             )}/${publishDate.toFormat("dd")}/${article.slug}`;
           })()}
           key={article.title}
-          topic={article.topics ? article.topics[0] : "BIOLOGY"}
+          topic={article.tags ? article.tags[0] : "BIOLOGY"}
           title={article.title}
           subtitle={article.summary}
+          hoverEffect={hoverEffect}
           author={(() => {
             const author = article.storyContributions.find(
               (value) => value.contributionType === "AUTHOR",

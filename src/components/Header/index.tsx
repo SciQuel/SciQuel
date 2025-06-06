@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import SciquelLogo from "../../../public/assets/images/logoWithNameOnSide.svg";
 import MainSubHeader from "./MainSubHeader";
-// import ProfileButton from "./ProfileButton";
+import ProfileButton from "./ProfileButton";
 import Search from "./search.svg";
 // import SeriesSubHeader from "./SeriesSubHeader";
 import SideBar from "./SideBar/SideBar";

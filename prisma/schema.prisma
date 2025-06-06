@@ -70,7 +70,7 @@ enum QuestionType {
   SELECT_ALL
 }
 
-enum StaffPickRecordType {
+enum UpdateType {
   CREATE
   DELETE
   UPDATE
@@ -89,7 +89,7 @@ model Story {
   summary      String
   summaryColor String
 
-  topics StoryTopic[]
+  tags StoryTopic[]
 
   storyContributions StoryContribution[]
   storyContent       StoryContent[]
@@ -102,10 +102,12 @@ model Story {
   createdAt       DateTime
   publishedAt     DateTime
   updatedAt       DateTime
-  quizzes         Quiz[]
   comments        Comment[]
   staffPick       StaffPick?
   StaffPickRecord StaffPickRecord[]
+
+  quizQuestions QuizQuestion[]
+  pageViews     PageView[]
 }
 
 model StoryContribution {
@@ -158,8 +160,8 @@ model User {
 
   authVerifications AuthVerification[]
 
-  roles    UserRole[] @default([])
-  quizzes  Quiz[]
+  roles    UserRole[]   @default([])
+  quizzes  QuizRecord[]
   comments Comment[]
 
   contactUpdates       ContactMessage[]
@@ -168,6 +170,7 @@ model User {
 
   commentLikes    CommentLike[]
   StaffPickRecord StaffPickRecord[]
+  pageViews       PageView[]
 }
 
 model AuthVerification {
@@ -197,9 +200,11 @@ model StoryContent {
 model PageView {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  userId  String @db.ObjectId
-  storyId String @db.ObjectId
+  userId String @db.ObjectId
+  user   User   @relation(fields: [userId], references: [id])
 
+  storyId   String   @db.ObjectId
+  story     Story    @relation(fields: [storyId], references: [id])
   createdAt DateTime @default(now())
 }
 
@@ -214,21 +219,47 @@ model Brain {
   @@unique([userId, storyId])
 }
 
-model Quiz {
+model QuizRecord {
+  // user answer record
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  userId  String @db.ObjectId
   storyId String @db.ObjectId
 
-  quizType   QuizType
-  totalScore Int
-  score      Int
-  date       DateTime @default(now())
+  quizType QuizType
 
-  user  User  @relation(fields: [userId], references: [id])
-  story Story @relation(fields: [storyId], references: [id])
+  maxScore           Int
+  score              Int
+  totalQuestion      Int
+  totalCorrectAnswer Int @default(0)
 
-  @@unique([userId, storyId])
+  createAt   DateTime @default(now())
+  lastUpdate DateTime @default(now())
+
+  userId String? @db.ObjectId
+
+  user                 User?    @relation(fields: [userId], references: [id])
+  quizQuestionIdRemain String[] @db.ObjectId
+  grades               Grade[]
+
+  @@index([createAt])
+  @@index([storyId, userId])
+  @@index([userId])
+}
+
+model Grade {
+  id                    String              @id @default(auto()) @map("_id") @db.ObjectId
+  userId                String?             @db.ObjectId
+  userResponseSubpartId String              @db.ObjectId
+  UserResponseSubpart   UserResponseSubpart @relation(fields: [userResponseSubpartId], references: [id])
+  quizQuestionId        String              @db.ObjectId
+  totalScore            Int
+  maxScore              Int
+  quizRecord            QuizRecord?         @relation(fields: [quizRecordId], references: [id])
+  quizRecordId          String?             @db.ObjectId
+
+  @@unique([userResponseSubpartId])
+  @@index([quizRecordId])
+  @@index([userId, quizQuestionId])
 }
 
 model Bookmark {
@@ -286,23 +317,73 @@ model BlockedUser {
 }
 
 model QuizQuestion {
-  id              String       @id @default(auto()) @map("_id") @db.ObjectId
+  // one of the story's quiz questions
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
   storyId         String       @db.ObjectId
+  Story           Story        @relation(fields: [storyId], references: [id])
+  subheader       String
   contentCategory String
   questionType    QuestionType
-  questionName    String
-  totalScore      Int
-  subparts        Subpart[]
+  maxScore        Int
+  subpartId       String       @db.ObjectId
+  deleted         Boolean      @default(false)
+
+  @@unique([subpartId])
+  @@index([storyId, deleted])
+  @@index([storyId])
 }
 
-model Subpart {
-  id             String        @id @default(auto()) @map("_id") @db.ObjectId
-  question       String
-  options        String[]
-  correctAnswer  String[]
-  explanation    String
-  QuizQuestion   QuizQuestion? @relation(fields: [quizQuestionId], references: [id])
-  quizQuestionId String?       @db.ObjectId
+model MultipleChoiceSubpart {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  question      String
+  options       String[]
+  correctAnswer Int
+  explanations  String[]
+}
+
+model TrueFalseSubpart {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  questions     String[]
+  correctAnswer Boolean[]
+  explanations  String[]
+}
+
+model DirectMatchingSubpart {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  question      String
+  options       String[]
+  categories    String[]
+  correctAnswer Int[]
+  explanations  String[]
+}
+
+model ComplexMatchingSubpart {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  question      String
+  categories    String[]
+  options       String[]
+  correctAnswer String[]
+  explanations  String[]
+}
+
+model SelectAllSubpart {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  question      String
+  options       String[]
+  correctAnswer Boolean[]
+  explanations  String[]
+}
+
+model UserResponseSubpart {
+  id             String       @id @default(auto()) @map("_id") @db.ObjectId
+  questionType   QuestionType
+  userId         String?      @db.ObjectId
+  quizQuestionId String       @db.ObjectId
+  userAns        String[]
+  grade          Grade?
+
+  @@index([userId, quizQuestionId])
 }
 
 model UserResponse {
@@ -320,6 +401,17 @@ model ResponseSubpart {
   subpartUserAns String[]
   UserResponse   UserResponse? @relation(fields: [userResponseId], references: [id])
   userResponseId String?       @db.ObjectId
+}
+
+model QuizQuestionRecord {
+  id             String     @id @default(auto()) @map("_id") @db.ObjectId
+  quizQuestionId String     @db.ObjectId
+  staffId        String     @db.ObjectId
+  updateType     UpdateType
+  createAt       DateTime   @default(now())
+
+  @@index([quizQuestionId])
+  @@index([createAt])
 }
 
 model Comment {
@@ -378,7 +470,7 @@ model StaffPickRecord {
 
   createdAt DateTime @default(now())
 
-  updateType StaffPickRecordType
+  updateType UpdateType
 
   description String?
 

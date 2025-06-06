@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 export default function SideBar() {
   const [showSideBar, setShowSideBar] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     const handler = (event: Event) => {
       if (menuRef.current != null) {

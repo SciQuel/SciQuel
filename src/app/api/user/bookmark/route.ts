@@ -60,6 +60,7 @@ export async function POST(req: NextRequest) {
   let result;
   try {
     result = requestSchema.safeParse(await req.json());
+    console.log(result);
     if (!result.success) {
       return NextResponse.json(result.error, { status: 400 });
     }
@@ -106,6 +107,7 @@ export async function POST(req: NextRequest) {
         { status: 500 },
       );
     }
+    console.log(res);
 
     return NextResponse.json(res, { status: 200 });
   } catch (e) {

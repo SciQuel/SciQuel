@@ -64,6 +64,21 @@ const nextConfig = {
         hostname: "storage.googleapis.com",
         port: "",
       },
+      {
+        protocol: "https",
+        hostname: "www.esa.int",
+        port: "",
+      },
+      {
+        protocol: "https",
+        hostname: "upload.wikimedia.org",
+        port: "",
+      },
+      {
+        protocol: "https",
+        hostname: "news.artnet.com",
+        port: "",
+      },
     ],
   },
 };

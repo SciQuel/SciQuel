@@ -14,6 +14,7 @@ interface Props {
   thumbnailUrl: string;
   mini: boolean;
   preferHorizontal?: boolean;
+  hoverEffect?: boolean;
 }
 
 export default function ArticleCard({
@@ -26,19 +27,24 @@ export default function ArticleCard({
   thumbnailUrl,
   mini = false,
   preferHorizontal = false,
+  hoverEffect = true
+
 }: Props) {
+
+  //hover:scale-[1.02]
   return (
     <div className="w-full">
       <Link className="align-middle" href={href ?? "#"}>
         <div
           className={clsx(
-            `flex h-full w-full cursor-pointer overflow-clip rounded-lg transition hover:scale-[1.02]`,
+            `flex h-full w-full cursor-pointer overflow-clip rounded-lg transition `,
             {
               "border border-sciquelCardBorder bg-sciquelCardBg": !(
                 mini && preferHorizontal
               ),
               "ml-auto w-[175px]": mini && preferHorizontal,
             },
+            hoverEffect && "hover:scale-[1.02]",
             mini && !preferHorizontal
               ? "min-h-[270px] max-w-xs xs:min-w-[265px]"
               : "xs:min-w-[300px]",
@@ -53,8 +59,8 @@ export default function ArticleCard({
                   ? "w-full"
                   : "grow  p-3"
                 : preferHorizontal
-                ? "p-3 sm:w-2/3"
-                : "grow  p-3",
+                  ? "p-3 sm:w-2/3"
+                  : "grow  p-3",
             )}
           >
             {/* Article Card Header */}
@@ -117,8 +123,8 @@ export default function ArticleCard({
                   ? "hidden"
                   : "h-24"
                 : preferHorizontal
-                ? "h-44 w-full sm:h-full sm:w-1/3"
-                : "h-44",
+                  ? "h-44 w-full sm:h-full sm:w-1/3"
+                  : "h-44",
             )}
           >
             <Image
