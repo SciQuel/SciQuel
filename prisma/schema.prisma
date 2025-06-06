@@ -106,6 +106,7 @@ model Story {
   comments        Comment[]
   staffPick       StaffPick?
   StaffPickRecord StaffPickRecord[]
+  PageView        PageView[]
 }
 
 model StoryContribution {
@@ -197,10 +198,14 @@ model StoryContent {
 model PageView {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  userId  String @db.ObjectId
-  storyId String @db.ObjectId
-
+  userId    String?  @db.ObjectId
+  storyId   String   @db.ObjectId
+  story     Story    @relation(fields: [storyId], references: [id])
   createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([storyId])
+  @@index([userId, storyId, createdAt])
 }
 
 model Brain {
