@@ -98,7 +98,8 @@ export default function TopicIcon({ type }: Props) {
     MedicineAct: <MedicineAct className="h-[2rem] w-auto" />,
     PhysicsAct: <PhysicsAct className="h-[2rem] w-auto" />,
     PsychologyAct: <PsychologyAct className="h-[2rem] w-auto" />,
-    SciQuelMattersAct: <SciQuelMattersAct className="h-2[rem] w-auto" />,
+    SciQuelMattersAct: <SciQuelMattersAct className="h-[2rem] w-auto" />,
+    SciQuelMatters: <SciQuelMatters className='h-[2rem] w-auto' />,
     SociologyAct: <SociologyAct className="h-[2rem] w-auto" />,
     TechnologyAct: <TechnologyAct className="h-[2rem] w-auto" />,
   };
