@@ -69,6 +69,11 @@ export default function Topic() {
       Hover: <TopicIcon type="PsychologyAct" />,
     },
     {
+      Topic: "SciQuel Matters",
+      Image: <TopicIcon type="SciQuelMatters" />,
+      Hover: <TopicIcon type="SciQuelMatters" />,
+    },
+    {
       Topic: "Sociology",
       Image: <TopicIcon type="Sociology" />,
       Hover: <TopicIcon type="SociologyAct" />,

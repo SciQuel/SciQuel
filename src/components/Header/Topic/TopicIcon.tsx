@@ -26,6 +26,8 @@ import PhysicsAct from "./TopicIcons/Physics_Active.svg";
 import Physics from "./TopicIcons/Physics_Inactive.svg";
 import PsychologyAct from "./TopicIcons/Psychology_Active.svg";
 import Psychology from "./TopicIcons/Psychology_Inactive.svg";
+import SciQuelMattersAct from "./TopicIcons/SqiQuelMatters_Active.svg";
+import SciQuelMatters from "./TopicIcons/SqiQuelMatters.svg";
 import SociologyAct from "./TopicIcons/Sociology_Active.svg";
 import Sociology from "./TopicIcons/Sociology_Inactive.svg";
 import TechnologyAct from "./TopicIcons/Technology_Active.svg";
@@ -33,36 +35,37 @@ import Technology from "./TopicIcons/Technology_Inactive.svg";
 
 interface Props {
   type:
-    | "Astronomy"
-    | "Biology"
-    | "Chemical"
-    | "Chemistry"
-    | "ComputerS"
-    | "Electrical"
-    | "Environmental"
-    | "Geology"
-    | "Math"
-    | "Mechanical"
-    | "Medicine"
-    | "Physics"
-    | "Psychology"
-    | "Sociology"
-    | "Technology"
-    | "AstronomyAct"
-    | "BiologyAct"
-    | "ChemicalAct"
-    | "ChemistryAct"
-    | "ComputerSAct"
-    | "ElectricalAct"
-    | "EnvironmentalAct"
-    | "GeologyAct"
-    | "MathAct"
-    | "MechanicalAct"
-    | "MedicineAct"
-    | "PhysicsAct"
-    | "PsychologyAct"
-    | "SociologyAct"
-    | "TechnologyAct";
+  | "Astronomy"
+  | "Biology"
+  | "Chemical"
+  | "Chemistry"
+  | "ComputerS"
+  | "Electrical"
+  | "Environmental"
+  | "Geology"
+  | "Math"
+  | "Mechanical"
+  | "Medicine"
+  | "Physics"
+  | "Psychology"
+  | "Sociology"
+  | "Technology"
+  | "AstronomyAct"
+  | "BiologyAct"
+  | "ChemicalAct"
+  | "ChemistryAct"
+  | "ComputerSAct"
+  | "ElectricalAct"
+  | "EnvironmentalAct"
+  | "GeologyAct"
+  | "MathAct"
+  | "MechanicalAct"
+  | "MedicineAct"
+  | "PhysicsAct"
+  | "PsychologyAct"
+  | "SciQuelMatters"
+  | "SociologyAct"
+  | "TechnologyAct";
 }
 
 export default function TopicIcon({ type }: Props) {
@@ -95,6 +98,7 @@ export default function TopicIcon({ type }: Props) {
     MedicineAct: <MedicineAct className="h-[2rem] w-auto" />,
     PhysicsAct: <PhysicsAct className="h-[2rem] w-auto" />,
     PsychologyAct: <PsychologyAct className="h-[2rem] w-auto" />,
+    SciQuelMattersAct: <SciQuelMattersAct className="h-2[rem] w-auto" />,
     SociologyAct: <SociologyAct className="h-[2rem] w-auto" />,
     TechnologyAct: <TechnologyAct className="h-[2rem] w-auto" />,
   };
