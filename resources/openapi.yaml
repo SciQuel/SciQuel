@@ -776,7 +776,7 @@ components:
         - MEDICINE
         - PHYSICS
         - PSYCHOLOGY
-        - STORY_TOPIC
+        - SCIQUEL_MATTERS
         - SOCIOLOGY
         - TECHNOLOGY
     StoryContribution:

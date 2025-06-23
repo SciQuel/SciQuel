@@ -34,6 +34,7 @@ const iconMap: Record<StoryTopic, JSX.Element> = {
   MEDICINE: <MedicineIcon className="w-6" />,
   PSYCHOLOGY: <PsyIcon className="w-6" />,
   TECHNOLOGY: <TechIcon className="w-6" />,
+  // SCIQUEL_MATTERS: <></>, 
   ASTRONOMY: <></>, // wait for the design team
   BIOLOGY: <></>, // wait for the design team
   GEOLOGY: <></>, // wait for the design team
