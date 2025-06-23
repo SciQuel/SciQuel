@@ -128,7 +128,7 @@ export default function OneMatch({
                 }}
               >
                 <div
-                  className="image-holder flex h-full w-[35%] max-w-[50px] items-center justify-center rounded-bl-[4px] rounded-tl-[4px] bg-[#e6e6fa] px-2 transition duration-300 ease-in-out"
+                  className="image-holder flex h-full w-[35%] max-w-[50px] items-center justify-center rounded-bl-[4px] rounded-tl-[4px] border-r-[1px]  bg-[#e6e6fa] px-2 transition duration-300 ease-in-out"
                   style={{
                     backgroundColor:
                       dirresult[index] === true
@@ -136,6 +136,12 @@ export default function OneMatch({
                         : dirresult[index] === false
                         ? "#ecaaaa"
                         : "#e6e6fa",
+                    borderRightColor:
+                      dirresult[index] === true
+                        ? "#437E64"
+                        : dirresult[index] === false
+                        ? "#B85D5D"
+                        : "",
                   }}
                 >
                   {dirresult[index] === true ? (

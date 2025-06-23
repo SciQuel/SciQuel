@@ -119,7 +119,7 @@ export default function MultipleMatch({
                         ? "#A3C9A8"
                         : trueResult[colIndex] === 0
                         ? "#E79595"
-                        : "#F2C705",
+                        : "#f2d49b",
                   }}
                 >
                   {fullCat}
@@ -213,18 +213,17 @@ export default function MultipleMatch({
                     return (
                       <div
                         key={"item" + fullOp + result.length}
-                        className="multiple-match-answer-choice-holder min-w-100 relative box-border flex  w-full cursor-move items-center justify-end break-words rounded-[4px] border border-black bg-white text-center text-[18px] transition duration-300 ease-in-out "
+                        className="multiple-match-answer-choice-holder min-w-100 relative box-border flex w-full  cursor-move items-center justify-end break-words rounded-[4px] border border-black  bg-white text-center text-[18px] transition duration-300 ease-in-out "
                         data-draggable="item"
                         style={{
                           backgroundColor:
                             responed === undefined
                               ? "white"
-                              : trueResult[colIndex] ===
-                                responed?.correct_option_counts[colIndex]
+                              : result[op] === true
                               ? "#A3C9A8"
-                              : trueResult[colIndex] === 0
+                              : result[op] === false
                               ? "#E79595"
-                              : "#F2C705",
+                              : "",
                         }}
                         draggable={!disable}
                         onDragStart={(e) => {
@@ -276,24 +275,27 @@ export default function MultipleMatch({
                         }}
                         onDragEnd={(e) => {
                           e.preventDefault();
-                          // currDragRef.current = null;
-                          // currOpRef.current = null;
-                          // currColRef.current = null;
                         }}
                       >
                         {/* correctness icon */}
                         <div
-                          className="image-holder absolute inset-0 flex h-full w-[35%] max-w-[50px] grow items-center justify-center rounded-bl-[4px] rounded-tl-[4px] bg-[#e6e6fa] px-2 transition duration-300 ease-in-out"
+                          className="image-holder absolute inset-0 flex h-full w-[35%] max-w-[50px] grow items-center justify-center rounded-bl-[4px] rounded-tl-[4px] border-r-[1px] bg-[#e6e6fa] px-2 transition duration-300 ease-in-out"
                           style={{
                             backgroundColor:
                               responed === undefined
-                                ? "white"
-                                : trueResult[colIndex] ===
-                                  responed?.correct_option_counts[colIndex]
-                                ? "#A3C9A8"
-                                : trueResult[colIndex] === 0
-                                ? "#E79595"
-                                : "#CE821A",
+                                ? "#e6e6fa"
+                                : result[op] === true
+                                ? "#B5D4B9"
+                                : result[op] === false
+                                ? "#ecaaaa"
+                                : "#f5ddae",
+
+                            borderRightColor:
+                              result[op] === true
+                                ? "#437E64"
+                                : result[op] === false
+                                ? "#B85D5D"
+                                : "",
                           }}
                         >
                           {result[op] === true ? (
@@ -335,7 +337,7 @@ export default function MultipleMatch({
                           )}
                         </div>
                         <div
-                          className="match-text align-self-center justify-right md-qz:inline-block sm-mm:w-[65%] xsm-mm:w-[73%] xsm-mm:text-[16px] m-auto flex w-[72%] max-w-full items-center justify-end justify-self-end hyphens-auto break-words p-3"
+                          className="match-text align-self-center justify-right md-qz:inline-block sm-mm:w-[65%] xsm-mm:w-[73%] xsm-mm:text-[16px] m-auto flex w-[100%] max-w-full items-center justify-center justify-self-end hyphens-auto break-words p-3"
                           data-draggable="answer"
                         >
                           {fullOp}
@@ -389,7 +391,15 @@ export default function MultipleMatch({
                     console.log("hello5");
                   }}
                 >
-                  <div className="image-holder absolute inset-0 flex h-full w-[35%] max-w-[50px] grow items-center justify-center rounded-bl-[4px] rounded-tl-[4px] bg-[#e6e6fa] px-2 transition duration-300 ease-in-out">
+                  <div
+                    className="image-holder absolute inset-0 flex h-full w-[35%] max-w-[50px] grow items-center justify-center rounded-bl-[4px] rounded-tl-[4px] border-r-[1px] bg-[#e6e6fa] px-2 transition duration-300 ease-in-out"
+                    style={{
+                      backgroundColor:
+                        responed === undefined ? "#e6e6fa" : "#ecaaaa",
+
+                      borderRightColor: responed === undefined ? "" : "#B85D5D",
+                    }}
+                  >
                     {responed != null ? (
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -414,8 +424,12 @@ export default function MultipleMatch({
                     )}
                   </div>
                   <div
-                    className="match-text align-self-center justify-right md-qz:inline-block sm-mm:w-[65%] xsm-mm:w-[73%] xsm-mm:text-[16px] m-auto flex w-[72%] max-w-full items-center justify-end justify-self-end hyphens-auto break-words p-3"
+                    className="match-text align-self-center justify-right md-qz:inline-block sm-mm:w-[65%] xsm-mm:w-[73%] xsm-mm:text-[16px] m-auto flex w-[100%] max-w-full items-center justify-center justify-self-end hyphens-auto break-words p-3"
                     data-draggable="answer"
+                    style={{
+                      backgroundColor:
+                        responed === undefined ? "white" : "#E79595",
+                    }}
                   >
                     {fullItem}
                   </div>
@@ -442,7 +456,7 @@ export default function MultipleMatch({
                       ? "linear-gradient(to right,#A3C9A8 1%,white 1%)"
                       : trueResult[index] === 0
                       ? "linear-gradient(to right,#E79595 1%,white 1%)"
-                      : "linear-gradient(to right,#F2C705 1%,white 1%)",
+                      : "linear-gradient(to right,#f2d49b 1%,white 1%)",
                 }}
               >
                 <p className="p-4 text-left" style={{ color: "black" }}>

@@ -2,8 +2,21 @@ interface Props {
   current: string;
   numOfQues: number;
   answered: boolean[];
+  setCurrent: Function;
+  progress: string;
+  gap: number;
+  setProgress: Function;
 }
-export default function ProgressBar({ current, numOfQues, answered }: Props) {
+export default function ProgressBar({
+  current,
+  numOfQues,
+  answered,
+  setCurrent,
+  progress,
+  gap,
+  setProgress,
+}: Props) {
+  const nextQes = answered.filter(Boolean).length + 1;
   return (
     <div className="position-relative mt-5 ">
       <div className="progress h-2 bg-[#ACC6BA]">
@@ -21,7 +34,7 @@ export default function ProgressBar({ current, numOfQues, answered }: Props) {
         <>
           {[...Array(numOfQues)].map((_, key) => (
             <li key={key} style={{ listStyle: "none" }}>
-              <div
+              <button
                 className="absolute -translate-x-2 -translate-y-2 rounded-full"
                 style={{
                   width: "0.75em",
@@ -30,7 +43,22 @@ export default function ProgressBar({ current, numOfQues, answered }: Props) {
                     answered[key] === true ? "#5F8E79" : "#ACC6BA",
                   zIndex: "2",
                 }}
-              ></div>
+                onClick={
+                  Number(key + 1) == nextQes || answered[key] === true
+                    ? () => {
+                        setCurrent(key);
+                        setProgress(
+                          Math.round((Number(key + 0.5) / numOfQues) * 100),
+                        );
+                        console.log(
+                          `Progress set to ${Math.round(
+                            (Number(key + 0.5) / numOfQues) * 100,
+                          )}%`,
+                        );
+                      }
+                    : () => {}
+                }
+              ></button>
 
               <div
                 className="absolute  -translate-x-3 -translate-y-3 rounded-full"

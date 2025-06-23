@@ -47,26 +47,33 @@ export default function Quiz({ Quizzes }: Props) {
   }
 
   const [selected, setSelected] = useState([] as answerInfo[]);
-  {
-    /*  Previous,Next,submit buttons */
-  }
-
+  /**
+   * Set the answerInfo for the current question.
+   *
+   * @param answer The answer info to set, which includes the quiz ID and the answer.
+   */
   const getAnswerInfo = (answer: answerInfo) => {
     console.log("Answer Info ", answer);
     setSelected([(selected[currentQuestion] = answer)]);
     setSelected([...selected]);
   };
 
+  /** Decrements the current question index and updates the progress bar. */
   const handlePrevious = () => {
-    const prevQues = currentQuestion - 1;
-    prevQues >= 0 && setCurrentQuestion(prevQues);
+    const prvQues = currentQuestion - 1;
+    prvQues >= 0 && setCurrentQuestion(prvQues);
+    setProg(String(Number(prog) - Number(gap)));
   };
 
   const handleNext = () => {
     const nextQues = currentQuestion + 1;
-    nextQues < numQues && setCurrentQuestion(nextQues);
-
+    setCurrentQuestion(nextQues);
+    // nextQues < numQues &&
     setProg(String(Number(prog) + Number(gap)));
+  };
+  const handleReview = () => {
+    setCurrentQuestion(0);
+    setProg("0%");
   };
   // function removeNullEmptyUndefined(arr: (number | null)[][]) {
   //   return arr.map((subArray) =>
@@ -75,7 +82,6 @@ export default function Quiz({ Quizzes }: Props) {
   // }
   async function submitAnswer() {
     const selectedAnswer = selected[currentQuestion];
-
     try {
       const response = await axios.post(
         `${env.NEXT_PUBLIC_SITE_URL}/api/grade`,
@@ -119,6 +125,8 @@ export default function Quiz({ Quizzes }: Props) {
       }),
     ]);
     setRespon([...respon]);
+    setAnswered([(answered[currentQuestion] = true)]);
+    setAnswered([...answered]);
   };
 
   return (
@@ -128,13 +136,23 @@ export default function Quiz({ Quizzes }: Props) {
           How much do you know already know about microglia?
         </h2>
       </div>
-      <ProgBar current={prog} numOfQues={numQues} answered={answered}></ProgBar>
+      <ProgBar
+        current={prog}
+        numOfQues={numQues}
+        answered={answered}
+        setCurrent={setCurrentQuestion}
+        progress={prog}
+        gap={gap}
+        setProgress={setProg}
+      ></ProgBar>
       <div className="quiz-content md-qz:self-center mt-6 flex h-full w-full flex-col items-center px-11 py-3">
         <div className="question-container md-qz:flex md-qz:flex-col md-qz:p-0 relative w-full px-5">
           <div className="absolute left-[-4%] top-[1%] w-[7%]">
-            <p>
-              {currentQuestion + 1} of {numQues}
-            </p>
+            {currentQuestion >= numQues ? null : (
+              <p>
+                {currentQuestion + 1} of {numQues}
+              </p>
+            )}
           </div>
 
           {Quizzes.quizzes.map((q, index) => {
@@ -213,6 +231,7 @@ export default function Quiz({ Quizzes }: Props) {
                 return <p>{q.questionType}</p>;
             }
           })}
+          {currentQuestion == numQues ? <Result></Result> : null}
         </div>
       </div>
       {/* Previous submit and next button functionality  */}
@@ -221,8 +240,7 @@ export default function Quiz({ Quizzes }: Props) {
           className="border-dark flex w-[15%] rounded-lg border bg-white py-2 text-black"
           type="button"
           style={{
-            visibility:
-              submitButton[currentQuestion] === true ? "visible" : "hidden",
+            visibility: currentQuestion != 0 ? "visible" : "hidden",
             display: currentQuestion + 1 > numQues ? "none" : "block",
           }}
           onClick={handlePrevious}
@@ -254,8 +272,11 @@ export default function Quiz({ Quizzes }: Props) {
           }
         >
           <div className="m-auto flex">
-            {submitButton[currentQuestion] === true ? "Next" : "Submit"}
-            {submitButton[currentQuestion] === true ? (
+            {submitButton[currentQuestion] === true && answered[currentQuestion]
+              ? "Next"
+              : "Submit"}
+            {submitButton[currentQuestion] === true &&
+            answered[currentQuestion] ? (
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
