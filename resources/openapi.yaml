@@ -776,6 +776,7 @@ components:
         - MEDICINE
         - PHYSICS
         - PSYCHOLOGY
+        - STORY_TOPIC
         - SOCIOLOGY
         - TECHNOLOGY
     StoryContribution:

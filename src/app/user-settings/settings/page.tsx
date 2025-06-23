@@ -56,9 +56,8 @@ function FontSlider() {
         htmlFor="font-range"
         className={`absolute text-base font-thin`}
         style={{
-          transform: `translateX(${
-            (fontSize - 26) * 11.8 + 100
-          }px) translateY(-24px)`,
+          transform: `translateX(${(fontSize - 26) * 11.8 + 100
+            }px) translateY(-24px)`,
         }}
       >
         {fontSize}
