@@ -18,6 +18,7 @@ const topicTagColors: Record<StoryTopic, string> = {
   MEDICINE: "#7282AC",
   PHYSICS: "#AB95B3",
   PSYCHOLOGY: "#624563",
+  SCIQUEL_MATTERS: "#1C4D52",
   SOCIOLOGY: "#CC6666",
   TECHNOLOGY: "#4E413F",
 } as const;
