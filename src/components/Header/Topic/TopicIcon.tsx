@@ -28,6 +28,8 @@ import PsychologyAct from "./TopicIcons/Psychology_Active.svg";
 import Psychology from "./TopicIcons/Psychology_Inactive.svg";
 import SociologyAct from "./TopicIcons/Sociology_Active.svg";
 import Sociology from "./TopicIcons/Sociology_Inactive.svg";
+import Sciquel from "./TopicIcons/icon.png";
+import SciquelAct from "./TopicIcons/icon.png";
 import TechnologyAct from "./TopicIcons/Technology_Active.svg";
 import Technology from "./TopicIcons/Technology_Inactive.svg";
 
@@ -62,7 +64,9 @@ interface Props {
     | "PhysicsAct"
     | "PsychologyAct"
     | "SociologyAct"
-    | "TechnologyAct";
+    | "TechnologyAct"
+    | "Sciquel"
+    | "SciquelAct";
 }
 
 export default function TopicIcon({ type }: Props) {
@@ -81,6 +85,8 @@ export default function TopicIcon({ type }: Props) {
     Physics: <Physics className="h-[2rem] w-auto" />,
     Psychology: <Psychology className="h-[2rem] w-auto" />,
     Sociology: <Sociology className="h-[2rem] w-auto" />,
+    // Sciquel: <Sciquel className="h-[2rem] w-auto" />,
+    Sciquel: <img src={Sciquel.src} alt="SciQuel" className="h-[2rem] w-auto" />,
     Technology: <Technology className="h-[2rem] w-auto" />,
     AstronomyAct: <AstronomyAct className="h-[2rem] w-auto" />,
     BiologyAct: <BiologyAct className="h-[2rem] w-auto" />,
@@ -96,6 +102,8 @@ export default function TopicIcon({ type }: Props) {
     PhysicsAct: <PhysicsAct className="h-[2rem] w-auto" />,
     PsychologyAct: <PsychologyAct className="h-[2rem] w-auto" />,
     SociologyAct: <SociologyAct className="h-[2rem] w-auto" />,
+    // SciquelAct: <SciquelAct className="h-[2rem] w-auto" />,
+    SciquelAct: <img src={SciquelAct.src} alt="SciQuel Active" className="h-[2rem] w-auto" />,
     TechnologyAct: <TechnologyAct className="h-[2rem] w-auto" />,
   };
   return iconMap[type];
