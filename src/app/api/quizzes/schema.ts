@@ -285,18 +285,10 @@ export const multipleChoiceSubpartSchema = z
       })
       .nonnegative({ message: "value must be a nonnegative" })
       .int({ message: "value must be a integer" }),
-    explanations: z.array(
-      z.string({
-        invalid_type_error: "value in explanations must be a string",
-      }),
-      {
-        required_error: "explanations required in body",
-        invalid_type_error: "explanations must be a string array",
-      },
-    ),
-  })
-  .refine(({ options, explanations }) => isAllEqual([explanations, options]), {
-    message: "The lengths array of explanations and options must be all equal",
+    explanations: z.string({
+      invalid_type_error: "value in explanations must be a string",
+      required_error: "explanations required in body",
+    }),
   })
   .refine(
     ({ correct_answer, options }) => !isOutOfBound([correct_answer], options),

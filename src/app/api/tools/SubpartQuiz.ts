@@ -6,7 +6,17 @@ interface QuizSubpartParam {
   subpartId: string;
 }
 
-interface QuizSubpartI {
+interface QuizSubpartMCI {
+  correctAnswer: number | string[] | number[] | boolean[];
+  contentCategory: string[];
+  question?: string;
+  categories?: string[];
+  options?: string[];
+  explanations?: string;
+  questions?: string[];
+}
+
+interface QuizSubpartNotMCI {
   correctAnswer: number | string[] | number[] | boolean[];
   contentCategory: string[];
   question?: string;
@@ -15,6 +25,8 @@ interface QuizSubpartI {
   explanations?: string[];
   questions?: string[];
 }
+
+type QuizSubpartI = QuizSubpartMCI | QuizSubpartNotMCI;
 //create look up object to get quiz subpart
 const GET_QUIZ_SUBPART: {
   GET_SUBPART: {

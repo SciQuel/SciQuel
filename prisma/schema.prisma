@@ -345,7 +345,7 @@ model MultipleChoiceSubpart {
   contentCategory String[]
   options         String[]
   correctAnswer   Int
-  explanations    String[]
+  explanations    String
 }
 
 model TrueFalseSubpart {
