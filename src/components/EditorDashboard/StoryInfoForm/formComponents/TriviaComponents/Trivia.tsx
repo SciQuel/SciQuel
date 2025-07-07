@@ -680,7 +680,7 @@ async function submitMultipleChoice(question: Question) {
       correct_answer: choices?.findIndex((choice) => choice.isCorrect),
       //explanations for each choice
       explanations: choices?.map(
-        (choice, index) => "Explains for choice " + index,
+        () => question.explanation || "No explanation provided",
       ),
     },
   });
@@ -834,7 +834,7 @@ async function submitComplexMatching(question: Question) {
  * @param question
  */
 async function submitTrueFalse(question: Question) {
-  /** Missing content_category, explainations The should be an explain for each option */
+  /** Missing content_category */
   const { trueOrFalseQuestions, type } = question;
   const res = await axios.post(urlQuiz, {
     story_id: storyIdTest,
@@ -847,7 +847,7 @@ async function submitTrueFalse(question: Question) {
       ),
       questions: trueOrFalseQuestions?.map((value) => value.content),
       explanations: trueOrFalseQuestions?.map(
-        (value, index) => "This is an explanation for question " + index,
+        (tf) => tf.explanation || "No explanation provided",
       ),
       correct_answers: trueOrFalseQuestions?.map((value) => value.isTrue),
     },
