@@ -12,18 +12,11 @@ export async function generateBasicMarkdown(content: string) {
     .use(remarkRehype)
     .use(rehypeSanitize, {
       ...defaultSchema,
-      tagNames: [
-        "p",
-        "strong", 
-        "em",
-        "u",
-        "a",
-        "br"
-      ],
+      tagNames: ["p", "strong", "em", "u", "a", "br"],
       attributes: {
         ...defaultSchema.attributes,
-        a: ["href"]
-      }
+        a: ["href"],
+      },
     })
     .use(rehypeReact, {
       Fragment: production.Fragment,
@@ -43,7 +36,9 @@ export async function generateBasicMarkdown(content: string) {
           <u {...props}>{props.children}</u>
         ),
         a: (props: HTMLProps<HTMLAnchorElement>) => (
-          <a {...props} href={props.href}>{props.children}</a>
+          <a {...props} href={props.href}>
+            {props.children}
+          </a>
         ),
       },
     })
