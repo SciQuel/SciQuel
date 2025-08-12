@@ -9,6 +9,7 @@ interface Props {
   responed: resInfo;
   disable: boolean;
   current: string;
+  reset: boolean[];
 }
 export default function MultipleChoice({
   question,
@@ -18,6 +19,7 @@ export default function MultipleChoice({
   responed,
   disable,
   current,
+  reset,
 }: Props) {
   const [mtAnswer, setMTAnswer] = useState(null as number | null);
 
@@ -26,6 +28,12 @@ export default function MultipleChoice({
       answers({ quizId: quizQuestionId, answer: mtAnswer });
     }
   }, [mtAnswer, show]);
+
+  useEffect(() => {
+    if (reset.length === 0) {
+      setMTAnswer(null);
+    }
+  }, [reset]);
 
   const handler = (index: number) => {
     setMTAnswer(index);

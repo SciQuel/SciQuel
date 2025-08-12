@@ -1,41 +1,24 @@
-import { type QuizHistory } from "@/app/user-settings/actions/getQuizHistory";
-import env from "@/lib/env";
-import axios from "axios";
-import { useEffect } from "react";
+import React from "react";
 
-export default function Results() {
-  async function getQuizRecord(): Promise<QuizHistory | null> {
-    try {
-      const res = await fetch(`${env.NEXT_PUBLIC_SITE_URL}/api/quiz-record`, {
-        next: { revalidate: 60 },
-      });
-      console.log("res", res);
-      console.log("getQuizRecord", res);
+interface Props {
+  resultInfo: {
+    results: { correct: boolean[]; explanation: string }[];
+    correct_option_counts: number[] | null;
+    score: number;
+  }[];
+}
 
-      if (!res.ok) {
-        throw new Error("Failed to fetch data");
-      }
+export default function Results({ resultInfo }: Props) {
+  let score = 0;
+  resultInfo.forEach((element) => {
+    score += element.score;
+  });
 
-      const data = await res.json();
-
-      if (!data) {
-        return null;
-      }
-
-      return data as QuizHistory;
-    } catch (error) {
-      console.error("Error fetching quiz record:", error);
-      return null;
-    }
-  }
-  useEffect(() => {
-    getQuizRecord();
-  }, []);
   return (
     <div className="text-black">
       <p className="mb-6 text-center ">
         <strong className="font-quicksand mb-1 text-2xl font-bold">
-          Your score:
+          Your score: {score}/{resultInfo.length * 10}
         </strong>
       </p>
     </div>

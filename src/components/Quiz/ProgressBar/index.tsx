@@ -2,18 +2,16 @@ interface Props {
   current: string;
   numOfQues: number;
   answered: boolean[];
-  setCurrent: Function;
+  setCurrent: (index: number) => void;
   progress: string;
   gap: number;
-  setProgress: Function;
+  setProgress: (progress: number) => void;
 }
 export default function ProgressBar({
   current,
   numOfQues,
   answered,
   setCurrent,
-  progress,
-  gap,
   setProgress,
 }: Props) {
   const nextQes = answered.filter(Boolean).length + 1;
@@ -32,7 +30,7 @@ export default function ProgressBar({
 
       <div className="flex justify-around bg-[#F8F8FF]">
         <>
-          {[...Array(numOfQues)].map((_, key) => (
+          {Array.from({ length: numOfQues }).map((_, key) => (
             <li key={key} style={{ listStyle: "none" }}>
               <button
                 className="absolute -translate-x-2 -translate-y-2 rounded-full"
@@ -56,7 +54,7 @@ export default function ProgressBar({
                           )}%`,
                         );
                       }
-                    : () => {}
+                    : undefined
                 }
               ></button>
 

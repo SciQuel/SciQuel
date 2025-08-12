@@ -4,12 +4,13 @@ import { type resInfo } from "../index";
 interface Props {
   questions: string[];
   show: boolean;
-  answers: Function;
+  answers: (params: { quizId: string; answer: boolean[] }) => void;
   quizQuestionId: string;
   responed: resInfo;
   answer: number | boolean | [number];
   disable: boolean;
-  current: number;
+  _current: number;
+  reset: boolean[];
 }
 export default function TrueFalse({
   questions,
@@ -18,7 +19,8 @@ export default function TrueFalse({
   quizQuestionId,
   responed,
   disable,
-  current,
+  _current,
+  reset,
 }: Props) {
   const [numIndex, setNumIndex] = useState([] as string[]);
   const [tfAnswer, setTFAnswer] = useState([] as boolean[]);
@@ -26,6 +28,12 @@ export default function TrueFalse({
   useEffect(() => {
     answers({ quizId: quizQuestionId, answer: tfAnswer });
   }, [tfAnswer]);
+  useEffect(() => {
+    if (reset.length === 0) {
+      setNumIndex([]);
+      setTFAnswer([]);
+    }
+  }, [reset]);
   const handler = (ans: boolean, idx: number, t: string) => {
     // console.log("ans ", t);
     setNumIndex([(numIndex[idx] = t)]);
@@ -60,20 +68,20 @@ export default function TrueFalse({
               <p>{statement}</p>
             </div>
             <button
-              key={index + "T"}
+              key={String(index) + "T"}
               className="select-box-true flex aspect-[1/1] basis-[10%] cursor-pointer items-center justify-between rounded-md bg-gray-200 bg-[length:65%] bg-center bg-no-repeat transition duration-300 hover:bg-gray-300 "
-              onClick={() => handler(true, index, index + "T")}
+              onClick={() => handler(true, index, String(index) + "T")}
               disabled={disable}
               style={{
                 pointerEvents: disable ? "none" : "auto",
 
                 backgroundColor:
                   responed &&
-                  index + "T" == numIndex[index] &&
+                  String(index) + "T" == numIndex[index] &&
                   responed.results[index]?.correct[0] === true
                     ? "#A3C9A8"
                     : responed &&
-                      index + "T" == numIndex[index] &&
+                      String(index) + "T" == numIndex[index] &&
                       responed.results[index]?.correct[0] === false
                     ? "#E79595"
                     : "rgb(229 231 235)",
@@ -89,7 +97,10 @@ export default function TrueFalse({
                   className="h-auto w-auto"
                   style={{
                     color: "#B85D5D",
-                    display: index + "T" === numIndex[index] ? "block" : "none",
+                    display:
+                      String(index) + "T" === numIndex[index]
+                        ? "block"
+                        : "none",
                   }}
                 >
                   <path
@@ -108,7 +119,10 @@ export default function TrueFalse({
                   className="h-auto w-auto"
                   style={{
                     color: "#5F8E79",
-                    display: index + "T" === numIndex[index] ? "block" : "none",
+                    display:
+                      String(index) + "T" === numIndex[index]
+                        ? "block"
+                        : "none",
                   }}
                 >
                   <path
@@ -121,19 +135,19 @@ export default function TrueFalse({
             </button>
 
             <button
-              key={index + "F"}
+              key={String(index) + "F"}
               className="select-box-false flex aspect-[1/1] basis-[10%] cursor-pointer items-center justify-between rounded-md bg-gray-200 bg-[length:65%] bg-center bg-no-repeat transition duration-300 hover:bg-gray-300"
-              onClick={() => handler(false, index, index + "F")}
+              onClick={() => handler(false, index, String(index) + "F")}
               disabled={disable}
               style={{
                 pointerEvents: disable ? "none" : "auto",
                 backgroundColor:
                   responed &&
-                  index + "F" === numIndex[index] &&
+                  String(index) + "F" === numIndex[index] &&
                   responed.results[index]?.correct[0] === true
                     ? "#A3C9A8"
                     : responed &&
-                      index + "F" === numIndex[index] &&
+                      String(index) + "F" === numIndex[index] &&
                       responed.results[index]?.correct[0] === false
                     ? "#E79595"
                     : "rgb(229 231 235)",
@@ -149,7 +163,10 @@ export default function TrueFalse({
                   className="h-auto w-auto"
                   style={{
                     color: "#B85D5D",
-                    display: index + "F" === numIndex[index] ? "block" : "none",
+                    display:
+                      String(index) + "F" === numIndex[index]
+                        ? "block"
+                        : "none",
                   }}
                 >
                   <path
@@ -168,7 +185,10 @@ export default function TrueFalse({
                   className="h-auto w-auto"
                   style={{
                     color: "#5F8E79",
-                    display: index + "F" === numIndex[index] ? "block" : "none",
+                    display:
+                      String(index) + "F" === numIndex[index]
+                        ? "block"
+                        : "none",
                   }}
                 >
                   <path

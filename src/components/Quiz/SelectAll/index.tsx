@@ -9,6 +9,7 @@ interface Props {
   responed: resInfo;
   disable: boolean;
   current: string;
+  reset: boolean[];
 }
 export default function SelectAll({
   options,
@@ -18,8 +19,8 @@ export default function SelectAll({
   responed,
   disable,
   current,
+  reset,
 }: Props) {
-  const [saAnswer, setSAAnswer] = useState([] as number[]);
   const [selected, setSelected] = useState([false] as boolean[]);
 
   useEffect(() => {
@@ -27,6 +28,12 @@ export default function SelectAll({
     // setSAAnswer(indexes);
     answers({ quizId: quizQuestionId, answer: indexes });
   }, [selected]);
+
+  useEffect(() => {
+    if (reset.length === 0) {
+      setSelected([false]);
+    }
+  }, [reset]);
 
   const getAllIndexes = (arr: boolean[], val: boolean) =>
     arr.reduce(

@@ -7,11 +7,12 @@ interface Props {
   categories: string[];
   options: string[];
   show: boolean;
-  answers: Function;
+  answers: (value: { quizId: string; answer: (number | null)[][] }) => void;
   quizQuestionId: string;
   responed: resInfo;
   disable: boolean;
   current: number;
+  reset: boolean[];
 }
 
 export default function MultipleMatch({
@@ -23,6 +24,7 @@ export default function MultipleMatch({
   responed,
   disable,
   current,
+  reset,
 }: Props) {
   // const [c, setC] = useState(categories.map((item, index) => index));
   // const empty2DArray = [[]];
@@ -82,6 +84,22 @@ export default function MultipleMatch({
     // console.log("Complex quizId ", quizId);
     answers({ quizId, answer: comAnswer });
   }, [comAnswer]);
+  useEffect(() => {
+    if (reset.length === 0) {
+      setComAnswer(
+        Array.from({ length: categories.length }, () => []) as (
+          | number
+          | null
+        )[][],
+      );
+      setOrder(
+        Array.from({ length: categories.length }, () =>
+          Array.from({ length: options.length }, () => null),
+        ) as (number | null)[][],
+      );
+      setOpList(options.map((item, index) => index));
+    }
+  }, [reset]);
 
   useEffect(() => {
     if (show) {

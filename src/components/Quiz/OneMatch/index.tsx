@@ -10,6 +10,7 @@ interface Props {
   responed: resInfo;
   disable: boolean;
   current: number;
+  reset: boolean[];
 }
 export default function OneMatch({
   categories,
@@ -20,16 +21,18 @@ export default function OneMatch({
   responed,
   disable,
   current,
+  reset,
 }: Props) {
   // console.log("ans ", userAns);
-
+  const [order, setOrder] = useState(options.map((item, index) => index));
   const [dirAnswer, setDirAnswer] = useState(
-    options.map((item, index) => index),
+    // options.map((item, index) => index),
+    order,
   );
   const [quizId, _] = useState(quizQuestionId);
 
   const [dirresult, setDirresult] = useState([] as boolean[]);
-  const [order, setOrder] = useState(options.map((item, index) => index));
+
   const currDragRef = useRef<number | null>(null);
 
   /**
@@ -49,6 +52,13 @@ export default function OneMatch({
     );
     return result;
   };
+
+  useEffect(() => {
+    if (reset.length === 0) {
+      setDirresult([]);
+      setDirAnswer(order);
+    }
+  }, [reset]);
   //Update the answer info to parent
   useEffect(() => {
     // console.log("Direct answer ", dirAnswer);

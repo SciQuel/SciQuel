@@ -12,8 +12,19 @@ import Result from "../Quiz/Results";
 import SelectAll from "../Quiz/SelectAll";
 import TrueFalse from "../Quiz/TrueFalse";
 
+interface Quiz {
+  quiz_question_id: number;
+  question_type: string;
+  question?: string;
+  options?: string[];
+  categories?: string[];
+  questions?: string[];
+}
+
 interface Props {
-  Quizzes: QuizQuestion;
+  Quizzes: {
+    quizzes: Quiz[];
+  };
 }
 
 export type answerInfo = {
@@ -73,7 +84,16 @@ export default function Quiz({ Quizzes }: Props) {
   };
   const handleReview = () => {
     setCurrentQuestion(0);
-    setProg("0%");
+    setProg(String(gap / 2));
+  };
+  const handleRetake = () => {
+    setCurrentQuestion(0);
+    setProg(String(gap / 2));
+    setSelected([]);
+    setAnswered([]);
+    setDisabled([false]);
+    setSubmitButton([]);
+    setRespon([]);
   };
   // function removeNullEmptyUndefined(arr: (number | null)[][]) {
   //   return arr.map((subArray) =>
@@ -111,7 +131,7 @@ export default function Quiz({ Quizzes }: Props) {
       selected[currentQuestion],
     );
     const res = await submitAnswer();
-    const resp = res?.data;
+    const resp: resInfo = res?.data as resInfo;
     console.log("resp ", resp);
     console.log("resp.results ", resp.results);
 
@@ -161,13 +181,14 @@ export default function Quiz({ Quizzes }: Props) {
                 return (
                   <MultipChoice
                     key={index}
-                    question={q.options}
+                    question={q.options ?? []}
                     show={index === currentQuestion ? true : false}
                     answers={getAnswerInfo}
-                    quizQuestionId={q.quiz_question_id}
+                    quizQuestionId={q.quiz_question_id.toString()}
                     responed={respon[currentQuestion]}
                     disable={disabled[currentQuestion]}
-                    current={q.question}
+                    current={q.question ?? ""}
+                    reset={answered}
                   />
                 );
 
@@ -175,13 +196,15 @@ export default function Quiz({ Quizzes }: Props) {
                 return (
                   <TrueFalse
                     key={index}
-                    questions={q.questions}
+                    questions={q.questions ?? []}
                     show={index === currentQuestion ? true : false}
                     answers={getAnswerInfo}
-                    quizQuestionId={q.quiz_question_id}
+                    quizQuestionId={q.quiz_question_id.toString()}
                     responed={respon[currentQuestion]}
+                    answer={selected[currentQuestion]?.answer}
                     disable={disabled[currentQuestion]}
                     current={currentQuestion}
+                    reset={answered}
                   />
                 );
 
@@ -189,49 +212,54 @@ export default function Quiz({ Quizzes }: Props) {
                 return (
                   <OneMatch
                     key={index}
-                    categories={q.categories}
-                    options={q.options}
+                    categories={q.categories ?? []}
+                    options={q.options ?? []}
                     show={index === currentQuestion ? true : false}
                     answers={getAnswerInfo}
-                    quizQuestionId={q.quiz_question_id}
+                    quizQuestionId={q.quiz_question_id.toString()}
                     responed={respon[currentQuestion]}
                     disable={disabled[currentQuestion]}
                     current={currentQuestion}
+                    reset={answered}
                   />
                 );
               case "COMPLEX_MATCHING":
                 return (
                   <MultipMatch
                     key={index}
-                    categories={q.categories}
-                    options={q.options}
+                    categories={q.categories ?? []}
+                    options={q.options ?? []}
                     show={index === currentQuestion ? true : false}
                     answers={getAnswerInfo}
-                    quizQuestionId={q.quiz_question_id}
+                    quizQuestionId={q.quiz_question_id.toString()}
                     responed={respon[currentQuestion]}
                     disable={disabled[currentQuestion]}
                     current={currentQuestion}
+                    reset={answered}
                   />
                 );
               case "SELECT_ALL":
                 return (
                   <SelectAll
                     key={index}
-                    options={q.options}
+                    options={q.options ?? []}
                     show={index === currentQuestion ? true : false}
                     answers={getAnswerInfo}
-                    quizQuestionId={q.quiz_question_id}
+                    quizQuestionId={q.quiz_question_id.toString()}
                     responed={respon[currentQuestion]}
                     disable={disabled[currentQuestion]}
-                    current={q.question}
+                    current={q.question ?? ""}
+                    reset={answered}
                   />
                 );
 
               default:
-                return <p>{q.questionType}</p>;
+                return <p>{q.question_type}</p>;
             }
           })}
-          {currentQuestion == numQues ? <Result></Result> : null}
+          {currentQuestion == numQues ? (
+            <Result resultInfo={respon}></Result>
+          ) : null}
         </div>
       </div>
       {/* Previous submit and next button functionality  */}
@@ -239,28 +267,34 @@ export default function Quiz({ Quizzes }: Props) {
         <button
           className="border-dark flex w-[15%] rounded-lg border bg-white py-2 text-black"
           type="button"
-          style={{
-            visibility: currentQuestion != 0 ? "visible" : "hidden",
-            display: currentQuestion + 1 > numQues ? "none" : "block",
-          }}
-          onClick={handlePrevious}
+          // style={{
+          //   visibility: currentQuestion != 0 ? "visible" : "hidden",
+          //   display: currentQuestion + 1 > numQues ? "none" : "block",
+          // }}
+          onClick={currentQuestion >= numQues ? handleReview : handlePrevious}
         >
           <div className="m-auto flex">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              className="h-6 w-6"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M15.75 19.5 8.25 12l7.5-7.5"
-              />
-            </svg>
-            Previous
+            {currentQuestion >= numQues ? (
+              "Review Quiz"
+            ) : (
+              <>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  className="h-6 w-6"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M15.75 19.5 8.25 12l7.5-7.5"
+                  />
+                </svg>
+                Previous
+              </>
+            )}
           </div>
         </button>
 
@@ -268,11 +302,18 @@ export default function Quiz({ Quizzes }: Props) {
           className="border-dark flex w-[15%] rounded-lg border bg-white py-2 text-black "
           type="button"
           onClick={
-            submitButton[currentQuestion] === true ? handleNext : handleSubmit
+            currentQuestion >= numQues
+              ? handleRetake
+              : submitButton[currentQuestion] === true
+              ? handleNext
+              : handleSubmit
           }
         >
           <div className="m-auto flex">
-            {submitButton[currentQuestion] === true && answered[currentQuestion]
+            {currentQuestion >= numQues
+              ? "Retake Quiz"
+              : submitButton[currentQuestion] === true &&
+                answered[currentQuestion]
               ? "Next"
               : "Submit"}
             {submitButton[currentQuestion] === true &&
