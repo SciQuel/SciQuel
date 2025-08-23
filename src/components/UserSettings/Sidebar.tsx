@@ -33,6 +33,10 @@ function SidebarItem(props: {
   );
 }
 
+//text for sidebar title, shows only on certain viewports
+function SidebarText(props: { children: React.ReactNode }) {
+  return <span className="hidden lg:block"> {props.children} </span>;
+}
 export default function Sidebar() {
   // 📝: this is the code for the sidebar! a couple of things to note: this huge, commented-out portion of this code was an attempt to make the
   //     sidebar collapsible (as according to the figma). it's a v low priority task, but if edward ever wants to re-implement it, you can
@@ -303,8 +307,8 @@ export default function Sidebar() {
   return (
     <div>
       <div
-        className="z-10 h-full gap-4 gap-y-8 bg-[#EDF4F4] px-5 pt-1.5 pt-6 text-center text-xl dark:text-white md:sticky md:w-56 
-                md:flex-col md:gap-y-2 md:text-left"
+        className="\ z-10 h-full gap-4 gap-y-8 bg-[#EDF4F4] px-5 pt-1.5 pt-6 text-center text-xl dark:text-white md:sticky md:flex-col
+                md:gap-y-2 md:text-left lg:w-56"
       >
         <div className="flex h-4/5 flex-col justify-between text-xl text-[#1A6768]">
           <div>
@@ -328,7 +332,7 @@ export default function Sidebar() {
                     fill="#1A6768"
                   />
                 </svg>
-                Dashboard
+                <SidebarText> Dashboard </SidebarText>
               </div>
             </SidebarItem>
 
@@ -398,7 +402,7 @@ export default function Sidebar() {
                     fill="#1A6768"
                   />
                 </svg>
-                Reading History
+                {/* Reading History */}
               </div>
             </SidebarItem>
 
@@ -445,7 +449,7 @@ export default function Sidebar() {
                     fill="#1A6768"
                   />
                 </svg>
-                Activity
+                {/* Activity */}
               </div>
             </SidebarItem>
 
@@ -468,7 +472,7 @@ export default function Sidebar() {
                     fill="#1A6768"
                   />
                 </svg>
-                Quiz History
+                {/* Quiz History */}
               </div>
             </SidebarItem>
 
@@ -497,7 +501,7 @@ export default function Sidebar() {
                     fill="#1A6768"
                   />
                 </svg>
-                Annotations
+                {/* Annotations */}
               </div>
             </SidebarItem>
 
@@ -520,7 +524,7 @@ export default function Sidebar() {
                     fill="#1A6768"
                   />
                 </svg>
-                Comments
+                {/* Comments */}
               </div>
             </SidebarItem>
 
@@ -567,7 +571,7 @@ export default function Sidebar() {
                     fill="#1A6768"
                   />
                 </svg>
-                Contact Us
+                {/* Contact Us */}
               </div>
             </SidebarItem>
 
@@ -589,7 +593,7 @@ export default function Sidebar() {
                     d="M12 8.5C10.1 8.5 8.5 10.1 8.5 12C8.5 13.9 10.1 15.5 12 15.5C13.9 15.5 15.5 13.9 15.5 12C15.5 10.1 13.9 8.5 12 8.5ZM12 14.5C10.6 14.5 9.5 13.4 9.5 12C9.5 10.6 10.6 9.5 12 9.5C13.4 9.5 14.5 10.6 14.5 12C14.5 13.4 13.4 14.5 12 14.5Z"
                   />
                 </svg>
-                Settings
+                {/* Settings */}
               </div>
             </SidebarItem>
           </div>
