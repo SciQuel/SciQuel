@@ -13,7 +13,8 @@ import shareIcon from "../../../../public/assets/images/story-share.png";
 import { type ReadingHistory as ReadingHistoryType } from "../../../app/user-settings/actions/getReadingHistory";
 import ShareDropDown from './ShareDropDown';
 interface Props {
-  data: ReadingHistoryType;
+  data: (ReadingHistoryType[number] & { diffInDays: number })[];
+
   bookMarkedReadingsIds: string[];
   brainedReadingIds: string[];
   handleBrainClick: (storyId: string) => Promise<void>;
@@ -23,12 +24,11 @@ interface Props {
 const DropDownContent: React.FC<Props> = ({
   data,
   bookMarkedReadingsIds,
-  brainedReadingIds,
   handleBrainClick,
   handleBookmarkClick,
 }) => {
   const [activeSharePopup, setActiveSharePopup] = useState<string | "">("");
-  const popupRefs = useRef<Record<string, HTMLDivElement | null>>({});
+const popupRefs: React.MutableRefObject<Record<string, React.RefObject<HTMLDivElement>>> = useRef({});
 
   //event handler for share button. opens the popup
   const handleShareClick = (e: React.MouseEvent, storyId: string) => {
@@ -59,7 +59,7 @@ const DropDownContent: React.FC<Props> = ({
 
   // class name for buttons
   const iconButtonClass =
-    "flex h-[30px] w-[30px] md:h-[40px] md:w-[40px]  justify-center rounded-full bg-[#76a89f] py-1 transition ease-linear";
+    "flex h-[30px] w-[30px] md:h-[40px] md:w-[40px]  justify-center items-center rounded-full bg-[#76a89f] py-1 transition ease-linear";
   return (
 
     <div className="z-50 max-h-full overflow-y-scroll scrollbar-cyan mb-2">
@@ -101,7 +101,7 @@ const DropDownContent: React.FC<Props> = ({
               </div>
 
               {/* Icons */}
-              <div className="flex flex-col h overflow-scroll   gap-2 items-center justify-center relative ">
+              <div className="flex flex-col h    gap-2 items-center justify-center relative ">
                 <div>
                   <div className="flex justify-end mr-3 gap-3">
                     <button className={iconButtonClass} onClick={() => handleBookmarkClick(reading.story.id)}>

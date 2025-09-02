@@ -402,7 +402,8 @@ export default function Sidebar() {
                     fill="#1A6768"
                   />
                 </svg>
-                {/* Reading History */}
+              
+              <SidebarText> Reading History  </SidebarText>
               </div>
             </SidebarItem>
 
@@ -449,7 +450,7 @@ export default function Sidebar() {
                     fill="#1A6768"
                   />
                 </svg>
-                {/* Activity */}
+                <SidebarText> Activity</SidebarText>
               </div>
             </SidebarItem>
 
@@ -472,7 +473,7 @@ export default function Sidebar() {
                     fill="#1A6768"
                   />
                 </svg>
-                {/* Quiz History */}
+                <SidebarText> Quiz History </SidebarText> 
               </div>
             </SidebarItem>
 
@@ -501,7 +502,7 @@ export default function Sidebar() {
                     fill="#1A6768"
                   />
                 </svg>
-                {/* Annotations */}
+                <SidebarText>Annotations </SidebarText> 
               </div>
             </SidebarItem>
 
@@ -524,7 +525,7 @@ export default function Sidebar() {
                     fill="#1A6768"
                   />
                 </svg>
-                {/* Comments */}
+               <SidebarText> Comments </SidebarText> 
               </div>
             </SidebarItem>
 
@@ -571,7 +572,7 @@ export default function Sidebar() {
                     fill="#1A6768"
                   />
                 </svg>
-                {/* Contact Us */}
+                <SidebarText> Contact Us </SidebarText>
               </div>
             </SidebarItem>
 
@@ -593,7 +594,7 @@ export default function Sidebar() {
                     d="M12 8.5C10.1 8.5 8.5 10.1 8.5 12C8.5 13.9 10.1 15.5 12 15.5C13.9 15.5 15.5 13.9 15.5 12C15.5 10.1 13.9 8.5 12 8.5ZM12 14.5C10.6 14.5 9.5 13.4 9.5 12C9.5 10.6 10.6 9.5 12 9.5C13.4 9.5 14.5 10.6 14.5 12C14.5 13.4 13.4 14.5 12 14.5Z"
                   />
                 </svg>
-                {/* Settings */}
+                <SidebarText> Settings </SidebarText>
               </div>
             </SidebarItem>
           </div>

@@ -1,20 +1,29 @@
 import Image from "next/image";
-import { useRef, useState } from "react";
+import { useRef, useState, createRef} from "react";
 import ClipboardIcon from "../../../../public/assets/images/clipboard.svg";
 import MailIcon from "../../../../public/assets/images/email.svg";
 import LinkedinIcon from "../../../../public/assets/images/linkedin.svg";
 import facebookIcon from "../../../../public/assets/images/story-facebook.png";
 import shareIcon from "../../../../public/assets/images/story-share.png";
 import xIcon from "../../../../public/assets/images/xicon.png";
+import { type ReadingHistory as ReadingHistoryType } from "../../../app/user-settings/actions/getReadingHistory";
 
-const iconButtonClass =
+
+const iconButtonClass:string =
   "flex md:h-[40px] md:w-[40px] h-[25px] w-[25px] items-center justify-center rounded-full bg-[#76a89f] py-1 transition ease-linear";
 
-const ShareDropDown = ({ popupRefs, reading, activeSharePopup }) => {
-  const textRef = useRef();
+interface props{
+  popupRefs: React.MutableRefObject<Record<string, React.RefObject<HTMLDivElement>>>;
+  reading: ReadingHistoryType[number] & { uuid: string };
+  activeSharePopup: string | null;
+}
+const ShareDropDown = ({ popupRefs, reading, activeSharePopup }: props) => {
+  const textRef = useRef<HTMLDivElement | null>(null);
   const [showClipBoardIcon, setShowClipboardIcon] = useState(false);
 
-  const handleShareClick = (e) => {
+
+  // on click, show the popup to copy reading url
+  const handleShareClick = (e: React.MouseEvent<HTMLButtonElement> | React.MouseEvent<HTMLAnchorElement>) => {
     e.stopPropagation();
 
     setShowClipboardIcon((prev) => !prev);
@@ -22,7 +31,7 @@ const ShareDropDown = ({ popupRefs, reading, activeSharePopup }) => {
 
   const handleClipboardClick = () => {
     if (textRef.current) {
-      const textToCopy = textRef.current.textContent;
+      const textToCopy= textRef?.current?.textContent;
       navigator.clipboard
         .writeText(textToCopy)
         .then(() => {
@@ -42,12 +51,12 @@ const ShareDropDown = ({ popupRefs, reading, activeSharePopup }) => {
 
   return (
     <div
-      className={`relative right-0 z-50 mt-3  overflow-visible  ${
+      className={`relative right-0 z-50 mt-3    ${
         open ? "opacity-100" : "opacity-0"
       }`}
       onClick={(e) => e.stopPropagation()}
       key={reading.uuid}
-      ref={(popupRefs.current[reading.uuid] ??= { current: null })}
+      ref={(popupRefs.current[reading.uuid] ??= createRef<HTMLDivElement>())}
     >
       {/* Icons */}
       <div className="relative z-10 flex w-auto items-center justify-between gap-2 rounded-lg px-3 shadow-lg">
@@ -106,10 +115,10 @@ const ShareDropDown = ({ popupRefs, reading, activeSharePopup }) => {
       </div>
 
       {/* link and copy ubtton that will show when user hits share again */}
-      {showClipBoardIcon && (
+      {showClipBoardIcon && open && (
         <div
           ref={textRef}
-          className="absolute top-[100%] z-10  mt-2 flex  w-[250px] items-center gap-2 rounded-lg bg-white px-3 py-3 shadow-lg shadow-md"
+          className="absolute top-[100%] z-10  mt-2 flex  w-full items-center gap-2 rounded-lg bg-white px-3 py-3 shadow-lg shadow-md"
         >
           <ClipboardIcon
             onClick={handleClipboardClick}

@@ -8,7 +8,7 @@ import DropDownContent from "./DropDownContent";
 import DropDownTabs from "./DropDownTabs";
 
 interface PropTypes {
-  data: ReadingHistoryType & { diffInDays: number }[];
+  data:(ReadingHistoryType[number] & { diffInDays: number })[];
   title: string;
   email: string;
   brained: string[];
