@@ -11,14 +11,15 @@ interface Props {
 export default function Results({ resultInfo }: Props) {
   let score = 0;
   resultInfo.forEach((element) => {
-    score += element.score;
+    if (element.score < 0) return;
+    if (element.score < 10) return (score += 0);
   });
 
   return (
     <div className="text-black">
       <p className="mb-6 text-center ">
-        <strong className="font-quicksand mb-1 text-2xl font-bold">
-          Your score: {score}/{resultInfo.length * 10}
+        <strong className="font-quicksand mb-1 text-3xl font-bold">
+          Score: <br /> {score} <br /> / <br /> {resultInfo.length}
         </strong>
       </p>
     </div>
