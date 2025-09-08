@@ -4,7 +4,7 @@ import { type resInfo } from "../index";
 interface Props {
   question: string[];
   show: boolean;
-  answers: Function;
+  answers: (params: { quizId: string; answer: number | null }) => void;
   quizQuestionId: string;
   responed: resInfo;
   disable: boolean;

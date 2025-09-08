@@ -5,7 +5,7 @@ interface Props {
   setCurrent: (index: number) => void;
   progress: string;
   gap: number;
-  setProgress: (progress: number) => void;
+  setProgress: (progress: string) => void;
 }
 export default function ProgressBar({
   current,
@@ -46,7 +46,9 @@ export default function ProgressBar({
                     ? () => {
                         setCurrent(key);
                         setProgress(
-                          Math.round((Number(key + 0.5) / numOfQues) * 100),
+                          Math.round(
+                            (Number(key + 0.5) / numOfQues) * 100,
+                          ).toString(),
                         );
                         console.log(
                           `Progress set to ${Math.round(

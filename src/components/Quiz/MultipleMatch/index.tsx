@@ -11,7 +11,6 @@ interface Props {
   quizQuestionId: string;
   responed: resInfo;
   disable: boolean;
-  current: number;
   reset: boolean[];
 }
 
@@ -23,7 +22,6 @@ export default function MultipleMatch({
   quizQuestionId,
   responed,
   disable,
-  current,
   reset,
 }: Props) {
   // const [c, setC] = useState(categories.map((item, index) => index));
@@ -45,7 +43,7 @@ export default function MultipleMatch({
   const currDragRef = useRef<HTMLTextAreaElement | null>(null);
   const currColRef = useRef<number | null>(null);
   const currOpRef = useRef<number | null>(null);
-
+  // remove null values from a 2D array
   function removeNull(arr: (number | null)[][]) {
     return arr.map((subArray) => subArray.filter((item) => item !== null));
   }
@@ -56,7 +54,10 @@ export default function MultipleMatch({
     if (array !== undefined) {
       array.forEach(({ correct }, index) =>
         correct.forEach((isCorrect, key) => {
-          correctArray[comAnswer[index][key]!] = isCorrect;
+          const answerIndex = comAnswer[index][key];
+          if (answerIndex !== null && answerIndex !== undefined) {
+            correctArray[answerIndex] = isCorrect;
+          }
         }),
       );
     }
@@ -64,6 +65,8 @@ export default function MultipleMatch({
     // result.push(...correctArray);
     return correctArray;
   };
+
+  // Count the number of true values in a 2D array
   const numberOfTrue = (
     array: Array<{ correct: boolean[]; explanation: string }>,
   ) => {
@@ -84,6 +87,8 @@ export default function MultipleMatch({
     // console.log("Complex quizId ", quizId);
     answers({ quizId, answer: comAnswer });
   }, [comAnswer]);
+
+  // Reset the answer when reset is called
   useEffect(() => {
     if (reset.length === 0) {
       setComAnswer(
@@ -101,6 +106,7 @@ export default function MultipleMatch({
     }
   }, [reset]);
 
+  // Update the answer info to parent when show is true
   useEffect(() => {
     if (show) {
       setResult(flattenCorrectArray(responed?.results));
@@ -119,7 +125,8 @@ export default function MultipleMatch({
 
         {/* <div className="multiple-match-drop-area flex w-full flex-row flex-wrap items-start justify-center gap-3 pb-3"></div> */}
 
-        {/* categorise */}
+        {/* categorise 
+         Map through the categories and create a column for each category */}
         <div className="grid w-full  grid-cols-3 justify-stretch gap-4 ">
           {catList.map((cat, colIndex) => {
             const fullCat = categories[cat];
@@ -133,7 +140,7 @@ export default function MultipleMatch({
                       responed === undefined
                         ? "white"
                         : trueResult[colIndex] ===
-                          responed?.correct_option_counts[colIndex]
+                          (responed?.correct_option_counts?.[colIndex] ?? 0)
                         ? "#A3C9A8"
                         : trueResult[colIndex] === 0
                         ? "#E79595"
@@ -166,6 +173,7 @@ export default function MultipleMatch({
                     // console.log("currDragRef", currDragRef.current);
 
                     // Check if the target element is a valid drop target
+                    // and if it is a target for the drop
                     if (target.getAttribute("data-draggable") === "target") {
                       // Insert the dragged item into its new position
                       const newcol = colIndex;
@@ -177,11 +185,18 @@ export default function MultipleMatch({
                       ) {
                         setOrder((state) => {
                           const newState = [...state];
-                          const op = currOpRef.current!;
-                          newState[newcol][op] = op;
-                          newState[currColRef.current!][op] = null;
-                          // console.log("here1 ");
-                          setComAnswer([...removeNull(newState)]);
+                          const op = currOpRef.current;
+                          if (op !== null && op !== undefined) {
+                            newState[newcol][op] = op;
+                            if (
+                              currColRef.current !== null &&
+                              currColRef.current !== undefined
+                            ) {
+                              newState[currColRef.current][op] = null;
+                            }
+                            // console.log("here1 ");
+                            setComAnswer([...removeNull(newState)]);
+                          }
                           return newState;
                         });
                       } else {
@@ -189,11 +204,13 @@ export default function MultipleMatch({
                           const newState = [...state];
 
                           // if (!newState[colIndex]) newState[colIndex] = [];
-                          const op = currOpRef.current!;
-                          newState[colIndex][op] = op;
-                          // console.log("here2 ");
-                          // console.log("drop", newState[colIndex]);
-                          setComAnswer([...removeNull(newState)]);
+                          const op = currOpRef.current;
+                          if (op !== null && op !== undefined) {
+                            newState[colIndex][op] = op;
+                            // console.log("here2 ");
+                            // console.log("drop", newState[colIndex]);
+                            setComAnswer([...removeNull(newState)]);
+                          }
                           return newState;
                         });
                         // console.log("here5 ");
@@ -204,8 +221,10 @@ export default function MultipleMatch({
 
                       setOpList((state) => {
                         const newState = [...state];
-                        const index = currOpRef.current!;
-                        newState[index] = -1;
+                        const index = currOpRef.current;
+                        if (index !== null && index !== undefined) {
+                          newState[index] = -1;
+                        }
                         // console.log("newState", newState);
                         // console.log("hello4");
                         return newState;
@@ -224,13 +243,13 @@ export default function MultipleMatch({
                   }}
                 >
                   {/* Answers in each column */}
-                  {comAnswer[colIndex]?.map((op, index) => {
+                  {comAnswer[colIndex]?.map((op, _) => {
                     if (op === null) return null;
 
                     const fullOp = options[op];
                     return (
                       <div
-                        key={"item" + fullOp + result.length}
+                        key={"item" + fullOp + String(result.length)}
                         className="multiple-match-answer-choice-holder min-w-100 relative box-border flex w-full  cursor-move items-center justify-end break-words rounded-[4px] border border-black  bg-white text-center text-[18px] transition duration-300 ease-in-out "
                         data-draggable="item"
                         style={{
@@ -253,9 +272,15 @@ export default function MultipleMatch({
                         onDragOver={(e) => {
                           e.preventDefault();
                         }}
-                        onDrop={(e) => {
-                          const old = currOpRef.current!;
+                        onDrop={() => {
+                          const old = currOpRef.current;
                           const newVal = op;
+                          if (old === null || old === undefined) {
+                            console.log(
+                              "currOpRef.current is null or undefined",
+                            );
+                            return;
+                          }
                           console.log("old", old);
                           console.log("newVal", newVal);
                           console.log("currColRef", currColRef.current);
@@ -384,7 +409,7 @@ export default function MultipleMatch({
               const fullItem = options[item];
               return (
                 <div
-                  key={"item" + fullItem + result.length}
+                  key={"item" + fullItem + String(result.length)}
                   className="multiple-match-answer-choice-holder min-w-100 relative box-border flex  w-full cursor-move items-center justify-end break-words rounded-[4px] border border-black bg-white text-center text-[18px] transition duration-300 ease-in-out "
                   draggable={!disable}
                   data-draggable="item"
@@ -470,7 +495,8 @@ export default function MultipleMatch({
                 className="modal-body"
                 style={{
                   background:
-                    trueResult[index] === responed.correct_option_counts[index]!
+                    trueResult[index] ===
+                    (responed.correct_option_counts?.[index] ?? 0)
                       ? "linear-gradient(to right,#A3C9A8 1%,white 1%)"
                       : trueResult[index] === 0
                       ? "linear-gradient(to right,#E79595 1%,white 1%)"

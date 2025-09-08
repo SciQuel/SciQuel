@@ -5,11 +5,11 @@ interface Props {
   categories: string[];
   options: string[];
   show: boolean;
-  answers: Function;
+  answers: (value: { quizId: string; answer: number[] }) => void;
   quizQuestionId: string;
   responed: resInfo;
   disable: boolean;
-  current: number;
+
   reset: boolean[];
 }
 export default function OneMatch({
@@ -20,11 +20,11 @@ export default function OneMatch({
   quizQuestionId,
   responed,
   disable,
-  current,
+
   reset,
 }: Props) {
   // console.log("ans ", userAns);
-  const [order, setOrder] = useState(options.map((item, index) => index));
+  const [order, _setOrder] = useState(options.map((item, index) => index));
   const [dirAnswer, setDirAnswer] = useState(
     // options.map((item, index) => index),
     order,
@@ -87,7 +87,7 @@ export default function OneMatch({
         return (
           <div
             id={"row" + index.toString()}
-            key={"row" + fullItem + dirresult.length}
+            key={"row" + fullItem + String(dirresult.length)}
             className="quiz-row my-3.5 flex w-full flex-row"
             onDragStart={() => {
               console.log("drag start");

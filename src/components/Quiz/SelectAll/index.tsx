@@ -4,7 +4,7 @@ import { type resInfo } from "../index";
 interface Props {
   options: string[];
   show: boolean;
-  answers: Function;
+  answers: (value: { quizId: string; answer: number[] }) => void;
   quizQuestionId: string;
   responed: resInfo;
   disable: boolean;
@@ -66,8 +66,8 @@ export default function SelectAll({
               className="`multiple-choice-option my-1.5 flex w-full cursor-pointer flex-row items-center justify-between gap-3 rounded-md border border-black px-5 py-5 text-base font-medium transition duration-300 ease-in-out hover:bg-gray-200"
               onClick={
                 selected[index] === true
-                  ? (e) => handlerUnSelected(index)
-                  : (e) => handlerSelected(index)
+                  ? () => handlerUnSelected(index)
+                  : () => handlerSelected(index)
               }
               disabled={disable}
               style={{
