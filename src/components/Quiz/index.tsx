@@ -1,7 +1,6 @@
 "use client";
 
 import env from "@/lib/env";
-import { type QuizQuestion } from "@prisma/client";
 import axios from "axios";
 import { useState } from "react";
 import MultipChoice from "../Quiz/MulitpleChoice";
@@ -52,6 +51,7 @@ export default function Quiz({ Quizzes }: Props) {
   const [answered, setAnswered] = useState([] as boolean[]);
   const [disabled, setDisabled] = useState([false] as boolean[]);
   const [respon, setRespon] = useState([] as resInfo[]);
+  const [reviewMode, setReviewMode] = useState(false);
 
   {
     /* quiz multiple choice useState  */
@@ -81,6 +81,9 @@ export default function Quiz({ Quizzes }: Props) {
     setCurrentQuestion(nextQues);
     // nextQues < numQues &&
     setProg(String(Number(prog) + Number(gap)));
+    if (nextQues === numQues) {
+      setReviewMode(true);
+    }
   };
   const handleReview = () => {
     setCurrentQuestion(0);
@@ -94,6 +97,11 @@ export default function Quiz({ Quizzes }: Props) {
     setDisabled([false]);
     setSubmitButton([]);
     setRespon([]);
+    setReviewMode(false);
+  };
+  const jumpToResult = () => {
+    setCurrentQuestion(numQues);
+    setProg("100");
   };
   // function removeNullEmptyUndefined(arr: (number | null)[][]) {
   //   return arr.map((subArray) =>
@@ -219,7 +227,6 @@ export default function Quiz({ Quizzes }: Props) {
                     quizQuestionId={q.quiz_question_id.toString()}
                     responed={respon[currentQuestion]}
                     disable={disabled[currentQuestion]}
-                    current={currentQuestion}
                     reset={answered}
                   />
                 );
@@ -234,7 +241,6 @@ export default function Quiz({ Quizzes }: Props) {
                     quizQuestionId={q.quiz_question_id.toString()}
                     responed={respon[currentQuestion]}
                     disable={disabled[currentQuestion]}
-                    current={currentQuestion}
                     reset={answered}
                   />
                 );
@@ -295,6 +301,22 @@ export default function Quiz({ Quizzes }: Props) {
                 Previous
               </>
             )}
+          </div>
+        </button>
+
+        <button
+          className="border-dark flex w-[15%] rounded-lg border bg-white py-2 text-black"
+          type="button"
+          style={{
+            display:
+              reviewMode === true && currentQuestion < numQues
+                ? "block"
+                : "none",
+          }}
+          onClick={jumpToResult}
+        >
+          <div className=" m-auto">
+            {currentQuestion < numQues ? "To Results " : null}
           </div>
         </button>
 
