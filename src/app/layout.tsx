@@ -73,7 +73,7 @@ export default async function RootLayout({
           <div className=" min-h-screen">
             <Header></Header>
 
-            <main className="pt-36 font-quicksand xs:pt-24 sm:pt-10" id="main">
+            <main className=" font-quicksand xs:pt-10 sm:pt-10" id="main">
               {children}
             </main>
           </div>

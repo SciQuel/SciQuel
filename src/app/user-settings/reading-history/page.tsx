@@ -90,7 +90,7 @@ export default async function ReadingHistory() {
 
   return (
     <div className=" flex w-full flex-col xs:px-2 md:px-6  ">
-      <h2 className="mb-10 ml-8 mt-8 text-3xl font-bold "> Reading History </h2>
+      <h2 className="mb-10 mt-8 text-3xl font-bold "> Reading History </h2>
       <ReadingDropDownContainer
         pastWeekReadings={pastWeekReadings}
         yesterdayReadings={yesterdayReadings}

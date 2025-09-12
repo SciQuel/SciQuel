@@ -52,11 +52,11 @@ const DropDownContent: React.FC<Props> = ({
   );
 
   const iconButtonClass =
-    "flex h-[30px] w-[30px] md:h-[40px] md:w-[40px] p-1 md:p-2 justify-center items-center rounded-full bg-[#76a89f] transition ease-linear";
+    " flex h-[30px] w-[30px]  md:h-[40px] md:w-[40px] p-1 md:p-2 justify-center items-center rounded-full bg-[#76a89f] transition ease-linear";
 
   return (
-    <div className="z-50 max-h-full overflow-y-scroll scrollbar-cyan mb-2">
-      <ul className="h-full relative">
+    <div className="z-50  max-h-full overflow-y-scroll scrollbar-cyan mb-2">
+      <ul className="h-full mr-3 relative">
         {data?.length === 0 && (
           <p className="text-md font-bold">No Readings</p>
         )}
@@ -90,7 +90,7 @@ const DropDownContent: React.FC<Props> = ({
               {/* Icon Buttons */}
               <div className="flex flex-col gap-2 items-center justify-center relative">
                 <div>
-                  <div className="flex justify-end mr-3 gap-3">
+                  <div className="flex justify-end  gap-3">
                     {/* Bookmark Button */}
                     <button
                       className={iconButtonClass}

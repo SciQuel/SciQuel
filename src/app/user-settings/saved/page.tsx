@@ -31,8 +31,8 @@ export default async function SavedPaged() {
     return response.data.map((story: Brained[number]) => story.storyId);
   };
   const data = await fetchBrainedIds();
-  console.log(data);
 
+    //get brained stores from brained ids
   let BrainedStories: GetStoryResult[] = await Promise.all(
     data.map(async (id: string) => {
       const resp: AxiosResponse<GetStoryResult> = await axios.get(

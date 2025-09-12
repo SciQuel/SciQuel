@@ -9,8 +9,9 @@ import xIcon from "../../../../public/assets/images/xicon.png";
 import { type ReadingHistory as ReadingHistoryType } from "../../../app/user-settings/actions/getReadingHistory";
 
 
-const iconButtonClass:string =
-  "flex md:h-[40px] md:w-[40px] h-[25px] w-[25px] items-center justify-center rounded-full bg-[#76a89f] py-1 transition ease-linear";
+const iconButtonClass =
+    "flex h-[35px] w-[35px] md:h-[40px] md:w-[40px] p-1 md:p-2 justify-center items-center rounded-full transition ease-linear  bg-[#76a89f] ";
+
 
 interface props{
   popupRefs: React.MutableRefObject<Record<string, React.RefObject<HTMLDivElement>>>;
@@ -49,17 +50,22 @@ const ShareDropDown = ({ popupRefs, reading, activeSharePopup }: props) => {
 
   const open = activeSharePopup === reading.uuid;
 
+  const buttonIcons = [
+    
+  ]
+
   return (
     <div
-      className={`relative right-0 z-50 mt-3    ${
-        open ? "opacity-100" : "opacity-0"
+      className={`relative p-1 right-0 z-50 mt-3    ${
+        open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none" 
       }`}
+      tabIndex= {open ? 0 : -1}
       onClick={(e) => e.stopPropagation()}
       key={reading.uuid}
       ref={(popupRefs.current[reading.uuid] ??= createRef<HTMLDivElement>())}
     >
       {/* Icons */}
-      <div className="relative z-10 flex w-auto items-center justify-between gap-2 rounded-lg px-3 shadow-lg">
+      <div className="relative z-10 flex w-auto  justify-between gap-2 rounded-lg shadow-lg">
         <button onClick={handleShareClick} className={iconButtonClass}>
           <Image
             src={shareIcon}
@@ -82,15 +88,18 @@ const ShareDropDown = ({ popupRefs, reading, activeSharePopup }: props) => {
 
         <a
           href="https://www.facebook.com/sharer/sharer.php?u=sciquel.org"
-          className={iconButtonClass}
+          className=""
           target="_blank"
           onClick={(e) => e.stopPropagation()}
         >
+          
           <Image
             src={facebookIcon}
+            className=" h-[35px] w-[35px] md:h-[40px] md:w-[40px]"
             alt="share to facebook"
-            width={20}
-            height={20}
+            width ={40}
+            height = {40}
+           
           />
         </a>
 
@@ -122,7 +131,7 @@ const ShareDropDown = ({ popupRefs, reading, activeSharePopup }: props) => {
         >
           <ClipboardIcon
             onClick={handleClipboardClick}
-            className="h-4/5 w-[40px]"
+            className="h-4/5 w-[40px] cursor-pointer"
           />
 
           {/* Link */}
