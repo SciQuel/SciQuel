@@ -5,6 +5,9 @@ import Trivia from "@/components/EditorDashboard/StoryInfoForm/formComponents/Tr
 import StoryPreview from "@/components/EditorDashboard/StoryPreview";
 import parseMarkdownToSections from "@/components/MarkdownEditor/parseMarkdown";
 import {
+  Prisma,
+  StoryType,
+  SubtopicOnStory,
   type Contributor,
   type StoryContribution,
   type StoryTopic,
@@ -22,126 +25,70 @@ export type Contribution = StoryContribution & {
 };
 
 interface Props {
-  contributions: Contribution[];
-  story: {
-    id?: string;
-    title?: string;
-    summary?: string;
-    image?: string;
-    caption?: string;
-    slug?: string;
-    date?: Date;
-    body?: string;
-    storyType?: string;
-    topics?: StoryTopic[];
-    titleColor: string;
-    summaryColor: string;
-    contributors?: string[];
-  };
-
-  content?: string;
+  story: Prisma.StoryGetPayload<{
+    include: {
+      storyContributions: {
+        include: {
+          contributor: true;
+        };
+      };
+      storyContent: {
+        orderBy: {
+          createdAt: "desc";
+        };
+        take: 1;
+      };
+      quizQuestions: true;
+      subtopics: {
+        include: {
+          subtopic: true;
+        };
+      };
+      generalSubjects: {
+        include: {
+          subject: true;
+        };
+      };
+    };
+  }>;
 }
 
 // Main component: StoryInfoEditorClient
 // This component manages the state and layout for editing a story
-const StoryInfoEditorClient: React.FC<Props> = ({ story, contributions }) => {
+const StoryInfoEditorClient: React.FC<Props> = ({ story }) => {
   // State declarations for various story properties
   // Grouping related state variables into a single object could be beneficial
-  const [body, setBody] = useState<string>("");
+  const [body, setBody] = useState<string>(
+    story.storyContent[0]?.content ?? "",
+  );
   const [title, setTitle] = useState<string>(story.title || "Untitled"); // Changed to default non-null
   const [summary, setSummary] = useState<string>(story.summary || ""); // Can remain empty but not null
-  const [image, setImage] = useState<string>(story.image || ""); // Empty string instead of null
-  const [caption, setCaption] = useState<string>(story.caption || ""); // Can remain empty but not null
+  const [image, setImage] = useState<File | string | null>(
+    story.thumbnailUrl || "",
+  ); // Empty string instead of null
+  const [caption, setCaption] = useState<string>(story.coverCaption || ""); // Can remain empty but not null
   const [slug, setSlug] = useState<string>(story.slug || "default-slug"); // Default slug instead of null
-  const [date, setDate] = useState<Date>(story.date || new Date()); // Initialize with current date if null
-  const [storyType, setStoryType] = useState<string>(
-    story.storyType || "defaultType",
+  const [date, setDate] = useState<Date | null>(
+    story.publishedAt || new Date(),
+  ); // Initialize with current date if null
+  const [storyType, setStoryType] = useState<StoryType>(
+    story.storyType || "ESSAY",
   ); // Default type instead of null
   const [topics, setTopics] = useState<StoryTopic[]>(story.topics || []); //use storytopic instead of string
+
   const [titleColor, setTitleColor] = useState<string>(
     story.titleColor || "#000000",
   ); // Default color
   const [summaryColor, setSummaryColor] = useState<string>(
     story.summaryColor || "#000000",
   ); // Default color
-  const [contributors, setContributors] =
-    useState<Contribution[]>(contributions);
-
-  // Function to format date for preview
-  // Consider moving this to a utility file for reuse
-  const formatPreviewDate = (date: string): string => {
-    if (!date) return "";
-    const dateObj = new Date(date);
-    if (isNaN(dateObj.getTime())) return ""; // invalid date check
-
-    const year = dateObj.getFullYear().toString();
-    const month = (dateObj.getMonth() + 1).toString().padStart(2, "0");
-    const day = dateObj.getDate().toString().padStart(2, "0");
-    const hour = dateObj.getHours();
-    const formattedHour = hour % 12 || 12;
-    const minutes = dateObj.getMinutes();
-    const AMPM = hour < 12 ? "AM" : "PM";
-    return `${month}-${day}-${year} ${formattedHour}:${minutes} ${AMPM} EDT`;
-  };
-
-  // Function to format contributors for display
-  // TODO: This function is defined but never used in the component. Consider removing if unnecessary.
-
-  // State for managing sections of the story
-  const [sections, setSections] = useState<Section[]>([]);
-
-  // Effect for logging sections state (for debugging)
-  useEffect(() => {
-    console.log("Sections state updated:", sections);
-  }, [sections]);
-
-  // Effect for fetching article content and initializing state
-  useEffect(() => {
-    async function loadArticle() {
-      if (story.id) {
-        try {
-          const fetchedArticle = await fetchArticleById(story.id, true);
-          if (fetchedArticle.storyContent.length > 0) {
-            const storyContent = fetchedArticle.storyContent[0].content;
-            setBody(storyContent);
-
-            // Parse into sections (for editing purposes) but also keep the original content
-            const parsedSections = parseMarkdownToSections(storyContent);
-            setSections(parsedSections);
-          }
-        } catch (err: any) {
-          console.error("Failed to fetch article:", err.message);
-        }
-      }
-    }
-
-    loadArticle();
-  }, [story.id]);
-
-  // Handler for markdown changes
-  const handleMarkdownChange = (newMarkdown: string) => {
-    setBody(newMarkdown);
-    const parsedSections = parseMarkdownToSections(newMarkdown);
-    setSections(parsedSections);
-  };
-
-  // Handler for section content changes
-  const handleSectionChange = (idx: number, newContent: string) => {
-    const updatedSections = [...sections];
-    updatedSections[idx].content = newContent;
-    setSections(updatedSections);
-  };
-
-  // Handler for adding a new section
-  const handleAddSection = (type: string) => {
-    setSections([...sections, { type, content: "" }]);
-  };
-
-  // Handler for deleting a section
-  const handleDeleteSection = (delIdx: number) => {
-    const newArray = sections.filter((_, index) => index !== delIdx);
-    setSections(newArray);
-  };
+  const [contributors, setContributors] = useState<
+    Prisma.StoryContributionGetPayload<{
+      include: {
+        contributor: true;
+      };
+    }>[]
+  >(story.storyContributions);
 
   // State and refs for managing the resizable layout
   const [leftWidth, setLeftWidth] = useState(40); // 40% as default
@@ -204,6 +151,8 @@ const StoryInfoEditorClient: React.FC<Props> = ({ story, contributions }) => {
               </h3>
             </div>
             <StoryInfoForm
+              subjects={story.generalSubjects}
+              subtopics={story.subtopics}
               id={story.id}
               title={title}
               setTitle={setTitle}
@@ -219,10 +168,6 @@ const StoryInfoEditorClient: React.FC<Props> = ({ story, contributions }) => {
               setDate={setDate}
               body={body}
               setBody={setBody}
-              sections={sections}
-              onSectionChange={handleSectionChange}
-              onAddSection={handleAddSection}
-              onDeleteSection={handleDeleteSection}
               storyType={storyType}
               setStoryType={setStoryType}
               topics={topics}
@@ -250,7 +195,7 @@ const StoryInfoEditorClient: React.FC<Props> = ({ story, contributions }) => {
           className="h-full overflow-y-auto bg-white"
           style={{ width: `${100 - leftWidth}%` }}
         >
-          <StoryPreview
+          {/* <StoryPreview
             article={{
               title,
               summary,
@@ -258,7 +203,6 @@ const StoryInfoEditorClient: React.FC<Props> = ({ story, contributions }) => {
               image,
               slug,
               date,
-              sections,
               storyType,
               topics,
               titleColor,
@@ -267,7 +211,7 @@ const StoryInfoEditorClient: React.FC<Props> = ({ story, contributions }) => {
             formattedDate={date?.toString() ?? ""}
             contributors={contributors}
             id={story.id}
-          />
+          /> */}
         </div>
       </div>
     </div>
@@ -275,17 +219,3 @@ const StoryInfoEditorClient: React.FC<Props> = ({ story, contributions }) => {
 };
 
 export default StoryInfoEditorClient;
-
-// API fetch function
-// TODO: Consider moving this to a separate API utility file
-async function fetchArticleById(id: string, includeContent = false) {
-  const includeContentParam = includeContent ? "?include_content=true" : "";
-  const response = await fetch(`/api/stories/id/${id}${includeContentParam}`);
-
-  if (!response.ok) {
-    throw new Error(`Failed to fetch article: ${response.statusText}`);
-  }
-
-  const article = await response.json();
-  return article;
-}

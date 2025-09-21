@@ -89,7 +89,9 @@ model Story {
   summary      String
   summaryColor String
 
-  topics StoryTopic[]
+  topics          StoryTopic[]
+  subtopics       SubtopicOnStory[]
+  generalSubjects GeneralSubjectOnStory[]
 
   storyContributions StoryContribution[]
   storyContent       StoryContent[]
@@ -106,9 +108,6 @@ model Story {
   comments        Comment[]
   staffPick       StaffPick?
   StaffPickRecord StaffPickRecord[]
-  Subtopic        Subtopic[]
-  GeneralSubject  GeneralSubject[]
-  subtopicIds     String[]          @db.ObjectId
   subjectTypeIds  String[]          @db.ObjectId
   currentVersion  Int               @default(1) // Current version of the story
 }
@@ -254,13 +253,29 @@ model QuizResult {
 }
 
 model Subtopic {
-  id             String        @id @default(auto()) @map("_id") @db.ObjectId
-  name           String        @unique
-  Story          Story?        @relation(fields: [storyId], references: [id])
-  storyId        String?       @db.ObjectId
-  // SubtopicOnStory SubtopicOnStory[]
-  StoryHistory   StoryHistory? @relation(fields: [storyHistoryId], references: [id])
-  storyHistoryId String?       @db.ObjectId
+  id   String @id @default(auto()) @map("_id") @db.ObjectId
+  name String @unique
+
+  story        SubtopicOnStory[]
+  storyHistory SubtopicOnStoryHistory[]
+
+  numStories Int @default(0)
+}
+
+model SubtopicOnStory {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  story      Story    @relation(fields: [storyId], references: [id])
+  storyId    String   @db.ObjectId
+  subtopic   Subtopic @relation(fields: [subtopicId], references: [id])
+  subtopicId String   @db.ObjectId
+}
+
+model SubtopicOnStoryHistory {
+  id                 String       @id @default(auto()) @map("_id") @db.ObjectId
+  storyHistoryRecord StoryHistory @relation(fields: [storyHistoryId], references: [id])
+  storyHistoryId     String       @db.ObjectId
+  subtopic           Subtopic     @relation(fields: [subtopicId], references: [id])
+  subtopicId         String       @db.ObjectId
 }
 
 model Bookmark {
@@ -514,13 +529,33 @@ model StaffPickRecord {
 }
 
 model GeneralSubject {
-  id             String        @id @default(auto()) @map("_id") @db.ObjectId
-  name           String        @unique
-  Story          Story?        @relation(fields: [storyId], references: [id])
-  storyId        String?       @db.ObjectId
-  // GeneralSubjectOnStory GeneralSubjectOnStory[]
-  StoryHistory   StoryHistory? @relation(fields: [storyHistoryId], references: [id])
-  storyHistoryId String?       @db.ObjectId
+  id   String @id @default(auto()) @map("_id") @db.ObjectId
+  name String @unique
+
+  stories             GeneralSubjectOnStory[]
+  storyHistoryRecords GeneralSubjectOnStoryHistory[]
+
+  numStories Int @default(0)
+}
+
+model GeneralSubjectOnStory {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  story   Story  @relation(fields: [storyId], references: [id])
+  storyId String @db.ObjectId
+
+  subject   GeneralSubject @relation(fields: [subjectId], references: [id])
+  subjectId String         @db.ObjectId
+}
+
+model GeneralSubjectOnStoryHistory {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  storyHistory   StoryHistory @relation(fields: [storyHistoryId], references: [id])
+  storyHistoryId String       @db.ObjectId
+
+  subject   GeneralSubject @relation(fields: [subjectId], references: [id])
+  subjectId String         @db.ObjectId
 }
 
 model StoryHistory {
@@ -543,8 +578,8 @@ model StoryHistory {
   summaryColor String
 
   topics          StoryTopic[]
-  subtopics       Subtopic[]
-  generalSubjects GeneralSubject[]
+  subtopics       SubtopicOnStoryHistory[]
+  generalSubjects GeneralSubjectOnStoryHistory[]
 
   storyContributions StoryContribution[]
   storyContent       StoryContent[]
@@ -560,7 +595,4 @@ model StoryHistory {
   coverCaption String @default("")
 
   quizzes QuizQuestion[]
-
-  subtopicIds    String[] @db.ObjectId
-  subjectTypeIds String[] @db.ObjectId
 }

@@ -2,23 +2,22 @@
 
 import { type Contribution } from "@/app/editor/(full-page)/story/info/StoryInfoEditorPageClient";
 import Form from "@/components/Form";
-import { type Contributor } from "@prisma/client";
-import { useState, type Dispatch, type SetStateAction } from "react";
+import { Prisma, StoryContribution, type Contributor } from "@prisma/client";
+import { useState } from "react";
 import { searchContributors } from "./actions";
 import CurrentContributor from "./CurrentContributor";
 import FoundContributor from "./FoundContributor";
 
 interface Props {
-  contributions: Contribution[];
-  setContributions: Dispatch<SetStateAction<Contribution[]>>;
+  contributions: Prisma.StoryContributionGetPayload<{
+    include: {
+      contributor: true;
+    };
+  }>[];
   storyId: string;
 }
 
-export default function ContributorSearch({
-  contributions,
-  setContributions,
-  storyId,
-}: Props) {
+export default function ContributorSearch({ contributions, storyId }: Props) {
   const [foundContributors, setFoundContributors] = useState<Contributor[]>([]);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -120,7 +119,7 @@ export default function ContributorSearch({
         {contributions.map((contribution) => (
           <CurrentContributor
             contribution={contribution}
-            key={`${contribution.id}-${contribution.contributor.id}`}
+            key={`${contribution.id}-${contribution.contributor?.id ?? ""}`}
           />
         ))}
       </ul>

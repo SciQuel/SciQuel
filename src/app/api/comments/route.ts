@@ -9,15 +9,11 @@ import { createCommentSchema } from "./schema";
 //to create a comment
 export async function POST(req: NextRequest) {
   try {
-    // console.log("Received request:", req);
     const requestBody = await req.json();
-    // console.log("Request body:", requestBody);
 
     const parsed = createCommentSchema.safeParse(requestBody);
-    // console.log("Validation result:", parsed);
 
     if (!parsed.success) {
-      // console.error("Validation error:", parsed.error);
       return new NextResponse(JSON.stringify({ error: parsed.error }), {
         status: 400,
         headers: {

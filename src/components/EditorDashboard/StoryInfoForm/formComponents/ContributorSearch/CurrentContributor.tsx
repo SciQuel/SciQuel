@@ -1,13 +1,20 @@
 "use client";
 
-import { type Contribution } from "@/app/editor/(full-page)/story/info/StoryInfoEditorPageClient";
 import Form from "@/components/Form";
-import { type ContributionType } from "@prisma/client";
+import {
+  Prisma,
+  StoryContribution,
+  type ContributionType,
+} from "@prisma/client";
 import { useState } from "react";
 import { deleteContribution, editContribution } from "./actions";
 
 interface Props {
-  contribution: Contribution;
+  contribution: Prisma.StoryContributionGetPayload<{
+    include: {
+      contributor: true;
+    };
+  }>;
 }
 
 export default function CurrentContributor({ contribution }: Props) {
@@ -37,7 +44,7 @@ export default function CurrentContributor({ contribution }: Props) {
   return (
     <li className="my-2 rounded-lg border bg-white px-2 py-1">
       <p>
-        {`${contribution.contributor.firstName} ${contribution.contributor.lastName}`}
+        {`${contribution.contributor?.firstName} ${contribution.contributor?.lastName}`}
         {deleteDone ? (
           <>
             {" "}

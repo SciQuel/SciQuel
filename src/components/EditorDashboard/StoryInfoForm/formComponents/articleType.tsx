@@ -1,11 +1,11 @@
+import { StoryType } from "@prisma/client";
 import clsx from "clsx";
 import React from "react";
 
 type Props = {
-  value: string;
-  onChange: (value: string) => void;
+  value: StoryType;
+  onChange: (value: StoryType) => void;
   required?: boolean;
-  indicateRequired?: boolean;
   disabled?: boolean;
   setDirty: (value: boolean) => void;
 };
@@ -14,15 +14,9 @@ const ArticleType = ({
   value,
   onChange,
   required = true,
-  indicateRequired = true,
   disabled = false,
   setDirty,
 }: Props) => {
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setDirty(true);
-    onChange(e.target.value);
-  };
-
   return (
     <label className="my-5 block">
       Story Type
@@ -33,11 +27,12 @@ const ArticleType = ({
                 focus:ring-0`,
           "disabled:pointer-events-none disabled:bg-gray-50 disabled:text-gray-300",
         )}
-        placeholder="Select a story type"
         required={required}
-        indicateRequired={indicateRequired}
         value={value}
-        onChange={handleChange}
+        onChange={(e) => {
+          setDirty(true);
+          onChange(e.target.value as "DIGEST" | "ESSAY");
+        }}
         disabled={disabled}
       >
         <option value="DIGEST">Digest</option>

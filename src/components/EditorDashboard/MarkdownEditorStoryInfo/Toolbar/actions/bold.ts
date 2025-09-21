@@ -1,7 +1,6 @@
 import { type editor } from "monaco-editor";
 
 export default function bold(editor: editor.ICodeEditor) {
-  console.log(1);
   const selection = editor.getSelection() ?? null;
   if (selection !== null) {
     const wrappedText = editor.getModel()?.getValueInRange(selection) ?? "";
