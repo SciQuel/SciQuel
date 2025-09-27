@@ -313,13 +313,8 @@ const Trivia: React.FC = () => {
         q.id === questionId
           ? {
               ...q,
-              categories: (q.categories || []).map((c) =>
-                c.id === categoryId
-                  ? {
-                      ...c,
-                      items: (c.items || []).filter((i) => i.id !== itemId),
-                    }
-                  : c,
+              categoryItems: (q.categoryItems || []).filter(
+                (item) => item.id !== itemId,
               ),
             }
           : q,
@@ -431,6 +426,27 @@ const Trivia: React.FC = () => {
 
   const [isCollapsed, setIsCollapsed] = useState(false);
 
+  const [savedQuestions, setSavedQuestions] = useState<Set<number>>(new Set());
+
+  const handleSave = (
+    question: Question,
+    e: React.MouseEvent<HTMLButtonElement>,
+  ) => {
+    submitQuizMap(question, e);
+
+    setSavedQuestions((prev) => new Set(prev).add(question.id));
+
+    setTimeout(() => {
+      setSavedQuestions((prev) => {
+        const updated = new Set(prev);
+        updated.delete(question.id);
+        return updated;
+      });
+    }, 1500);
+  };
+
+  const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
+
   return (
     <div className="container mx-auto py-4">
       <h1
@@ -479,13 +495,36 @@ const Trivia: React.FC = () => {
                 <option value="COMPLEX_MATCHING">Multiple Matching</option>
                 <option value="SELECT_ALL">Select All</option>
               </select>
+
               <button
                 type="button"
-                onClick={() => deleteQuestion(question.id)}
-                className="px-2 py-2 text-black"
+                onClick={() => setConfirmDeleteId(question.id)}
+                className="px-2 py-2 text-black hover:text-red-500"
               >
                 &times;
               </button>
+
+              {confirmDeleteId === question.id && (
+                <div className="mt-2 flex items-center gap-2 text-sm text-gray-700">
+                  <span>Delete this question?</span>
+                  <button
+                    className="rounded bg-red-500 px-2 py-1 text-white hover:bg-red-600"
+                    onClick={() => {
+                      deleteQuestion(question.id);
+                      setConfirmDeleteId(null);
+                    }}
+                  >
+                    Yes
+                  </button>
+                  <button
+                    className="rounded bg-gray-300 px-2 py-1 hover:bg-gray-400"
+                    onClick={() => setConfirmDeleteId(null)}
+                  >
+                    No
+                  </button>
+                </div>
+              )}
+
               {question.type === "MULTIPLE_CHOICE" && (
                 <MultipleChoiceQuestion
                   question={question}
@@ -545,12 +584,18 @@ const Trivia: React.FC = () => {
                 placeholder="Enter explanation here"
               />
             </div> */}
-              <button
-                onClick={(e) => submitQuizMap(question, e)}
-                className="mt-4 rounded bg-sciquelTeal px-3 py-2 text-sm text-white"
-              >
-                Save quiz question
-              </button>
+              <div className="mt-4 flex items-center gap-2">
+                <button
+                  className="rounded bg-sciquelTeal px-3 py-2 text-sm text-white"
+                  onClick={(e) => handleSave(question, e)}
+                >
+                  Save quiz question
+                </button>
+
+                {savedQuestions.has(question.id) && (
+                  <span className="text-lg text-green-500">✔</span>
+                )}
+              </div>
             </div>
           ))}
           <button
@@ -737,37 +782,30 @@ async function submitSelectAll(question: Question) {
  * @param question
  */
 async function submitDirectMatching(question: Question) {
-  /** Missing content_category, explainations The should be an explain for each option */
   const { content, pairs, type } = question;
-  /**
-   * Missing content_category, explainations The should be an explain for each option add subheader
-   * add content
-   */
+
+  // The correct answers should be the original indices before shuffling
+  // Since rightSideOrder in the component maintains the original order in its 'number' property,
+  // we can use that to determine the correct mapping
+  const correctAnswers = (question.pairs || []).map((pair, index) => index);
 
   const res = await axios.post(urlQuiz, {
     story_id: storyIdTest,
     question_type: type,
-    //optional
     max_score: 10,
     subpart: {
       question: content,
-      //content category for each match (for the left side for now)
-      //example for content_category
       content_category: pairs?.map(
         (val, index) => "This is an content_category for pair " + index,
       ),
-      //the left side
       categories: pairs?.map((pair) => pair.left),
-      //the right side
       options: pairs?.map((pair) => pair.right),
-      //number is the index of the right side
-      //For example: [1,0,2] means the first pair is 1, the second pair is 0, the third pair is 2
-      //need to figure out how to store the correct ansswers
-      correct_answers: [1, 0, 2], //not correct
-      //explaination for each match (for the left side for now)
-      //example for explantion for each pair (left side)
+      // This assumes the right side options will be displayed in shuffled order,
+      // and the correct answer is their original position (0, 1, 2, etc.)
+      correct_answers: correctAnswers,
       explanations: pairs?.map(
-        (val, index) => "This is an explantation for pair " + index,
+        (val, index) =>
+          val.explanation || "This is an explantation for pair " + index,
       ),
     },
     subheader: "This is a subheader",

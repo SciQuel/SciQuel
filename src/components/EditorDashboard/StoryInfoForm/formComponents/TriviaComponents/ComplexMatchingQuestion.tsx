@@ -38,7 +38,6 @@ const ComplexMatchingQuestion: React.FC<ComplexMatchingQuestionProps> = ({
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const textareaRefs = useRef<Record<number, HTMLTextAreaElement | null>>({});
 
-  // Auto-resize effect
   useEffect(() => {
     Object.values(textareaRefs.current).forEach((textarea) => {
       if (textarea) {
@@ -88,9 +87,11 @@ const ComplexMatchingQuestion: React.FC<ComplexMatchingQuestionProps> = ({
       : "#CCCCCC";
   };
 
-  const handleDeleteItem = (itemId: number, categoryId: number | null) => {
-    if (categoryId !== null) {
-      deleteItemFromCategory(question.id, categoryId, itemId);
+  const handleDeleteItem = (itemId: number) => {
+    // Find the categoryId for this item
+    const item = question.categoryItems?.find((i) => i.id === itemId);
+    if (item && item.categoryId) {
+      deleteItemFromCategory(question.id, item.categoryId, itemId);
     }
   };
 
@@ -201,7 +202,7 @@ const ComplexMatchingQuestion: React.FC<ComplexMatchingQuestionProps> = ({
                 </div>
                 <button
                   type="button"
-                  onClick={() => handleDeleteItem(item.id, item.categoryId)}
+                  onClick={() => handleDeleteItem(item.id)}
                   className="ml-2 text-black"
                   style={{ cursor: "pointer" }}
                 >
