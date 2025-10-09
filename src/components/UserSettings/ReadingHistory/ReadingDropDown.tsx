@@ -109,6 +109,7 @@ const ReadingDropDown: React.FC<PropTypes> = ({
       {openDropDown === title && (
         <DropDownContent
           data={data}
+          title = {title}
           bookMarkedReadingsIds={bookMarkedReadingsIds}
           brainedReadingIds={brainedReadingIds}
           handleBookmarkClick={handleBookmarkClick}

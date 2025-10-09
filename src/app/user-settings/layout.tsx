@@ -9,14 +9,14 @@ export default function Layout(props: { children: React.ReactNode }) {
   const { data: session } = useSession();
   if (!session) {
     return (
-      <div className="min-h-screen bg-white px-8 dark:bg-black">
+      <div className="min-h-screen bg-white px-8 ">
         <p>You need to sign in to view this page</p>
       </div>
     );
   }
   return (
     <section className="h-full">
-      <div className="flex  h-[calc(100dvh-100px)] bg-white dark:bg-sciquelDarkText dark:text-white">
+      <div className=" flex-col md:flex-row flex  h-[calc(100dvh-100px)] bg-white">
         <Sidebar />
         {props.children}
       </div>

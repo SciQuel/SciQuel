@@ -34,7 +34,7 @@ export default function Header() {
          text-xl font-thin leading-[2rem] sm:px-10 md:justify-center"
         >
           <Link className=" pointer-events-auto" href="/">
-            <SciquelLogo className="h-8 w-auto fill-white sm:h-10" />
+            <SciquelLogo className="h-8  w-auto fill-white sm:h-10" />
             <span className="sr-only">Go to home page</span>
           </Link>
         </div>

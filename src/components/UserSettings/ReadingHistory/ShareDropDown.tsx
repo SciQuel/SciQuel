@@ -10,7 +10,7 @@ import { type ReadingHistory as ReadingHistoryType } from "../../../app/user-set
 
 
 const iconButtonClass =
-    "flex h-[35px] w-[35px] md:h-[40px] md:w-[40px] p-1 md:p-2 justify-center items-center rounded-full transition ease-linear  bg-[#76a89f] ";
+    "flex h-[40px] w-[40px] md:h-[40px] md:w-[40px] p-1 md:p-2 justify-center items-center rounded-full transition ease-linear  bg-[#76a89f] ";
 
 
 interface props{
@@ -51,12 +51,12 @@ const ShareDropDown = ({ popupRefs, reading, activeSharePopup }: props) => {
   const open = activeSharePopup === reading.uuid;
 
   const buttonIcons = [
-    
+
   ]
 
   return (
     <div
-      className={`relative p-1 right-0 z-50 mt-3    ${
+      className={`absolute md:relative w-1/2 md:w-full  left-0 md:right-0 z-50 mt-3    ${
         open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none" 
       }`}
       tabIndex= {open ? 0 : -1}
@@ -65,7 +65,7 @@ const ShareDropDown = ({ popupRefs, reading, activeSharePopup }: props) => {
       ref={(popupRefs.current[reading.uuid] ??= createRef<HTMLDivElement>())}
     >
       {/* Icons */}
-      <div className="relative z-10 flex w-auto  justify-between gap-2 rounded-lg shadow-lg">
+      <div className="relative z-10 p-2  bg-sciquelCardBg shadow-md  flex w-auto  justify-between gap-3 rounded-lg ">
         <button onClick={handleShareClick} className={iconButtonClass}>
           <Image
             src={shareIcon}
@@ -127,7 +127,7 @@ const ShareDropDown = ({ popupRefs, reading, activeSharePopup }: props) => {
       {showClipBoardIcon && open && (
         <div
           ref={textRef}
-          className="absolute top-[100%] z-10  mt-2 flex  w-full items-center gap-2 rounded-lg bg-white px-3 py-3 shadow-lg shadow-md"
+          className="absolute  z-10  mt-2 flex left-0  w-full items-center gap-2 rounded-lg bg-sciquelCardBg px-1  md:px-3 py-3 shadow-md"
         >
           <ClipboardIcon
             onClick={handleClipboardClick}
@@ -135,7 +135,7 @@ const ShareDropDown = ({ popupRefs, reading, activeSharePopup }: props) => {
           />
 
           {/* Link */}
-          <div className="h-4/5 flex-1 truncate rounded-full bg-[#76a89f] p-2">
+          <div className="h-4/5 text-white flex-1 truncate rounded-full bg-[#76a89f] p-2">
             {`${baseUrl}/stories/${new Date(
               reading.createdAt,
             ).getUTCFullYear()}/${

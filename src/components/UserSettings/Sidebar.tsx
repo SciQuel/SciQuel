@@ -11,11 +11,12 @@ function SidebarItem(props: {
   path: string;
   href: string;
   margin?: boolean;
+  title: string;
 }) {
   const active = props.path === props.href;
   // console.log(`props.children: ${props.children?.toString()}`)
   return (
-    <div className="">
+    <div className="" title = {props.title} >
       <Link
         href={props.href}
         className={clsx({
@@ -26,6 +27,7 @@ function SidebarItem(props: {
           // "bg-[#FFF]": active, idk why that doesn't work lol
           "md:mt-16": props.margin,
         })}
+      
       >
         {props.children}
       </Link>
@@ -307,12 +309,12 @@ export default function Sidebar() {
   return (
     <div>
       <div
-        className="\ z-10 h-full gap-4 gap-y-8 bg-[#EDF4F4] px-5 pt-1.5 pt-6 text-center text-xl dark:text-white md:sticky md:flex-col
-                md:gap-y-2 md:text-left lg:w-56"
+        className="\ z-10 h-12  md:h-full  flex-row gap-4  gap-y-8 bg-[#EDF4F4] md:px-5 px-2 md:pt-6 text-center text-xl dark:text-white md:sticky md:flex-col
+                md:gap-y-2  md:text-left lg:w-56"
       >
-        <div className="flex h-4/5 flex-col justify-between text-xl text-[#1A6768]">
-          <div>
-            <SidebarItem href="/user-settings/dashboard" path={path}>
+        <div className=" flex md:h-4/5 flex-row md:flex-col h-full w-full text-xl text-[#1A6768]">
+          <div className="flex md:flex-col w-full items-center md:items-stretch   h-full justify-between flex-row">
+            <SidebarItem href="/user-settings/dashboard" path={path} title = {'Dashboard'}>
               <div className="my-3 flex flex-row items-center">
                 {/* N.B.: bc i didn't know this, it might be helpful-- these svg codes are directly copied from figma! just right click and select 'copy as svg'*/}
                 <svg
@@ -338,7 +340,7 @@ export default function Sidebar() {
 
             <hr className="solid my-2 border-[#D6D6D6]"></hr>
 
-            <SidebarItem href="/user-settings/reading-history" path={path}>
+            <SidebarItem href="/user-settings/reading-history" path={path} title = {'Reading History'}>
               <div className="my-3 flex flex-row items-center">
                 <svg
                   className="mr-2"
@@ -409,7 +411,7 @@ export default function Sidebar() {
 
             <hr className="solid my-2 border-[#D6D6D6]"></hr>
 
-            <SidebarItem href="/user-settings/activity" path={path}>
+            <SidebarItem href="/user-settings/activity" path={path} title = {'Activity'}>
               <div className="my-3 flex flex-row items-center">
                 <svg
                   className="mr-2"
@@ -456,7 +458,7 @@ export default function Sidebar() {
 
             <hr className="solid my-2 border-[#D6D6D6]"></hr>
 
-            <SidebarItem href="/user-settings/quiz-history" path={path}>
+            <SidebarItem href="/user-settings/quiz-history" path={path} title = {'Quiz History'}>
               <div className="my-3 flex flex-row items-center">
                 <svg
                   className="mr-2"
@@ -479,7 +481,7 @@ export default function Sidebar() {
 
             <hr className="solid my-2 border-[#D6D6D6]"></hr>
 
-            <SidebarItem href="/user-settings/annotations" path={path}>
+            <SidebarItem href="/user-settings/annotations" path={path} title = {"Annotations"}>
               <div className="my-3 flex flex-row items-center">
                 <svg
                   className="mr-2"
@@ -508,7 +510,7 @@ export default function Sidebar() {
 
             <hr className="solid my-2 border-[#D6D6D6]"></hr>
 
-            <SidebarItem href="/user-settings/comments" path={path}>
+            <SidebarItem href="/user-settings/comments" path={path} title = {'Comments'}>
               <div className="my-3 flex flex-row items-center">
                 <svg
                   className="mr-2"
@@ -530,13 +532,84 @@ export default function Sidebar() {
             </SidebarItem>
 
             <hr className="solid my-2 border-[#D6D6D6]"></hr>
-          </div>
+         
 
-          <div>
+
+          {/*last two icons for small screen */}
+           <SidebarItem
+              href="/user-settings/contact-us"
+              path={path}
+              margin={true}
+              title = {'Contact Us'}
+            >
+              <div className="my-3 md:hidden flex flex-row items-center">
+                <svg
+                  className="mr-2"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M18.032 14.88C18.1701 14.3453 18.7155 14.0237 19.2502 14.1618C20.3229 14.4387 21.2732 15.0641 21.9519 15.9397C22.6307 16.8152 22.9994 17.8914 23.0002 18.9993V21C23.0002 21.5523 22.5525 22 22.0002 22C21.448 22 21.0002 21.5523 21.0002 21V19.0007C20.9997 18.3361 20.7784 17.6902 20.3713 17.165C19.964 16.6396 19.3938 16.2644 18.7502 16.0982C18.2155 15.9602 17.8939 15.4148 18.032 14.88Z"
+                    fill="#1A6768"
+                  />
+                  <path
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M14.0315 2.88196C14.1685 2.34694 14.7133 2.02426 15.2483 2.16125C16.3238 2.43663 17.2771 3.06213 17.9578 3.93914C18.6386 4.81615 19.0081 5.89479 19.0081 7.005C19.0081 8.11521 18.6386 9.19385 17.9578 10.0709C17.2771 10.9479 16.3238 11.5734 15.2483 11.8488C14.7133 11.9857 14.1685 11.6631 14.0315 11.128C13.8945 10.593 14.2172 10.0482 14.7522 9.91125C15.3975 9.74603 15.9695 9.37073 16.3779 8.84452C16.7864 8.31831 17.0081 7.67113 17.0081 7.005C17.0081 6.33887 16.7864 5.69169 16.3779 5.16548C15.9695 4.63928 15.3975 4.26398 14.7522 4.09875C14.2172 3.96176 13.8945 3.41699 14.0315 2.88196Z"
+                    fill="#1A6768"
+                  />
+                  <path
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M9 4C7.34315 4 6 5.34315 6 7C6 8.65685 7.34315 10 9 10C10.6569 10 12 8.65685 12 7C12 5.34315 10.6569 4 9 4ZM4 7C4 4.23858 6.23858 2 9 2C11.7614 2 14 4.23858 14 7C14 9.76142 11.7614 12 9 12C6.23858 12 4 9.76142 4 7Z"
+                    fill="#1A6768"
+                  />
+                  <path
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M6 16C4.34315 16 3 17.3431 3 19V21C3 21.5523 2.55228 22 2 22C1.44772 22 1 21.5523 1 21V19C1 16.2386 3.23858 14 6 14H12C14.7614 14 17 16.2386 17 19V21C17 21.5523 16.5523 22 16 22C15.4477 22 15 21.5523 15 21V19C15 17.3431 13.6569 16 12 16H6Z"
+                    fill="#1A6768"
+                  />
+                </svg>
+                <SidebarText> Contact Us </SidebarText>
+              </div>
+            </SidebarItem>
+
+            <SidebarItem href="/user-settings/settings" path={path} title = {'Settings'}>
+              <div className="my-3 md:hidden flex flex-row items-center">
+                <svg
+                  width="33"
+                  height="33"
+                  viewBox="0 0 24 24"
+                  fill="#1A6768"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fill="#1A6768"
+                    d="M19.2 10L18.1 9.8C18 9.6 18 9.4 17.9 9.2L18.5 8.3L19 7.6L16.4 5L15.7 5.5L14.8 6.1C14.6 6 14.4 6 14.2 5.9L14 4.8L13.8 4H10.2L10 4.8L9.8 5.9C9.6 6 9.4 6 9.2 6.1L8.3 5.5L7.6 5.1L5.1 7.6L5.6 8.3L6.2 9.2C6 9.4 6 9.6 5.9 9.8L4.8 10L4 10.2V13.8L4.8 14L5.9 14.2C6 14.4 6 14.6 6.1 14.8L5.5 15.7L5 16.4L7.6 19L8.3 18.5L9.2 17.9C9.4 18 9.6 18 9.8 18.1L10 19.2L10.2 20H13.8L14 19.2L14.2 18.1C14.4 18 14.6 18 14.8 17.9L15.7 18.5L16.4 19L19 16.4L18.5 15.7L17.9 14.8C18 14.6 18.1 14.4 18.1 14.2L19.2 14L20 13.8V10.2L19.2 10ZM19 13L17.3 13.3C17.2 13.8 17 14.3 16.7 14.8L17.6 16.2L16.2 17.6L14.8 16.7C14.3 17 13.8 17.2 13.3 17.3L13 19H11L10.7 17.3C10.2 17.2 9.7 17 9.2 16.7L7.8 17.6L6.4 16.2L7.3 14.8C7 14.3 6.8 13.8 6.7 13.3L5 13V11L6.7 10.7C6.8 10.2 7 9.7 7.3 9.2L6.3 7.8L7.7 6.4L9.1 7.3C9.6 7 10.1 6.8 10.6 6.7L11 5H13L13.3 6.7C13.8 6.8 14.3 7 14.8 7.3L16.2 6.4L17.6 7.8L16.7 9.2C17 9.7 17.2 10.2 17.3 10.7L19 11V13Z"
+                  />
+                  <path
+                    fill="#1A6768"
+                    d="M12 8.5C10.1 8.5 8.5 10.1 8.5 12C8.5 13.9 10.1 15.5 12 15.5C13.9 15.5 15.5 13.9 15.5 12C15.5 10.1 13.9 8.5 12 8.5ZM12 14.5C10.6 14.5 9.5 13.4 9.5 12C9.5 10.6 10.6 9.5 12 9.5C13.4 9.5 14.5 10.6 14.5 12C14.5 13.4 13.4 14.5 12 14.5Z"
+                  />
+                </svg>
+                <SidebarText> Settings </SidebarText>
+              </div>
+            </SidebarItem>
+             </div>
+
+          <div className="md:mt-auto hidden md:flex md:flex-col flex-row ">
             <SidebarItem
               href="/user-settings/contact-us"
               path={path}
               margin={true}
+              title={'Contact Us'}
+    
             >
               <div className="my-3 flex flex-row items-center">
                 <svg
@@ -576,7 +649,7 @@ export default function Sidebar() {
               </div>
             </SidebarItem>
 
-            <SidebarItem href="/user-settings/settings" path={path}>
+            <SidebarItem href="/user-settings/settings" path={path} title = {'Settings'}>
               <div className="my-3 flex flex-row items-center">
                 <svg
                   width="33"

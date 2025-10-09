@@ -18,6 +18,7 @@ interface Props {
   brainedReadingIds: string[];
   handleBrainClick: (storyId: string) => Promise<void>;
   handleBookmarkClick: (storyId: string) => Promise<void>;
+  title:string
 }
 
 const DropDownContent: React.FC<Props> = ({
@@ -25,6 +26,7 @@ const DropDownContent: React.FC<Props> = ({
   bookMarkedReadingsIds,
   handleBrainClick,
   handleBookmarkClick,
+  title
 }) => {
   const [activeSharePopup, setActiveSharePopup] = useState<string | "">("");
   const popupRefs: React.MutableRefObject<Record<string, React.RefObject<HTMLDivElement>>> = useRef({});
@@ -52,17 +54,17 @@ const DropDownContent: React.FC<Props> = ({
   );
 
   const iconButtonClass =
-    " flex h-[30px] w-[30px]  md:h-[40px] md:w-[40px] p-1 md:p-2 justify-center items-center rounded-full bg-[#76a89f] transition ease-linear";
+    " flex h-[40px] w-[40px]  md:h-[40px] md:w-[40px] p-1 md:p-2 justify-center items-center rounded-full bg-[#76a89f] transition ease-linear ";
 
   return (
     <div className="z-50  max-h-full overflow-y-scroll scrollbar-cyan mb-2">
-      <ul className="h-full mr-3 relative">
+      <ul className="h-full mr-3  relative">
         {data?.length === 0 && (
-          <p className="text-md font-bold">No Readings</p>
+          <p className="text-md font-bold">  {`You have not read anything ${title === 'Past Week' ? 'in the ' : ''}${title} `}</p>
         )}
         {bookMarkedReadings?.map((reading) => (
-          <li className="h-auto min-h-[35%] mb-2 relative" key={reading.uuid}>
-            <div className="flex justify-between py-2 gap-7">
+          <li className="h-auto min-h-[35%] sm:mb-8 mb-2 relative" key={reading.uuid}>
+            <div className="flex flex-col md:flex-row justify-between py-2 gap-7">
               {/* Image + Text */}
               <div className="flex gap-3">
                 <img
@@ -88,16 +90,16 @@ const DropDownContent: React.FC<Props> = ({
               </div>
 
               {/* Icon Buttons */}
-              <div className="flex flex-col gap-2 items-center justify-center relative">
+              <div className="flex flex-col gap-2 justify-center relative">
                 <div>
-                  <div className="flex justify-end  gap-3">
+                  <div className="flex md:justify-end px-2 gap-3">
                     {/* Bookmark Button */}
                     <button
                       className={iconButtonClass}
                       onClick={() => handleBookmarkClick(reading.story.id)}
                     >
                       <Bookmark
-                        className="w-full h-full max-w-[20px] max-h-[20px] md:max-w-[25px] md:max-h-[25px]"
+                        className="w-full stroke-black text-black h-full max-w-[20px] max-h-[20px] md:max-w-[25px] md:max-h-[25px]"
                         fill={
                           bookMarkedReadingsIds.includes(reading.story.id)
                             ? "yellow"

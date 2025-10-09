@@ -31,7 +31,7 @@ const ReadingDropDownContainer: React.FC<Props> = ({
     }
   };
   return (
-    <div className="  flex h-full w-full flex-grow flex-col gap-5 overflow-hidden ">
+    <div className="  flex  w-full flex-grow flex-col gap-5 overflow-hidden ">
       <ReadingDropDown
         title={"Past Week"}
         data={pastWeekReadings}
