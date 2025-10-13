@@ -96,6 +96,7 @@ export default function StoryLargeImage({
         ref={imageContainerRef}
       >
         <figure className="mx-auto table gap-2 p-8 lg:w-min lg:p-0">
+          {/* eslint-disable-next-line @next/next/no-img-element*/}
           <img
             src={src}
             className="max-w-screen max-h-[900px] w-auto lg:max-w-[1000px]"

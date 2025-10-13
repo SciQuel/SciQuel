@@ -1,4 +1,3 @@
-import Image from "next/image";
 import {
   useEffect,
   useLayoutEffect,
@@ -232,20 +231,17 @@ const StoryImagePopup = ({
             height: imageDimensions?.height,
           }}
         >
-          <Image
+          {/* eslint-disable-next-line @next/next/no-img-element*/}
+          <img
             src={src}
-            alt={alt || ""}
-            unoptimized
-            width={1}
-            height={1}
-            sizes="100vw"
-            className="max-h-full max-w-full object-contain"
+            className={`max-h-full max-w-full object-contain `}
             ref={imageRef}
             onClick={handlePopUpImageClick}
             onMouseDown={handleMouseDown}
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
             onDragStart={(e) => e.preventDefault()}
+            alt={alt}
             style={{ ...imageStyles, ...imageTransform }}
           />
         </div>
