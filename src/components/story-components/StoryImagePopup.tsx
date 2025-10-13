@@ -1,3 +1,4 @@
+import Image from "next/image";
 import {
   useEffect,
   useLayoutEffect,
@@ -51,13 +52,13 @@ const StoryImagePopup = ({
     const MAX_WIDTH = isSmallScreen
       ? window.innerWidth * 0.95
       : isMediumScreen
-        ? 700
-        : 800;
+      ? 700
+      : 800;
     const MAX_HEIGHT = isSmallScreen
       ? 630
       : isMediumScreen
-        ? 700
-        : window.innerHeight * 0.97;
+      ? 700
+      : window.innerHeight * 0.97;
 
     const MIN_SIZE = window.innerWidth * 0.98;
 
@@ -214,8 +215,9 @@ const StoryImagePopup = ({
       onClick={handleOutsideClick}
     >
       <div
-        className={`z-0 mx-7 flex h-full max-h-full w-auto flex-col  items-center justify-center  sm:py-5 lg:flex-row lg:py-0     ${imageClicked && "justify-center"
-          }`}
+        className={`z-0 mx-7 flex h-full max-h-full w-auto flex-col  items-center justify-center  sm:py-5 lg:flex-row lg:py-0     ${
+          imageClicked && "justify-center"
+        }`}
       >
         {!imageClicked && (
           <div className="  invisible hidden h-[100px] flex-grow basis-[10px] bg-black lg:mx-5 lg:block">
@@ -230,23 +232,28 @@ const StoryImagePopup = ({
             height: imageDimensions?.height,
           }}
         >
-          <img
+          <Image
             src={src}
-            className={`max-h-full max-w-full object-contain `}
+            alt={alt || ""}
+            unoptimized
+            width={1}
+            height={1}
+            sizes="100vw"
+            className="max-h-full max-w-full object-contain"
             ref={imageRef}
             onClick={handlePopUpImageClick}
             onMouseDown={handleMouseDown}
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
             onDragStart={(e) => e.preventDefault()}
-            alt={alt}
             style={{ ...imageStyles, ...imageTransform }}
           />
         </div>
 
         <p
-          className={`px-auto mx-5  flex-shrink basis-0 cursor-text break-words  text-left  lg:mx-5 lg:w-auto  lg:flex-grow  lg:text-lg  ${imageClicked ? "hidden" : ""
-            }`}
+          className={`px-auto mx-5  flex-shrink basis-0 cursor-text break-words  text-left  lg:mx-5 lg:w-auto  lg:flex-grow  lg:text-lg  ${
+            imageClicked ? "hidden" : ""
+          }`}
           ref={captionRef}
         >
           {children}
