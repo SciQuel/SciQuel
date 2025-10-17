@@ -20,6 +20,8 @@ const allowedDirectives = [
   "dropdown",
   "gray-text",
   "end-icon",
+  "dictionary-word",
+  "dictionary-sentence",
 ];
 
 const mapDirectiveNode: MapFunction<Node> = (node: Node<Data>) => {
