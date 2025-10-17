@@ -16,7 +16,7 @@ function SidebarItem(props: {
   const active = props.path === props.href;
   // console.log(`props.children: ${props.children?.toString()}`)
   return (
-    <div className="" title = {props.title} >
+    <div className="" title={props.title}>
       <Link
         href={props.href}
         className={clsx({
@@ -27,7 +27,6 @@ function SidebarItem(props: {
           // "bg-[#FFF]": active, idk why that doesn't work lol
           "md:mt-16": props.margin,
         })}
-      
       >
         {props.children}
       </Link>
@@ -309,12 +308,16 @@ export default function Sidebar() {
   return (
     <div>
       <div
-        className="\ z-10 h-12  md:h-full  flex-row gap-4  gap-y-8 bg-[#EDF4F4] md:px-5 px-2 md:pt-6 text-center text-xl dark:text-white md:sticky md:flex-col
-                md:gap-y-2  md:text-left lg:w-56"
+        className="\ z-10 h-12  flex-row  gap-4 gap-y-8  bg-[#EDF4F4] px-2 text-center text-xl md:sticky md:h-full md:flex-col md:gap-y-2 md:px-5 md:pt-6
+                md:text-left  lg:w-56 dark:text-white"
       >
-        <div className=" flex md:h-4/5 flex-row md:flex-col h-full w-full text-xl text-[#1A6768]">
-          <div className="flex md:flex-col w-full items-center md:items-stretch   h-full justify-between flex-row">
-            <SidebarItem href="/user-settings/dashboard" path={path} title = {'Dashboard'}>
+        <div className=" flex h-full w-full flex-row text-xl text-[#1A6768] md:h-4/5 md:flex-col">
+          <div className="flex h-full w-full flex-row items-center   justify-between md:flex-col md:items-stretch">
+            <SidebarItem
+              href="/user-settings/dashboard"
+              path={path}
+              title={"Dashboard"}
+            >
               <div className="my-3 flex flex-row items-center">
                 {/* N.B.: bc i didn't know this, it might be helpful-- these svg codes are directly copied from figma! just right click and select 'copy as svg'*/}
                 <svg
@@ -340,7 +343,11 @@ export default function Sidebar() {
 
             <hr className="solid my-2 border-[#D6D6D6]"></hr>
 
-            <SidebarItem href="/user-settings/reading-history" path={path} title = {'Reading History'}>
+            <SidebarItem
+              href="/user-settings/reading-history"
+              path={path}
+              title={"Reading History"}
+            >
               <div className="my-3 flex flex-row items-center">
                 <svg
                   className="mr-2"
@@ -404,14 +411,18 @@ export default function Sidebar() {
                     fill="#1A6768"
                   />
                 </svg>
-              
-              <SidebarText> Reading History  </SidebarText>
+
+                <SidebarText> Reading History </SidebarText>
               </div>
             </SidebarItem>
 
             <hr className="solid my-2 border-[#D6D6D6]"></hr>
 
-            <SidebarItem href="/user-settings/activity" path={path} title = {'Activity'}>
+            <SidebarItem
+              href="/user-settings/activity"
+              path={path}
+              title={"Activity"}
+            >
               <div className="my-3 flex flex-row items-center">
                 <svg
                   className="mr-2"
@@ -458,7 +469,11 @@ export default function Sidebar() {
 
             <hr className="solid my-2 border-[#D6D6D6]"></hr>
 
-            <SidebarItem href="/user-settings/quiz-history" path={path} title = {'Quiz History'}>
+            <SidebarItem
+              href="/user-settings/quiz-history"
+              path={path}
+              title={"Quiz History"}
+            >
               <div className="my-3 flex flex-row items-center">
                 <svg
                   className="mr-2"
@@ -475,13 +490,17 @@ export default function Sidebar() {
                     fill="#1A6768"
                   />
                 </svg>
-                <SidebarText> Quiz History </SidebarText> 
+                <SidebarText> Quiz History </SidebarText>
               </div>
             </SidebarItem>
 
             <hr className="solid my-2 border-[#D6D6D6]"></hr>
 
-            <SidebarItem href="/user-settings/annotations" path={path} title = {"Annotations"}>
+            <SidebarItem
+              href="/user-settings/annotations"
+              path={path}
+              title={"Annotations"}
+            >
               <div className="my-3 flex flex-row items-center">
                 <svg
                   className="mr-2"
@@ -504,13 +523,17 @@ export default function Sidebar() {
                     fill="#1A6768"
                   />
                 </svg>
-                <SidebarText>Annotations </SidebarText> 
+                <SidebarText>Annotations </SidebarText>
               </div>
             </SidebarItem>
 
             <hr className="solid my-2 border-[#D6D6D6]"></hr>
 
-            <SidebarItem href="/user-settings/comments" path={path} title = {'Comments'}>
+            <SidebarItem
+              href="/user-settings/comments"
+              path={path}
+              title={"Comments"}
+            >
               <div className="my-3 flex flex-row items-center">
                 <svg
                   className="mr-2"
@@ -527,22 +550,20 @@ export default function Sidebar() {
                     fill="#1A6768"
                   />
                 </svg>
-               <SidebarText> Comments </SidebarText> 
+                <SidebarText> Comments </SidebarText>
               </div>
             </SidebarItem>
 
             <hr className="solid my-2 border-[#D6D6D6]"></hr>
-         
 
-
-          {/*last two icons for small screen */}
-           <SidebarItem
+            {/*last two icons for small screen */}
+            <SidebarItem
               href="/user-settings/contact-us"
               path={path}
               margin={true}
-              title = {'Contact Us'}
+              title={"Contact Us"}
             >
-              <div className="my-3 md:hidden flex flex-row items-center">
+              <div className="my-3 flex flex-row items-center md:hidden">
                 <svg
                   className="mr-2"
                   width="24"
@@ -580,8 +601,12 @@ export default function Sidebar() {
               </div>
             </SidebarItem>
 
-            <SidebarItem href="/user-settings/settings" path={path} title = {'Settings'}>
-              <div className="my-3 md:hidden flex flex-row items-center">
+            <SidebarItem
+              href="/user-settings/settings"
+              path={path}
+              title={"Settings"}
+            >
+              <div className="my-3 flex flex-row items-center md:hidden">
                 <svg
                   width="33"
                   height="33"
@@ -601,15 +626,14 @@ export default function Sidebar() {
                 <SidebarText> Settings </SidebarText>
               </div>
             </SidebarItem>
-             </div>
+          </div>
 
-          <div className="md:mt-auto hidden md:flex md:flex-col flex-row ">
+          <div className="hidden flex-row md:mt-auto md:flex md:flex-col ">
             <SidebarItem
               href="/user-settings/contact-us"
               path={path}
               margin={true}
-              title={'Contact Us'}
-    
+              title={"Contact Us"}
             >
               <div className="my-3 flex flex-row items-center">
                 <svg
@@ -649,7 +673,11 @@ export default function Sidebar() {
               </div>
             </SidebarItem>
 
-            <SidebarItem href="/user-settings/settings" path={path} title = {'Settings'}>
+            <SidebarItem
+              href="/user-settings/settings"
+              path={path}
+              title={"Settings"}
+            >
               <div className="my-3 flex flex-row items-center">
                 <svg
                   width="33"

@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { useRef, useState, createRef} from "react";
+import { createRef, useRef, useState } from "react";
 import ClipboardIcon from "../../../../public/assets/images/clipboard.svg";
 import MailIcon from "../../../../public/assets/images/email.svg";
 import LinkedinIcon from "../../../../public/assets/images/linkedin.svg";
@@ -8,13 +8,13 @@ import shareIcon from "../../../../public/assets/images/story-share.png";
 import xIcon from "../../../../public/assets/images/xicon.png";
 import { type ReadingHistory as ReadingHistoryType } from "../../../app/user-settings/actions/getReadingHistory";
 
-
 const iconButtonClass =
-    "flex h-[40px] w-[40px] md:h-[40px] md:w-[40px] p-1 md:p-2 justify-center items-center rounded-full transition ease-linear  bg-[#76a89f] ";
+  "flex h-[40px] w-[40px] md:h-[40px] md:w-[40px] p-1 md:p-2 justify-center items-center rounded-full transition ease-linear  bg-[#76a89f] ";
 
-
-interface props{
-  popupRefs: React.MutableRefObject<Record<string, React.RefObject<HTMLDivElement>>>;
+interface props {
+  popupRefs: React.MutableRefObject<
+    Record<string, React.RefObject<HTMLDivElement>>
+  >;
   reading: ReadingHistoryType[number] & { uuid: string };
   activeSharePopup: string | null;
 }
@@ -22,9 +22,12 @@ const ShareDropDown = ({ popupRefs, reading, activeSharePopup }: props) => {
   const textRef = useRef<HTMLDivElement | null>(null);
   const [showClipBoardIcon, setShowClipboardIcon] = useState(false);
 
-
   // on click, show the popup to copy reading url
-  const handleShareClick = (e: React.MouseEvent<HTMLButtonElement> | React.MouseEvent<HTMLAnchorElement>) => {
+  const handleShareClick = (
+    e:
+      | React.MouseEvent<HTMLButtonElement>
+      | React.MouseEvent<HTMLAnchorElement>,
+  ) => {
     e.stopPropagation();
 
     setShowClipboardIcon((prev) => !prev);
@@ -32,7 +35,7 @@ const ShareDropDown = ({ popupRefs, reading, activeSharePopup }: props) => {
 
   const handleClipboardClick = () => {
     if (textRef.current) {
-      const textToCopy= textRef?.current?.textContent;
+      const textToCopy = textRef?.current?.textContent;
       navigator.clipboard
         .writeText(textToCopy)
         .then(() => {
@@ -50,31 +53,33 @@ const ShareDropDown = ({ popupRefs, reading, activeSharePopup }: props) => {
 
   const open = activeSharePopup === reading.uuid;
 
-  const buttonIcons = [
-
-  ]
+  const buttonIcons = [];
 
   return (
     <div
-      className={`absolute md:relative w-1/2 md:w-full  left-0 md:right-0 z-50 mt-3    ${
-        open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none" 
+      className={`absolute left-0 z-50 mt-3  w-1/2 md:relative md:right-0 md:w-full    ${
+        open
+          ? "pointer-events-auto opacity-100"
+          : "pointer-events-none opacity-0"
       }`}
-      tabIndex= {open ? 0 : -1}
+      tabIndex={open ? 0 : -1}
       onClick={(e) => e.stopPropagation()}
       key={reading.uuid}
       ref={(popupRefs.current[reading.uuid] ??= createRef<HTMLDivElement>())}
     >
       {/* Icons */}
-      <div className="relative z-10 p-2  bg-sciquelCardBg shadow-md  flex w-auto  justify-between gap-3 rounded-lg ">
-        <button onClick={handleShareClick} className={iconButtonClass}>
-          <Image
-            src={shareIcon}
-            width={20}
-            height={20}
-            alt="share a link to this story"
-          />
-          <span className="sr-only">share a link to this story</span>
-        </button>
+      <div className="relative z-10 flex  w-auto justify-between  gap-3 rounded-lg  bg-sciquelCardBg p-2 shadow-md ">
+        <Image
+          src={shareIcon}
+          className={`${iconButtonClass}, sm:p-0, bg-transparent !p-0 md:p-0`}
+          onClick={() => setShowClipboardIcon(!showClipBoardIcon)}
+          width={20}
+          height={20}
+          role="button"
+          tabIndex={0}
+          alt="share a link to this story"
+        />
+        <span className="sr-only">share a link to this story</span>
 
         <a
           href="mailto:?subject=Check Out This Article&body=sciquel.org"
@@ -92,14 +97,12 @@ const ShareDropDown = ({ popupRefs, reading, activeSharePopup }: props) => {
           target="_blank"
           onClick={(e) => e.stopPropagation()}
         >
-          
           <Image
             src={facebookIcon}
             className=" h-[35px] w-[35px] md:h-[40px] md:w-[40px]"
             alt="share to facebook"
-            width ={40}
-            height = {40}
-           
+            width={40}
+            height={40}
           />
         </a>
 
@@ -127,7 +130,7 @@ const ShareDropDown = ({ popupRefs, reading, activeSharePopup }: props) => {
       {showClipBoardIcon && open && (
         <div
           ref={textRef}
-          className="absolute  z-10  mt-2 flex left-0  w-full items-center gap-2 rounded-lg bg-sciquelCardBg px-1  md:px-3 py-3 shadow-md"
+          className="absolute  left-0  z-10 mt-2 flex  w-full items-center gap-2 rounded-lg bg-sciquelCardBg px-1  py-3 shadow-md md:px-3"
         >
           <ClipboardIcon
             onClick={handleClipboardClick}
@@ -135,7 +138,7 @@ const ShareDropDown = ({ popupRefs, reading, activeSharePopup }: props) => {
           />
 
           {/* Link */}
-          <div className="h-4/5 text-white flex-1 truncate rounded-full bg-[#76a89f] p-2">
+          <div className="h-4/5 flex-1 truncate rounded-full bg-[#76a89f] p-2 text-white">
             {`${baseUrl}/stories/${new Date(
               reading.createdAt,
             ).getUTCFullYear()}/${

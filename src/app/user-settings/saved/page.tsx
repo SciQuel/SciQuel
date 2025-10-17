@@ -32,7 +32,7 @@ export default async function SavedPaged() {
   };
   const data = await fetchBrainedIds();
 
-    //get brained stores from brained ids
+  //get brained stores from brained ids
   let BrainedStories: GetStoryResult[] = await Promise.all(
     data.map(async (id: string) => {
       const resp: AxiosResponse<GetStoryResult> = await axios.get(

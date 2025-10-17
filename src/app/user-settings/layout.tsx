@@ -16,7 +16,7 @@ export default function Layout(props: { children: React.ReactNode }) {
   }
   return (
     <section className="h-full">
-      <div className=" flex-col md:flex-row flex  h-[calc(100dvh-100px)] bg-white">
+      <div className=" flex h-[calc(100dvh-100px)] flex-col  bg-white md:flex-row">
         <Sidebar />
         {props.children}
       </div>
