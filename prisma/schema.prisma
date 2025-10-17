@@ -170,6 +170,8 @@ model User {
   commentLikes    CommentLike[]
   StaffPickRecord StaffPickRecord[]
   pageViews       PageView[]
+  Quiz            Quiz[]
+  UserDefinition  UserDefinition[]
 }
 
 model AuthVerification {
@@ -214,6 +216,23 @@ model Brain {
   storyId String @db.ObjectId
 
   createdAt DateTime @default(now())
+
+  @@unique([userId, storyId])
+}
+
+model Quiz {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  userId  String @db.ObjectId
+  storyId String @db.ObjectId
+
+  quizType   QuizType
+  totalScore Int
+  score      Int
+  date       DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id])
+  story Story @relation(fields: [storyId], references: [id])
 
   @@unique([userId, storyId])
 }
@@ -286,8 +305,18 @@ model DictionaryDefinition {
   definitionAudioUrl String?
   useAudioUrl        String?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  UserDefinition UserDefinition[]
+}
+
+model UserDefinition {
+  id           String               @id @default(auto()) @map("_id") @db.ObjectId
+  definition   DictionaryDefinition @relation(fields: [definitionId], references: [id])
+  definitionId String               @db.ObjectId
+  user         User                 @relation(fields: [userId], references: [id])
+  userId       String               @db.ObjectId
+  createdAt    DateTime             @default(now())
 }
 
 // feedback schema
