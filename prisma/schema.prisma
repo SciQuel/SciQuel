@@ -5,6 +5,10 @@ generator client {
   provider = "prisma-client-js"
 }
 
+generator json {
+  provider = "prisma-json-types-generator"
+}
+
 datasource db {
   provider = "mongodb"
   url      = env("DATABASE_URL")
@@ -105,6 +109,7 @@ model Story {
   publishedAt     DateTime
   updatedAt       DateTime
   quizQuestions   QuizQuestion[]
+  triviaQuestions TriviaQuestion[]
   comments        Comment[]
   staffPick       StaffPick?
   StaffPickRecord StaffPickRecord[]
@@ -268,6 +273,8 @@ model SubtopicOnStory {
   storyId    String   @db.ObjectId
   subtopic   Subtopic @relation(fields: [subtopicId], references: [id])
   subtopicId String   @db.ObjectId
+
+  @@unique([storyId, subtopicId])
 }
 
 model SubtopicOnStoryHistory {
@@ -276,6 +283,8 @@ model SubtopicOnStoryHistory {
   storyHistoryId     String       @db.ObjectId
   subtopic           Subtopic     @relation(fields: [subtopicId], references: [id])
   subtopicId         String       @db.ObjectId
+
+  @@unique([storyHistoryId, subtopicId])
 }
 
 model Bookmark {
@@ -330,6 +339,27 @@ model BlockedUser {
   banEndTime DateTime?
 
   lastUpdated DateTime
+}
+
+model TriviaQuestion {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  subheader         String
+  contentCategories String[]
+  explanations      String[]
+
+  maxScore Int
+
+  /// [QuestionJson]
+  questionData Json
+
+  storyId String? @db.ObjectId
+  story   Story?  @relation(fields: [storyId], references: [id])
+
+  StoryHistory   StoryHistory? @relation(fields: [storyHistoryId], references: [id])
+  storyHistoryId String?       @db.ObjectId
+
+  createdAt DateTime @default(now())
 }
 
 model QuizQuestion {
@@ -546,6 +576,8 @@ model GeneralSubjectOnStory {
 
   subject   GeneralSubject @relation(fields: [subjectId], references: [id])
   subjectId String         @db.ObjectId
+
+  @@unique([storyId, subjectId])
 }
 
 model GeneralSubjectOnStoryHistory {
@@ -556,6 +588,8 @@ model GeneralSubjectOnStoryHistory {
 
   subject   GeneralSubject @relation(fields: [subjectId], references: [id])
   subjectId String         @db.ObjectId
+
+  @@unique([storyHistoryId, subjectId])
 }
 
 model StoryHistory {
@@ -594,5 +628,6 @@ model StoryHistory {
   thumbnailUrl String
   coverCaption String @default("")
 
-  quizzes QuizQuestion[]
+  quizzes         QuizQuestion[]
+  triviaQuestions TriviaQuestion[]
 }

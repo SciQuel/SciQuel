@@ -13,6 +13,7 @@ import {
   type StoryTopic,
 } from "@prisma/client";
 import React, { useEffect, useRef, useState } from "react";
+import { FullQuizSubpart } from "./page";
 
 // Interface definitions for the component's data structures
 interface Section {
@@ -51,6 +52,7 @@ interface Props {
       };
     };
   }>;
+  quizzes: FullQuizSubpart[];
 }
 
 // Main component: StoryInfoEditorClient

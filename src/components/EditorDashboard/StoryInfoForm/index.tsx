@@ -3,8 +3,6 @@
 import MarkdownEditorStoryInfo from "@/components/EditorDashboard/MarkdownEditorStoryInfo";
 import Trivia from "@/components/EditorDashboard/StoryInfoForm/formComponents/TriviaComponents/Trivia";
 import Form from "@/components/Form";
-import { Popover, Transition } from "@headlessui/react";
-import { PlusCircleIcon, PlusIcon } from "@heroicons/react/20/solid";
 import {
   Prisma,
   StoryTopic,
@@ -13,10 +11,7 @@ import {
   type StoryType,
 } from "@prisma/client";
 import clsx from "clsx";
-import { useRouter } from "next/navigation";
 import {
-  Fragment,
-  useRef,
   useState,
   useTransition,
   type Dispatch,
@@ -35,7 +30,6 @@ import ContributorSearch from "./formComponents/ContributorSearch/ContributorSea
 import ArticleSubjects from "./formComponents/subjectComponents/ArticleSubjects";
 import ArticleSubtopics from "./formComponents/subtopicComponents/articleSubtopics";
 import { getData } from "./StoryFormFunc";
-import Tags from "./Tags";
 
 interface Props {
   id?: string;
@@ -119,8 +113,6 @@ export default function StoryInfoForm({
 
   const [category, setCategory] = useState<Category>("ARTICLE");
 
-  const [subjectQuery, setSubjectQuery] = useState("");
-
   const [subtopics, setSubtopics] = useState(
     originalSubtopics.map((subtopic) => subtopic.subtopic),
   );
@@ -128,81 +120,7 @@ export default function StoryInfoForm({
     originalSubjects.map((subjectLink) => subjectLink.subject),
   );
 
-  const data = getData();
-
-  const [subtopiclist, setSubtopicList] = useState(data.subtopics);
-  const [subjectlist, setSubjectList] = useState(data.subjects);
-
-  const [isCreateSubjectModalOpen, setIsCreateSubjectModalOpen] =
-    useState(false);
-
   const [success, setSuccess] = useState(false);
-
-  const filteredSubjectList =
-    subjectQuery === ""
-      ? subjectlist
-      : subjectlist.filter((item: any) =>
-          item.name
-            .toLowerCase()
-            .replace(/\s+/g, "")
-            .includes(subjectQuery.toLowerCase().replace(/\s+/g, "")),
-        );
-
-  // add a subject tag
-  const addSubject = (id: any) => {
-    subjectlist.forEach((item: any) => {
-      if (item.id == id) {
-        if (item.checked == true) {
-          removeSubjectTag(id);
-        } else {
-          setSubjects((subjects) => [...subjects, item]);
-          setSubjectList(
-            subjectlist.map((item: any) =>
-              item.id == id ? { ...item, checked: true } : item,
-            ),
-          );
-        }
-      }
-    });
-  };
-
-  // remove a subject tag
-  const removeSubjectTag = (id: number) => {
-    setSubjects(subjects.filter((item: any) => item.id != id));
-    setSubjectList(
-      subjectlist.map((item: any) =>
-        item.id == id ? { ...item, checked: false } : item,
-      ),
-    );
-  };
-
-  //create a subtopic tag
-  const createSubtopic = (subtopic: string) => {
-    const newSubtopic = {
-      id: crypto.randomUUID(),
-      name: subtopic,
-      number_of_articles: 0,
-      color: "bg-[#E8E8E8] text-black",
-      checked: true,
-    };
-
-    setSubtopicList((subtopiclist: any) => [...subtopiclist, newSubtopic]);
-    // setSubtopics((subtopics) => [...subtopics, newSubtopic]);
-  };
-
-  //create a subject tag
-  const createSubject = (subject: string) => {
-    const newSubject = {
-      id: crypto.randomUUID(),
-      name: subject,
-      number_of_articles: 0,
-      color: "bg-[#E8E8E8] text-black",
-      checked: true,
-    };
-
-    setSubjectList((subjectlist: any) => [...subjectlist, newSubject]);
-    // setSubjects((subjects) => [...subjects, newSubject]);
-  };
 
   // Div outlining what the left half of the page actually looks like
   return (
@@ -421,94 +339,7 @@ export default function StoryInfoForm({
 
         <ArticleSubjects subjects={subjects} setSubjects={setSubjects} />
 
-        {/* SELECT SUBJECT (+) BUTTON */}
         <div className={`grid w-1/3 grid-cols-1 gap-2`}>
-          <div className="flex flex-row justify-items-center gap-4">
-            <label>Select subject</label>
-
-            <Popover className="relative">
-              <Popover.Button>
-                <PlusCircleIcon
-                  className="plus-circle-icon h-6"
-                  aria-hidden="true"
-                />
-              </Popover.Button>
-
-              <Transition
-                as={Fragment}
-                leave="transition ease-in duration-100"
-                leaveFrom="opacity-100"
-                leaveTo="opacity-0"
-                afterLeave={() => setSubjectQuery("")}
-              >
-                <Popover.Panel className="absolute z-10 w-max">
-                  <div className="border-1 grid grid-cols-1 gap-1 rounded-md border bg-white px-1 py-1 shadow-lg shadow-gray-400">
-                    <div className="flex flex-row gap-1">
-                      <input
-                        placeholder="Search a subject"
-                        className="custom_input_sm grow"
-                        onChange={(event) =>
-                          setSubjectQuery(event.target.value)
-                        }
-                      />
-                      <PlusIcon
-                        className="plus-icon"
-                        aria-hidden="true"
-                        onClick={(event) => setIsCreateSubjectModalOpen(true)}
-                      />
-                    </div>
-                    <ul className="max-h-[170px] overflow-y-auto px-1">
-                      {filteredSubjectList.length === 0 &&
-                      subjectQuery !== "" ? (
-                        <div className="relative select-none py-2 text-center text-sm">
-                          <span className="block cursor-default pb-1 text-gray-700">
-                            No results found.
-                          </span>
-                          <span className="text-green-sheen block cursor-pointer underline">
-                            Create a subject tag
-                          </span>
-                        </div>
-                      ) : (
-                        filteredSubjectList.map((subject: any) => (
-                          <li>
-                            <div className="flex flex-row items-center gap-2 py-2">
-                              <div className="flex items-center ">
-                                <input
-                                  type="checkbox"
-                                  defaultChecked={subject.checked}
-                                  onChange={(event) => addSubject(subject.id)}
-                                  className="h-4 w-4 cursor-pointer rounded border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600"
-                                />
-                                <label className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
-                                  {subject.name}
-                                </label>
-                              </div>
-
-                              <span className="text-xs font-semibold text-[#0d6efd]">
-                                ({subject.number_of_articles} article
-                                {subject.number_of_articles > 1 ? "s" : ""})
-                              </span>
-                            </div>
-                          </li>
-                        ))
-                      )}
-                    </ul>
-                  </div>
-                </Popover.Panel>
-              </Transition>
-            </Popover>
-          </div>
-          <div className="flex flex-row flex-wrap gap-3">
-            {subjects.map((subject: any) => (
-              <Tags
-                key={subject.id}
-                id={subject.id}
-                name={subject.name}
-                color="bg-[#E8E8E8] text-black"
-                removeTag={removeSubjectTag}
-              />
-            ))}
-          </div>
           <Trivia />
         </div>
         {/* Real-time validation messages */}

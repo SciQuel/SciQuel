@@ -18,7 +18,7 @@
     "@headlessui/react": "^2.2.3",
     "@heroicons/react": "^2.2.0",
     "@monaco-editor/react": "^4.5.1",
-    "@prisma/client": "^4.16.2",
+    "@prisma/client": "^6.16.2",
     "@tailwindcss/container-queries": "^0.1.1",
     "autoprefixer": "^10.4.20",
     "axios": "^1.7.9",
@@ -79,7 +79,8 @@
     "eslint-plugin-prettier": "^4.2.1",
     "prettier": "^2.8.8",
     "prettier-plugin-tailwindcss": "^0.3.0",
-    "prisma": "^4.16.2",
+    "prisma": "^6.16.2",
+    "prisma-json-types-generator": "^3.6.1",
     "request": "^2.88.2",
     "tailwindcss-touch": "^1.0.1",
     "ts-node": "^10.9.1"

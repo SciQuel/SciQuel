@@ -311,7 +311,11 @@ export async function GET(req: NextRequest) {
         { status: 401 },
       );
     }
-    const { quizzes, subparts } = await getQuizzes({ storyId });
+    const { quizzes, subparts } = await getQuizzes({
+      storyId,
+      includeAnswer: true,
+      includeExplain: true,
+    });
     const quizResponse = quizzes.map((quiz, index) => {
       const { subheader, questionType, id, maxScore } = quiz;
       return {
