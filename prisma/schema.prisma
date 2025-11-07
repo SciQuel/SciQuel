@@ -107,6 +107,8 @@ model Story {
 
   quizQuestions QuizQuestion[]
   pageViews     PageView[]
+  Brain         Brain[]
+  Bookmark      Bookmark[]
 }
 
 model StoryContribution {
@@ -214,6 +216,7 @@ model Brain {
 
   userId  String @db.ObjectId
   storyId String @db.ObjectId
+  story   Story  @relation(fields: [storyId], references: [id])
 
   createdAt DateTime @default(now())
 
@@ -287,6 +290,7 @@ model Bookmark {
   storyId String @db.ObjectId
 
   createdAt DateTime @default(now())
+  story     Story    @relation(fields: [storyId], references: [id])
 
   @@unique([userId, storyId])
 }
