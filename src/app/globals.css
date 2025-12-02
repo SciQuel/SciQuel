@@ -7,6 +7,21 @@
   src: url("../../public/fonts/CH_SB_SC_WithoutQ_Kerned_01.otf");
 }
 
+/* Changes the first letter of the first paragraph in each story */
+/* Layer to override defaults */
+@layer components {
+  .story-paragraph:first-of-type::first-letter {
+    font-family: "custom-test", serif;
+    font-size: 5rem;
+    line-height: 54px;
+    float: left;
+    margin-right: 0.3rem;
+  }
+  .story-paragraph:first-of-type {
+    margin-top: 1.5rem;
+  }
+}
+
 /* :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
