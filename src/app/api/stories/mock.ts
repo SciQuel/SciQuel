@@ -22,7 +22,7 @@ export const StoriesMock = http.get(
       page,
       page_size,
       keyword,
-      staff_pick,
+      // staff_pick,
       topic,
       type,
       date_from,

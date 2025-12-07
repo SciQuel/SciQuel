@@ -98,13 +98,13 @@ export const PhoneScreen: Story = {
   ...VariableStoryCount,
 
   parameters: {
-    ...VariableStoryCount.parameters
+    ...VariableStoryCount.parameters,
   },
 
   globals: {
     viewport: {
       value: "iphonex",
-      isRotated: false
-    }
-  }
+      isRotated: false,
+    },
+  },
 };

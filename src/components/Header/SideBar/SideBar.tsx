@@ -1,16 +1,5 @@
 import Link from "next/link";
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-  type Dispatch,
-  type SetStateAction,
-} from "react";
-
-function testClick(setState: Dispatch<SetStateAction<boolean>>) {
-  setState((state) => !state);
-}
+import { useEffect, useRef, useState } from "react";
 
 const HamburgerButton = ({ onClick }: { onClick: () => void }) => {
   return (
@@ -49,34 +38,12 @@ export default function SideBar() {
     };
   });
 
-  const testFunc = () => {
-    console.log("click");
-  };
-
-  const testCallback = useCallback(() => {
-    console.log("test");
-  }, [setShowSideBar]);
-
   return (
     <div
       onMouseEnter={() => {
         console.log("test mouse enter");
       }}
     >
-      {/* <button
-        className="temp-class h-[2rem] cursor-pointer"
-        onClick={() => {
-          testClick(setShowSideBar);
-        }}
-        onMouseEnter={() => {
-          console.log("hover");
-        }}
-      >
-        <div className="mx-3.5 my-1.5 h-1 w-8 bg-white"></div>
-        <div className="mx-3.5 my-1.5 h-1 w-8 bg-white"></div>
-        <div className="mx-3.5 my-1.5 h-1 w-8 bg-white"></div>
-        <span className="sr-only">Open Sidebar</span>
-      </button> */}
       <HamburgerButton
         onClick={() => {
           setShowSideBar(!showSideBar);

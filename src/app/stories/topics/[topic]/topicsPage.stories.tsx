@@ -1,15 +1,9 @@
 import { StoryTopic } from "@prisma/client";
 import { type Meta, type StoryObj } from "@storybook/nextjs";
 import RootLayoutBody from "#src/components/layout-components/RootBody/RootBody";
-import { http, HttpResponse } from "msw";
-import { Params } from "next/dist/shared/lib/router/utils/route-matcher";
 import { type ComponentProps } from "react";
 import { db, reset } from "../../../../../mocks/data.mock";
-import {
-  createSpecificStories,
-  createStories,
-  getStories,
-} from "../../../../../mocks/functions/storyFunctions";
+import { createSpecificStories } from "../../../../../mocks/functions/storyFunctions";
 import StoryTopicPage from "./page";
 
 const topics = [
@@ -102,7 +96,7 @@ export const PhoneScreen: Story = {
   globals: {
     viewport: {
       value: "iphonex",
-      isRotated: false
-    }
+      isRotated: false,
+    },
   },
 };

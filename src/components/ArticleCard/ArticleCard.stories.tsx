@@ -69,8 +69,8 @@ export const VerticalMobile: Story = {
   globals: {
     viewport: {
       value: "iphonex",
-      isRotated: false
-    }
+      isRotated: false,
+    },
   },
 };
 
@@ -115,7 +115,7 @@ export const PreferHorizontalMobile: Story = {
   globals: {
     viewport: {
       value: "iphonex",
-      isRotated: false
-    }
+      isRotated: false,
+    },
   },
 };

@@ -2,7 +2,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import SciquelLogo from "../../../public/assets/images/logoWithNameOnSide.svg";
 import MainSubHeader from "./MainSubHeader";
@@ -14,7 +14,6 @@ import SideBar from "./SideBar/SideBar";
 export default function Header() {
   const [searchQuery, setSearchQuery] = useState("");
   const router = useRouter();
-  const pathname = usePathname();
 
   const onSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
