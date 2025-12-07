@@ -1,6 +1,5 @@
 import { faker } from "@faker-js/faker";
 import { drop, factory, oneOf } from "@mswjs/data";
-import { ContributionType, type Category, type Story } from "@prisma/client";
 import { ContributorModel } from "./models/contributors";
 import { StoryModel } from "./models/story";
 import { StoryContributionModel } from "./models/storyContributions";

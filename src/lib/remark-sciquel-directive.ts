@@ -4,7 +4,7 @@ import { type Plugin, type Transformer } from "unified";
 import { type Node } from "unist";
 import { map, type MapFunction } from "unist-util-map";
 
-const isDirectiveNode = (node: Node): node is DirectiveNode => {
+const isDirectiveNode = (node: Node<object>): node is DirectiveNode => {
   const { type } = node;
   return (
     type === "textDirective" ||
