@@ -1,5 +1,5 @@
 import env from "@/lib/env";
-import { type Meta, type StoryObj } from "@storybook/react";
+import { type Meta, type StoryObj } from "@storybook/nextjs";
 import RootLayoutBody from "#src/components/layout-components/RootBody/RootBody";
 import { http, HttpResponse } from "msw";
 import { reset } from "../../mocks/data.mock";
@@ -96,10 +96,15 @@ export const VariableStoryCount: Story = {
 
 export const PhoneScreen: Story = {
   ...VariableStoryCount,
+
   parameters: {
-    ...VariableStoryCount.parameters,
-    viewport: {
-      defaultViewport: "iphonex",
-    },
+    ...VariableStoryCount.parameters
   },
+
+  globals: {
+    viewport: {
+      value: "iphonex",
+      isRotated: false
+    }
+  }
 };

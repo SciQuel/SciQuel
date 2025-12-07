@@ -1,6 +1,6 @@
 import { type StoryTopic, type StoryType } from "@prisma/client";
-import { INITIAL_VIEWPORTS } from "@storybook/addon-viewport";
-import { type Meta, type StoryObj } from "@storybook/react";
+import { INITIAL_VIEWPORTS } from "storybook/viewport";
+import { type Meta, type StoryObj } from "@storybook/nextjs";
 import { DateTime } from "luxon";
 import bgImg from "../../../public/assets/images/top_background_img.png";
 import MainCard from "./index";
@@ -41,10 +41,17 @@ export const BasicStory: Story = {
 
 export const SmallScreen: Story = {
   ...BasicStory,
+
   parameters: {
     viewport: {
-      viewports: INITIAL_VIEWPORTS,
-      defaultViewport: "iphonex",
+      viewports: INITIAL_VIEWPORTS
     },
   },
+
+  globals: {
+    viewport: {
+      value: "iphonex",
+      isRotated: false
+    }
+  }
 };

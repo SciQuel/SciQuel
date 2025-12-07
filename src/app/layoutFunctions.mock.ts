@@ -1,4 +1,4 @@
-import { fn } from "@storybook/test";
+import { fn } from "storybook/test";
 
 const layoutGetServerSession = fn(() => {
   return new Promise((resolve) => {

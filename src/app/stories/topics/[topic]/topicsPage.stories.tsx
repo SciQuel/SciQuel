@@ -1,5 +1,5 @@
 import { StoryTopic } from "@prisma/client";
-import { type Meta, type StoryObj } from "@storybook/react";
+import { type Meta, type StoryObj } from "@storybook/nextjs";
 import RootLayoutBody from "#src/components/layout-components/RootBody/RootBody";
 import { http, HttpResponse } from "msw";
 import { Params } from "next/dist/shared/lib/router/utils/route-matcher";
@@ -99,9 +99,10 @@ export const MainStory: Story = {
 
 export const PhoneScreen: Story = {
   ...MainStory,
-  parameters: {
+  globals: {
     viewport: {
-      defaultViewport: "iphonex",
-    },
+      value: "iphonex",
+      isRotated: false
+    }
   },
 };

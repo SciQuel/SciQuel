@@ -1,5 +1,5 @@
 import { type StoryTopic } from "@prisma/client";
-import { type Meta, type StoryObj } from "@storybook/react";
+import { type Meta, type StoryObj } from "@storybook/nextjs";
 import { DateTime } from "luxon";
 import bgImg from "../../../public/assets/images/top_background_img.png";
 import ArticleCard from "./ArticleCard";
@@ -66,10 +66,11 @@ export const VerticalRow: Story = {
 
 export const VerticalMobile: Story = {
   ...VerticalRow,
-  parameters: {
+  globals: {
     viewport: {
-      defaultViewport: "iphonex",
-    },
+      value: "iphonex",
+      isRotated: false
+    }
   },
 };
 
@@ -111,9 +112,10 @@ export const PreferHorizontalColumn: Story = {
 
 export const PreferHorizontalMobile: Story = {
   ...PreferHorizontalColumn,
-  parameters: {
+  globals: {
     viewport: {
-      defaultViewport: "iphonex",
-    },
+      value: "iphonex",
+      isRotated: false
+    }
   },
 };

@@ -1,8 +1,8 @@
-import type { Preview } from "@storybook/react";
+import type { Preview } from "@storybook/nextjs";
 import { initialize, mswLoader } from "msw-storybook-addon";
 import { StoriesMock } from "../src/app/api/stories/mock";
 import "../src/app/globals.css";
-import { INITIAL_VIEWPORTS } from "@storybook/addon-viewport";
+import { INITIAL_VIEWPORTS } from "storybook/viewport";
 
 initialize({ onUnhandledRequest: "bypass" });
 
@@ -11,7 +11,7 @@ const preview: Preview = {
   parameters: {
     layout: "fullscreen",
     viewport: {
-      viewports: INITIAL_VIEWPORTS,
+      options: INITIAL_VIEWPORTS,
     },
     controls: {
       matchers: {
