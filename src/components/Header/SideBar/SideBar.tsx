@@ -325,7 +325,7 @@ export default function SideBar() {
               href="/leave-feedback"
               className="block w-full px-4 font-medium"
             >
-              Leave FeedBack
+              Leave Feedback
             </Link>
           </li>
           <li
