@@ -22,10 +22,7 @@ export default function InnerCard({
   href,
 }: Props) {
   return (
-    <Link
-      href={href}
-      className="relative z-20 flex w-full flex-col rounded bg-white transition-all duration-300    lg:bg-transparent"
-    >
+    <div className="relative z-20 flex w-full flex-col rounded bg-white transition-all duration-300    lg:bg-transparent">
       <div className="z-20 flex flex-col rounded  bg-white from-[#027373] to-sciquelTeal p-5 transition-opacity duration-300 lg:bg-gradient-to-t lg:px-5 lg:pt-8 ">
         <div className="flex items-start justify-between">
           <TopicTag name={tag} />
@@ -50,6 +47,6 @@ export default function InnerCard({
           {author} | {date}
         </p>
       </div>
-    </Link>
+    </div>
   );
 }
