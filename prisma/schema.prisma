@@ -5,9 +5,9 @@ generator client {
   provider = "prisma-client-js"
 }
 
-generator json {
-  provider = "prisma-json-types-generator"
-}
+// generator json {
+//   provider = "prisma-json-types-generator"
+// }
 
 datasource db {
   provider = "mongodb"
