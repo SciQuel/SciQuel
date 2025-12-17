@@ -35,18 +35,52 @@ export default function SelectAll({
     }
   }, [reset]);
 
+  /**
+   * This function takes an array of booleans and a boolean value as arguments, and returns an array
+   * of the indexes of the elements in the array that match the boolean value.
+   *
+   * @param {boolean[]} arr - The array of booleans.
+   * @param {boolean} val - The boolean value to match.
+   * @returns {number[]} - An array of the indexes of the elements in the array that match the
+   *          boolean value.
+   */
   const getAllIndexes = (arr: boolean[], val: boolean) =>
     arr.reduce(
+      /**
+       * This function takes the current array of indexes, the current element, and the current
+       * index as arguments, and returns a new array of indexes.
+       *
+       * @param {number[]} indexes - The current array of indexes.
+       * @param {boolean} el - The current element.
+       * @param {number} i - The current index.
+       * @returns {number[]} - A new array of indexes.
+       */
       (indexes, el, i) => (el === val ? [...indexes, i] : indexes),
       [] as number[],
     );
 
+  /**
+   * Handles the event when a user selects an option.
+   *
+   * @param {number} index - The index of the option to select.
+   */
   const handlerSelected = (index: number) => {
+    // Set the selected state of the option to true.
     setSelected([(selected[index] = true)]);
+
+    // Set the new selected state.
     setSelected([...selected]);
   };
+  /**
+   * Handles the event when a user unselects an option.
+   *
+   * @param {number} index - The index of the option to unselect.
+   */
   const handlerUnSelected = (index: number) => {
+    // Set the selected state of the option to false.
     setSelected([(selected[index] = false)]);
+
+    // Set the new selected state.
     setSelected([...selected]);
   };
   return (

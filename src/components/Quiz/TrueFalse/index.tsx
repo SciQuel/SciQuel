@@ -9,7 +9,6 @@ interface Props {
   responed: resInfo;
   answer: number | boolean | [number];
   disable: boolean;
-  _current: number;
   reset: boolean[];
 }
 export default function TrueFalse({
@@ -19,7 +18,6 @@ export default function TrueFalse({
   quizQuestionId,
   responed,
   disable,
-  _current,
   reset,
 }: Props) {
   const [numIndex, setNumIndex] = useState([] as string[]);
@@ -34,14 +32,24 @@ export default function TrueFalse({
       setTFAnswer([]);
     }
   }, [reset]);
-  const handler = (ans: boolean, idx: number, t: string) => {
-    // console.log("ans ", t);
+  /**
+   * Handler function for true/false questions.
+   *
+   * @param {boolean} ans The answer to the question (true or false).
+   * @param {number} idx The index of the question.
+   * @param {string} t The text of the question.
+   */
+  const handler = (ans: boolean, idx: number, t: string): void => {
+    // Save the answer to the state
     setNumIndex([(numIndex[idx] = t)]);
+    // Update the state with the new answer
     setNumIndex([...numIndex]);
+    // Save the answer to the state
     setTFAnswer([(tfAnswer[idx] = ans)]);
+    // Update the state with the new answer
     setTFAnswer([...tfAnswer]);
   };
-  // console.log("isCorrect ", isCorrect, "exp ", exp, "selec ", selec);
+
   return (
     <div style={{ display: show ? "block" : "none" }}>
       <div className="true-false-selection mb-3 flex flex-col items-start gap-3 text-black">

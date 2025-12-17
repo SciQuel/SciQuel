@@ -211,7 +211,6 @@ export default function Quiz({ Quizzes }: Props) {
                     responed={respon[currentQuestion]}
                     answer={selected[currentQuestion]?.answer}
                     disable={disabled[currentQuestion]}
-                    current={currentQuestion}
                     reset={answered}
                   />
                 );
