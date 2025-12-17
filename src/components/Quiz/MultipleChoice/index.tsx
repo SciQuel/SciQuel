@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Explanation from "../Explanation";
 import { type resInfo } from "../index";
 
 interface Props {
@@ -117,7 +118,10 @@ export default function MultipleChoice({
         ))}
       </div>
 
-      {responed && (
+      <Explanation explanation={responed} quizType="MULTIPLE_CHOICE" />
+
+      {/* Explanation Area */}
+      {/* {responed && (
         <div className="col my-2 text-center">
           {responed.results[0]?.correct[0] === true ? (
             <div className="modal-content w-full border border-none">
@@ -159,7 +163,7 @@ export default function MultipleChoice({
             </div>
           )}
         </div>
-      )}
+      )} */}
     </div>
   );
 }
