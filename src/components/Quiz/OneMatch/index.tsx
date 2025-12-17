@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import Explanation from "../Explanation";
 import { type resInfo } from "../index";
 
 interface Props {
@@ -25,10 +26,7 @@ export default function OneMatch({
 }: Props) {
   // console.log("ans ", userAns);
   const [order, _setOrder] = useState(options.map((item, index) => index));
-  const [dirAnswer, setDirAnswer] = useState(
-    // options.map((item, index) => index),
-    order,
-  );
+  const [dirAnswer, setDirAnswer] = useState(order);
   const [quizId, _] = useState(quizQuestionId);
 
   const [dirresult, setDirresult] = useState([] as boolean[]);
@@ -61,8 +59,11 @@ export default function OneMatch({
   }, [reset]);
   //Update the answer info to parent
   useEffect(() => {
-    // console.log("Direct answer ", dirAnswer);
-    answers({ quizId, answer: dirAnswer });
+    if (show) {
+      console.log("quizId ", quizId);
+      console.log("Direct answer ", dirAnswer);
+      answers({ quizId: quizQuestionId, answer: dirAnswer });
+    }
   }, [dirAnswer]);
 
   useEffect(() => {
@@ -210,7 +211,10 @@ export default function OneMatch({
         );
       })}
       {/** two */}
-      {responed?.results?.map((res) => (
+      {Explanation && (
+        <Explanation explanation={responed} quizType="DIRECT_MATCHING" />
+      )}
+      {/* {responed?.results?.map((res) => (
         <div className="col my-2 text-center">
           <div>
             {res.correct[0] === true ? (
@@ -258,7 +262,7 @@ export default function OneMatch({
             )}
           </div>
         </div>
-      ))}
+      ))} */}
     </div>
   );
 }
