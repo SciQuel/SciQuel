@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Explanation from "../Explanation";
 import { type resInfo } from "../index";
 
 interface Props {
@@ -24,8 +25,6 @@ export default function MultipleMatch({
   disable,
   reset,
 }: Props) {
-  // const [c, setC] = useState(categories.map((item, index) => index));
-  // const empty2DArray = [[]];
   const [comAnswer, setComAnswer] = useState(
     Array.from({ length: categories.length }, () => []) as (number | null)[][],
   );
@@ -61,7 +60,7 @@ export default function MultipleMatch({
         }),
       );
     }
-    console.log("correctArray ", correctArray);
+    // computed correctArray
     // result.push(...correctArray);
     return correctArray;
   };
@@ -84,8 +83,10 @@ export default function MultipleMatch({
 
   // Update the answer info to parent
   useEffect(() => {
-    // console.log("Complex quizId ", quizId);
-    answers({ quizId, answer: comAnswer });
+    if (show) {
+      // console.log("Complex quizId ", quizId);
+      answers({ quizId, answer: comAnswer });
+    }
   }, [comAnswer]);
 
   // Reset the answer when reset is called
@@ -113,6 +114,82 @@ export default function MultipleMatch({
       setTrueResult(numberOfTrue(responed?.results));
     }
   }, [responed]);
+
+  // Number of columns in the choice grid. Keep in sync with the CSS grid (grid-cols-3).
+  const GRID_COLS = 3;
+  // Count how many options are still available (not dragged away, represented by -1).
+  const activeChoiceCount = opList.filter((i) => i !== -1).length;
+  // Number of placeholder cells to render so the grid keeps its layout when items are removed.
+  const placeholderCount = Math.max(0, GRID_COLS - activeChoiceCount);
+
+  // Helper: remove option `op` from any category rows and update comAnswer
+  const removeOptionFromOrder = (op: number) => {
+    setOrder((state) => {
+      const newState = state.map((row) =>
+        row.map((cell) => (cell === op ? null : cell)),
+      );
+      setComAnswer([...removeNull(newState)]);
+      return newState;
+    });
+  };
+
+  // Helper: restore an option back into the choice list (opList)
+  const restoreOptionToChoices = (op: number) => {
+    setOpList((state) => {
+      const newState = [...state];
+      newState[op] = op;
+      return newState;
+    });
+  };
+
+  // Handler: drop an item into a category column (target slot)
+  const handleCategoryDrop = (newcol: number) => {
+    const op = currOpRef.current;
+    if (op === null || op === undefined) return;
+    setOrder((state) => {
+      const newState = state.map((row) => [...row]);
+      if (currColRef.current != null && currColRef.current !== newcol) {
+        newState[newcol][op] = op;
+        newState[currColRef.current][op] = null;
+      } else {
+        newState[newcol][op] = op;
+      }
+      setComAnswer([...removeNull(newState)]);
+      return newState;
+    });
+    // mark option as removed from choice list
+    setOpList((state) => {
+      const newState = [...state];
+      newState[op] = -1;
+      return newState;
+    });
+    currOpRef.current = null;
+    currColRef.current = null;
+    currDragRef.current = null;
+  };
+
+  // Handler: drop onto another item to swap positions
+  const handleSwapDrop = (newVal: number) => {
+    const old = currOpRef.current;
+    if (old === null || old === undefined) return;
+    setOrder((state) => {
+      const newState = state.map((row) => [...row]);
+      const oldRow = state.findIndex((row) => row.includes(old));
+      const newRow = state.findIndex((row) => row.includes(newVal));
+      const oldCol = oldRow !== -1 ? state[oldRow].indexOf(old) : -1;
+      const newCol = newRow !== -1 ? state[newRow].indexOf(newVal) : -1;
+      if (oldRow !== -1 && newRow !== -1) {
+        newState[oldRow][newVal] = newVal;
+        newState[newRow][old] = old;
+        if (oldCol !== -1) newState[oldRow][oldCol] = null;
+        if (newCol !== -1) newState[newRow][newCol] = null;
+      }
+      setComAnswer([...removeNull(newState)]);
+      return newState;
+    });
+    currOpRef.current = null;
+    currDragRef.current = null;
+  };
 
   return (
     <div style={{ display: show ? "block" : "none" }}>
@@ -150,97 +227,20 @@ export default function MultipleMatch({
                   {fullCat}
                 </div>
                 <div
-                  // id={cat}
-                  // category-key={index}
                   className="contents"
                   onDragStart={(e) => {
                     currColRef.current = colIndex;
-                    console.log("drag start cat ", currColRef.current);
                     currDragRef.current = e.target as HTMLTextAreaElement;
                   }}
-                  onDragOver={(e) => {
-                    e.preventDefault();
-                    // console.log("drag over cat currColRef", currColRef.current);
-                    // console.log("drag over  cat currOpRef", currOpRef.current);
-                    // console.log("drag over col", colIndex);
-                  }}
+                  onDragOver={(e) => e.preventDefault()}
                   onDrop={(e) => {
-                    // console.log("drop", colIndex);
                     e.preventDefault();
-                    const target = e.target as HTMLTextAreaElement;
-                    // console.log("target", target);
-                    // let tmp = currDragRef.current?.innerHTML || ""; // Store the current content of the dragged item
-                    // console.log("currDragRef", currDragRef.current);
-
-                    // Check if the target element is a valid drop target
-                    // and if it is a target for the drop
+                    const target = e.target as HTMLElement;
                     if (target.getAttribute("data-draggable") === "target") {
-                      // Insert the dragged item into its new position
-                      const newcol = colIndex;
-                      // console.log("newcol form ", newcol);
-                      // console.log("currColRef", currColRef.current);
-                      if (
-                        currColRef.current != null &&
-                        currColRef.current != newcol
-                      ) {
-                        setOrder((state) => {
-                          const newState = [...state];
-                          const op = currOpRef.current;
-                          if (op !== null && op !== undefined) {
-                            newState[newcol][op] = op;
-                            if (
-                              currColRef.current !== null &&
-                              currColRef.current !== undefined
-                            ) {
-                              newState[currColRef.current][op] = null;
-                            }
-                            // console.log("here1 ");
-                            setComAnswer([...removeNull(newState)]);
-                          }
-                          return newState;
-                        });
-                      } else {
-                        setOrder((state) => {
-                          const newState = [...state];
-
-                          // if (!newState[colIndex]) newState[colIndex] = [];
-                          const op = currOpRef.current;
-                          if (op !== null && op !== undefined) {
-                            newState[colIndex][op] = op;
-                            // console.log("here2 ");
-                            // console.log("drop", newState[colIndex]);
-                            setComAnswer([...removeNull(newState)]);
-                          }
-                          return newState;
-                        });
-                        // console.log("here5 ");
-
-                        // console.log("here6 ");
-                      }
-                      // console.log("here7 ");
-
-                      setOpList((state) => {
-                        const newState = [...state];
-                        const index = currOpRef.current;
-                        if (index !== null && index !== undefined) {
-                          newState[index] = -1;
-                        }
-                        // console.log("newState", newState);
-                        // console.log("hello4");
-                        return newState;
-                      });
+                      handleCategoryDrop(colIndex);
                     }
-                    console.log("hello3");
-                    console.log("currColRef", currColRef.current);
-                    setComAnswer([...removeNull(order)]);
-                    // console.log("drop", cat);
                   }}
-                  onDragEnd={(e) => {
-                    e.preventDefault();
-                    // currDragRef.current = null;
-                    // currOpRef.current = null;
-                    // currColRef.current = null;
-                  }}
+                  onDragEnd={(e) => e.preventDefault()}
                 >
                   {/* Answers in each column */}
                   {comAnswer[colIndex]?.map((op, _) => {
@@ -264,58 +264,13 @@ export default function MultipleMatch({
                         }}
                         draggable={!disable}
                         onDragStart={(e) => {
-                          console.log("drag start");
                           currDragRef.current = e.target as HTMLTextAreaElement;
                           currOpRef.current = op;
-                          console.log("opref ", currOpRef.current);
                         }}
                         onDragOver={(e) => {
                           e.preventDefault();
                         }}
-                        onDrop={() => {
-                          const old = currOpRef.current;
-                          const newVal = op;
-                          if (old === null || old === undefined) {
-                            console.log(
-                              "currOpRef.current is null or undefined",
-                            );
-                            return;
-                          }
-                          console.log("old", old);
-                          console.log("newVal", newVal);
-                          console.log("currColRef", currColRef.current);
-                          const oldRow = order.findIndex((row) =>
-                            row.includes(old),
-                          );
-                          const newRow = order.findIndex((row) =>
-                            row.includes(newVal),
-                          );
-                          // console.log("oldRow", oldRow);
-                          // console.log("newRow", newRow);
-                          const oldCol =
-                            oldRow !== -1 ? order[oldRow].indexOf(old) : -1;
-                          const newCol =
-                            newRow !== -1 ? order[newRow].indexOf(newVal) : -1;
-                          // console.log("oldCol", oldCol);
-                          // console.log("newCol", newCol);
-                          // console.log("order", order);
-
-                          if (oldRow !== -1 && newRow !== -1) {
-                            setOrder((state) => {
-                              const newState = [...state];
-                              newState[oldRow][newVal] = newVal;
-                              newState[newRow][old] = old;
-                              newState[oldRow][oldCol] = null;
-                              newState[newRow][newCol] = null;
-
-                              return newState;
-                            });
-                            setComAnswer([...removeNull(order)]);
-                          } else {
-                            console.log(`Element ${newVal} not found`);
-                            console.log(`Element ${old} not found`);
-                          }
-                        }}
+                        onDrop={() => handleSwapDrop(op)}
                         onDragEnd={(e) => {
                           e.preventDefault();
                         }}
@@ -403,7 +358,21 @@ export default function MultipleMatch({
       {/* Choice Area */}
 
       <div className="multiple-match-answer-choice-area  w-full place-items-center gap-2 border-t-[1.75px] pt-6 ">
-        <div className="grid  w-full grid-cols-3 justify-stretch gap-4">
+        <div
+          className="grid  w-full grid-cols-3 justify-stretch gap-4"
+          onDragOver={(e) => e.preventDefault()}
+          onDrop={(e) => {
+            e.preventDefault();
+            const op = currOpRef.current;
+            if (op === null || op === undefined) return;
+            // remove from any category and restore to choices
+            removeOptionFromOrder(op);
+            restoreOptionToChoices(op);
+            currOpRef.current = null;
+            currColRef.current = null;
+            currDragRef.current = null;
+          }}
+        >
           {opList.map((item, index) => {
             if (item != -1) {
               const fullItem = options[item];
@@ -415,23 +384,17 @@ export default function MultipleMatch({
                   data-draggable="item"
                   option-key={index}
                   onDragStart={(e) => {
-                    console.log("drag start");
                     currDragRef.current = e.target as HTMLTextAreaElement;
                     currOpRef.current = index;
-                    // currColRef.current = -1;
-                    // console.log(" start currDragRef", currDragRef.current);
                   }}
                   onDragOver={(e) => {
                     e.preventDefault();
-                    console.log("drag over currColRef", currColRef.current);
-                    console.log("drag over currOpRef", currOpRef.current);
                   }}
                   onDrop={(e) => {
                     e.preventDefault();
                   }}
                   onDragEnd={(e) => {
                     e.preventDefault();
-                    console.log("hello5");
                   }}
                 >
                   <div
@@ -481,13 +444,68 @@ export default function MultipleMatch({
             }
           })}
 
-          <div
-            className="multiple-match-slot h-[50px] w-full rounded-[4px] border-none bg-white p-3 transition duration-300"
-            data-draggable="target"
-          ></div>
+          {activeChoiceCount < opList.length ? (
+            <div
+              className="multiple-match-slot h-[50px] w-full  rounded-[4px]   bg-gray-200 p-3 transition duration-300 "
+              style={{ border: "2px dashed black" }}
+              data-draggable="target"
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={(e) => {
+                e.preventDefault();
+                const op = currOpRef.current;
+                if (op === null || op === undefined) return;
+                // remove this option from any category it currently lives in
+                setOrder((state) => {
+                  const newState = state.map((row) =>
+                    row.map((cell) => (cell === op ? null : cell)),
+                  );
+                  setComAnswer([...removeNull(newState)]);
+                  return newState;
+                });
+                // restore the option back into the choice list
+                setOpList((state) => {
+                  const newState = [...state];
+                  newState[op] = op;
+                  return newState;
+                });
+                currOpRef.current = null;
+              }}
+            ></div>
+          ) : (
+            <div
+              className="multiple-match-slot h-[50px] w-full rounded-[4px] border-none bg-white p-3 transition duration-300"
+              data-draggable="target"
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={(e) => {
+                e.preventDefault();
+                const op = currOpRef.current;
+                if (op === null || op === undefined) return;
+                setOrder((state) => {
+                  const newState = state.map((row) =>
+                    row.map((cell) => (cell === op ? null : cell)),
+                  );
+                  setComAnswer([...removeNull(newState)]);
+                  return newState;
+                });
+                setOpList((state) => {
+                  const newState = [...state];
+                  newState[op] = op;
+                  return newState;
+                });
+                currOpRef.current = null;
+              }}
+            ></div>
+          )}
         </div>
       </div>
-      {responed?.results?.map((res, index: number) => (
+      {/* Explanation Area */}
+      <Explanation
+        explanation={responed}
+        quizType="COMPLEX_MATCHING"
+        mmOnly={trueResult}
+      />
+
+      {/* {responed?.results?.map((res, index: number) => (
         <div className="col my-2 text-center">
           <div>
             <div className="modal-content  w-full border border-none">
@@ -510,7 +528,7 @@ export default function MultipleMatch({
             </div>
           </div>
         </div>
-      ))}
+      ))} */}
     </div>
   );
 }
