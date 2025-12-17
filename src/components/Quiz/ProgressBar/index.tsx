@@ -1,10 +1,9 @@
 interface Props {
+  quizMode: string;
   current: string;
   numOfQues: number;
   answered: boolean[];
   setCurrent: (index: number) => void;
-  progress: string;
-  gap: number;
   setProgress: (progress: string) => void;
 }
 /**
@@ -22,12 +21,11 @@ interface Props {
  * @param {Function} props.setProgress A function to set the progress string.
  */
 export default function ProgressBar({
+  quizMode,
   current,
   numOfQues,
   answered,
   setCurrent,
-  progress,
-  gap,
   setProgress,
 }: Props) {
   // The next question number

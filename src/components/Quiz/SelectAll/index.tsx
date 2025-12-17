@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Explanation from "../Explanation";
 import { type resInfo } from "../index";
 
 interface Props {
@@ -24,9 +25,11 @@ export default function SelectAll({
   const [selected, setSelected] = useState([false] as boolean[]);
 
   useEffect(() => {
-    const indexes = getAllIndexes(selected, true);
-    // setSAAnswer(indexes);
-    answers({ quizId: quizQuestionId, answer: indexes });
+    if (show) {
+      const indexes = getAllIndexes(selected, true);
+      // setSAAnswer(indexes);
+      answers({ quizId: quizQuestionId, answer: indexes });
+    }
   }, [selected]);
 
   useEffect(() => {
@@ -169,8 +172,11 @@ export default function SelectAll({
         {/* Base on the correctness of the choice, to display correct and incorrect massage*/}
 
         {/* <div className="col my-2 text-center"> {disable ? exp : ""}</div> */}
-
-        <div className="col my-2 text-center">
+        {/* Explanation Area */}
+        {responed && (
+          <Explanation explanation={responed} quizType="SELECT_ALL" />
+        )}
+        {/* <div className="col my-2 text-center">
           {responed && responed.score === 10 ? (
             <div>
               <div className="modal-content  w-full border border-none">
@@ -238,7 +244,7 @@ export default function SelectAll({
               </p>
             </div>
           ) : null}
-        </div>
+        </div> */}
       </div>
     </div>
   );
