@@ -1,118 +1,121 @@
 import prisma from "@/lib/prisma";
-import { Prisma } from "@prisma/client";
+import { getServerSession } from "next-auth";
 import { NextResponse, type NextRequest } from "next/server";
 import { getSchema, postSchema } from "./schema";
+import { getReadingHistory } from "./tool";
 
 export async function GET(req: Request) {
-  const { searchParams } = new URL(req.url);
-  const parsedParams = getSchema.safeParse(Object.fromEntries(searchParams));
-
-  if (!parsedParams.success) {
-    return NextResponse.json(parsedParams.error, { status: 400 });
-  }
-
-  const { user_id } = parsedParams.data;
-
   try {
-    const result = await prisma.pageView.groupBy({
-      by: ["storyId"],
-      _count: {
-        storyId: true,
-      },
-      orderBy: {
-        _count: {
-          storyId: "desc",
-        },
-      },
-      take: 10,
-      where: {
-        userId: user_id,
-      },
+    const url = new URL(req.url);
+    const queryUrl = Object.fromEntries(url.searchParams);
+    const parsedResult = getSchema.safeParse({
+      page: queryUrl.page,
+      limit: queryUrl.limit,
+      distinct: queryUrl.distinct,
     });
-
-    const storyIds = result.map((item) => item.storyId);
-
-    const stories = await prisma.story.findMany({
-      where: {
-        id: {
-          in: storyIds,
+    if (!parsedResult.success) {
+      return NextResponse.json(
+        {
+          error: parsedResult.error.errors[0].message,
+          errors: parsedResult.error.errors.map((err) => err.message),
         },
-      },
-    });
-
-    const sortedStories = storyIds.map((id) =>
-      stories.find((story) => story.id === id),
-    );
-
-    return NextResponse.json(sortedStories);
-  } catch (e) {
-    if (e instanceof Prisma.PrismaClientValidationError) {
-      console.log(e.message);
-      return NextResponse.json({ error: "Bad Request" }, { status: 400 });
+        { status: 400 },
+      );
     }
-
-    // all other errors
-    return NextResponse.json({ error: e }, { status: 500 });
+    // check if user is logged in
+    const session = await getServerSession();
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    const user = await prisma.user.findUnique({
+      where: { email: session?.user.email ?? "noemail" },
+      select: { id: true },
+    });
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+    const { page, limit, distinct } = parsedResult.data;
+    const { paginatedResult, countResult, maxPage } = await getReadingHistory({
+      userId: user.id,
+      limit,
+      page,
+      distinct,
+    });
+    return NextResponse.json({
+      total: countResult,
+      page_number: page + 1,
+      total_page: maxPage,
+      reading_history: paginatedResult.map((value) => ({
+        story_id: value.id,
+        last_read: value.lastRead,
+        story_summary: value.storySummary,
+        story_title: value.storyTitle,
+        story_thumbnail_url: value.storyThumbnailUrl,
+        story_slug: value.storySlug,
+        article_publish: value.articlePublish,
+        contributors: value.contributors.map((contributor) => ({
+          contributor_id: contributor.id,
+          first_name: contributor.firstName,
+          last_name: contributor.lastName,
+          contributor_type: contributor.type,
+        })),
+        bookmarked: value.bookmarked,
+        brained: value.brained,
+      })),
+    });
+  } catch (e) {
+    console.log(e);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 },
+    );
   }
 }
 
 export async function POST(req: NextRequest) {
-  let result;
   try {
-    result = postSchema.safeParse(await req.json());
-    if (!result.success) {
-      return NextResponse.json(result.error, { status: 400 });
-    }
-
-    const { story_id, user_id } = result.data;
-
-    // validate story_id
-    const story = await prisma.story.findUnique({
+    const session = await getServerSession();
+    const user = await prisma.user.findFirst({
       where: {
-        id: story_id,
+        email: session?.user.email || "noemail",
       },
     });
-
-    if (story === null) {
-      return NextResponse.json({ error: "Story not found" }, { status: 404 });
-    }
-
-    // validate user_id
-    const user = await prisma.user.findUnique({
-      where: {
-        id: user_id,
-      },
-    });
-
-    if (user === null) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
-    const res = await prisma.pageView.create({
-      data: {
-        userId: user_id,
-        storyId: story_id,
-      },
-    });
-
-    if (res === null) {
+    const parsedBody = postSchema.safeParse(await req.json());
+    if (!parsedBody.success) {
       return NextResponse.json(
-        { error: "Failed to create db entry" },
-        { status: 500 },
-      );
-    }
-
-    return NextResponse.json(res, { status: 200 });
-  } catch (e) {
-    // req.json() throws an error
-    if (!result) {
-      return NextResponse.json(
-        { error: "Invalid request body" },
+        { error: parsedBody.error.errors[0].message },
         { status: 400 },
       );
     }
 
-    // all other errors
-    return NextResponse.json({ error: e }, { status: 500 });
+    const storyId = parsedBody.data.story_id;
+    // validate story_id
+    const story = await prisma.story.findUnique({
+      where: {
+        id: storyId,
+      },
+    });
+    if (story === null) {
+      return NextResponse.json({ error: "Story not found" }, { status: 404 });
+    }
+
+    //create new time everytime user reading story
+    await prisma.pageView.create({
+      data: {
+        userId: user?.id,
+        storyId: storyId,
+      },
+    });
+    return NextResponse.json(
+      { message: "Updated user reading history" },
+      {
+        status: 200,
+      },
+    );
+  } catch (e) {
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 },
+    );
   }
 }
