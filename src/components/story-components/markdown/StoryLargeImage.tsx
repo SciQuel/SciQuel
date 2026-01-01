@@ -49,8 +49,8 @@ export default function StoryLargeImage({
   const overlapReducer = storyScrollInfo
     ? storyScrollInfo.overlapReducer
     : (state: number) => {
-      return state;
-    };
+        return state;
+      };
 
   const [, overlapDispatch] = useReducer(overlapReducer, 0);
 
@@ -212,9 +212,11 @@ it will only open the popup
         >
           <img
             src={src}
-            className={`${isPrintMode ? "md:max-w-[768px]" : "lg:max-w-[1000px]"
-              } max-w-screen mx-auto max-h-[900px] w-auto ${isSmallMargin ? "cursor-default" : "cursor-pointer"
-              }`}
+            className={`${
+              isPrintMode ? "md:max-w-[768px]" : "lg:max-w-[1000px]"
+            } max-w-screen mx-auto max-h-[900px] w-auto ${
+              isSmallMargin ? "cursor-default" : "cursor-pointer"
+            }`}
             alt={alt}
             onClick={handleClick}
           />
