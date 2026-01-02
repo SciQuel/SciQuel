@@ -1,8 +1,40 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
 
 // import FooterIcon from "./FooterIcon";
 
 export default function Footer() {
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setMessage(null);
+    if (!email) return setMessage("Please enter an email address.");
+    setLoading(true);
+    try {
+      const res = await fetch("/api/emails", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setMessage(data?.error ?? "Subscribe failed");
+      } else {
+        setMessage(data?.message ?? "Subscribed — thank you!");
+        setEmail("");
+      }
+    } catch (err) {
+      setMessage("Unable to subscribe right now");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <div className=" z-10 flex w-full flex-col bg-sciquelFooter font-quicksand text-white ">
       <div className="relative">
@@ -11,27 +43,28 @@ export default function Footer() {
             <p>
               Get a weekly dose of accessible science delivered to your inbox.
             </p>
-            <form className="w-full">
+            <form className="w-full" onSubmit={handleSubmit}>
               <input
                 id="email"
+                name="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 type="email"
-                className="h-9 w-full rounded-l-lg rounded-r-lg border border-solid
-                 bg-sciquelFooter pl-2 text-xs font-medium
-                  text-white placeholder-white outline-1
-                   sm:w-64 sm:rounded-r-none"
+                className="h-9 w-full rounded-l-lg rounded-r-lg border border-solid bg-sciquelFooter pl-2 text-xs font-medium text-white placeholder-white outline-1 sm:w-64 sm:rounded-r-none"
                 placeholder="team@sciquel.org"
                 pattern="^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"
                 title="Please provide a valid email to subscribe to our newsletter"
                 required
+                aria-label="Email address"
               />
               <button
                 type="submit"
-                className="mx-auto mt-3 h-9 w-28 
-                rounded-l-lg rounded-r-lg
-                 bg-white text-xs text-sciquelFooter sm:mx-0 sm:mt-0 sm:rounded-l-none"
+                disabled={loading}
+                className="mx-auto mt-3 h-9 w-28 rounded-l-lg rounded-r-lg bg-white text-xs text-sciquelFooter disabled:opacity-60 sm:mx-0 sm:mt-0 sm:rounded-l-none"
               >
-                Subscribe
+                {loading ? "Sending..." : "Subscribe"}
               </button>
+              {message && <p className="mt-2 text-xs">{message}</p>}
             </form>
           </div>
           <div className="flex flex-col items-end pt-4 ">
