@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import {
@@ -5,6 +6,7 @@ import {
   useEffect,
   useReducer,
   useRef,
+  useState,
   type PropsWithChildren,
 } from "react";
 import { PrintContext } from "../PrintContext";
@@ -15,6 +17,7 @@ import {
   // type DispatchAction,
   // type OnScreenElements,
 } from "../scroll/ScrollProvider";
+import StoryImagePopup from "../StoryImagePopup";
 
 interface Props {
   src: string;
@@ -38,6 +41,11 @@ export default function StoryLargeImage({
   const resizeRef = useRef<ResizeObserver | null>(null);
   const intersectionRef = useRef<IntersectionObserver | null>(null);
   const scrollObserveRef = useRef(false);
+  const [isClicked, setIsClicked] = useState(false);
+  const captionRef = useRef<HTMLParagraphElement>(null);
+  const imageContainerRef = useRef<HTMLDivElement>(null);
+  const [isSmallMargin, setSmallMargin] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   const overlapReducer = storyScrollInfo
     ? storyScrollInfo.overlapReducer
@@ -68,6 +76,55 @@ export default function StoryLargeImage({
       }
     };
   }, []);
+
+  useEffect(() => {
+    // Check if the space to the end of the screen is small enough to open the popup
+    const checkMargin = () => {
+      if (
+        !imageContainerRef.current ||
+        !imageContainerRef.current?.parentElement
+      )
+        return;
+
+      const rect =
+        imageContainerRef.current?.parentElement.getBoundingClientRect();
+      const spaceLeft = rect.left;
+      const spaceRight = window.innerWidth - rect.right;
+
+      console.log(spaceLeft, spaceRight);
+
+      if (spaceLeft <= 40 || spaceRight <= 40) {
+        setSmallMargin(true);
+      } else {
+        setSmallMargin(false);
+      }
+    };
+
+    checkMargin();
+    window.addEventListener("resize", checkMargin);
+
+    return () => {
+      window.removeEventListener("resize", checkMargin);
+    };
+  }, []);
+
+  useEffect(() => {
+    const isMobile =
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent,
+      );
+    setIsMobile(isMobile);
+  }, []);
+
+  /*Handling click on the popup div and the image div where image is on article page . If the div is clicked
+when the popup is up, it checks if it outisde the image, if it is it closes the popup, otherwise it will use handleImageClick defined
+in other file. When the popup is not already up, 
+it will only open the popup
+*/
+  const handleClick = () => {
+    if (isSmallMargin || isMobile) return;
+    setIsClicked(!isClicked);
+  };
 
   function checkResize(entries: ResizeObserverEntry[]) {
     entries.forEach((entry) => {
@@ -132,22 +189,43 @@ export default function StoryLargeImage({
   }
 
   return (
-    <div className="flex w-full items-center justify-center sm:w-auto sm:min-w-[30rem]">
-      <figure
-        className="mx-auto table w-full gap-8 p-8 lg:w-min lg:p-0"
-        ref={figureRef}
-      >
-        <img
+    <>
+      {isClicked && (
+        <StoryImagePopup
           src={src}
-          className={`${
-            isPrintMode ? "md:max-w-[768px]" : "lg:max-w-[1000px]"
-          } max-w-screen mx-auto max-h-[900px] w-auto`}
+          children={children}
+          handleClick={handleClick}
+          captionRef={captionRef}
           alt={alt}
+          isClicked={isClicked}
+          setIsClicked={setIsClicked}
+          isMobile={isMobile}
+          isSmallMargin={isSmallMargin}
         />
-        <figcaption className="mt-2 table-caption w-full caption-bottom px-8 font-sourceSerif4 text-base lg:px-0">
-          {children}
-        </figcaption>
-      </figure>
-    </div>
+      )}
+      <div
+        className="flex w-full items-center justify-center sm:w-auto sm:min-w-[30rem]"
+        ref={imageContainerRef}
+      >
+        <figure
+          className="mx-auto table w-full gap-8 p-8 lg:w-min lg:p-0"
+          ref={figureRef}
+        >
+          <img
+            src={src}
+            className={`${
+              isPrintMode ? "md:max-w-[768px]" : "lg:max-w-[1000px]"
+            } max-w-screen mx-auto max-h-[900px] w-auto ${
+              isSmallMargin ? "cursor-default" : "cursor-pointer"
+            }`}
+            alt={alt}
+            onClick={handleClick}
+          />
+          <figcaption className="mt-2 table-caption w-full caption-bottom px-8 font-sourceSerif4 text-base lg:px-0">
+            {children}
+          </figcaption>
+        </figure>
+      </div>
+    </>
   );
 }

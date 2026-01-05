@@ -45,7 +45,7 @@ export default function ArticleList({
               (value) => value.contributionType === "AUTHOR",
             );
             return author
-              ? `${author.contributor.firstName} ${author.contributor.lastName}`
+              ? `${author.contributor?.firstName} ${author.contributor?.lastName}`
               : "";
           })()}
           date={DateTime.fromJSDate(article.publishedAt).toLocaleString(

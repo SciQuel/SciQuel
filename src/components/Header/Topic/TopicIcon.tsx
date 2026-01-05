@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import AstronomyAct from "./TopicIcons/Astronomy_Active.svg";
