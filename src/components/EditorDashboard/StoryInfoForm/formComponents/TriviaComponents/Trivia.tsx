@@ -1,3 +1,5 @@
+/* eslint-disable isaacscript/complete-sentences-jsdoc */
+import env from "@/lib/env";
 import axios from "axios";
 import React, { useState } from "react";
 import ComplexMatchingQuestion from "./ComplexMatchingQuestion";
@@ -49,6 +51,7 @@ export type QuestionType =
 
 export interface Question {
   id: number;
+  quizQuestionId?: string;
   type: QuestionType;
   content: string;
   explanation?: string;
@@ -508,15 +511,39 @@ const Trivia: React.FC = () => {
                 <div className="mt-2 flex items-center gap-2 text-sm text-gray-700">
                   <span>Delete this question?</span>
                   <button
+                    type="button"
                     className="rounded bg-red-500 px-2 py-1 text-white hover:bg-red-600"
-                    onClick={() => {
-                      deleteQuestion(question.id);
-                      setConfirmDeleteId(null);
+                    onClick={(e) => {
+                      e.preventDefault();
+                      const qid = question.quizQuestionId;
+                      console.log("Deleting question:", qid);
+
+                      void (async () => {
+                        try {
+                          if (qid) {
+                            await deleteQuestionFromBackend(qid);
+                          } else {
+                            console.warn(
+                              "No quizQuestionId; performing local delete only",
+                            );
+                          }
+                          deleteQuestion(question.id); // local frontend delete
+                          setConfirmDeleteId(null); // Only close on success
+                        } catch (err) {
+                          console.error("❌ Delete error:", err);
+                          if (axios.isAxiosError(err)) {
+                            console.error("❌ Status:", err.response?.status);
+                            console.error("❌ Response:", err.response?.data);
+                          }
+                          // Don't close the dialog, so user can check console
+                        }
+                      })();
                     }}
                   >
                     Yes
                   </button>
                   <button
+                    type="button"
                     className="rounded bg-gray-300 px-2 py-1 hover:bg-gray-400"
                     onClick={() => setConfirmDeleteId(null)}
                   >
@@ -524,7 +551,6 @@ const Trivia: React.FC = () => {
                   </button>
                 </div>
               )}
-
               {question.type === "MULTIPLE_CHOICE" && (
                 <MultipleChoiceQuestion
                   question={question}
@@ -605,6 +631,15 @@ const Trivia: React.FC = () => {
           >
             Add Question
           </button>
+          <button
+            type="button"
+            onClick={() => {
+              void getCurrentQuizzes(setQuestions);
+            }}
+            className="mt-4 rounded bg-sciquelTeal px-3 py-2 text-sm text-white"
+          >
+            GET
+          </button>
         </div>
       )}
     </div>
@@ -640,64 +675,6 @@ async function submitQuizMap(
 }
 const urlQuiz = "/api/quizzes/edit";
 const storyIdTest = "6488c6f6f5f617c772f6f61a";
-// story_id: ObjectId
-// question_type:QuestionType enum
-// max_score:number,
-// subpart:QuizQuestionCreate,
-// subheader:string
-
-// SELECT_ALL:
-// {
-// 	content_category:string[ ],
-// 	question: string,
-//  options: string[ ]
-//  correct_answers: number[ ]
-//  explanations: string[ ]
-// }
-
-// COMPLEX_MATCHING:
-// {
-// 	content_categories:string[ ]
-// 	question: string
-//  categories: string[ ]
-//  options: string[ ]
-//  correct_answers: number[ ][ ]
-//  explanations: string[ ]
-// }
-
-// DIRECT_MATCHING:
-// 	{
-// 		content_categories:string[ ]
-// 		question: string
-//    categories: string[ ]
-//    options: string[ ]
-//    correct_answers: number[ ]
-//    explanations: string[ ]
-// 	}
-
-//   MULTIPLE_CHOICE:
-// {
-// 		question: string,
-//    options: string[ ]
-//    correct_answer: number
-//    explanations: string[ ]
-//    content_category:string[ ]
-// }
-
-// TRUE_FALSE:
-// 	{
-// 		content_category:string[ ]
-// 		questions: string[ ]
-//    correct_answers: bool[ ]
-//    explanations:string[ ]
-// }
-
-/**
- * *Fix content_category and question are different content_category is a group question is a child
- * of the group there are explanations in every type question, the amount is based on type story_id
- * is required max_score is optional default is 10 all type question is put in subpart missing
- * subheader
- */
 
 /**
  * Submit multiple choice question type
@@ -705,28 +682,18 @@ const storyIdTest = "6488c6f6f5f617c772f6f61a";
  * @param question
  */
 async function submitMultipleChoice(question: Question) {
-  /**
-   * Missing content_category, explainations The should be an explain for each choice add subheader
-   * add content
-   */
   const { content, choices, type } = question;
   const res = await axios.post(urlQuiz, {
     story_id: storyIdTest,
     question_type: type,
-    //optional
     max_score: 10,
     subheader: "This is a subheader",
     subpart: {
-      //content_category is array and should only have 1
       content_category: ["Content category"],
       question: content,
       options: choices?.map((choice) => choice.content),
-      //index of choice that isCorrect:true
       correct_answer: choices?.findIndex((choice) => choice.isCorrect),
-      //explanations for each choice
-      explanations: choices?.map(
-        () => question.explanation || "No explanation provided",
-      ),
+      explanations: (() => question.explanation || "no explanation provided")(),
     },
   });
   return res;
@@ -738,36 +705,23 @@ async function submitMultipleChoice(question: Question) {
  * @param question
  */
 async function submitSelectAll(question: Question) {
-  /**
-   * Missing content_category, explainations The should be an explain for each option add subheader
-   * add content
-   */
   const { content, options, type, correct_answers } = question;
 
-  //correct_answers contains optionId
   const optionIndexChecked = options
-    //convert options to obj array contain id and index
     ?.map(({ id }, index) => ({ id, index }))
-    //keep option that correct_answers have the option id
     .filter(({ id, index }) => correct_answers?.includes(id))
-    //convert to index array
     .map(({ index }) => index);
 
   const res = await axios.post(urlQuiz, {
     story_id: storyIdTest,
     question_type: type,
-    //optional
     max_score: 10,
     subheader: "This is a subheader",
     subpart: {
       question: content,
-      //content_category is array and should only have 1
       content_category: ["Content category"],
-
       options: options?.map((option) => option.content),
-      //index of option that is checked, order does not matter
       correct_answers: optionIndexChecked,
-      //explanations for each option
       explanations: options?.map(
         (option, index) => "This is a explaination for option " + index,
       ),
@@ -784,9 +738,6 @@ async function submitSelectAll(question: Question) {
 async function submitDirectMatching(question: Question) {
   const { content, pairs, type } = question;
 
-  // The correct answers should be the original indices before shuffling
-  // Since rightSideOrder in the component maintains the original order in its 'number' property,
-  // we can use that to determine the correct mapping
   const correctAnswers = (question.pairs || []).map((pair, index) => index);
 
   const res = await axios.post(urlQuiz, {
@@ -800,8 +751,6 @@ async function submitDirectMatching(question: Question) {
       ),
       categories: pairs?.map((pair) => pair.left),
       options: pairs?.map((pair) => pair.right),
-      // This assumes the right side options will be displayed in shuffled order,
-      // and the correct answer is their original position (0, 1, 2, etc.)
       correct_answers: correctAnswers,
       explanations: pairs?.map(
         (val, index) =>
@@ -819,43 +768,32 @@ async function submitDirectMatching(question: Question) {
  * @param question
  */
 async function submitComplexMatching(question: Question) {
-  /**
-   * Missing content_category, explainations The should be an explain for each option add content
-   * add subheader
-   */
   const { categories, categoryItems, content } = question;
-  //create a map of category id to item index
   const categoriesIdMap =
     categories?.reduce<{ [key: number]: number[] }>((prev, { id }) => {
       prev[id] = [];
       return prev;
     }, {}) ?? {};
-  //insert index of item to the catedoryIdMap
   categoryItems?.forEach(({ categoryId }, index) => {
     categoriesIdMap[categoryId].push(index);
   });
-  //convert it to ans
   const correct_answers =
     categories?.map(({ id }) => categoriesIdMap[id]) ?? [];
-  //correct_answers contains optionId
   const res = await axios.post(urlQuiz, {
     story_id: storyIdTest,
     question_type: "COMPLEX_MATCHING",
     max_score: 10,
     subpart: {
-      //content_category for each match (left side)
       content_category: categories?.map(
         (val, index) => "This is an content_category for category " + index,
       ),
       question: content,
       categories: categories?.map(({ name }) => name),
       options: categoryItems?.map(({ content }) => content),
-      //index from the categoryItems that should belong to the category position
-      //Example: [[1,2],[0]] means category 1 has item 1 and 2, category 2 has item 0
       correct_answers: correct_answers,
-      //explanation for each match (left side) plus the placeholder options
       explanations: [
         ...(categories?.map(
+          // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
           (val, index) => "This is an explanations for category " + index,
         ) || []),
         "This is an explanation for the options place holder",
@@ -872,14 +810,12 @@ async function submitComplexMatching(question: Question) {
  * @param question
  */
 async function submitTrueFalse(question: Question) {
-  /** Missing content_category */
   const { trueOrFalseQuestions, type } = question;
   const res = await axios.post(urlQuiz, {
     story_id: storyIdTest,
     question_type: type,
     max_score: 10,
     subpart: {
-      // content_category for each question
       content_category: trueOrFalseQuestions?.map(
         (value, index) => "This is a content_category for question " + index,
       ),
@@ -892,4 +828,138 @@ async function submitTrueFalse(question: Question) {
     subheader: "This is a subheader",
   });
   return res;
+}
+
+async function getCurrentQuizzes(
+  setQuestions: React.Dispatch<React.SetStateAction<Question[]>>,
+) {
+  try {
+    const res = await axios.get(
+      `${env.NEXT_PUBLIC_SITE_URL}/api/quizzes/edit?story_id=${storyIdTest}`,
+    );
+
+    if (res.status !== 200) {
+      console.error("Failed to fetch quizzes");
+      return;
+    }
+
+    const body = res.data?.quizzes;
+    if (!Array.isArray(body)) {
+      console.error("Unexpected response format:", res.data);
+      return;
+    }
+    console.log("🟦 RAW GET RESPONSE:", body);
+
+    const mappedQuestions: Question[] = body.map((quiz: any, index: number) => {
+      const type = quiz.question_type as QuestionType;
+
+      // Extract the quiz_question_id properly - check both _id and quiz_question_id
+      const quizQuestionId = quiz.quiz_question_id || quiz._id;
+      console.log("🟦 Mapping quiz with ID:", quizQuestionId, "Type:", type);
+
+      switch (type) {
+        case "MULTIPLE_CHOICE":
+          return {
+            id: index + 1,
+            type,
+            quizQuestionId: quizQuestionId,
+            content: quiz.question || "",
+            explanation: Array.isArray(quiz.explanations)
+              ? quiz.explanations
+              : [],
+            choices:
+              quiz.options?.map((opt: string, idx: number) => ({
+                id: idx + 1,
+                content: opt,
+                isCorrect: false,
+              })) || [],
+          };
+        case "SELECT_ALL":
+          return {
+            id: index + 1,
+            type,
+            quizQuestionId: quizQuestionId,
+            content: quiz.question || "",
+            explanation: quiz.explanation || "",
+            options:
+              quiz.options?.map((opt: string, idx: number) => ({
+                id: idx + 1,
+                content: opt,
+              })) || [],
+            correct_answers: [],
+          };
+
+        case "DIRECT_MATCHING":
+          return {
+            id: index + 1,
+            type,
+            quizQuestionId: quizQuestionId,
+            content: quiz.question || "",
+            explanation: quiz.explanation || "",
+            pairs:
+              quiz.categories?.map((cat: string, idx: number) => ({
+                id: idx + 1,
+                left: cat,
+                right: quiz.options?.[idx] || "",
+              })) || [],
+          };
+
+        case "TRUE_FALSE":
+          return {
+            id: index + 1,
+            type,
+            quizQuestionId: quizQuestionId,
+            content: quiz.sub_header || "",
+            trueOrFalseQuestions:
+              quiz.questions?.map((q: string, idx: number) => ({
+                id: idx + 1,
+                content: q,
+                isTrue: false,
+                explanation: "",
+              })) || [],
+          };
+
+        default:
+          return {
+            id: index + 1,
+            type,
+            quizQuestionId: quizQuestionId,
+            content: quiz.question || "",
+          };
+      }
+    });
+
+    setQuestions(mappedQuestions);
+    console.log("Loaded quizzes:", mappedQuestions);
+  } catch (err) {
+    console.error("Error fetching quizzes:", err);
+  }
+}
+
+async function deleteQuestionFromBackend(quizQuestionId: string) {
+  const payload = {
+    story_id: storyIdTest,
+    quiz_question_id: quizQuestionId,
+  };
+
+  console.log("DELETE content:", payload);
+  console.log("DELETE URL:", urlQuiz);
+
+  try {
+    const response = await axios.delete(`${urlQuiz}`, {
+      params: {
+        story_id: storyIdTest,
+        quiz_question_id: quizQuestionId,
+      },
+    });
+
+    console.log("🟦 DELETE response:", response.data);
+    return response;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error("DELETE error response:", error.response?.data);
+      console.error("DELETE error status:", error.response?.status);
+    }
+    throw error;
+  }
 }
