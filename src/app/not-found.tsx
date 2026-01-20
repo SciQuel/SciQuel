@@ -14,32 +14,88 @@ export default function NotFound() {
   function renderContent() {
     switch (selected) {
       case 0:
-        return <div className="flex flex-col justify-center items-center h-full w-full p-40 text-black font-black">
+        return (
+          <div className="flex flex-col justify-center items-center h-full w-full p-40 text-black font-black">
             <h1>Most Popular Articles</h1>
             <button>Sample</button>
             <button>Sample</button>
             <button>Sample</button>
             <span className="hover:cursor-pointer hover:underline">Explore More Articles</span>
           </div>
+        );
       case 1:
-        return <div className="flex flex-col justify-center items-center h-full w-full p-40 gap-4">
-          <p>Couldn't find what you were looking for? Let us know so we can fix it!</p>
-          <form className="flex flex-col justify-center items-center gap-4">
-            <div className="bg-white rounded-lg text-black flex flex-col items-center justify-center p-4 gap-2">
-              <span className="">Describe what you were looking for.</span>
-              <textarea className="bg-slate-300 rounded-lg w-full" style={{resize:"none"}}></textarea>
-            </div>
-            <button className="bg-white rounded-full text-black px-4">Submit</button>
-          </form>
-        </div>
+        return (
+          <div className="flex flex-col justify-center items-center h-full w-full p-40 gap-4">
+            <p>Couldn't find what you were looking for? Let us know so we can fix it!</p>
+            <form className="flex flex-col justify-center items-center gap-4">
+              <div className="bg-white rounded-lg text-black flex flex-col items-center justify-center p-4 gap-2">
+                <span className="">Describe what you were looking for.</span>
+                <textarea className="bg-slate-300 rounded-lg w-full" style={{resize:"none"}}></textarea>
+              </div>
+              <button className="bg-white rounded-full text-black px-4">Submit</button>
+            </form>
+          </div>
+        );
       case 2:
-        return <div className="flex justify-normal items-center h-full w-full p-40">
-          <span>Loading...</span>
-        </div>
+        return (
+          <div className="flex justify-normal items-center h-full w-full p-40">
+            <span>Loading...</span>
+          </div>
+        );
     }
   }
 
   const stars = Array.from({ length: 100 });
+
+  const buttons = [
+    {
+      label: (
+        <>
+          EXPLORE<br />ARTICLES
+        </>
+      ),
+      bg: backgroundImageArray[0],
+      href: null,
+    },
+    {
+      label: (
+        <>
+          CONTACT<br />US
+        </>
+      ),
+      bg: backgroundImageArray[1],
+      href: null,
+    },
+    {
+      label: (
+        <>
+          GO<br />HOME
+        </>
+      ),
+      bg: backgroundImageArray[2],
+      href: "/",
+    },
+  ];
+
+  const baseButtonClasses = `
+    relative w-32 h-32 rounded-full
+    bg-no-repeat bg-center bg-cover
+    flex items-center justify-center
+    text-white font-medium
+  `;
+
+  const afterBaseClasses = `
+    after:absolute after:inset-0 after:rounded-full after:-z-10
+    after:transition-opacity after:duration-1000 after:scale-[0.8]
+  `;
+
+  const selectedShadow = `
+    after:bg-black/30
+    after:translate-x-2 after:translate-y-2
+    after:opacity-100
+  `;
+
+
 
   return (
     <div className="flex min-h-screen justify-evenly bg-[#0E3648] align-middle text-white">
@@ -72,48 +128,30 @@ export default function NotFound() {
           <p>Let's explore other ways to help.</p>
         </div>
         <div className="flex justify-evenly">
-          <button
-            className="w-32 h-32
-              rounded-full
-              bg-[url('/assets/images/home-button.svg')]
-              bg-no-repeat bg-center bg-cover
-              flex items-center justify-center
-              text-white font-medium"
-            style={{ backgroundImage: backgroundImageArray[0] }}
-            onClick={() => setSelected(0)}
-          >
-            EXPLORE<br/>
-            ARTICLES
-          </button>
-          <button
-            className="w-32 h-32
-              rounded-full
-              bg-[url('/assets/images/home-button.svg')]
-              bg-no-repeat bg-center bg-cover
-              flex items-center justify-center
-              text-white font-medium"
-            style={{ backgroundImage: backgroundImageArray[1] }}
-            onClick={() => setSelected(1)}
-          >
-            CONTACT
-            <br/>
-            US
-          </button>
-          <Link href="/">
-            <button
-              className="w-32 h-32
-              rounded-full
-              bg-[url('/assets/images/home-button.svg')]
-              bg-no-repeat bg-center bg-cover
-              flex items-center justify-center
-              text-white font-medium"
-              style={{ backgroundImage: backgroundImageArray[2] }}
-              onClick={() => setSelected(2)}
+          {buttons.map((btn, index) => {
+            const buttonElement = (
+              <button
+                key={index}
+                className={`
+                  ${baseButtonClasses}
+                  ${afterBaseClasses}
+                  ${selected === index ? selectedShadow : 'after:opacity-0'}
+                `}
+                style={{ backgroundImage: btn.bg }}
+                onClick={() => setSelected(index)}
               >
-              GO<br/>
-              HOME
-            </button>
-          </Link>
+                {btn.label}
+              </button>
+            );
+
+            return btn.href ? (
+              <Link href={btn.href} key={index}>
+                {buttonElement}
+              </Link>
+            ) : (
+              buttonElement
+            );
+          })}
         </div>
       </div>
 
