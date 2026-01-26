@@ -15,19 +15,17 @@ export default function NotFound() {
     switch (selected) {
       case 0:
         return (
-          <div className="flex w-full h-full justify-center items-center">
-            <div className="flex flex-col justify-center items-center text-black font-black gap-2">
-              <h1>Most Popular Articles</h1>
-              {Array.from({ length: 3 }).map((_, i) => {
-                return <div key="i" className="bg-white w-full rounded-lg">article</div>;
-              })}
-              <span className="hover:cursor-pointer hover:underline">Explore More Articles</span>
-            </div>
+          <div className="flex flex-col justify-center items-center text-black font-black gap-2 w-3/5 h-3/5">
+            <h1>Most Popular Articles</h1>
+            {Array.from({ length: 3 }).map((_, i) => {
+              return <div key="i" className="bg-white w-full rounded-lg text-center p-6">[article card]</div>;
+            })}
+            <span className="hover:cursor-pointer hover:underline">Explore More Articles</span>
           </div>
         );
       case 1:
         return (
-          <div className="flex flex-col justify-center items-center h-full w-full gap-4 p-36 text-center">
+          <div className="flex flex-col justify-center items-center gap-4 w-3/5 h-3/5 text-center">
             <p className="mx-8">Couldn't find what you were looking for? Let us know so we can fix it!</p>
             <form className="flex flex-col justify-center items-center gap-4 w-full flex-1">
               <div className="bg-white rounded-lg text-black flex flex-col items-center justify-center p-4 gap-2 w-full flex-1">
@@ -100,7 +98,7 @@ export default function NotFound() {
 
 
   return (
-    <div className="flex min-h-screen justify-evenly bg-[#0E3648] align-middle text-white">
+    <div className="flex flex-col min-h-screen justify-evenly bg-[#0E3648] align-middle text-white md:flex-row">
       {/* Stars */}
       <div className="absolute inset-0 overflow-hidden z-10">
         {stars.map((_, i) => {
@@ -159,7 +157,7 @@ export default function NotFound() {
 
       {/* Right */}
       <div id="not-found-right" className="flex flex-col justify-center items-center flex-1 z-10">
-        <div className="bg-cover aspect-square overflow-hidden w-full"
+        <div className="bg-cover aspect-square overflow-hidden w-full flex justify-center items-center"
           style={{ backgroundImage: backgroundImageArray[selected] }}
         >
           {renderContent()}
