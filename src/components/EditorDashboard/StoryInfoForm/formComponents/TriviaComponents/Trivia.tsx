@@ -1,4 +1,3 @@
-/* eslint-disable isaacscript/complete-sentences-jsdoc */
 import env from "@/lib/env";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
@@ -62,14 +61,29 @@ export interface Question {
   categoryItems?: MatchingItem[];
   options?: { id: number; content: string }[];
   correct_answers?: number[];
-  //wordBank: WordBankItem[];
+}
+
+interface QuizApiResponse {
+  quiz_question_id: string;
+  sub_header: string;
+  question_type: QuestionType;
+  max_score: number;
+  message?: string;
 }
 
 const Trivia: React.FC = () => {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [nextId, setNextId] = useState(1);
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [savedQuestions, setSavedQuestions] = useState<Set<number>>(new Set());
+  const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
+
+  useEffect(() => {
+    void getCurrentQuizzes(setQuestions, setNextId);
+  }, []);
+
   const addQuestion = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault(); // Prevent form submission
+    event.preventDefault();
 
     setQuestions([
       ...questions,
@@ -86,10 +100,6 @@ const Trivia: React.FC = () => {
     ]);
     setNextId(nextId + 4);
   };
-
-  useEffect(() => {
-    void getCurrentQuizzes(setQuestions);
-  }, []);
 
   const updateQuestion = (id: number, updatedQuestion: Partial<Question>) => {
     setQuestions(
@@ -255,7 +265,6 @@ const Trivia: React.FC = () => {
 
   const UpdateItemInCategory = (
     questionId: number,
-    //  categoryId: number,
     itemId: number,
     updatedItem: Partial<{ content: string }>,
   ) => {
@@ -431,42 +440,55 @@ const Trivia: React.FC = () => {
     );
   };
 
-  const [isCollapsed, setIsCollapsed] = useState(false);
-
-  const [savedQuestions, setSavedQuestions] = useState<Set<number>>(new Set());
-
-  const handleSave = (
+  const handleSave = async (
     question: Question,
     e: React.MouseEvent<HTMLButtonElement>,
   ) => {
-    submitQuizMap(question, e);
+    try {
+      const result = await submitQuizMap(question, e);
 
-    setSavedQuestions((prev) => new Set(prev).add(question.id));
+      // Update the question with the returned quiz_question_id if it's a new question
+      if (
+        result &&
+        "data" in result &&
+        result.data?.quiz_question_id &&
+        !question.quizQuestionId
+      ) {
+        setQuestions((prev) =>
+          prev.map((q) =>
+            q.id === question.id
+              ? { ...q, quizQuestionId: result.data.quiz_question_id }
+              : q,
+          ),
+        );
+      }
 
-    setTimeout(() => {
-      setSavedQuestions((prev) => {
-        const updated = new Set(prev);
-        updated.delete(question.id);
-        return updated;
-      });
-    }, 1500);
+      setSavedQuestions((prev) => new Set(prev).add(question.id));
+
+      setTimeout(() => {
+        setSavedQuestions((prev) => {
+          const updated = new Set(prev);
+          updated.delete(question.id);
+          return updated;
+        });
+      }, 1500);
+    } catch (error) {
+      console.error("Error saving question:", error);
+      alert("Failed to save question. Please check the console for details.");
+    }
   };
-
-  const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
 
   return (
     <div className="container mx-auto py-4">
       <h1
-        className="text-l flex cursor-pointer items-center gap-1" // Changed ml-2 to gap-1 for consistent spacing
+        className="text-l flex cursor-pointer items-center gap-1"
         onClick={() => setIsCollapsed(!isCollapsed)}
       >
         Trivia Questions
         <span className="inline-flex h-8 w-8 items-center justify-center">
-          {" "}
-          {/* Increased size to h-8 w-8 */}
           {isCollapsed ? (
             <svg
-              className="h-full w-full" // Slightly smaller than container for padding
+              className="h-full w-full"
               viewBox="0 0 24 24"
               fill="currentColor"
             >
@@ -531,15 +553,10 @@ const Trivia: React.FC = () => {
                               "No quizQuestionId; performing local delete only",
                             );
                           }
-                          deleteQuestion(question.id); // local frontend delete
-                          setConfirmDeleteId(null); // Only close on success
+                          deleteQuestion(question.id);
+                          setConfirmDeleteId(null);
                         } catch (err) {
-                          console.error("❌ Delete error:", err);
-                          if (axios.isAxiosError(err)) {
-                            console.error("❌ Status:", err.response?.status);
-                            console.error("❌ Response:", err.response?.data);
-                          }
-                          // Don't close the dialog, so user can check console
+                          console.error("Delete error:", err);
                         }
                       })();
                     }}
@@ -603,21 +620,10 @@ const Trivia: React.FC = () => {
                   updateOption={updateOption}
                 />
               )}
-              {/* Right Side: Explanation Box */}
-              {/* <div className="mt-4">
-              <textarea
-                value={question.explanation || ""}
-                onChange={(e) =>
-                  updateQuestion(question.id, { explanation: e.target.value })
-                }
-                className="w-full p-2 border rounded"
-                placeholder="Enter explanation here"
-              />
-            </div> */}
               <div className="mt-4 flex items-center gap-2">
                 <button
                   className="rounded bg-sciquelTeal px-3 py-2 text-sm text-white"
-                  onClick={(e) => handleSave(question, e)}
+                  onClick={(e) => void handleSave(question, e)}
                 >
                   Save quiz question
                 </button>
@@ -635,15 +641,6 @@ const Trivia: React.FC = () => {
           >
             Add Question
           </button>
-          {/*          <button
-            type="button"
-            onClick={() => {
-              void getCurrentQuizzes(setQuestions);
-            }}
-            className="mt-4 rounded bg-sciquelTeal px-3 py-2 text-sm text-white"
-          >
-            GET
-          </button> */}
         </div>
       )}
     </div>
@@ -652,93 +649,60 @@ const Trivia: React.FC = () => {
 
 export default Trivia;
 
-/** test case here */
-async function submitQuizMap(
-  question: Question,
-  e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-) {
-  e.preventDefault();
-  let res = {};
-  switch (question.type) {
-    case "MULTIPLE_CHOICE":
-      res = await submitMultipleChoice(question);
-      break;
-    case "SELECT_ALL":
-      res = await submitSelectAll(question);
-      break;
-    case "DIRECT_MATCHING":
-      res = await submitDirectMatching(question);
-      break;
-    case "COMPLEX_MATCHING":
-      res = await submitComplexMatching(question);
-      break;
-    case "TRUE_FALSE":
-      res = await submitTrueFalse(question);
-  }
-  console.log(res);
-}
+// ============================================================================
+// API FUNCTIONS
+// ============================================================================
+
 const urlQuiz = "/api/quizzes/edit";
 const storyIdTest = "6488c6f6f5f617c772f6f61a";
 
-/**
- * Submit multiple choice question type
- *
- * @param question
- */
-// async function submitMultipleChoice(question: Question) {
-//   const { content, choices, type } = question;
-//   const res = await axios.post(urlQuiz, {
-//     story_id: storyIdTest,
-//     question_type: type,
-//     max_score: 10,
-//     subheader: "This is a subheader",
-//     subpart: {
-//       content_category: ["Content category"],
-//       question: content,
-//       options: choices?.map((choice) => choice.content),
-//       correct_answer: choices?.findIndex((choice) => choice.isCorrect),
-//       explanations: (() => question.explanation || "no explanation provided")(),
-//     },
-//   });
-//   return res;
-// }
+/* POST (create) or PATCH (update) */
+async function submitQuizMap(
+  question: Question,
+  e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+): Promise<{ data: QuizApiResponse } | undefined> {
+  e.preventDefault();
+
+  try {
+    switch (question.type) {
+      case "MULTIPLE_CHOICE":
+        return await submitMultipleChoice(question);
+      case "SELECT_ALL":
+        return await submitSelectAll(question);
+      case "DIRECT_MATCHING":
+        return await submitDirectMatching(question);
+      case "COMPLEX_MATCHING":
+        return await submitComplexMatching(question);
+      case "TRUE_FALSE":
+        return await submitTrueFalse(question);
+    }
+  } catch (error) {
+    console.error("Submit error:", error);
+    throw error;
+  }
+}
+
 async function submitMultipleChoice(question: Question) {
   const { content, choices, type, quizQuestionId } = question;
 
   const correctIndex = choices?.findIndex((choice) => choice.isCorrect) ?? -1;
 
-  // Validate correct answer is selected
   if (correctIndex === -1) {
     alert("Please select a correct answer before saving!");
     throw new Error("No correct answer selected");
   }
 
-  // Ensure we have choices
   if (!choices || choices.length === 0) {
     alert("Please add at least one choice!");
     throw new Error("No choices provided");
   }
 
-  // Create clean arrays with guaranteed string values
   const options = choices.map((choice) => String(choice.content || ""));
   const explanations = choices.map(() =>
     String(question.explanation || "No explanation provided"),
   );
 
-  const payload: {
-    story_id: string;
-    question_type: QuestionType;
-    max_score: number;
-    subheader: string;
-    subpart: {
-      content_category: string[];
-      question: string;
-      options: string[];
-      correct_answer: number;
-      explanations: string[];
-    };
-    quiz_question_id?: string;
-  } = {
+  const payload = {
     story_id: storyIdTest,
     question_type: type,
     max_score: 10,
@@ -750,56 +714,43 @@ async function submitMultipleChoice(question: Question) {
       correct_answer: correctIndex,
       explanations: explanations,
     },
+    ...(quizQuestionId && { quiz_question_id: quizQuestionId }),
   };
 
-  if (quizQuestionId) {
-    payload.quiz_question_id = quizQuestionId;
-  }
-
-  console.log("📤 Full payload:", JSON.stringify(payload, null, 2));
+  console.log("Payload:", JSON.stringify(payload, null, 2));
 
   try {
-    const res = await axios.post(urlQuiz, payload, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    // Update the question with the returned quiz_question_id if it's a new question
-    if (res.data?.quiz_question_id && !quizQuestionId) {
-      question.quizQuestionId = res.data.quiz_question_id;
-    }
+    // Use POST if no quizQuestionId (new), otherwise use PATCH (update)
+    const res = quizQuestionId
+      ? await axios.patch(urlQuiz, payload, {
+          params: { quiz_question_id: quizQuestionId },
+          headers: { "Content-Type": "application/json" },
+        })
+      : await axios.post(urlQuiz, payload, {
+          headers: { "Content-Type": "application/json" },
+        });
 
     return res;
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      console.error("POST Error Details:");
+      console.error("Request Error:");
       console.error("Status:", error.response?.status);
-      console.error("Response data:", error.response?.data);
-      console.error("Request payload:", JSON.stringify(payload, null, 2));
-
-      // Check what was actually sent
-      if (error.config?.data) {
-        console.error("Actual data sent:", error.config.data);
-      }
+      console.error("Response:", error.response?.data);
+      console.error("Payload:", JSON.stringify(payload, null, 2));
     }
     throw error;
   }
 }
-/**
- * Submit select all question type
- *
- * @param question
- */
+
 async function submitSelectAll(question: Question) {
-  const { content, options, type, correct_answers } = question;
+  const { content, options, type, correct_answers, quizQuestionId } = question;
 
   const optionIndexChecked = options
     ?.map(({ id }, index) => ({ id, index }))
-    .filter(({ id, index }) => correct_answers?.includes(id))
+    .filter(({ id }) => correct_answers?.includes(id))
     .map(({ index }) => index);
 
-  const res = await axios.post(urlQuiz, {
+  const payload = {
     story_id: storyIdTest,
     question_type: type,
     max_score: 10,
@@ -810,69 +761,99 @@ async function submitSelectAll(question: Question) {
       options: options?.map((option) => option.content),
       correct_answers: optionIndexChecked,
       explanations: options?.map(
-        (option, index) => "This is a explaination for option " + index,
+        (_, index) => `This is an explanation for option ${index}`,
       ),
     },
-  });
-  return res;
+    ...(quizQuestionId && { quiz_question_id: quizQuestionId }),
+  };
+
+  try {
+    const res = quizQuestionId
+      ? await axios.patch(urlQuiz, payload, {
+          params: { quiz_question_id: quizQuestionId },
+          headers: { "Content-Type": "application/json" },
+        })
+      : await axios.post(urlQuiz, payload, {
+          headers: { "Content-Type": "application/json" },
+        });
+
+    return res;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error("SELECT_ALL Error:", error.response?.data);
+    }
+    throw error;
+  }
 }
 
-/**
- * Submit direct matching question type
- *
- * @param question
- */
 async function submitDirectMatching(question: Question) {
-  const { content, pairs, type } = question;
+  const { content, pairs, type, quizQuestionId } = question;
 
-  const correctAnswers = (question.pairs || []).map((pair, index) => index);
+  const correctAnswers = (question.pairs || []).map((_, index) => index);
 
-  const res = await axios.post(urlQuiz, {
+  const payload = {
     story_id: storyIdTest,
     question_type: type,
     max_score: 10,
     subpart: {
       question: content,
       content_category: pairs?.map(
-        (val, index) => "This is an content_category for pair " + index,
+        (_, index) => `This is a content_category for pair ${index}`,
       ),
       categories: pairs?.map((pair) => pair.left),
       options: pairs?.map((pair) => pair.right),
       correct_answers: correctAnswers,
       explanations: pairs?.map(
         (val, index) =>
-          val.explanation || "This is an explantation for pair " + index,
+          val.explanation || `This is an explanation for pair ${index}`,
       ),
     },
     subheader: "This is a subheader",
-  });
-  return res;
+    ...(quizQuestionId && { quiz_question_id: quizQuestionId }),
+  };
+
+  try {
+    const res = quizQuestionId
+      ? await axios.patch(urlQuiz, payload, {
+          params: { quiz_question_id: quizQuestionId },
+          headers: { "Content-Type": "application/json" },
+        })
+      : await axios.post(urlQuiz, payload, {
+          headers: { "Content-Type": "application/json" },
+        });
+
+    return res;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error("DIRECT_MATCHING Error:", error.response?.data);
+    }
+    throw error;
+  }
 }
 
-/**
- * Submit complex matching question type
- *
- * @param question
- */
 async function submitComplexMatching(question: Question) {
-  const { categories, categoryItems, content } = question;
+  const { categories, categoryItems, content, quizQuestionId } = question;
+
   const categoriesIdMap =
     categories?.reduce<{ [key: number]: number[] }>((prev, { id }) => {
       prev[id] = [];
       return prev;
     }, {}) ?? {};
+
   categoryItems?.forEach(({ categoryId }, index) => {
     categoriesIdMap[categoryId].push(index);
   });
+
   const correct_answers =
     categories?.map(({ id }) => categoriesIdMap[id]) ?? [];
-  const res = await axios.post(urlQuiz, {
+
+  const payload = {
     story_id: storyIdTest,
     question_type: "COMPLEX_MATCHING",
     max_score: 10,
     subpart: {
       content_category: categories?.map(
-        (val, index) => "This is an content_category for category " + index,
+        (_, index) => `This is a content_category for category ${index}`,
       ),
       question: content,
       categories: categories?.map(({ name }) => name),
@@ -880,31 +861,45 @@ async function submitComplexMatching(question: Question) {
       correct_answers: correct_answers,
       explanations: [
         ...(categories?.map(
-          // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
-          (val, index) => "This is an explanations for category " + index,
+          (val, index) =>
+            val.explanation || `This is an explanation for category ${index}`,
         ) || []),
-        "This is an explanation for the options place holder",
+        "This is an explanation for the options placeholder",
       ],
     },
     subheader: "This is a subheader",
-  });
-  return res;
+    ...(quizQuestionId && { quiz_question_id: quizQuestionId }),
+  };
+
+  try {
+    const res = quizQuestionId
+      ? await axios.patch(urlQuiz, payload, {
+          params: { quiz_question_id: quizQuestionId },
+          headers: { "Content-Type": "application/json" },
+        })
+      : await axios.post(urlQuiz, payload, {
+          headers: { "Content-Type": "application/json" },
+        });
+
+    return res;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error("COMPLEX_MATCHING Error:", error.response?.data);
+    }
+    throw error;
+  }
 }
 
-/**
- * Submit true false question type
- *
- * @param question
- */
 async function submitTrueFalse(question: Question) {
-  const { trueOrFalseQuestions, type } = question;
-  const res = await axios.post(urlQuiz, {
+  const { trueOrFalseQuestions, type, quizQuestionId } = question;
+
+  const payload = {
     story_id: storyIdTest,
     question_type: type,
     max_score: 10,
     subpart: {
       content_category: trueOrFalseQuestions?.map(
-        (value, index) => "This is a content_category for question " + index,
+        (_, index) => `This is a content_category for question ${index}`,
       ),
       questions: trueOrFalseQuestions?.map((value) => value.content),
       explanations: trueOrFalseQuestions?.map(
@@ -913,12 +908,31 @@ async function submitTrueFalse(question: Question) {
       correct_answers: trueOrFalseQuestions?.map((value) => value.isTrue),
     },
     subheader: "This is a subheader",
-  });
-  return res;
+    ...(quizQuestionId && { quiz_question_id: quizQuestionId }),
+  };
+
+  try {
+    const res = quizQuestionId
+      ? await axios.patch(urlQuiz, payload, {
+          params: { quiz_question_id: quizQuestionId },
+          headers: { "Content-Type": "application/json" },
+        })
+      : await axios.post(urlQuiz, payload, {
+          headers: { "Content-Type": "application/json" },
+        });
+
+    return res;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error("TRUE_FALSE Error:", error.response?.data);
+    }
+    throw error;
+  }
 }
 
 async function getCurrentQuizzes(
   setQuestions: React.Dispatch<React.SetStateAction<Question[]>>,
+  setNextId: React.Dispatch<React.SetStateAction<number>>,
 ) {
   try {
     const res = await axios.get(
@@ -936,88 +950,160 @@ async function getCurrentQuizzes(
       return;
     }
 
+    let maxId = 1;
+
     const mappedQuestions: Question[] = body.map((quiz: any, index: number) => {
       const type = quiz.question_type as QuestionType;
-
-      // Extract the quiz_question_id properly - check both _id and quiz_question_id
       const quizQuestionId = quiz.quiz_question_id || quiz._id;
+      const baseId = (index + 1) * 1000;
+      maxId = Math.max(maxId, baseId + 100);
 
       switch (type) {
-        case "MULTIPLE_CHOICE":
+        case "MULTIPLE_CHOICE": {
+          const choices =
+            quiz.options?.map((opt: string, idx: number) => ({
+              id: baseId + idx + 1,
+              content: opt,
+              isCorrect: idx === quiz.correct_answer,
+            })) || [];
+
           return {
-            id: index + 1,
+            id: baseId,
             type,
-            quizQuestionId: quizQuestionId,
+            quizQuestionId,
             content: quiz.question || "",
-            explanation:
-              typeof quiz.explanations === "string"
-                ? quiz.explanations
-                : Array.isArray(quiz.explanations)
-                ? quiz.explanations[0]
+            explanation: Array.isArray(quiz.explanations)
+              ? quiz.explanations[0]
+              : typeof quiz.explanations === "string"
+              ? quiz.explanations
+              : "",
+            choices,
+          };
+        }
+
+        case "SELECT_ALL": {
+          const options =
+            quiz.options?.map((opt: string, idx: number) => ({
+              id: baseId + idx + 1,
+              content: opt,
+            })) || [];
+
+          const correct_answers = Array.isArray(quiz.correct_answers)
+            ? quiz.correct_answers.map((idx: number) => baseId + idx + 1)
+            : [];
+
+          return {
+            id: baseId,
+            type,
+            quizQuestionId,
+            content: quiz.question || "",
+            explanation: Array.isArray(quiz.explanations)
+              ? quiz.explanations[0]
+              : "",
+            options,
+            correct_answers,
+          };
+        }
+
+        case "DIRECT_MATCHING": {
+          const pairs =
+            quiz.categories?.map((cat: string, idx: number) => ({
+              id: baseId + idx + 1,
+              left: cat,
+              right: quiz.options?.[idx] || "",
+              explanation: Array.isArray(quiz.explanations)
+                ? quiz.explanations[idx]
                 : "",
-            choices:
-              quiz.options?.map((opt: string, idx: number) => ({
-                id: idx + 1,
-                content: opt,
-                isCorrect: idx === quiz.correct_answer,
-              })) || [],
-          };
-        case "SELECT_ALL":
-          return {
-            id: index + 1,
-            type,
-            quizQuestionId: quizQuestionId,
-            content: quiz.question || "",
-            explanation: quiz.explanation || "",
-            options:
-              quiz.options?.map((opt: string, idx: number) => ({
-                id: idx + 1,
-                content: opt,
-              })) || [],
-            correct_answers: [],
-          };
+            })) || [];
 
-        case "DIRECT_MATCHING":
           return {
-            id: index + 1,
+            id: baseId,
             type,
-            quizQuestionId: quizQuestionId,
+            quizQuestionId,
             content: quiz.question || "",
-            explanation: quiz.explanation || "",
-            pairs:
-              quiz.categories?.map((cat: string, idx: number) => ({
-                id: idx + 1,
-                left: cat,
-                right: quiz.options?.[idx] || "",
-              })) || [],
+            pairs,
           };
+        }
 
-        case "TRUE_FALSE":
+        case "COMPLEX_MATCHING": {
+          const categories =
+            quiz.categories?.map((cat: string, idx: number) => ({
+              id: baseId + idx + 1,
+              name: cat,
+              explanation: Array.isArray(quiz.explanations)
+                ? quiz.explanations[idx] || ""
+                : "",
+              items: [],
+            })) || [];
+
+          const categoryItems: MatchingItem[] = [];
+          let itemIdCounter = baseId + 1000;
+
+          if (Array.isArray(quiz.correct_answers)) {
+            quiz.correct_answers.forEach(
+              (optionIndices: number[], categoryIdx: number) => {
+                const categoryId = baseId + categoryIdx + 1;
+                optionIndices.forEach((optionIdx: number) => {
+                  if (
+                    quiz.options &&
+                    optionIdx >= 0 &&
+                    optionIdx < quiz.options.length
+                  ) {
+                    categoryItems.push({
+                      id: itemIdCounter++,
+                      categoryId: categoryId,
+                      content: quiz.options[optionIdx],
+                    });
+                  }
+                });
+              },
+            );
+          }
+
           return {
-            id: index + 1,
+            id: baseId,
             type,
-            quizQuestionId: quizQuestionId,
+            quizQuestionId,
+            content: quiz.question || "",
+            categories,
+            categoryItems,
+          };
+        }
+
+        case "TRUE_FALSE": {
+          const trueOrFalseQuestions =
+            quiz.questions?.map((q: string, idx: number) => ({
+              id: baseId + idx + 1,
+              content: q,
+              isTrue: Array.isArray(quiz.correct_answers)
+                ? Boolean(quiz.correct_answers[idx])
+                : false,
+              explanation: Array.isArray(quiz.explanations)
+                ? quiz.explanations[idx]
+                : "",
+            })) || [];
+
+          return {
+            id: baseId,
+            type,
+            quizQuestionId,
             content: quiz.sub_header || "",
-            trueOrFalseQuestions:
-              quiz.questions?.map((q: string, idx: number) => ({
-                id: idx + 1,
-                content: q,
-                isTrue: false,
-                explanation: "",
-              })) || [],
+            trueOrFalseQuestions,
           };
+        }
 
         default:
           return {
-            id: index + 1,
+            id: baseId,
             type,
-            quizQuestionId: quizQuestionId,
+            quizQuestionId,
             content: quiz.question || "",
           };
       }
     });
 
     setQuestions(mappedQuestions);
+    setNextId(maxId + 1);
     console.log("Loaded quizzes:", mappedQuestions);
   } catch (err) {
     console.error("Error fetching quizzes:", err);
@@ -1025,28 +1111,19 @@ async function getCurrentQuizzes(
 }
 
 async function deleteQuestionFromBackend(quizQuestionId: string) {
-  const payload = {
-    story_id: storyIdTest,
-    quiz_question_id: quizQuestionId,
-  };
-
-  console.log("DELETE content:", payload);
-  console.log("DELETE URL:", urlQuiz);
+  console.log("DELETE quiz_question_id:", quizQuestionId);
 
   try {
-    const response = await axios.delete(`${urlQuiz}`, {
+    const response = await axios.delete(urlQuiz, {
       params: {
         story_id: storyIdTest,
         quiz_question_id: quizQuestionId,
       },
     });
 
+    console.log("Delete successful:", response.data);
     return response;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error("DELETE error response:", error.response?.data);
-      console.error("DELETE error status:", error.response?.status);
-    }
     throw error;
   }
 }
