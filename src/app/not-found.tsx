@@ -37,11 +37,7 @@ export default function NotFound() {
           </div>
         );
       case 2:
-        return (
-          <div className="flex justify-normal items-center h-full w-full p-40">
-            <span>Loading...</span>
-          </div>
-        );
+        return <span>Loading...</span>;
     }
   }
 
@@ -82,6 +78,8 @@ export default function NotFound() {
     bg-no-repeat bg-center bg-cover
     flex items-center justify-center
     text-white font-medium
+    outline outline-transparent hover:outline-4 hover:outline-yellow-400 hover:outline-offset-[-14px]
+    transition-[outline-color,outline-width,outline-offset] duration-200
   `;
 
   const afterBaseClasses = `
@@ -94,8 +92,6 @@ export default function NotFound() {
     after:translate-x-2 after:translate-y-2
     after:opacity-100
   `;
-
-
 
   return (
     <div className="flex flex-col min-h-screen justify-evenly bg-[#0E3648] align-middle text-white md:flex-row">
