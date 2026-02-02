@@ -1,7 +1,7 @@
 /* eslint-disable isaacscript/complete-sentences-jsdoc */
 import env from "@/lib/env";
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ComplexMatchingQuestion from "./ComplexMatchingQuestion";
 import DirectMatchingQuestion from "./DirectMatchingQuestion";
 import MultipleChoiceQuestion from "./MultipleChoiceQuestion";
@@ -62,7 +62,7 @@ export interface Question {
   categoryItems?: MatchingItem[];
   options?: { id: number; content: string }[];
   correct_answers?: number[];
-  //wordBank: WordBankItem[]; // Add this to the type definition
+  //wordBank: WordBankItem[];
 }
 
 const Trivia: React.FC = () => {
@@ -86,6 +86,10 @@ const Trivia: React.FC = () => {
     ]);
     setNextId(nextId + 4);
   };
+
+  useEffect(() => {
+    void getCurrentQuizzes(setQuestions);
+  }, []);
 
   const updateQuestion = (id: number, updatedQuestion: Partial<Question>) => {
     setQuestions(
@@ -631,7 +635,7 @@ const Trivia: React.FC = () => {
           >
             Add Question
           </button>
-          <button
+          {/*          <button
             type="button"
             onClick={() => {
               void getCurrentQuizzes(setQuestions);
@@ -639,7 +643,7 @@ const Trivia: React.FC = () => {
             className="mt-4 rounded bg-sciquelTeal px-3 py-2 text-sm text-white"
           >
             GET
-          </button>
+          </button> */}
         </div>
       )}
     </div>
@@ -681,24 +685,107 @@ const storyIdTest = "6488c6f6f5f617c772f6f61a";
  *
  * @param question
  */
+// async function submitMultipleChoice(question: Question) {
+//   const { content, choices, type } = question;
+//   const res = await axios.post(urlQuiz, {
+//     story_id: storyIdTest,
+//     question_type: type,
+//     max_score: 10,
+//     subheader: "This is a subheader",
+//     subpart: {
+//       content_category: ["Content category"],
+//       question: content,
+//       options: choices?.map((choice) => choice.content),
+//       correct_answer: choices?.findIndex((choice) => choice.isCorrect),
+//       explanations: (() => question.explanation || "no explanation provided")(),
+//     },
+//   });
+//   return res;
+// }
 async function submitMultipleChoice(question: Question) {
-  const { content, choices, type } = question;
-  const res = await axios.post(urlQuiz, {
+  const { content, choices, type, quizQuestionId } = question;
+
+  const correctIndex = choices?.findIndex((choice) => choice.isCorrect) ?? -1;
+
+  // Validate correct answer is selected
+  if (correctIndex === -1) {
+    alert("Please select a correct answer before saving!");
+    throw new Error("No correct answer selected");
+  }
+
+  // Ensure we have choices
+  if (!choices || choices.length === 0) {
+    alert("Please add at least one choice!");
+    throw new Error("No choices provided");
+  }
+
+  // Create clean arrays with guaranteed string values
+  const options = choices.map((choice) => String(choice.content || ""));
+  const explanations = choices.map(() =>
+    String(question.explanation || "No explanation provided"),
+  );
+
+  const payload: {
+    story_id: string;
+    question_type: QuestionType;
+    max_score: number;
+    subheader: string;
+    subpart: {
+      content_category: string[];
+      question: string;
+      options: string[];
+      correct_answer: number;
+      explanations: string[];
+    };
+    quiz_question_id?: string;
+  } = {
     story_id: storyIdTest,
     question_type: type,
     max_score: 10,
     subheader: "This is a subheader",
     subpart: {
       content_category: ["Content category"],
-      question: content,
-      options: choices?.map((choice) => choice.content),
-      correct_answer: choices?.findIndex((choice) => choice.isCorrect),
-      explanations: (() => question.explanation || "no explanation provided")(),
+      question: String(content || ""),
+      options: options,
+      correct_answer: correctIndex,
+      explanations: explanations,
     },
-  });
-  return res;
-}
+  };
 
+  if (quizQuestionId) {
+    payload.quiz_question_id = quizQuestionId;
+  }
+
+  console.log("📤 Full payload:", JSON.stringify(payload, null, 2));
+
+  try {
+    const res = await axios.post(urlQuiz, payload, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    // Update the question with the returned quiz_question_id if it's a new question
+    if (res.data?.quiz_question_id && !quizQuestionId) {
+      question.quizQuestionId = res.data.quiz_question_id;
+    }
+
+    return res;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error("POST Error Details:");
+      console.error("Status:", error.response?.status);
+      console.error("Response data:", error.response?.data);
+      console.error("Request payload:", JSON.stringify(payload, null, 2));
+
+      // Check what was actually sent
+      if (error.config?.data) {
+        console.error("Actual data sent:", error.config.data);
+      }
+    }
+    throw error;
+  }
+}
 /**
  * Submit select all question type
  *
@@ -848,14 +935,12 @@ async function getCurrentQuizzes(
       console.error("Unexpected response format:", res.data);
       return;
     }
-    console.log("🟦 RAW GET RESPONSE:", body);
 
     const mappedQuestions: Question[] = body.map((quiz: any, index: number) => {
       const type = quiz.question_type as QuestionType;
 
       // Extract the quiz_question_id properly - check both _id and quiz_question_id
       const quizQuestionId = quiz.quiz_question_id || quiz._id;
-      console.log("🟦 Mapping quiz with ID:", quizQuestionId, "Type:", type);
 
       switch (type) {
         case "MULTIPLE_CHOICE":
@@ -864,14 +949,17 @@ async function getCurrentQuizzes(
             type,
             quizQuestionId: quizQuestionId,
             content: quiz.question || "",
-            explanation: Array.isArray(quiz.explanations)
-              ? quiz.explanations
-              : [],
+            explanation:
+              typeof quiz.explanations === "string"
+                ? quiz.explanations
+                : Array.isArray(quiz.explanations)
+                ? quiz.explanations[0]
+                : "",
             choices:
               quiz.options?.map((opt: string, idx: number) => ({
                 id: idx + 1,
                 content: opt,
-                isCorrect: false,
+                isCorrect: idx === quiz.correct_answer,
               })) || [],
           };
         case "SELECT_ALL":
@@ -953,7 +1041,6 @@ async function deleteQuestionFromBackend(quizQuestionId: string) {
       },
     });
 
-    console.log("🟦 DELETE response:", response.data);
     return response;
   } catch (error) {
     if (axios.isAxiosError(error)) {
