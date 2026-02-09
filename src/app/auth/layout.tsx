@@ -18,7 +18,7 @@ export default async function LoginPage({ children }: PropsWithChildren) {
       >
         {/* Top-left blob */}
         <div
-          className="absolute top-[-25cqw] left-[-15cqw]
+          className="absolute top-[-30cqw] left-[-15cqw]
                     h-[50cqw] w-[50cqw]
                     rounded-full
                     bg-gradient-to-t from-[#B1F0E9] to-[#368C9F] z-10"
@@ -27,7 +27,7 @@ export default async function LoginPage({ children }: PropsWithChildren) {
         {/* Bottom-left blob */}
         <div
           className="absolute bottom-[-10cqw] left-[-10cqw]
-                    h-[40cqw] w-[40cqw]
+                    h-[45cqw] w-[45cqw]
                     rounded-full
                     bg-gradient-to-t from-[#B1F0E9] to-[#368C9F]"
         />
@@ -40,18 +40,18 @@ export default async function LoginPage({ children }: PropsWithChildren) {
                     bg-gradient-to-t from-[#B1F0E9] to-[#368C9F]"
         />
 
-
         <Image
           src="/assets/images/logo_with_name_2.svg"
           alt="SciQuel Logo"
           width={400}
-          height={400}
-          className="relative z-10 pointer-events-none"
+          height={100}
+          className="w-[30cqw] h-auto pointer-events-none relative z-10"
+          priority
         />
       </div>
 
       <div id="login-right" className="flex grow items-center justify-center">
-        <div className="w-5/12 max-w-[26rem]">{children}</div>
+        <div className="w-5/12 max-w-[26rem] min-w-80">{children}</div>
       </div>
     </div>
   );
