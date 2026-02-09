@@ -11,7 +11,6 @@ import { StoryScrollProvider } from "@/components/story-components/scroll/Scroll
 // import ShareLinks from "@/components/story-components/ShareLinks";
 import StoryCredits from "@/components/story-components/StoryCredits";
 import StoryFooter from "@/components/story-components/StoryFooter";
-import StoryLargeImage from "@/components/story-components/StoryLargeImage";
 import { tagUser } from "@/lib/cache";
 import env from "@/lib/env";
 import { generateMarkdown } from "@/lib/markdown";
