@@ -19,7 +19,7 @@ export default function LoginForm() {
       className="flex flex-col"
     >
       <h1 className="text-center text-4xl font-semibold text-sciquelTeal">
-        Login
+        Log In
       </h1>
       <FormInput
         title="Email"
@@ -37,20 +37,20 @@ export default function LoginForm() {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
-      <div className="mt-2 text-sm text-sciquelTeal">
-        <Link href="/auth/forgot-password">Forgot your password?</Link>
+      <div className="mt-2 text-sm text-sciquelTeal flex justify-end">
+        <Link href="/auth/forgot-password" className="hover:underline">Forgot your password?</Link>
       </div>
       <button
         type="submit"
         disabled={email.length === 0 || password.length === 0}
-        className={`mt-4 rounded-md bg-sciquelTeal px-2 py-1 font-semibold text-white
+        className={`mt-8 rounded-md bg-sciquelTeal px-2 py-1 font-semibold text-white
         transition-all hover:brightness-90 disabled:bg-gray-300 disabled:hover:brightness-100`}
       >
         Log in
       </button>
-      <p className="mt-6 text-sm text-sciquelDarkText">
+      <p className="mt-2 text-sm text-sciquelDarkText text-center">
         Haven't signed up yet?{" "}
-        <Link href="/auth/register" className="text-sciquelTeal">
+        <Link href="/auth/register" className="text-sciquelTeal hover:underline">
           Sign up here
         </Link>
       </p>

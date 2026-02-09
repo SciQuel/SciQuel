@@ -33,13 +33,12 @@ export default function FormInput({
     <div className="relative mt-6 w-full">
       <input
         className={clsx(
-          `peer w-full rounded-md px-2 py-1 placeholder-transparent outline invalid:outline-dashed
-          invalid:outline-2 invalid:outline-red-400 hover:outline-sciquelTeal
-          invalid:hover:outline-red-400 focus:outline-2 focus:ring-0`,
+          `peer w-full border-0 border-b px-2 py-1 text-sciquelTeal placeholder-transparent
+          hover:border-sciquelTeal focus:border-sciquelTeal focus:outline-none focus:ring-0`,
           invalid
-            ? "outline-dashed outline-2 outline-red-400 hover:outline-red-400 focus:outline-red-400"
-            : "outline-1 outline-gray-200 focus:outline-sciquelTeal",
-          "disabled:pointer-events-none disabled:bg-gray-50 disabled:text-gray-300",
+            ? "border-b-red-400 hover:border-b-red-400 focus:border-b-red-400"
+            : "border-b-gray-200",
+          "disabled:pointer-events-none disabled:bg-transparent disabled:text-gray-300",
         )}
         placeholder={title}
         type={type === "password" ? (show ? "text" : "password") : type}
