@@ -24,24 +24,22 @@ export default async function LoginPage({ children }: PropsWithChildren) {
                     bg-gradient-to-t from-[#B1F0E9] to-[#368C9F] z-10"
         />
 
-        {/* Bottom blobs – shared gradient */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#B1F0E9] to-[#368C9F]">
-          {/* Bottom-left blob */}
-          <div
-            className="absolute bottom-[-10cqw] left-[-10cqw]
-                      h-[40cqw] w-[40cqw]
-                      rounded-full
-                      bg-inherit"
-          />
+        {/* Bottom-left blob */}
+        <div
+          className="absolute bottom-[-10cqw] left-[-10cqw]
+                    h-[40cqw] w-[40cqw]
+                    rounded-full
+                    bg-gradient-to-t from-[#B1F0E9] to-[#368C9F]"
+        />
 
-          {/* Bottom-right blob */}
-          <div
-            className="absolute bottom-[-10cqw] right-[-10cqw]
-                      h-[30cqw] w-[30cqw]
-                      rounded-full
-                      bg-inherit"
-          />
-        </div>
+        {/* Bottom-right blob */}
+        <div
+          className="absolute bottom-[-10cqw] right-[-10cqw]
+                    h-[30cqw] w-[30cqw]
+                    rounded-full
+                    bg-gradient-to-t from-[#B1F0E9] to-[#368C9F]"
+        />
+
 
         <Image
           src="/assets/images/logo_with_name_2.svg"
