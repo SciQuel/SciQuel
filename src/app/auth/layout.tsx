@@ -14,11 +14,11 @@ export default async function LoginPage({ children }: PropsWithChildren) {
       <div
         id="login-left"
         className="relative hidden md:flex w-5/12 items-center justify-center overflow-hidden
-                  bg-gradient-to-t from-[#B1F0E9] to-[#368C9F]"
+                  bg-gradient-to-t from-[#B1F0E9] to-[#368C9F] pointer-events-none"
       >
         {/* Top-left blob */}
         <div
-          className="absolute top-[-30cqw] left-[-15cqw]
+          className="absolute top-[-35cqw] left-[-15cqw]
                     h-[50cqw] w-[50cqw]
                     rounded-full
                     bg-gradient-to-t from-[#B1F0E9] to-[#368C9F] z-10"
@@ -45,7 +45,7 @@ export default async function LoginPage({ children }: PropsWithChildren) {
           alt="SciQuel Logo"
           width={400}
           height={100}
-          className="w-[30cqw] h-auto pointer-events-none relative z-10"
+          className="w-[30cqw] h-auto pointer-events-none select-none relative z-10"
           priority
         />
       </div>
