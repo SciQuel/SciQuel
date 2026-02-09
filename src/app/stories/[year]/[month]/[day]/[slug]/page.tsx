@@ -140,13 +140,6 @@ export default async function StoriesPage({ params }: Params) {
                 {/* <Dictionary /> */}
 
                 {file.result as ReactNode}
-                <StoryLargeImage
-                  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMbhc_N3jzah8UJlH5VAdGQ0mGLO2x6v70SQ&s"
-                  alt="small image"
-                >
-                  Some small caption with a sentence or two about a cell. Extra
-                  text for testing purposes.
-                </StoryLargeImage>
               </div>
               <div className="w-[calc( 100% - 1rem )] mx-2 mb-8 mt-8 border-t-2 border-[#616161] pt-1  md:mx-auto md:w-[768px] ">
                 <p className=" mt-2 text-sm text-[#616161]">
