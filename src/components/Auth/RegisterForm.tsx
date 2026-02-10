@@ -108,9 +108,12 @@ export default function RegisterForm() {
           >
             Sign up
           </button>
-          <p className="mt-2 text-sm text-sciquelDarkText text-center">
+          <p className="mt-2 text-center text-sm text-sciquelDarkText">
             Already have an account?{" "}
-            <Link href="/auth/login" className="text-sciquelTeal hover:underline">
+            <Link
+              href="/auth/login"
+              className="text-sciquelTeal hover:underline"
+            >
               Log in here
             </Link>
           </p>

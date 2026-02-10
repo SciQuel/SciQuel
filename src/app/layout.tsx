@@ -70,10 +70,13 @@ export default async function RootLayout({
           >
             Skip to main content
           </a>
-          <div className="flex flex-col min-h-screen">
+          <div className="flex min-h-screen flex-col">
             <Header></Header>
 
-            <main id="main" className="pt-36 font-quicksand xs:pt-24 sm:pt-10 flex-1 flex flex-col">
+            <main
+              id="main"
+              className="flex flex-1 flex-col pt-36 font-quicksand xs:pt-24 sm:pt-10"
+            >
               {children}
             </main>
 

@@ -10,18 +10,18 @@ export default async function LoginPage({ children }: PropsWithChildren) {
     redirect("/", RedirectType.push);
   }
   return (
-    <div className="flex flex-row overflow-hidden flex-1">
+    <div className="flex flex-1 flex-row overflow-hidden">
       <div
         id="login-left"
-        className="relative hidden md:flex w-5/12 items-center justify-center overflow-hidden
-                  bg-gradient-to-t from-[#B1F0E9] to-[#368C9F] pointer-events-none"
+        className="pointer-events-none relative hidden w-5/12 items-center justify-center overflow-hidden
+                  bg-gradient-to-t from-[#B1F0E9] to-[#368C9F] md:flex"
       >
         {/* Top-left blob */}
         <div
-          className="absolute top-[-30cqw] left-[-10cqw]
-                    h-[40cqw] w-[40cqw]
-                    rounded-full
-                    bg-gradient-to-t from-[#B1F0E9] to-[#368C9F] z-10"
+          className="absolute left-[-10cqw] top-[-30cqw]
+                    z-10 h-[40cqw]
+                    w-[40cqw]
+                    rounded-full bg-gradient-to-t from-[#B1F0E9] to-[#368C9F]"
         />
 
         {/* Bottom-left blob */}
@@ -45,13 +45,13 @@ export default async function LoginPage({ children }: PropsWithChildren) {
           alt="SciQuel Logo"
           width={400}
           height={100}
-          className="w-[30cqw] h-auto pointer-events-none select-none relative z-10"
+          className="pointer-events-none relative z-10 h-auto w-[30cqw] select-none"
           priority
         />
       </div>
 
       <div id="login-right" className="flex grow items-center justify-center">
-        <div className="w-5/12 max-w-[26rem] min-w-80">{children}</div>
+        <div className="w-5/12 min-w-80 max-w-[26rem]">{children}</div>
       </div>
     </div>
   );
