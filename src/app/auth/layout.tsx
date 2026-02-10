@@ -18,16 +18,16 @@ export default async function LoginPage({ children }: PropsWithChildren) {
       >
         {/* Top-left blob */}
         <div
-          className="absolute top-[-35cqw] left-[-15cqw]
-                    h-[50cqw] w-[50cqw]
+          className="absolute top-[-30cqw] left-[-10cqw]
+                    h-[40cqw] w-[40cqw]
                     rounded-full
                     bg-gradient-to-t from-[#B1F0E9] to-[#368C9F] z-10"
         />
 
         {/* Bottom-left blob */}
         <div
-          className="absolute bottom-[-10cqw] left-[-10cqw]
-                    h-[45cqw] w-[45cqw]
+          className="absolute bottom-[-15cqw] left-[-10cqw]
+                    h-[40cqw] w-[40cqw]
                     rounded-full
                     bg-gradient-to-t from-[#B1F0E9] to-[#368C9F]"
         />
@@ -35,7 +35,7 @@ export default async function LoginPage({ children }: PropsWithChildren) {
         {/* Bottom-right blob */}
         <div
           className="absolute bottom-[-10cqw] right-[-10cqw]
-                    h-[30cqw] w-[30cqw]
+                    h-[25cqw] w-[25cqw]
                     rounded-full
                     bg-gradient-to-t from-[#B1F0E9] to-[#368C9F]"
         />
