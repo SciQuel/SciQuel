@@ -10,7 +10,7 @@ export default async function LoginPage({ children }: PropsWithChildren) {
     redirect("/", RedirectType.push);
   }
   return (
-    <div className="flex min-h-screen grow flex-row">
+    <div className="flex flex-row overflow-hidden flex-1">
       <div
         id="login-left"
         className="relative hidden md:flex w-5/12 items-center justify-center overflow-hidden
