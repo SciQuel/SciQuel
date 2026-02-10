@@ -41,7 +41,7 @@ export default async function LoginPage({ children }: PropsWithChildren) {
         />
 
         <Image
-          src="/assets/images/logo_with_name_2.svg"
+          src="/assets/images/logoWithNameOnSide.svg"
           alt="SciQuel Logo"
           width={400}
           height={100}
