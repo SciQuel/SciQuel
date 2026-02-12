@@ -312,7 +312,7 @@ function createMultipleChoiceSubpart(subpartData: any) {
         options,
         correctAnswer: correct_answer,
         question,
-        explanations,
+        explanations: [explanations],
       },
     });
   }
