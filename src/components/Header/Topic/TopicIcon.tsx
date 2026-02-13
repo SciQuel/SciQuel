@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { type ReactNode } from "react";
 import AstronomyAct from "./TopicIcons/Astronomy_Active.svg";
 import Astronomy from "./TopicIcons/Astronomy_Inactive.svg";
@@ -107,7 +108,7 @@ export default function TopicIcon({ type }: Props) {
     SociologyAct: <SociologyAct className="h-[2rem] w-auto" />,
     // SciquelAct: <SciquelAct className="h-[2rem] w-auto" />,
     SciquelAct: (
-      <img
+      <Image
         src={SciquelAct.src}
         alt="SciQuel Active"
         className="h-[2rem] w-auto"
