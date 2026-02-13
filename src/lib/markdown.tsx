@@ -25,6 +25,8 @@ import retextEnglish from "retext-english";
 import { unified } from "unified";
 import retextWordCount from "./retext-word-count";
 
+/*eslint-disable @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call */
+
 export async function generateMarkdown(content: string) {
   const wordStats: Record<string, number> = {};
 
