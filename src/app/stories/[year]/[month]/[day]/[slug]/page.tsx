@@ -117,7 +117,7 @@ export default async function StoriesPage({ params }: Params) {
   const story = await retrieveStoryContent(params);
 
   const { file } = await generateMarkdown(
-    `${story.storyContent[0].content} :end-icon`,
+    `${story.storyContent[0].content}:end-icon`,
   );
 
   return (
