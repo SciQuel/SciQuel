@@ -18,7 +18,7 @@ interface Params {
 
 const paramTopicSchema = z.preprocess(
   (value) => String(z.string().parse(value).toUpperCase()),
-  z.nativeEnum(StoryTopic),
+  z.enum(StoryTopic),
 );
 
 export default async function StoryTopicPage(props: Params) {
