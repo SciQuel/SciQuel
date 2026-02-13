@@ -19,12 +19,14 @@ import { generateMarkdown } from "@/lib/markdown";
 import { type ReactNode } from "react";
 
 interface Params {
-  params: {
-    year: string;
-    month: string;
-    day: string;
-    slug: string;
-  };
+  year: string;
+  month: string;
+  day: string;
+  slug: string;
+}
+
+interface ParamsPromise {
+  params: Promise<Params>;
 }
 
 // const testDictionary = {
@@ -112,7 +114,8 @@ interface Params {
 //   },
 // ];
 
-export default async function StoriesPage({ params }: Params) {
+export default async function StoriesPage(props: ParamsPromise) {
+  const params = await props.params;
   const whatsNewArticles = await getWhatsNewArticles();
   const story = await retrieveStoryContent(params);
 
@@ -232,12 +235,7 @@ export default async function StoriesPage({ params }: Params) {
 //   }
 // }
 
-async function retrieveStoryContent({
-  year,
-  day,
-  month,
-  slug,
-}: Params["params"]) {
+async function retrieveStoryContent({ year, day, month, slug }: Params) {
   const storyRoute = `/stories/${year}/${month}/${day}/${slug}`;
   const prefetchedMetadataRes = await fetch(
     `${env.NEXT_PUBLIC_SITE_URL}/api${storyRoute}`,

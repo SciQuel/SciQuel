@@ -8,12 +8,12 @@ import Link from "next/link";
 import { z } from "zod";
 
 interface Params {
-  params: {
+  params: Promise<{
     topic: string;
-  };
-  searchParams: {
+  }>;
+  searchParams: Promise<{
     page_number: string;
-  };
+  }>;
 }
 
 const paramTopicSchema = z.preprocess(
@@ -21,7 +21,8 @@ const paramTopicSchema = z.preprocess(
   z.nativeEnum(StoryTopic),
 );
 
-export default async function StoryTopicPage({ params }: Params) {
+export default async function StoryTopicPage(props: Params) {
+  const params = await props.params;
   const topicResult = paramTopicSchema.safeParse(params.topic);
   if (!topicResult.success) {
     return (

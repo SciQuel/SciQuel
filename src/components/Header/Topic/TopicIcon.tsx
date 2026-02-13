@@ -1,5 +1,6 @@
 "use client";
 
+import { type ReactNode } from "react";
 import AstronomyAct from "./TopicIcons/Astronomy_Active.svg";
 import Astronomy from "./TopicIcons/Astronomy_Inactive.svg";
 import BiologyAct from "./TopicIcons/Biology_Active.svg";
@@ -70,7 +71,7 @@ interface Props {
 }
 
 export default function TopicIcon({ type }: Props) {
-  const iconMap: Record<typeof type, JSX.Element> = {
+  const iconMap: Record<typeof type, ReactNode> = {
     Astronomy: <Astronomy className="h-[2rem] w-auto" />,
     Biology: <Biology className="h-[2rem] w-auto" />,
     Chemical: <Chemical className="h-[2rem] w-auto" />,
