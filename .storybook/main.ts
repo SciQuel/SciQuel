@@ -7,7 +7,7 @@ const config: StorybookConfig = {
     "@chromatic-com/storybook",
     "@storybook/addon-a11y",
     "msw-storybook-addon",
-    "@storybook/addon-docs"
+    "@storybook/addon-docs",
   ],
   framework: {
     name: "@storybook/nextjs",
