@@ -74,7 +74,7 @@ export default function ArticleCard({
               </div>
             ) : null}
             {/* Article Content */}
-            <div className="flex grow flex-col">
+            <div className="relative flex grow flex-col">
               <div>
                 <h2
                   className={clsx(
@@ -117,7 +117,7 @@ export default function ArticleCard({
                   ? "hidden"
                   : "h-24"
                 : preferHorizontal
-                ? "h-44 w-full sm:h-full sm:w-1/3"
+                ? "h-44 w-full sm:h-auto sm:w-1/3 sm:flex-1"
                 : "h-44",
             )}
           >
