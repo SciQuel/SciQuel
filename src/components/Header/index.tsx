@@ -41,10 +41,9 @@ export default function Header() {
         <div className="flex w-full flex-row gap-4 px-4 py-[0.8rem] align-middle xs:px-10">
           <SideBar />
           <div className="top-0 hidden pt-1 sm:flex">
-            <Search className="h-[2rem] w-auto" />
-
             <form onSubmit={onSearch}>
-              <label className="">
+              <label className="flex gap-4">
+                <Search className="h-[2rem] w-auto cursor-pointer" />
                 <input
                   className="w-24 border border-x-transparent
                  border-y-transparent bg-transparent outline-none
