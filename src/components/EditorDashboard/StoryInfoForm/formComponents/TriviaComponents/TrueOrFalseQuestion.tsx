@@ -14,10 +14,8 @@ const TrueOrFalseQuestion: React.FC<TrueOrFalseQuestionProps> = ({
   addTrueOrFalseQuestion,
   deleteTrueOrFalseQuestion,
 }) => {
-  // Create a ref to store all textarea refs
   const textareaRefs = useRef<Record<number, HTMLTextAreaElement | null>>({});
 
-  // Auto-resize effect
   useEffect(() => {
     Object.values(textareaRefs.current).forEach((textarea) => {
       if (textarea) {

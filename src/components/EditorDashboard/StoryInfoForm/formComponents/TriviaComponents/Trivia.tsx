@@ -649,14 +649,12 @@ const Trivia: React.FC = () => {
 
 export default Trivia;
 
-// ============================================================================
 // API FUNCTIONS
-// ============================================================================
 
 const urlQuiz = "/api/quizzes/edit";
 const storyIdTest = "6488c6f6f5f617c772f6f61a";
 
-/* POST (create) or PATCH (update) */
+/* post or patch */
 async function submitQuizMap(
   question: Question,
   e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
@@ -698,9 +696,11 @@ async function submitMultipleChoice(question: Question) {
   }
 
   const options = choices.map((choice) => String(choice.content || ""));
-  const explanations = choices.map(() =>
-    String(question.explanation || "No explanation provided"),
-  );
+  // const explanations = choices.map(() =>
+  //   String(question.explanation || "No explanation provided"),
+  // );
+
+  const explanations = question.explanation;
 
   const payload = {
     story_id: storyIdTest,
@@ -720,7 +720,6 @@ async function submitMultipleChoice(question: Question) {
   console.log("Payload:", JSON.stringify(payload, null, 2));
 
   try {
-    // Use POST if no quizQuestionId (new), otherwise use PATCH (update)
     const res = quizQuestionId
       ? await axios.patch(urlQuiz, payload, {
           params: { quiz_question_id: quizQuestionId },
@@ -761,7 +760,7 @@ async function submitSelectAll(question: Question) {
       options: options?.map((option) => option.content),
       correct_answers: optionIndexChecked,
       explanations: options?.map(
-        (_, index) => `This is an explanation for option ${index}`,
+        (_, index) => `This is an explanation for option ${index}`, //send whatever explanation multiple times
       ),
     },
     ...(quizQuestionId && { quiz_question_id: quizQuestionId }),
@@ -789,8 +788,8 @@ async function submitSelectAll(question: Question) {
 async function submitDirectMatching(question: Question) {
   const { content, pairs, type, quizQuestionId } = question;
 
-  const correctAnswers = (question.pairs || []).map((_, index) => index);
-
+  const correctAnswer = (question.pairs || []).map((_, index) => index);
+  console.log("PAIRS:", pairs);
   const payload = {
     story_id: storyIdTest,
     question_type: type,
@@ -802,7 +801,7 @@ async function submitDirectMatching(question: Question) {
       ),
       categories: pairs?.map((pair) => pair.left),
       options: pairs?.map((pair) => pair.right),
-      correct_answers: correctAnswers,
+      correct_answers: correctAnswer,
       explanations: pairs?.map(
         (val, index) =>
           val.explanation || `This is an explanation for pair ${index}`,
@@ -951,7 +950,7 @@ async function getCurrentQuizzes(
     }
 
     let maxId = 1;
-
+    console.log("RES", res.data);
     const mappedQuestions: Question[] = body.map((quiz: any, index: number) => {
       const type = quiz.question_type as QuestionType;
       const quizQuestionId = quiz.quiz_question_id || quiz._id;
@@ -964,7 +963,7 @@ async function getCurrentQuizzes(
             quiz.options?.map((opt: string, idx: number) => ({
               id: baseId + idx + 1,
               content: opt,
-              isCorrect: idx === quiz.correct_answer,
+              isCorrect: idx === quiz.correctAnswer,
             })) || [];
 
           return {
@@ -988,8 +987,8 @@ async function getCurrentQuizzes(
               content: opt,
             })) || [];
 
-          const correct_answers = Array.isArray(quiz.correct_answers)
-            ? quiz.correct_answers.map((idx: number) => baseId + idx + 1)
+          const correct_answers = Array.isArray(quiz.correctAnswer)
+            ? quiz.correctAnswer.map((idx: number) => baseId + idx + 1)
             : [];
 
           return {
@@ -1039,14 +1038,15 @@ async function getCurrentQuizzes(
           const categoryItems: MatchingItem[] = [];
           let itemIdCounter = baseId + 1000;
 
-          if (Array.isArray(quiz.correct_answers)) {
-            quiz.correct_answers.forEach(
-              (optionIndices: number[], categoryIdx: number) => {
+          if (Array.isArray(quiz.correctAnswer)) {
+            quiz.correctAnswer.forEach(
+              (optionIndices: string, categoryIdx: number) => {
+                const indicies = optionIndices.split(" ");
                 const categoryId = baseId + categoryIdx + 1;
-                optionIndices.forEach((optionIdx: number) => {
+                indicies.forEach((optionIdx: string) => {
                   if (
                     quiz.options &&
-                    optionIdx >= 0 &&
+                    optionIdx >= "0" &&
                     optionIdx < quiz.options.length
                   ) {
                     categoryItems.push({
@@ -1075,8 +1075,8 @@ async function getCurrentQuizzes(
             quiz.questions?.map((q: string, idx: number) => ({
               id: baseId + idx + 1,
               content: q,
-              isTrue: Array.isArray(quiz.correct_answers)
-                ? Boolean(quiz.correct_answers[idx])
+              isTrue: Array.isArray(quiz.correctAnswer)
+                ? Boolean(quiz.correctAnswer[idx])
                 : false,
               explanation: Array.isArray(quiz.explanations)
                 ? quiz.explanations[idx]
@@ -1127,3 +1127,10 @@ async function deleteQuestionFromBackend(quizQuestionId: string) {
     throw error;
   }
 }
+
+/* 
+To - Do: 
+- Fix save/delete question functionality.  
+- Changing question type prevents saving question. 
+- Slow loading performance. 
+*/

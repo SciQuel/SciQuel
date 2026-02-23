@@ -13,15 +13,12 @@ interface MultipleChoiceQuestionProps {
   ) => void;
 }
 
-// Reusable custom hook for auto-resizing textarea
 const useAutoResizeTextarea = (value: string) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     if (textareaRef.current) {
-      // Reset height to get accurate scrollHeight
       textareaRef.current.style.height = "auto";
-      // Set new height based on content
       textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
     }
   }, [value]);
@@ -102,7 +99,6 @@ const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
       >
         Add Choice
       </button>
-      {/* Explanation textarea with auto-resize */}
       <textarea
         ref={explanationTextareaRef}
         value={question.explanation || ""}

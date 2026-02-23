@@ -234,3 +234,8 @@ const ComplexMatchingQuestion: React.FC<ComplexMatchingQuestionProps> = ({
 };
 
 export default ComplexMatchingQuestion;
+
+/* 
+To - Do: 
+- Make sure that the word bank order is preserved after saving. 
+*/

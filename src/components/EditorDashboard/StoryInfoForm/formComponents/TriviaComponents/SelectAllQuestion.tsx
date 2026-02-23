@@ -13,15 +13,12 @@ interface SelectAllQuestionProps {
   ) => void;
 }
 
-// Custom hook for auto-resizing textarea
 const useAutoResizeTextarea = (value: string) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     if (textareaRef.current) {
-      // Reset height to get accurate scrollHeight
       textareaRef.current.style.height = "auto";
-      // Set new height based on content
       textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
     }
   }, [value]);
@@ -55,7 +52,6 @@ const SelectAllQuestion: React.FC<SelectAllQuestionProps> = ({
 
   return (
     <div>
-      {/* Question Input */}
       <input
         type="text"
         value={question.content}
@@ -66,7 +62,6 @@ const SelectAllQuestion: React.FC<SelectAllQuestionProps> = ({
         className="mb-2 w-full rounded border p-2"
       />
 
-      {/* Options */}
       {question.options?.map((option, index) => (
         <div key={option.id} className="mb-2 flex items-center">
           <input
@@ -94,7 +89,6 @@ const SelectAllQuestion: React.FC<SelectAllQuestionProps> = ({
         </div>
       ))}
 
-      {/* Add Option Button */}
       <button
         type="button"
         onClick={() => addOption(question.id)}
@@ -103,7 +97,6 @@ const SelectAllQuestion: React.FC<SelectAllQuestionProps> = ({
         Add Option
       </button>
 
-      {/* Auto-resizing Explanation Box */}
       <textarea
         ref={textareaRef}
         value={question.explanation || ""}
@@ -117,3 +110,8 @@ const SelectAllQuestion: React.FC<SelectAllQuestionProps> = ({
 };
 
 export default SelectAllQuestion;
+
+/* 
+To - Do: 
+- saving the question is buggy.  
+*/

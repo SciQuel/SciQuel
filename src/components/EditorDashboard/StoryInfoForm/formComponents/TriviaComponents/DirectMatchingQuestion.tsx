@@ -87,10 +87,15 @@ const DirectMatchingQuestion: React.FC<DirectMatchingQuestionProps> = ({
     e.preventDefault();
   };
 
-  const handleRightSideChange = (index: number, value: string) => {
+  const handleRightSideChange = (
+    pairId: number,
+    index: number,
+    value: string,
+  ) => {
     const updatedRightSideOrder = [...rightSideOrder];
     updatedRightSideOrder[index].right = value;
     setRightSideOrder(updatedRightSideOrder);
+    updatePair(question.id, pairId, { right: value });
   };
 
   const handleLeftSideChange = (pairId: number, value: string) => {
@@ -187,7 +192,9 @@ const DirectMatchingQuestion: React.FC<DirectMatchingQuestionProps> = ({
                 <input
                   type="text"
                   value={rightPair.right}
-                  onChange={(e) => handleRightSideChange(index, e.target.value)}
+                  onChange={(e) =>
+                    handleRightSideChange(rightPair.id, index, e.target.value)
+                  }
                   className="w-full rounded border-4 border-gray-300 p-2 pl-10"
                   placeholder="Right side"
                   style={{
@@ -253,3 +260,9 @@ const DirectMatchingQuestion: React.FC<DirectMatchingQuestionProps> = ({
 };
 
 export default DirectMatchingQuestion;
+
+/* 
+To - Do: 
+- Preserve the order/colors of the right side after saving.  
+- Explanation field is buggy in loading the correct content.
+*/
