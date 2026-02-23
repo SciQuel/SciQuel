@@ -22,12 +22,12 @@ export default function MainSubHeader() {
         LATEST
       </Link>
 
-      <Link
+      {/* <Link
         className="grow cursor-pointer px-4 py-2 hover:bg-sciquelHover"
         href="/stories/read"
       >
         READ
-      </Link>
+      </Link> */}
 
       {/* <div className="grow cursor-pointer py-2 hover:bg-sciquelHover">
         <Topic />

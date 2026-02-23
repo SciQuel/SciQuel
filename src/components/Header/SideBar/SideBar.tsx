@@ -253,7 +253,7 @@ export default function SideBar() {
             style={{ display: showSideBar ? "block" : "none" }}
           />
 
-          <li
+          {/* <li
             className="text-white-400 my-1.5 flex transform cursor-pointer items-center   hover:bg-sciquelHover"
             style={{ display: showSideBar ? "block" : "none" }}
           >
@@ -263,8 +263,8 @@ export default function SideBar() {
             >
               Get Involved
             </Link>
-          </li>
-          <li
+          </li> */}
+          {/* <li
             className="text-white-400 my-1.5 flex transform cursor-pointer items-center   hover:bg-sciquelHover"
             style={{ display: showSideBar ? "block" : "none" }}
           >
@@ -274,20 +274,20 @@ export default function SideBar() {
             >
               Leave Feedback
             </Link>
-          </li>
-          <li
+          </li> */}
+          {/* <li
             className="text-white-400 my-1.5 flex transform cursor-pointer items-center   hover:bg-sciquelHover"
             style={{ display: showSideBar ? "block" : "none" }}
           >
             <Link href="/about" className="block w-full px-4 font-medium">
               Behind The Science
             </Link>
-          </li>
+          </li> */}
 
-          <hr
+          {/* <hr
             className="mx-3 my-2"
             style={{ display: showSideBar ? "block" : "none" }}
-          />
+          /> */}
 
           <li
             className=" text-white-400 group relative my-1.5 flex transform items-center   hover:bg-sciquelHover"
