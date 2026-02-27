@@ -344,28 +344,33 @@ export default function StoryCredits({ story }: Props) {
           ref={headerRef}
           className={`relative m-10 flex min-h-0 w-full flex-col justify-end overflow-hidden `}
         >
-          <h1
-            className="mb-0 rounded-t-xl p-8 pb-0 font-customTest text-6xl font-bold sm:text-8xl lg:w-4/5"
+          <div
+            className={`flex w-4/5 flex-col overflow-hidden text-ellipsis rounded`}
             style={{
-              color: story.titleColor,
-
-              fontSize: `${Math.max(headerFont, 14)}px`,
-              lineHeight: `${Math.max(headerFont + 3, 14)}px`,
+              backgroundColor: story.titleBackgroundColor,
             }}
           >
-            {story.title}
-          </h1>
-          <h2
-            className=" p-8 pt-0 font-besley text-2xl   lg:w-5/6"
-            style={{
-              color: story.summaryColor,
-
-              fontSize: `${Math.max(headerFont - 33, 14)}px`,
-              lineHeight: `${Math.max(headerFont - 28, 14)}px`,
-            }}
-          >
-            {story.summary}
-          </h2>
+            <h1
+              className="mb-0 rounded-t-xl p-8 pb-0 font-customTest text-6xl font-bold sm:text-8xl lg:w-full"
+              style={{
+                color: story.titleColor,
+                fontSize: `${Math.max(headerFont, 14)}px`,
+                lineHeight: `${Math.max(headerFont + 3, 14)}px`,
+              }}
+            >
+              {story.title}
+            </h1>
+            <h2
+              className="p-8 pt-0 font-besley text-2xl lg:w-full"
+              style={{
+                color: story.summaryColor,
+                fontSize: `${Math.max(headerFont - 33, 14)}px`,
+                lineHeight: `${Math.max(headerFont - 28, 14)}px`,
+              }}
+            >
+              {story.summary}
+            </h2>
+          </div>
         </div>
       </div>
       {/* <div className="h-[calc(100vh_-_7.5rem)] w-full" />{" "} */}
