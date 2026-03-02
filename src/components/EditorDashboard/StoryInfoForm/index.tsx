@@ -1,6 +1,7 @@
 "use client";
 
 import Form from "@/components/Form";
+import FormColorPicker from "@/components/Form/FormColorPicker";
 import FormInput from "@/components/Form/FormInput";
 import axios from "axios";
 import clsx from "clsx";
@@ -27,6 +28,8 @@ export default function StoryInfoForm({
 
   const [title, setTitle] = useState(initialTitle ?? "");
   const [summary, setSummary] = useState(initialSummary ?? "");
+  const [titleColor, setTitleColor] = useState("#000000");
+  const [titleBackgroundColor, setTitleBackgroundColor] = useState("#ffffff");
   const [image, setImage] = useState<File | string | null>(
     initialImage ?? null,
   );
@@ -48,6 +51,8 @@ export default function StoryInfoForm({
                 }
                 formData.append("title", title);
                 formData.append("summary", summary);
+                formData.append("titleColor", titleColor);
+                formData.append("titleBackgroundColor", titleBackgroundColor);
                 formData.append("imageCaption", caption);
                 if (image === null) {
                   return;
@@ -87,6 +92,20 @@ export default function StoryInfoForm({
             setTitle(e.target.value);
           }}
           disabled={loading}
+        />
+        <FormColorPicker
+          title="Title Color"
+          onChange={(e) => {
+            setDirty(true);
+            setTitleColor(e.target.value);
+          }}
+        />
+        <FormColorPicker
+          title="Title Background Color"
+          onChange={(e) => {
+            setDirty(true);
+            setTitleBackgroundColor(e.target.value);
+          }}
         />
         <FormInput
           title="Summary"
