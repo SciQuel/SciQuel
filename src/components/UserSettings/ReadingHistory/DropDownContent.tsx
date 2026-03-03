@@ -29,13 +29,14 @@ const DropDownContent: React.FC<Props> = ({
   title,
 }) => {
   const [activeSharePopup, setActiveSharePopup] = useState<string | "">("");
+  const [visibleCount, setVisibleCount] = useState(6);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const popupRefs: React.MutableRefObject<
     Record<string, React.RefObject<HTMLDivElement>>
   > = useRef({});
 
   const handleShareClick = (e: React.MouseEvent, storyId: string) => {
     e.stopPropagation();
-    console.log("test");
     setActiveSharePopup(storyId);
   };
 
@@ -51,16 +52,105 @@ const DropDownContent: React.FC<Props> = ({
     return () => document.removeEventListener("click", handleOutsideClick);
   }, [activeSharePopup]);
 
+  useEffect(() => {
+    setVisibleCount(6);
+  }, [data, title]);
+
+  useEffect(() => {
+    const handlePageWheel = (event: WheelEvent) => {
+      const scrollContainer = scrollContainerRef.current;
+      if (!scrollContainer) return;
+
+      const wheelTarget = event.target as HTMLElement | null;
+      const isWheelFromDropdown = Boolean(
+        wheelTarget?.closest("[data-reading-dropdown-content='true']"),
+      );
+
+      if (!wheelTarget?.closest("[data-user-settings-content='true']")) {
+        return;
+      }
+      if (wheelTarget?.closest("[data-user-settings-sidebar='true']")) {
+        return;
+      }
+
+      const rect = scrollContainer.getBoundingClientRect();
+      const isPointerInsideContainer =
+        event.clientX >= rect.left &&
+        event.clientX <= rect.right &&
+        event.clientY >= rect.top &&
+        event.clientY <= rect.bottom;
+
+      if (isPointerInsideContainer) {
+        const nativeScrollbarWidth =
+          scrollContainer.offsetWidth - scrollContainer.clientWidth;
+        const scrollbarGutterWidth = nativeScrollbarWidth > 0
+          ? nativeScrollbarWidth
+          : 20;
+        const isPointerOnScrollbar =
+          event.clientX >= rect.right - scrollbarGutterWidth;
+
+        if (isPointerOnScrollbar) return;
+      }
+
+      const hasOverflow =
+        scrollContainer.scrollHeight > scrollContainer.clientHeight;
+      if (!hasOverflow) return;
+
+      const maxScrollTop =
+        scrollContainer.scrollHeight - scrollContainer.clientHeight;
+      const currentScrollTop = scrollContainer.scrollTop;
+      const nextScrollTop = Math.min(
+        maxScrollTop,
+        Math.max(0, currentScrollTop + event.deltaY),
+      );
+      const canMoveDropdown = nextScrollTop !== currentScrollTop;
+
+      if (isWheelFromDropdown) {
+        event.preventDefault();
+        if (!canMoveDropdown) return;
+        scrollContainer.scrollTop = nextScrollTop;
+        return;
+      }
+
+      if (!canMoveDropdown) return;
+      event.preventDefault();
+      scrollContainer.scrollTop = nextScrollTop;
+    };
+
+    window.addEventListener("wheel", handlePageWheel, { passive: false });
+    return () => window.removeEventListener("wheel", handlePageWheel);
+  }, []);
+
   const bookMarkedReadings = useMemo(
     () => data.map((reading) => ({ ...reading, uuid: crypto.randomUUID() })),
     [data],
   );
 
+  const visibleReadings = useMemo(
+    () => bookMarkedReadings.slice(0, visibleCount),
+    [bookMarkedReadings, visibleCount],
+  );
+
   const iconButtonClass =
     " flex h-[40px] w-[40px]  md:h-[40px] md:w-[40px] p-1 md:p-2 justify-center items-center rounded-full bg-[#76a89f] transition ease-linear ";
 
+  const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
+    const target = event.currentTarget;
+    const isNearBottom =
+      target.scrollTop + target.clientHeight >= target.scrollHeight - 80;
+
+    if (!isNearBottom) return;
+    if (visibleCount >= bookMarkedReadings.length) return;
+    setVisibleCount((count) => count + 6);
+  };
+
   return (
-    <div className="scrollbar-cyan  z-50 mb-2 max-h-full overflow-y-scroll">
+    <div
+      ref={scrollContainerRef}
+      data-reading-dropdown-content="true"
+      className="scrollbar-cyan  z-50 mb-2 max-h-full overflow-y-scroll"
+      onScroll={handleScroll}
+    >
       <ul className="relative mr-3  h-full">
         {data?.length === 0 && (
           <p className="text-md font-bold">
@@ -70,7 +160,7 @@ const DropDownContent: React.FC<Props> = ({
             }${title} `}
           </p>
         )}
-        {bookMarkedReadings?.map((reading) => (
+        {visibleReadings?.map((reading) => (
           <li
             className="relative mb-2 h-auto min-h-[35%] sm:mb-8"
             key={reading?.uuid}

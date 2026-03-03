@@ -15,10 +15,15 @@ export default function Layout(props: { children: React.ReactNode }) {
     );
   }
   return (
-    <section className="h-full">
-      <div className=" flex h-[calc(100dvh-100px)] flex-col  bg-white md:flex-row">
+    <section className="h-full overflow-hidden">
+      <div className="flex h-[calc(100dvh-100px)] flex-col overflow-hidden bg-white md:flex-row">
         <Sidebar />
-        {props.children}
+        <div
+          data-user-settings-content="true"
+          className="min-h-0 flex-1 overflow-y-auto"
+        >
+          {props.children}
+        </div>
       </div>
     </section>
   );

@@ -306,7 +306,7 @@ export default function Sidebar() {
 
   */
   return (
-    <div>
+    <div data-user-settings-sidebar="true" className="overflow-hidden">
       <div
         className="\ z-10 h-12  flex-row  gap-4 gap-y-8  bg-[#EDF4F4] px-2 text-center text-xl md:sticky md:h-full md:flex-col md:gap-y-2 md:px-5 md:pt-6
                 md:text-left  lg:w-56 dark:text-white"
