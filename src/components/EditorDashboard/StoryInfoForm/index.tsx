@@ -11,6 +11,8 @@ import { useRef, useState, useTransition } from "react";
 interface Props {
   id?: string;
   title?: string;
+  titleColor?: string;
+  titleBackgroundColor?: string;
   summary?: string;
   image?: string;
   caption?: string;
@@ -19,6 +21,8 @@ interface Props {
 export default function StoryInfoForm({
   id: storyId,
   title: initialTitle,
+  titleColor: initialTitleColor,
+  titleBackgroundColor: initialTitleBackgroundColor,
   summary: initialSummary,
   image: initialImage,
   caption: initialCaption,
@@ -28,8 +32,10 @@ export default function StoryInfoForm({
 
   const [title, setTitle] = useState(initialTitle ?? "");
   const [summary, setSummary] = useState(initialSummary ?? "");
-  const [titleColor, setTitleColor] = useState("#000000");
-  const [titleBackgroundColor, setTitleBackgroundColor] = useState("#ffffff");
+  const [titleColor, setTitleColor] = useState(initialTitleColor ?? "#000000");
+  const [titleBackgroundColor, setTitleBackgroundColor] = useState(
+    initialTitleBackgroundColor ?? "#ffffff",
+  );
   const [image, setImage] = useState<File | string | null>(
     initialImage ?? null,
   );

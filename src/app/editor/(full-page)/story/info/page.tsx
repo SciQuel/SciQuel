@@ -20,6 +20,8 @@ export default async function StoryInfoEditorPage({
       <h3 className="text-3xl font-semibold text-sciquelTeal">Story Info</h3>
       <StoryInfoForm
         title={story?.title}
+        titleColor={story?.titleColor}
+        titleBackgroundColor={story?.titleBackgroundColor}
         summary={story?.summary}
         image={story?.thumbnailUrl}
         id={story?.id}
