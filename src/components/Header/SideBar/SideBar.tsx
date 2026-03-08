@@ -283,6 +283,17 @@ export default function SideBar() {
               Behind The Science
             </Link>
           </li>
+          <li
+            className="text-white-400 my-1.5 flex transform cursor-pointer items-center   hover:bg-sciquelHover"
+            style={{ display: showSideBar ? "block" : "none" }}
+          >
+            <Link
+              href="/staff-picks-preview"
+              className="block w-full px-4 font-medium"
+            >
+              Your Staff Picks
+            </Link>
+          </li>
 
           <hr
             className="mx-3 my-2"
