@@ -12,6 +12,43 @@ interface Props {
   contributor: ContributorResult;
 }
 
+type SocialPlatform =
+  | "instagram"
+  | "youtube"
+  | "tiktok"
+  | "twitter"
+  | "facebook"
+  | "website";
+
+type SocialLink = { platform: SocialPlatform; url: string };
+
+const inferPlatformFromUrl = (raw: string): SocialPlatform => {
+  const s = raw.trim();
+
+  // allow partial input like "instagram.com/..." while typing
+  const normalized =
+    s.startsWith("http://") || s.startsWith("https://")
+      ? s
+      : `https://${s.replace(/^\/+/, "")}`;
+
+  let host = "";
+  try {
+    host = new URL(normalized).hostname.toLowerCase();
+  } catch {
+    return "website";
+  }
+
+  host = host.replace(/^www\./, "").replace(/^m\./, "");
+
+  if (host === "instagram.com") return "instagram";
+  if (host === "tiktok.com") return "tiktok";
+  if (host === "facebook.com" || host === "fb.com") return "facebook";
+  if (host === "twitter.com" || host === "x.com") return "twitter";
+  if (host === "youtube.com" || host === "youtu.be") return "youtube";
+
+  return "website";
+};
+
 export default function ContributorEditCard({ contributor }: Props) {
   const [email, setEmail] = useState(contributor.email ?? "");
   const [firstName, setFirstName] = useState(contributor.firstName);
@@ -22,6 +59,24 @@ export default function ContributorEditCard({ contributor }: Props) {
   const [newAvatar, setNewAvatar] = useState<File | null>(null);
   const [editMode, setEditMode] = useState(false);
   const [finished, setFinished] = useState(false);
+
+  const [socialLinks, setSocialLinks] = useState<SocialLink[]>(
+    (contributor as any).socialLinks?.length
+      ? (contributor as any).socialLinks
+      : [{ platform: "instagram", url: "" }],
+  );
+
+  const updateSocialLink = (i: number, patch: Partial<SocialLink>) => {
+    setSocialLinks((prev) =>
+      prev.map((x, idx) => (idx === i ? { ...x, ...patch } : x)),
+    );
+  };
+
+  const addSocialLink = () =>
+    setSocialLinks((prev) => [...prev, { platform: "website", url: "" }]);
+
+  const removeSocialLink = (i: number) =>
+    setSocialLinks((prev) => prev.filter((_, idx) => idx !== i));
 
   return (
     <div className="m-2 flex w-fit flex-row gap-3 rounded-lg border-2 border-slate-600 p-2">
@@ -90,6 +145,7 @@ export default function ContributorEditCard({ contributor }: Props) {
                 email,
                 slug,
                 bio,
+                socialLinks,
               )
                 .then((result) => {
                   if (result.error) {
@@ -159,6 +215,48 @@ export default function ContributorEditCard({ contributor }: Props) {
                 }}
               />
             </label>
+            <div className="flex flex-col gap-2">
+              <p>social links:</p>
+
+              {socialLinks.map((link, i) => (
+                <div key={i} className="flex gap-2">
+                  <input
+                    className="w-full rounded border-2 border-slate-600 px-2 py-1"
+                    placeholder="https://..."
+                    value={link.url}
+                    onChange={(e) => {
+                      const url = e.target.value;
+                      updateSocialLink(i, {
+                        url,
+                        platform: inferPlatformFromUrl(url),
+                      });
+                    }}
+                    type="text"
+                  />
+
+                  <button
+                    type="button"
+                    className="rounded border border-slate-700 px-3 py-1"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      removeSocialLink(i);
+                    }}
+                    //disabled={socialLinks.length === 1}
+                  >
+                    –
+                  </button>
+                </div>
+              ))}
+
+              <button
+                type="button"
+                className="w-fit rounded-md border border-slate-700 px-4 py-1"
+                onClick={addSocialLink}
+              >
+                + Add link
+              </button>
+            </div>
             <button
               className="w-fit rounded-md border border-slate-700 px-4 py-1"
               type="submit"

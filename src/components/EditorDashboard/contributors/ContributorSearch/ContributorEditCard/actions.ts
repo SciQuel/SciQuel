@@ -17,6 +17,13 @@ const contributorImgSchema = zfd.formData({
   ),
 });
 
+const socialLinksSchema = z.array(
+  z.object({
+    platform: z.string().min(1),
+    url: z.string().url(),
+  }),
+);
+
 export async function replaceContributorImage(form: FormData) {
   const parsed = contributorImgSchema.safeParse(form);
   if (!parsed.success) {
@@ -85,6 +92,7 @@ export async function updateContributorTextFields(
   email: string,
   slug: string,
   bio: string,
+  socialLinks: unknown,
 ) {
   try {
     const session = await getServerSession();
@@ -95,6 +103,12 @@ export async function updateContributorTextFields(
 
     if (!user || !user.roles.includes("EDITOR")) {
       return { error: "unauthorized" };
+    }
+    const parsedLinks = socialLinksSchema.safeParse(socialLinks);
+    console.log(socialLinks)
+    console.log(parsedLinks);
+    if (!parsedLinks.success) {
+      return { error: "bad social links" };
     }
 
     const newContributorInfo = await prisma.contributor.update({
@@ -107,6 +121,7 @@ export async function updateContributorTextFields(
         email: email,
         contributorSlug: slug,
         bio: bio,
+        socialLinks: parsedLinks.data ,
       },
     });
 

@@ -16,6 +16,10 @@ type StoryResult = Story & {
       firstName: string;
       lastName: string;
       avatarUrl: string | null;
+      socialLinks: {
+        platform: string;
+        url: string;
+      }[];
     };
     contributionType: ContributionType;
     otherContributorType: string | undefined;
