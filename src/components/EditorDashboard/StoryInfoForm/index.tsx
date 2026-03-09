@@ -68,6 +68,7 @@ export default function StoryInfoForm({
                   const file = new File([image], image.name);
                   formData.append("image", file, file.name);
                 }
+
                 const story = await axios.put<{ id: string }>(
                   "/api/stories",
                   formData,

@@ -66,8 +66,8 @@ export const postStorySchema = z.object({
 export const putStorySchema = zfd.formData({
   id: zfd.text().optional(),
   title: zfd.text(),
-  titleColor: zfd.text(z.string().startsWith("#").min(3).max(7)),
-  titleBackgroundColor: zfd.text(z.string().startsWith("#").min(3).max(7)),
+  titleColor: zfd.text(),
+  titleBackgroundColor: zfd.text(),
   summary: zfd.text(),
   image: z.preprocess(
     (val) => (val instanceof Blob && val.size === 0 ? undefined : val),
