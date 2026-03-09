@@ -5,9 +5,9 @@ import ProfileButton from "@/components/profile-page/ProfileButtons";
 import ProfileSidebar from "@/components/profile-page/ProfileSidebar";
 import Pagination from "@/components/StoriesList/Pagination";
 import env from "@/lib/env";
+import { type StoryTopic } from "@prisma/client";
 import { DateTime } from "luxon";
 import { notFound } from "next/navigation";
-import { StoryTopic } from "@prisma/client";
 
 interface Params {
   searchParams: { [key: string]: string };
@@ -44,7 +44,7 @@ async function getArticles(slug: string, page: number, staffPick: boolean) {
         `${env.NEXT_PUBLIC_SITE_URL
         }/api/contributor?contributorSlug=${slug}&staffPick=True&pageNum=${page - 1
         }`,
-        { cache: "no-store" }
+        { cache: "no-store" },
       );
       if (res.ok) {
         const raw = (await res.json()) as GetContributionResult;
@@ -62,7 +62,8 @@ async function getArticles(slug: string, page: number, staffPick: boolean) {
     try {
       const res = await fetch(
         `${env.NEXT_PUBLIC_SITE_URL
-        }/api/contributor?contributorSlug=${slug}&pageNum=${page - 1}`, { cache: "no-store" }
+        }/api/contributor?contributorSlug=${slug}&pageNum=${page - 1}`,
+        { cache: "no-store" },
       );
       if (res.ok) {
         const raw = (await res.json()) as GetContributionResult;
@@ -99,15 +100,12 @@ export default async function ProfilePage({ searchParams, params }: Params) {
     notFound();
   }
 
-
-
   //const topicCounts: Record<string, number> = {};
   const topicCounts: Partial<Record<StoryTopic, number>> = {};
 
-
   for (const story of startingArticles.stories) {
     for (const topic of story.topics ?? []) {
-      const key = topic as StoryTopic;
+      const key = topic;
       topicCounts[key] = (topicCounts[key] ?? 0) + 1;
     }
   }
@@ -116,15 +114,17 @@ export default async function ProfilePage({ searchParams, params }: Params) {
     .sort((a, b) => b[1] - a[1])
     .slice(0, 2)
     .map(([topic]) => topic);
-  console.log(topTopics)
-
+  console.log(topTopics);
 
   const pageSize = 9;
   const totalPages = Math.ceil(startingArticles.count / pageSize);
   return (
     <>
       <div className="flex h-fit min-h-[calc(100vh_-_4rem)] w-full flex-col justify-between md:flex-row">
-        <ProfileSidebar contributor={startingArticles.contributor} topTopics={topTopics} />
+        <ProfileSidebar
+          contributor={startingArticles.contributor}
+          topTopics={topTopics}
+        />
 
         <div className="flex h-full flex-1 flex-col gap-3 p-6 pt-8 text-center">
           <ProfileButton slug={contributorSlug} searchParams={searchParams} />

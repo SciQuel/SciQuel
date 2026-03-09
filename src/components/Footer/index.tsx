@@ -155,7 +155,6 @@ export default function Footer() {
                 setStep("email");
               }}
             >
-              {/* One true pill */}
               <div className="flex w-full overflow-hidden rounded-lg border border-white sm:w-fit">
                 {step === "email" ? (
                   <>

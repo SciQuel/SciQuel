@@ -105,7 +105,7 @@ export async function updateContributorTextFields(
       return { error: "unauthorized" };
     }
     const parsedLinks = socialLinksSchema.safeParse(socialLinks);
-    console.log(socialLinks)
+    console.log(socialLinks);
     console.log(parsedLinks);
     if (!parsedLinks.success) {
       return { error: "bad social links" };
@@ -121,7 +121,7 @@ export async function updateContributorTextFields(
         email: email,
         contributorSlug: slug,
         bio: bio,
-        socialLinks: parsedLinks.data ,
+        socialLinks: parsedLinks.data,
       },
     });
 

@@ -135,8 +135,7 @@ export default async function StoriesPage({ params }: Params) {
               </div>
             </div>
             <div className="w-screen xl:w-full">
-              <div className="mx-0 mt-2 flex w-screen flex-col items-center gap-4 px-2 sm:mx-auto md:w-[768px] md:px-0 story-body">
-
+              <div className="story-body mx-0 mt-2 flex w-screen flex-col items-center gap-4 px-2 sm:mx-auto md:w-[768px] md:px-0">
                 {/* <Dictionary /> */}
 
                 {file.result as ReactNode}

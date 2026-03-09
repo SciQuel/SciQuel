@@ -3,7 +3,7 @@
 import prisma from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 
-type SocialLink = {
+export type SocialLink = {
   platform: string;
   url: string;
 };

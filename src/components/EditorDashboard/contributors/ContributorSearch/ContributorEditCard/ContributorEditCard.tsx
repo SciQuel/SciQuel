@@ -2,7 +2,7 @@
 
 import Avatar from "@/components/Avatar";
 import { useState } from "react";
-import { type ContributorResult } from "../actions";
+import { type ContributorResult, type SocialLink } from "../actions";
 import {
   replaceContributorImage,
   updateContributorTextFields,
@@ -19,8 +19,6 @@ type SocialPlatform =
   | "twitter"
   | "facebook"
   | "website";
-
-type SocialLink = { platform: SocialPlatform; url: string };
 
 const inferPlatformFromUrl = (raw: string): SocialPlatform => {
   const s = raw.trim();
@@ -58,10 +56,9 @@ export default function ContributorEditCard({ contributor }: Props) {
   const [newAvatar, setNewAvatar] = useState<File | null>(null);
   const [editMode, setEditMode] = useState(false);
   const [finished, setFinished] = useState(false);
-
   const [socialLinks, setSocialLinks] = useState<SocialLink[]>(
-    (contributor as any).socialLinks?.length
-      ? (contributor as any).socialLinks
+    contributor.socialLinks?.length
+      ? contributor.socialLinks
       : [{ platform: "instagram", url: "" }],
   );
 
@@ -241,9 +238,8 @@ export default function ContributorEditCard({ contributor }: Props) {
                       e.stopPropagation();
                       removeSocialLink(i);
                     }}
-                  //disabled={socialLinks.length === 1}
                   >
-                    –
+                    -
                   </button>
                 </div>
               ))}
