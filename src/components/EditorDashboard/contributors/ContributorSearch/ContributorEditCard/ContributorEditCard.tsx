@@ -25,7 +25,6 @@ type SocialLink = { platform: SocialPlatform; url: string };
 const inferPlatformFromUrl = (raw: string): SocialPlatform => {
   const s = raw.trim();
 
-  // allow partial input like "instagram.com/..." while typing
   const normalized =
     s.startsWith("http://") || s.startsWith("https://")
       ? s
@@ -242,7 +241,7 @@ export default function ContributorEditCard({ contributor }: Props) {
                       e.stopPropagation();
                       removeSocialLink(i);
                     }}
-                    //disabled={socialLinks.length === 1}
+                  //disabled={socialLinks.length === 1}
                   >
                     –
                   </button>
