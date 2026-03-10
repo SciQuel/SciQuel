@@ -1,3 +1,5 @@
+import DictionaryWord from "@/components/story-components/dictionary/DictionaryWord";
+import DictionarySentence from "@/components/story-components/markdown/DictionarySentence";
 import StoryBlockquote from "@/components/story-components/markdown/StoryBlockquote";
 import StoryCaptionCitation from "@/components/story-components/markdown/StoryCaptionCitation";
 import StoryCode from "@/components/story-components/markdown/StoryCode";
@@ -47,6 +49,7 @@ export async function generateMarkdown(content: string) {
       attributes: {
         ...defaultSchema.attributes,
         "large-image": ["src", "alt"],
+        "dictionary-word": ["word"],
       },
       tagNames: [
         ...(defaultSchema.tagNames ?? []),
@@ -54,6 +57,8 @@ export async function generateMarkdown(content: string) {
         "caption-citation",
         "dropdown",
         "gray-text",
+        "dictionary-sentence",
+        "dictionary-word",
         "end-icon",
       ],
     })
@@ -123,6 +128,28 @@ export async function generateMarkdown(content: string) {
             return <></>;
           }
         },
+        "dictionary-sentence": (props: HTMLProps<HTMLElement>) => {
+          if (props.children) {
+            return <DictionarySentence>{props.children}</DictionarySentence>;
+          } else {
+            return <></>;
+          }
+        },
+
+        "dictionary-word": (
+          props: HTMLProps<HTMLElement> & { word: string },
+        ) => {
+          if (props.children || props.word) {
+            return (
+              <DictionaryWord word={props.word}>
+                {props.children ?? undefined}
+              </DictionaryWord>
+            );
+          } else {
+            return <></>;
+          }
+        },
+
         "end-icon": () => <StoryEndIcon />,
       },
     })

@@ -2,6 +2,7 @@
 
 import { type patchStorySchema } from "@/app/api/stories/schema";
 import { generateMarkdown } from "@/lib/markdown";
+import { DictionaryDefinition } from "@prisma/client";
 import axios from "axios";
 import clsx from "clsx";
 import { type editor } from "monaco-editor";
@@ -16,6 +17,8 @@ import {
   type ReactNode,
 } from "react";
 import { type z } from "zod";
+import Dictionary from "../story-components/dictionary/Dictionary";
+import { DictionaryProvider } from "../story-components/dictionary/DictionaryContext";
 import StatusBar from "./StatusBar";
 import Toolbar from "./Toolbar";
 import bold from "./Toolbar/actions/bold";
@@ -34,9 +37,14 @@ const inter = Inter({ subsets: ["latin"] });
 interface Props {
   initialValue?: string;
   id: string;
+  dictionaryWords: DictionaryDefinition[];
 }
 
-export default function MarkdownEditor({ initialValue, id }: Props) {
+export default function MarkdownEditor({
+  initialValue,
+  id,
+  dictionaryWords,
+}: Props) {
   const router = useRouter();
   const [dirty, setDirty] = useState(false);
   const [value, setValue] = useState(initialValue ?? "");
@@ -123,6 +131,7 @@ export default function MarkdownEditor({ initialValue, id }: Props) {
     <div className="flex h-full min-h-screen grow flex-row">
       <div className={clsx("flex w-1/2 flex-col border-r", inter.className)}>
         <Toolbar
+          dictionaryWords={dictionaryWords.map((entry) => entry.word)}
           editor={editor}
           onSubmit={handleEditorSubmit}
           loading={loading}
@@ -154,7 +163,23 @@ export default function MarkdownEditor({ initialValue, id }: Props) {
       <div className="flex max-h-full w-1/2 flex-col overflow-scroll">
         <div className="h-0">
           <div className="flex flex-col gap-5 pt-5 @container">
-            {renderedContent}
+            <DictionaryProvider
+              dictionary={dictionaryWords.map((wordDbEntry) => {
+                return {
+                  id: wordDbEntry.id,
+                  word: wordDbEntry.word,
+                  definition: wordDbEntry.definition,
+                  instances: [],
+                  inContext: wordDbEntry.exampleSentences,
+                  bookmarked: undefined,
+                  altSpellings: wordDbEntry.alternativeSpellings,
+                };
+              })}
+            >
+              <button>Fullscreen View</button>
+              {renderedContent}
+              <Dictionary />
+            </DictionaryProvider>
           </div>
         </div>
       </div>

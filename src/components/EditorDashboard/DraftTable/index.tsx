@@ -71,6 +71,12 @@ export default function DraftTable() {
                   >
                     Edit
                   </Link>
+                  <Link
+                    href={`/editor/story/dictionary?id=${story.id}`}
+                    className="mr-2 rounded-md bg-teal-600 px-2 py-1 text-sm font-semibold text-white hover:bg-teal-700"
+                  >
+                    Dictionary
+                  </Link>
                   <button className="rounded-md bg-blue-600 px-2 py-1 text-sm font-semibold text-white hover:bg-blue-700">
                     Publish
                   </button>

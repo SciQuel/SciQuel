@@ -6,6 +6,8 @@ declare global {
       "gray-text": React.HTMLAttributes;
       dropdown: React.HTMLAttributes;
       "end-icon": React.HTMLAttributes;
+      "dictionary-word": React.HTMLAttributes & { word: string };
+      "dictionary-sentence": React.HTMLAttributes;
     }
   }
 }

@@ -7,12 +7,16 @@ import {
   useState,
   type PropsWithChildren,
 } from "react";
-import { deepCloneDict, DictionaryContext } from "./DictionaryContext";
+import {
+  deepCloneDict,
+  DictionaryContext,
+} from "../dictionary/DictionaryContext";
 
 export default function DictionarySentence({ children }: PropsWithChildren) {
   const fullDictionary = useContext(DictionaryContext);
   const sentenceRef = useRef<HTMLSpanElement>(null);
   const [highlight, setHighlight] = useState(false);
+  const [wordFound, setWordFound] = useState(true);
 
   useEffect(() => {
     if (
@@ -66,12 +70,13 @@ export default function DictionarySentence({ children }: PropsWithChildren) {
         }
         // final check if we add the word?
         if (wordAdded) {
-          // console.warn(item.word, " is in test sentence");
+          console.warn(item.word, " is in test sentence");
         }
       });
 
       const spanRef = sentenceRef.current;
       // should have all our instances added to our copyDict?
+      setWordFound(indexList.length > 0);
       fullDictionary.setDictionary((state) => {
         const copyState = deepCloneDict(state);
         indexList.forEach((item) => {
@@ -90,11 +95,18 @@ export default function DictionarySentence({ children }: PropsWithChildren) {
     <span
       ref={sentenceRef}
       tabIndex={-1}
-      className={`${
-        highlight ? "rounded bg-sciquelGreen  " : ""
+      className={`${highlight ? "rounded bg-sciquelGreen  " : ""} ${
+        wordFound ? "" : " bg-red-300"
       } relative transition-all duration-500`}
     >
-      {children}
+      {children}{" "}
+      {!wordFound ? (
+        <span className="font-bold text-red-950">
+          {"["}Could not find matching dictionary word{"]"}
+        </span>
+      ) : (
+        <></>
+      )}
     </span>
   );
 }
