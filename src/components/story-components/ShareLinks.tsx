@@ -105,7 +105,7 @@ export default function ShareLinks() {
   }
 
   return (
-    <div id="share-links" className="flex flex-row lg:flex-col gap-4 mt-2">
+    <div id="share-links" className="flex flex-row xl:flex-col gap-4 mt-2">
       {/* Print Mode Button */}
       <button
         type="button"
@@ -121,22 +121,26 @@ export default function ShareLinks() {
         <PrintModeIcon />
       </button>
 
+
+
+
       {/* Share Button */}
       <div
         onMouseLeave={() => {
-          setShowOptions("none");
+          // setShowOptions("none");
         }}
         onMouseEnter={() => {
           if (window.innerWidth > 640) {
             setShowOptions("share");
           }
         }}
-        className={`pointer-events-auto  flex h-fit w-fit flex-col md:flex-row`}
+        className={`relative pointer-events-auto  flex h-fit w-fit flex-col md:flex-row`}
       >
         <button
           type="button"
           aria-haspopup={true}
           aria-expanded={showOptions == "share"}
+          aria-label="Share"
           className="pointer-events-auto h-fit w-fit rounded-full xl:ml-0"
           onClick={() => {
             if (showOptions == "share") {
@@ -148,7 +152,7 @@ export default function ShareLinks() {
         >
           <ShareIcon className="rounded-full bg-[#76a89f] h-[45px] w-[45px]" />
         </button>
-        <div className="ml-[0.25rem] absolute">
+        <div className={`absolute ${showOptions !== "share" ? "pointer-events-none" : ""}`}>
           <SocialMediaPopup show={showOptions == "share"} ref={popupRef} />
         </div>
       </div>

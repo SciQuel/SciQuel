@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
   forwardRef,
@@ -101,19 +100,23 @@ const SocialMediaPopup = forwardRef(
 
     return (
       <>
+        {/* greyed background on mobile */}
         <div
-          className={`fixed bottom-0 left-0 z-[19] h-screen w-screen items-end overflow-hidden bg-neutral-800/75 transition-all sm:static sm:top-0 sm:ml-[-4.75rem] sm:mt-2 sm:h-fit sm:w-fit sm:items-start sm:justify-center sm:bg-transparent xl:-mt-20 xl:ml-0 xl:w-fit xl:px-8 ${
-            show ? "opacity-100" : "max-h-0 max-w-0 opacity-0 sm:-translate-y-2"
+          className={`fixed bottom-0 left-0 z-[19] h-screen w-screen items-end overflow-hidden bg-neutral-800/75 transition-all sm:static sm:top-0 sm:ml-[-4.75rem] sm:mt-2 sm:h-fit sm:w-fit sm:items-start sm:justify-center sm:bg-transparent xl:-mt-20 xl:ml-0 xl:w-fit ${
+            show ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none sm:visible sm:opacity-100 sm:-translate-y-2"
           }`}
         >
+          {/* bottom of screen box on mobile */}
           <div
             ref={ref}
-            className={`absolute bottom-0 z-[19] flex w-screen flex-col pt-0 transition-transform duration-500 sm:relative sm:px-0 md:w-[768px] md:pl-0 md:pr-0 xl:relative xl:h-fit xl:w-fit ${
-              show ? "translate-y-0" : "max-h-0 translate-y-full opacity-0 sm:-translate-y-0"
+            className={`absolute bottom-0 z-[50] flex w-screen flex-col pt-0 transition-transform duration-500 sm:relative sm:px-0 md:w-[768px] md:pl-0 md:pr-0 xl:relative xl:h-fit xl:w-fit ${
+              show
+                ? "translate-y-0" 
+                : "max-h-0 translate-y-full opacity-0 sm:-translate-y-0"
             }`}
           >
             {/* Arrow */}
-            <div className="z-20 sm:absolute sm:left-20 sm:top-1 sm:z-[2] sm:ml-1 sm:h-6 sm:w-6 sm:rotate-45 sm:rounded-tl sm:border-l-2 sm:border-t-2 sm:border-sciquelCardBorder sm:bg-sciquelCardBg xl:left-0 xl:top-10 xl:ml-[1.3rem] xl:h-7 xl:w-7 xl:rounded-bl xl:rounded-tl-none xl:border-b-2 xl:border-t-0" />
+            <div id="arrow" className="z-20 absolute sm:left-20 sm:top-1 sm:z-[2] sm:ml-1 sm:h-6 sm:w-6 sm:rotate-45 sm:rounded-tl sm:border-l-2 sm:border-t-2 sm:border-sciquelCardBorder sm:bg-sciquelCardBg xl:left-0 xl:top-10 xl:ml-[1.3rem] xl:h-7 xl:w-7 xl:rounded-bl xl:rounded-tl-none xl:border-b-2 xl:border-t-0" />
 
             <div className="relative flex w-full flex-col-reverse sm:p-2 xl:left-8 xl:flex-row xl:px-0 xl:py-3">
               {/* Buttons Container */}
@@ -183,7 +186,7 @@ const SocialMediaPopup = forwardRef(
 
         {/* Success Toast */}
         <div
-          className={`fixed bottom-0 right-0 m-3 mb-44 rounded-md border-2 border-sciquelCardBorder bg-sciquelCardBg px-3 py-2 font-semibold text-zinc-400 transition-opacity after:absolute after:bottom-0 after:left-0 after:z-50 after:h-1 sm:mb-3 ${
+          className={`fixed bottom-0 right-0 z-[100] m-3 mb-44 rounded-md border-2 border-sciquelCardBorder bg-sciquelCardBg px-3 py-2 font-semibold text-zinc-400 transition-opacity after:absolute after:bottom-0 after:left-0 after:z-50 after:h-1 sm:mb-3 ${
             playTimerBar ? "after:w-0 after:animate-[shrink_1900ms_linear] after:bg-sciquelTeal" : "after:w-full"
           } ${justCopied ? "opacity-100" : "pointer-events-none opacity-0"}`}
         >
