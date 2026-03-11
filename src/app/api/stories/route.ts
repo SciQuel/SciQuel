@@ -1,5 +1,4 @@
 import { randomUUID } from "crypto";
-import { parse } from "path";
 import { bucket, bucketUrlPrefix } from "@/lib/gcs";
 import prisma from "@/lib/prisma";
 import {

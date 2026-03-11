@@ -1,6 +1,5 @@
 "use client";
 
-import clsx from "clsx";
 import { type ChangeEventHandler } from "react";
 
 export default function FormColorPicker({
