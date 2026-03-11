@@ -100,20 +100,24 @@ export default function StoryInfoForm({
           }}
           disabled={loading}
         />
-        <FormColorPicker
-          title="Title Color"
-          onChange={(e) => {
-            setDirty(true);
-            setTitleColor(e.target.value);
-          }}
-        />
-        <FormColorPicker
-          title="Title Background Color"
-          onChange={(e) => {
-            setDirty(true);
-            setTitleBackgroundColor(e.target.value);
-          }}
-        />
+        <div className="mt-6 pb-6">
+          <FormColorPicker
+            title="Title Color"
+            onChange={(e) => {
+              setDirty(true);
+              setTitleColor(e.target.value);
+            }}
+            value={titleColor}
+          />
+          <FormColorPicker
+            title="Title Background Color"
+            onChange={(e) => {
+              setDirty(true);
+              setTitleBackgroundColor(e.target.value);
+            }}
+            value={titleBackgroundColor}
+          />
+        </div>
         <FormInput
           title="Summary"
           required
