@@ -44,8 +44,6 @@ const besley = Besley({
   variable: "--font-besley",
 });
 
-
-
 export default async function RootLayout({
   children,
 }: {
@@ -85,6 +83,4 @@ export default async function RootLayout({
       </body>
     </html>
   );
-
-  
 }

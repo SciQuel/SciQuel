@@ -2,7 +2,6 @@ import Avatar from "@/components/Avatar";
 import FooterIcon from "@/components/Footer/FooterIcon";
 import TopicTag from "@/components/TopicTag";
 import { type Contributor, type StoryTopic } from "@prisma/client";
-import { s } from "hastscript";
 
 interface Props {
   contributor: Contributor;

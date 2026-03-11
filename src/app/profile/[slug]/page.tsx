@@ -9,6 +9,8 @@ import { type StoryTopic } from "@prisma/client";
 import { DateTime } from "luxon";
 import { notFound } from "next/navigation";
 
+const NEXT_PUBLIC_SITE_URL = env.NEXT_PUBLIC_SITE_URL;
+
 interface Params {
   searchParams: { [key: string]: string };
   params: {
@@ -41,8 +43,8 @@ async function getArticles(slug: string, page: number, staffPick: boolean) {
   if (staffPick) {
     try {
       const res = await fetch(
-        `${env.NEXT_PUBLIC_SITE_URL
-        }/api/contributor?contributorSlug=${slug}&staffPick=True&pageNum=${page - 1
+        `${NEXT_PUBLIC_SITE_URL}/api/contributor?contributorSlug=${slug}&staffPick=True&pageNum=${
+          page - 1
         }`,
         { cache: "no-store" },
       );
@@ -61,8 +63,9 @@ async function getArticles(slug: string, page: number, staffPick: boolean) {
   } else {
     try {
       const res = await fetch(
-        `${env.NEXT_PUBLIC_SITE_URL
-        }/api/contributor?contributorSlug=${slug}&pageNum=${page - 1}`,
+        `${NEXT_PUBLIC_SITE_URL}/api/contributor?contributorSlug=${slug}&pageNum=${
+          page - 1
+        }`,
         { cache: "no-store" },
       );
       if (res.ok) {
