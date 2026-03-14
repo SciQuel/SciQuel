@@ -9,36 +9,18 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
-import { type StoryTopic } from "@prisma/client";
 import StaffPickCard from "./StaffPickCard";
+import {
+  placeholderArticles,
+  type PlaceholderStaffPick,
+} from "./placeholderData";
 
 type Step = "compose" | "preview" | "success";
 
-interface PlaceholderArticle {
-  id: string;
-  title: string;
-  summary: string;
-  thumbnailUrl: string;
-  topic: StoryTopic;
-  authorName: string;
-  condensedDate: string;
-  href: string;
+interface StaffPickCreateFlowProps {
+  mode?: "create" | "edit";
+  initialStaffPick?: PlaceholderStaffPick;
 }
-
-// Temporary article choice used to prototype the create flow before wiring real data
-const placeholderArticles: PlaceholderArticle[] = [
-  {
-    id: "bobtail-squid",
-    title: "Lights. Camera. Action!",
-    summary:
-      "How the Hawaiian bobtail squid brings a creative vision to its maritime world of small big screens.",
-    thumbnailUrl: "/assets/images/bobtail.png",
-    topic: "BIOLOGY",
-    authorName: "Edward Chen",
-    condensedDate: "05/27/21",
-    href: "/stories/read",
-  },
-];
 
 // Shared button styling for the bottom navigation controls
 function ActionButton(props: {
@@ -65,14 +47,22 @@ function ActionButton(props: {
   );
 }
 
-export default function StaffPickCreateFlow() {
+export default function StaffPickCreateFlow({
+  mode = "create",
+  initialStaffPick,
+}: StaffPickCreateFlowProps) {
   const router = useRouter();
+  const isEditMode = mode === "edit";
   // This controls which screen of the create flow is currently visible
   const [step, setStep] = useState<Step>("compose");
   const [searchValue, setSearchValue] = useState("");
-  const [selectedArticleId, setSelectedArticleId] = useState("");
-  const [quote, setQuote] = useState("");
-  const [authorName, setAuthorName] = useState("");
+  const [selectedArticleId, setSelectedArticleId] = useState(
+    initialStaffPick?.articleId ?? "",
+  );
+  const [quote, setQuote] = useState(initialStaffPick?.quote ?? "");
+  const [authorName, setAuthorName] = useState(
+    initialStaffPick?.quoteAuthor ?? "",
+  );
 
   // Filter the placeholder article list from the search box input
   const filteredArticles = useMemo(() => {
@@ -110,7 +100,9 @@ export default function StaffPickCreateFlow() {
     return (
       <div className="flex min-h-[28rem] flex-col items-center justify-center gap-6 text-center">
         <p className="text-2xl font-semibold text-black">
-          Success! Your Staff pick has been submitted.
+          {isEditMode
+            ? "Success! Your Staff Pick has been updated."
+            : "Success! Your Staff pick has been submitted."}
         </p>
         <Link
           href="/staff-picks-preview"
@@ -129,7 +121,7 @@ export default function StaffPickCreateFlow() {
         <div className="grid gap-10 lg:grid-cols-[1fr_1fr] lg:gap-12">
           <section className="flex flex-col gap-5">
             <h2 className="text-[2rem] font-semibold leading-none text-black">
-              Choose your Article
+              {isEditMode ? "Selected Article" : "Choose your Article"}
             </h2>
 
             {selectedArticle ? (
@@ -138,16 +130,18 @@ export default function StaffPickCreateFlow() {
                 <span className="text-2xl font-medium text-[#2667ff]">
                   {selectedArticle.title}
                 </span>
-                <button
-                  type="button"
-                  onClick={() => setSelectedArticleId("")}
-                  className="text-2xl font-medium text-[#ff1d14] transition hover:opacity-70"
-                  aria-label="Remove selected article"
-                >
-                  ×
-                </button>
+                {isEditMode ? null : (
+                  <button
+                    type="button"
+                    onClick={() => setSelectedArticleId("")}
+                    className="text-2xl font-medium text-[#ff1d14] transition hover:opacity-70"
+                    aria-label="Remove selected article"
+                  >
+                    ×
+                  </button>
+                )}
               </div>
-            ) : (
+            ) : isEditMode ? null : (
               <>
                 {/* Search narrows the temporary article choices shown in the dropdown */}
                 <div className="relative w-full">
@@ -184,7 +178,7 @@ export default function StaffPickCreateFlow() {
 
           <section className="flex flex-col gap-5">
             <h2 className="text-[2rem] font-semibold leading-none text-black">
-              Write your Quote
+              {isEditMode ? "Edit your Quote" : "Write your Quote"}
             </h2>
 
             {/* Quote text is reused directly in the preview card */}
@@ -250,7 +244,9 @@ export default function StaffPickCreateFlow() {
             Preview
           </ActionButton>
         ) : (
-          <ActionButton onClick={() => setStep("success")}>Submit</ActionButton>
+          <ActionButton onClick={() => setStep("success")}>
+            {isEditMode ? "Save" : "Submit"}
+          </ActionButton>
         )}
       </div>
     </div>
