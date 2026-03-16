@@ -195,9 +195,6 @@ export async function PUT(request: NextRequest) {
           .file(story.thumbnailUrl.slice(bucketUrlPrefix.length))
           .delete({ ignoreNotFound: true });
       }
-      console.log(
-        `title color ${parsedRequest.data.titleColor}, title background ${parsedRequest.data.titleBackgroundColor}`,
-      );
       await prisma.story.update({
         where: { id: parsedRequest.data.id },
         data: {

@@ -95,9 +95,7 @@ export async function PATCH(
     if (!user || !user.roles.includes("EDITOR")) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
-
     const parsedBody = patchStorySchema.safeParse(await request.json());
-
     const { id } = params;
 
     if (!parsedBody.success || typeof id !== "string") {

@@ -1,11 +1,14 @@
 "use client";
 
 import { type GetStoriesResult } from "@/app/api/stories/route";
+import { type patchStorySchema } from "@/app/api/stories/schema";
 import env from "@/lib/env";
+import axios from "axios";
 import { DateTime } from "luxon";
 import Link from "next/link";
 import { useState } from "react";
 import useSWR from "swr";
+import { type z } from "zod";
 
 const storyFetcher = (url: string) =>
   fetch(url).then((r) => r.json() as Promise<GetStoriesResult>);
@@ -71,7 +74,25 @@ export default function DraftTable() {
                   >
                     Edit
                   </Link>
-                  <button className="rounded-md bg-blue-600 px-2 py-1 text-sm font-semibold text-white hover:bg-blue-700">
+                  <button
+                    className="rounded-md bg-blue-600 px-2 py-1 text-sm font-semibold text-white hover:bg-blue-700"
+                    onClick={() => {
+                      void (async function () {
+                        const storyPatch = await axios.patch<
+                          z.infer<typeof patchStorySchema>
+                        >(
+                          `/api/stories/id/${story.id}`,
+                          { published: true },
+                          {
+                            params: {
+                              id: story.id,
+                            },
+                          },
+                        );
+                        console.log(storyPatch);
+                      })();
+                    }}
+                  >
                     Publish
                   </button>
                 </td>
