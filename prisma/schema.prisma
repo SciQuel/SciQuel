@@ -110,6 +110,7 @@ model Story {
 
   series Series[] @relation(fields: [seriesIds], references: [id])
   seriesIds String[] db.ObjectId
+  storySeriesShortHeadline? String
 
 }
 
