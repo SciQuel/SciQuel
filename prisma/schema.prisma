@@ -107,6 +107,10 @@ model Story {
   comments        Comment[]
   staffPick       StaffPick?
   StaffPickRecord StaffPickRecord[]
+
+  series Series[] @relation(fields: [seriesIds], references: [id])
+  seriesIds String[] db.ObjectId
+
 }
 
 model StoryContribution {
@@ -385,4 +389,11 @@ model StaffPickRecord {
 
   @@index([storyId])
   @@index([staffId])
+}
+
+model Series {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  name String
+  stories Story @relation(fields: [storyIds], references: [id])
+  storyIds String[] db.ObjectId
 }
