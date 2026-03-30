@@ -83,9 +83,8 @@ const DropDownContent: React.FC<Props> = ({
       if (isPointerInsideContainer) {
         const nativeScrollbarWidth =
           scrollContainer.offsetWidth - scrollContainer.clientWidth;
-        const scrollbarGutterWidth = nativeScrollbarWidth > 0
-          ? nativeScrollbarWidth
-          : 20;
+        const scrollbarGutterWidth =
+          nativeScrollbarWidth > 0 ? nativeScrollbarWidth : 20;
         const isPointerOnScrollbar =
           event.clientX >= rect.right - scrollbarGutterWidth;
 
@@ -104,13 +103,6 @@ const DropDownContent: React.FC<Props> = ({
         Math.max(0, currentScrollTop + event.deltaY),
       );
       const canMoveDropdown = nextScrollTop !== currentScrollTop;
-
-      if (isWheelFromDropdown) {
-        event.preventDefault();
-        if (!canMoveDropdown) return;
-        scrollContainer.scrollTop = nextScrollTop;
-        return;
-      }
 
       if (!canMoveDropdown) return;
       event.preventDefault();
