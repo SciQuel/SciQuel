@@ -108,9 +108,8 @@ model Story {
   staffPick       StaffPick?
   StaffPickRecord StaffPickRecord[]
 
-  series Series[] @relation(fields: [seriesIds], references: [id])
-  seriesIds String[] db.ObjectId
-  storySeriesShortHeadline? String
+  series Series[]
+  storySeriesShortHeadline String?
 
 }
 
@@ -395,6 +394,6 @@ model StaffPickRecord {
 model Series {
   id String @id @default(auto()) @map("_id") @db.ObjectId
   name String
-  stories Story @relation(fields: [storyIds], references: [id])
-  storyIds String[] db.ObjectId
+  stories Story @relation(fields: [storyId], references: [id])
+  storyId String @db.ObjectId
 }
