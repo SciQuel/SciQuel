@@ -4,13 +4,7 @@ import { type GetStoryResult } from "@/app/api/stories/[year]/[month]/[day]/[slu
 import { type StoryTopic } from "@prisma/client";
 import { DateTime } from "luxon";
 import Image from "next/image";
-import {
-  useContext,
-  useEffect,
-  useLayoutEffect,
-  useReducer,
-  useRef,
-} from "react";
+import { useContext, useEffect, useReducer, useRef } from "react";
 import Avatar from "../Avatar";
 import TopicTag from "../TopicTag";
 import { PrintContext } from "./PrintContext";
