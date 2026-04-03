@@ -1,7 +1,8 @@
+import { parse } from "path";
 import prisma from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 import { NextResponse, type NextRequest } from "next/server";
-import { getSeriesSchema } from "./schema";
+import { getSeriesSchema, putSeriesSchema } from "./schema";
 
 //get series based on id or title
 export async function GET(req: NextRequest) {
@@ -18,10 +19,10 @@ export async function GET(req: NextRequest) {
       where: {
         id: id,
         title: title
-          ? title
-          : {
+          ? {
               contains: title,
-            },
+            }
+          : title,
       },
     });
     return NextResponse.json({
@@ -35,5 +36,65 @@ export async function GET(req: NextRequest) {
 
     // all other errors
     return NextResponse.json({ error: e }, { status: 500 });
+  }
+}
+
+export async function PUT(req: NextRequest) {
+  const seriesFormData = await req.formData();
+  const parsedRequest = putSeriesSchema.safeParse(seriesFormData);
+  if (!parsedRequest.success) {
+    return NextResponse.json({ error: "Bad Request" }, { status: 400 });
+  }
+  try {
+    //update
+    const parsedData = parsedRequest.data;
+    if (parsedData.id) {
+      const series = await prisma.series.findUnique({
+        where: { id: parsedData.id },
+      });
+      if (!series) {
+        return NextResponse.json({ error: "Not Found" }, { status: 404 });
+      }
+      const newStoryIds = parsedData.stories ?? series.storyId;
+      const updatedSeries = await prisma.series.update({
+        where: { id: parsedData.id },
+        data: {
+          title: parsedData.title,
+          stories: {
+            connect: newStoryIds.map((storyId) => ({ id: storyId })),
+          },
+        },
+        include: {
+          stories: true,
+        },
+      });
+      return NextResponse.json({ updatedSeries });
+    }
+    //create
+    if (!parsedData.stories) {
+      return NextResponse.json(
+        {
+          message: "Bad Request. Missing both series id and connected stories",
+        },
+        { status: 400 },
+      );
+    }
+    const newSeries = await prisma.series.create({
+      data: {
+        title: parsedData.title,
+        stories: {
+          connect: parsedData.stories
+            ? parsedData.stories.map((storyId) => ({ id: storyId }))
+            : [],
+        },
+      },
+    });
+    return NextResponse.json({ newSeries });
+  } catch (err) {
+    console.log(err);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 },
+    );
   }
 }

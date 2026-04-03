@@ -398,4 +398,5 @@ model Series {
   title String
   stories Story[] @relation(fields: [storyId], references: [id])
   storyId String[] @db.ObjectId
+  createdAt DateTime @default(now())
 }

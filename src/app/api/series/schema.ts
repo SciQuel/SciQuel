@@ -9,11 +9,11 @@ export const getSeriesSchema = z.object({
 export const putSeriesSchema = zfd.formData({
   id: zfd.text().optional(),
   title: zfd.text(),
-  stories: zfd.repeatable(z.array(zfd.text()).min(1)),
+  stories: z.array(zfd.text()),
 });
 
 export const patchSeriesSchema = z.object({
   id: zfd.text(),
   title: zfd.text().optional(),
-  stories: zfd.repeatable(z.array(zfd.text()).min(1)).optional(),
+  stories: z.array(zfd.text()).optional(),
 });
