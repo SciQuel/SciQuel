@@ -82,7 +82,9 @@ export async function GET(req: NextRequest) {
             }
           : {}),
         published,
-        staffPick: staff_pick ? { isNot: null } : undefined,
+        // Support both "already picked" and "not yet picked" story searches.
+        ...(staff_pick === true ? { staffPick: { isNot: null } } : {}),
+        ...(staff_pick === false ? { staffPick: { is: null } } : {}),
         ...(topic ? { topics: { has: topic } } : {}),
         storyType: type,
         category: category,
@@ -113,7 +115,7 @@ export async function GET(req: NextRequest) {
     });
 
     const numStories = await prisma.story.count({
-      where: query.where,
+      where: { category: Category.ARTICLE, ...query.where },
     });
 
     return NextResponse.json({

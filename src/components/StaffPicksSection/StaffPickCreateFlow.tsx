@@ -6,16 +6,27 @@
 // "use client" is required to use state and effects in this component, which are necessary for the interactive create flow steps and form handling.
 "use client";
 
+import { type GetStoriesResult } from "@/app/api/stories/route";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { type StoryTopic } from "@prisma/client";
+import { useDeferredValue, useEffect, useState } from "react";
 import StaffPickCard from "./StaffPickCard";
-import {
-  placeholderArticles,
-  type PlaceholderStaffPick,
-} from "./placeholderData";
+import { type PlaceholderStaffPick } from "./placeholderData";
+import TopicTag from "../TopicTag";
 
 type Step = "compose" | "preview" | "success";
+
+interface ArticleOption {
+  id: string;
+  title: string;
+  summary: string;
+  thumbnailUrl: string;
+  topic: StoryTopic;
+  authorName: string;
+  condensedDate: string;
+  href: string;
+}
 
 interface StaffPickCreateFlowProps {
   mode?: "create" | "edit";
@@ -56,34 +67,72 @@ export default function StaffPickCreateFlow({
   // This controls which screen of the create flow is currently visible
   const [step, setStep] = useState<Step>("compose");
   const [searchValue, setSearchValue] = useState("");
-  const [selectedArticleId, setSelectedArticleId] = useState(
-    initialStaffPick?.articleId ?? "",
+  const deferredSearchValue = useDeferredValue(searchValue);
+  // Real article options now come from the stories API instead of placeholder data.
+  const [articleOptions, setArticleOptions] = useState<ArticleOption[]>([]);
+  const [selectedArticle, setSelectedArticle] = useState<ArticleOption | null>(
+    initialStaffPick ? mapStaffPickToArticle(initialStaffPick) : null,
   );
+  const [isLoadingArticles, setIsLoadingArticles] = useState(!isEditMode);
+  const [articleLoadError, setArticleLoadError] = useState<string | null>(null);
   const [quote, setQuote] = useState(initialStaffPick?.quote ?? "");
   const [authorName, setAuthorName] = useState(
     initialStaffPick?.quoteAuthor ?? "",
   );
 
-  // Filter the placeholder article list from the search box input
-  const filteredArticles = useMemo(() => {
-    const normalized = searchValue.trim().toLowerCase();
-    if (!normalized) {
-      return placeholderArticles;
+  useEffect(() => {
+    if (isEditMode) {
+      return;
     }
 
-    return placeholderArticles.filter((article) => {
-      return (
-        article.title.toLowerCase().includes(normalized) ||
-        article.authorName.toLowerCase().includes(normalized) ||
-        article.topic.toLowerCase().replaceAll("_", " ").includes(normalized)
-      );
+    // Keep the prototype edit screen fixed to its seeded article, but load live articles for create.
+    const controller = new AbortController();
+    const params = new URLSearchParams({
+      published: "true",
+      // Only show stories that are not already picked as staff picks.
+      staff_pick: "false",
+      page_size: "25",
     });
-  }, [searchValue]);
+    const normalizedSearchValue = deferredSearchValue.trim();
 
-  // Resolve the selected article once so the form and preview can both reuse it
-  const selectedArticle = placeholderArticles.find(
-    (article) => article.id === selectedArticleId,
-  );
+    if (normalizedSearchValue) {
+      params.set("keyword", normalizedSearchValue);
+    }
+
+    setIsLoadingArticles(true);
+    setArticleLoadError(null);
+
+    void fetch(`/api/stories?${params.toString()}`, {
+      signal: controller.signal,
+    })
+      .then(async (response) => {
+        if (!response.ok) {
+          throw new Error("Unable to load articles.");
+        }
+
+        return (await response.json()) as GetStoriesResult;
+      })
+      .then((result) => {
+        // Normalize story records into the lighter picker/preview shape this flow already uses.
+        setArticleOptions(result.stories.map(mapStoryToArticle));
+      })
+      .catch((error: unknown) => {
+        if (controller.signal.aborted) {
+          return;
+        }
+
+        console.error(error);
+        setArticleOptions([]);
+        setArticleLoadError("We couldn't load articles right now.");
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) {
+          setIsLoadingArticles(false);
+        }
+      });
+
+    return () => controller.abort();
+  }, [deferredSearchValue, isEditMode]);
 
   // Preview is only enabled once the core draft fields are filled in
   const canPreview = Boolean(
@@ -133,7 +182,7 @@ export default function StaffPickCreateFlow({
                 {isEditMode ? null : (
                   <button
                     type="button"
-                    onClick={() => setSelectedArticleId("")}
+                    onClick={() => setSelectedArticle(null)}
                     className="text-2xl font-medium text-[#ff1d14] transition hover:opacity-70"
                     aria-label="Remove selected article"
                   >
@@ -157,21 +206,59 @@ export default function StaffPickCreateFlow({
                   />
                 </div>
 
-                {/* The dropdown is the actual selector for which article becomes the staff pick */}
-                <div className="w-full">
-                  <select
-                    value={selectedArticleId}
-                    onChange={(event) => setSelectedArticleId(event.target.value)}
-                    className="w-full rounded-md border border-gray-300 bg-white px-4 py-3 text-lg text-black outline-none transition focus:border-sciquelTeal"
-                  >
-                    <option value="">Article</option>
-                    {filteredArticles.map((article) => (
-                      <option key={article.id} value={article.id}>
-                        {article.title}
-                      </option>
-                    ))}
-                  </select>
+                {/* Show richer article results so the user can scan before selecting. */}
+                <div className="w-full overflow-hidden rounded-xl border border-gray-200 bg-white">
+                  {isLoadingArticles ? (
+                    <div className="px-4 py-5 text-sm text-sciquelMuted">
+                      Loading articles...
+                    </div>
+                  ) : articleOptions.length > 0 ? (
+                    <div className="max-h-[20rem] overflow-y-auto">
+                      {articleOptions.map((article) => (
+                        <button
+                          key={article.id}
+                          type="button"
+                          onClick={() => setSelectedArticle(article)}
+                          className="flex w-full flex-col gap-3 border-b border-gray-100 px-4 py-4 text-left transition hover:bg-[#f6fbfb] last:border-b-0"
+                        >
+                          <div className="flex items-start justify-between gap-4">
+                            <div className="flex min-w-0 flex-col gap-2">
+                              <span className="text-lg font-semibold leading-snug text-sciquelHeading">
+                                {article.title}
+                              </span>
+                              <p className="line-clamp-2 text-sm leading-relaxed text-sciquelMuted">
+                                {article.summary}
+                              </p>
+                            </div>
+                            <span className="rounded-full bg-sciquelTeal px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-white">
+                              Select
+                            </span>
+                          </div>
+
+                          <div className="flex flex-wrap items-center gap-3 text-sm text-sciquelMuted">
+                            <TopicTag name={article.topic} />
+                            <span className="font-semibold text-sciquelDarkText">
+                              By {article.authorName}
+                            </span>
+                            <span>{article.condensedDate}</span>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  ) : null}
                 </div>
+
+                {articleLoadError ? (
+                  <p className="text-sm font-medium text-[#db3631]">
+                    {articleLoadError}
+                  </p>
+                ) : null}
+
+                {!isLoadingArticles && !articleLoadError && articleOptions.length === 0 ? (
+                  <p className="text-sm text-sciquelMuted">
+                    No published articles matched your search.
+                  </p>
+                ) : null}
               </>
             )}
           </section>
@@ -251,4 +338,55 @@ export default function StaffPickCreateFlow({
       </div>
     </div>
   );
+}
+
+function mapStaffPickToArticle(staffPick: PlaceholderStaffPick): ArticleOption {
+  return {
+    id: staffPick.articleId,
+    title: staffPick.title,
+    summary: staffPick.summary,
+    thumbnailUrl: staffPick.thumbnailUrl,
+    topic: staffPick.topic,
+    authorName: staffPick.authorName,
+    condensedDate: staffPick.condensedDate,
+    href: staffPick.href,
+  };
+}
+
+// Convert the full story payload into the article card fields used by the staff pick flow.
+function mapStoryToArticle(story: GetStoriesResult["stories"][number]): ArticleOption {
+  const publishedDate = new Date(story.publishedAt ?? story.createdAt);
+  const primaryAuthor =
+    story.storyContributions.find(
+      (contribution) => contribution.contributionType === "AUTHOR",
+    ) ?? story.storyContributions[0];
+
+  return {
+    id: story.id,
+    title: story.title,
+    summary: story.summary,
+    thumbnailUrl: story.thumbnailUrl,
+    topic: story.topics[0] ?? "SCIQUEL_MATTERS",
+    authorName: primaryAuthor
+      ? `${primaryAuthor.contributor.firstName} ${primaryAuthor.contributor.lastName}`
+      : "SciQuel",
+    condensedDate: formatCondensedDate(publishedDate),
+    href: buildStoryHref(publishedDate, story.slug),
+  };
+}
+
+function formatCondensedDate(date: Date) {
+  return new Intl.DateTimeFormat("en-US", {
+    month: "2-digit",
+    day: "2-digit",
+    year: "2-digit",
+  }).format(date);
+}
+
+function buildStoryHref(date: Date, slug: string) {
+  const year = date.getUTCFullYear();
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(date.getUTCDate()).padStart(2, "0");
+
+  return `/stories/${year}/${month}/${day}/${slug}`;
 }
