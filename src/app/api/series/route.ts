@@ -1,8 +1,9 @@
+import { error } from "console";
 import { parse } from "path";
 import prisma from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 import { NextResponse, type NextRequest } from "next/server";
-import { getSeriesSchema, putSeriesSchema } from "./schema";
+import { getSeriesSchema, patchSeriesSchema, putSeriesSchema } from "./schema";
 
 //get series based on id or title
 export async function GET(req: NextRequest) {
@@ -43,33 +44,13 @@ export async function PUT(req: NextRequest) {
   const seriesFormData = await req.formData();
   const parsedRequest = putSeriesSchema.safeParse(seriesFormData);
   if (!parsedRequest.success) {
+    console.log(parsedRequest.error);
     return NextResponse.json({ error: "Bad Request" }, { status: 400 });
   }
   try {
     //update
     const parsedData = parsedRequest.data;
-    if (parsedData.id) {
-      const series = await prisma.series.findUnique({
-        where: { id: parsedData.id },
-      });
-      if (!series) {
-        return NextResponse.json({ error: "Not Found" }, { status: 404 });
-      }
-      const newStoryIds = parsedData.stories ?? series.storyId;
-      const updatedSeries = await prisma.series.update({
-        where: { id: parsedData.id },
-        data: {
-          title: parsedData.title,
-          stories: {
-            connect: newStoryIds.map((storyId) => ({ id: storyId })),
-          },
-        },
-        include: {
-          stories: true,
-        },
-      });
-      return NextResponse.json({ updatedSeries });
-    }
+
     //create
     if (!parsedData.stories) {
       return NextResponse.json(
@@ -95,6 +76,51 @@ export async function PUT(req: NextRequest) {
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 },
+    );
+  }
+}
+
+export async function PATCH(req: NextRequest) {
+  try {
+    const formData = await req.formData();
+    const parsedRequest = patchSeriesSchema.safeParse(formData);
+    if (!parsedRequest.success) {
+      console.log(parsedRequest.error);
+      return NextResponse.json({ error: "Bad Request" }, { status: 400 });
+    }
+    //update
+    const parsedData = parsedRequest.data;
+    if (parsedData.id) {
+      const series = await prisma.series.findUnique({
+        where: { id: parsedData.id },
+      });
+      if (!series) {
+        return NextResponse.json({ error: "Not Found" }, { status: 404 });
+      }
+      const newStoryIds = parsedData.stories ?? series.storyId;
+      const updatedSeries = await prisma.series.update({
+        where: { id: parsedData.id },
+        data: {
+          title: parsedData.title,
+          stories: {
+            connect: newStoryIds.map((storyId) => ({ id: storyId })),
+          },
+        },
+        include: {
+          stories: true,
+        },
+      });
+      return NextResponse.json({ updatedSeries });
+    }
+  } catch (err) {
+    console.log(err);
+    return NextResponse.json(
+      {
+        error: "Internal Server Error",
+      },
+      {
+        status: 500,
+      },
     );
   }
 }

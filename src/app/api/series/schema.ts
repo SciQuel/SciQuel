@@ -7,7 +7,6 @@ export const getSeriesSchema = z.object({
 });
 
 export const putSeriesSchema = zfd.formData({
-  id: zfd.text().optional(),
   title: zfd.text(),
   stories: z.array(zfd.text()),
 });
