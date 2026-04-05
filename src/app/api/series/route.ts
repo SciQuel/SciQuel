@@ -77,20 +77,23 @@ export async function PUT(req: NextRequest) {
       data: {
         title: parsedData.title,
         stories: {
-          connect: parsedData.stories.map((storyId) => ({ id: storyId })),
+          connect: parsedData.stories.map((story) => ({ id: story.id })),
         },
       },
     });
     const updatedStories = await prisma.story.updateMany({
       where: {
         id: {
-          in: parsedData.stories,
+          in: parsedData.stories.map((story) => story.id),
         },
       },
       data: {
         seriesId: {
           push: newSeries.id,
         },
+        storySeriesShortHeadline: JSON.stringify(
+          parsedData.stories.map((story) => story.shortHeadline),
+        ),
       },
     });
     return NextResponse.json({
