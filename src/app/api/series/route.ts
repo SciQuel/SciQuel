@@ -1,5 +1,3 @@
-import { error } from "console";
-import { parse } from "path";
 import prisma from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 import { NextResponse, type NextRequest } from "next/server";
@@ -12,9 +10,16 @@ export async function GET(req: NextRequest) {
     Object.fromEntries(searchParams),
   );
   if (!parsedParams.success) {
-    return NextResponse.json(parsedParams.error, { status: 400 });
+    console.log(parsedParams.error);
+    return NextResponse.json({ error: "Bad request." }, { status: 400 });
   }
   const { id, title } = parsedParams.data;
+  if (!id && !title) {
+    return NextResponse.json(
+      { error: "Missing both id and title" },
+      { status: 422 },
+    );
+  }
   try {
     const allSeries = await prisma.series.findMany({
       where: {
@@ -29,14 +34,22 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({
       allSeries,
     });
-  } catch (e) {
-    if (e instanceof Prisma.PrismaClientValidationError) {
-      console.log(e.message);
-      return NextResponse.json({ error: "Bad Request" }, { status: 400 });
+  } catch (err) {
+    console.log(err);
+    if (err instanceof Prisma.PrismaClientKnownRequestError) {
+      return NextResponse.json(
+        {
+          error: `Bad Request. Error message: ${err.message}`,
+          errorCode: err.code,
+          meta: err.meta,
+        },
+        { status: 400 },
+      );
     }
-
-    // all other errors
-    return NextResponse.json({ error: e }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 },
+    );
   }
 }
 
@@ -55,7 +68,7 @@ export async function PUT(req: NextRequest) {
     if (!parsedData.stories) {
       return NextResponse.json(
         {
-          message: "Bad Request. Missing both series id and connected stories",
+          message: "Bad Request. Missing connected stories array",
         },
         { status: 400 },
       );
@@ -64,15 +77,38 @@ export async function PUT(req: NextRequest) {
       data: {
         title: parsedData.title,
         stories: {
-          connect: parsedData.stories
-            ? parsedData.stories.map((storyId) => ({ id: storyId }))
-            : [],
+          connect: parsedData.stories.map((storyId) => ({ id: storyId })),
         },
       },
     });
-    return NextResponse.json({ newSeries });
+    const updatedStories = await prisma.story.updateMany({
+      where: {
+        id: {
+          in: parsedData.stories,
+        },
+      },
+      data: {
+        seriesId: {
+          push: newSeries.id,
+        },
+      },
+    });
+    return NextResponse.json({
+      newSeries: newSeries,
+      updatedStories: updatedStories,
+    });
   } catch (err) {
     console.log(err);
+    if (err instanceof Prisma.PrismaClientKnownRequestError) {
+      return NextResponse.json(
+        {
+          error: `Bad Request. Error message: ${err.message}`,
+          errorCode: err.code,
+          meta: err.meta,
+        },
+        { status: 400 },
+      );
+    }
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 },
@@ -114,13 +150,19 @@ export async function PATCH(req: NextRequest) {
     }
   } catch (err) {
     console.log(err);
+    if (err instanceof Prisma.PrismaClientKnownRequestError) {
+      return NextResponse.json(
+        {
+          error: `Bad Request. Error message: ${err.message}`,
+          errorCode: err.code,
+          meta: err.meta,
+        },
+        { status: 400 },
+      );
+    }
     return NextResponse.json(
-      {
-        error: "Internal Server Error",
-      },
-      {
-        status: 500,
-      },
+      { error: "Internal Server Error" },
+      { status: 500 },
     );
   }
 }
