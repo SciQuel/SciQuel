@@ -107,12 +107,7 @@ model Story {
   comments        Comment[]
   staffPick       StaffPick?
   StaffPickRecord StaffPickRecord[]
-
-  series Series[] @relation(fields: [seriesId], references: [id])
-  seriesId String[] @db.ObjectId
-
-  storySeriesShortHeadline String?
-
+  StoryinSeries   StoryinSeries[]
 }
 
 model StoryContribution {
@@ -394,9 +389,19 @@ model StaffPickRecord {
 }
 
 model Series {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-  title String @unique
-  stories Story[] @relation(fields: [storyId], references: [id])
-  storyId String[] @db.ObjectId
-  createdAt DateTime @default(now())
+  id            String          @id @default(auto()) @map("_id") @db.ObjectId
+  title         String          @unique
+  createdAt     DateTime        @default(now())
+  StoryinSeries StoryinSeries[]
+}
+
+model StoryinSeries {
+  id                 String  @id @default(auto()) @map("_id") @db.ObjectId
+  story              Story   @relation(fields: [storyId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  storyId            String  @db.ObjectId
+  series             Series  @relation(fields: [seriesId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  seriesId           String  @db.ObjectId
+  storyShortHeadline String?
+  storyURL           String
+  order              Int
 }

@@ -1,7 +1,19 @@
+import { parse } from "node:path";
 import prisma from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 import { NextResponse, type NextRequest } from "next/server";
 import { getSeriesSchema, patchSeriesSchema, putSeriesSchema } from "./schema";
+
+interface StoryinSeries {
+  id: string;
+  shortHeadline: string;
+  storyURL: string;
+}
+
+interface NewSeries {
+  id: string;
+  title: string;
+}
 
 //get series based on id or title
 export async function GET(req: NextRequest) {
@@ -10,8 +22,10 @@ export async function GET(req: NextRequest) {
     Object.fromEntries(searchParams),
   );
   if (!parsedParams.success) {
-    console.log(parsedParams.error);
-    return NextResponse.json({ error: "Bad request." }, { status: 400 });
+    return NextResponse.json(
+      { error: `Bad request. Validation Error Message ${parsedParams.error} ` },
+      { status: 400 },
+    );
   }
   const { id, title } = parsedParams.data;
   if (!id && !title) {
@@ -39,7 +53,7 @@ export async function GET(req: NextRequest) {
     if (err instanceof Prisma.PrismaClientKnownRequestError) {
       return NextResponse.json(
         {
-          error: `Bad Request. Error message: ${err.message}`,
+          error: `Bad Request. Prisma Error message: ${err.message}`,
           errorCode: err.code,
           meta: err.meta,
         },
@@ -52,7 +66,7 @@ export async function GET(req: NextRequest) {
     );
   }
 }
-
+/*
 export async function PUT(req: NextRequest) {
   const seriesFormData = await req.formData();
   const parsedRequest = putSeriesSchema.safeParse(seriesFormData);
@@ -136,7 +150,9 @@ export async function PATCH(req: NextRequest) {
       if (!series) {
         return NextResponse.json({ error: "Not Found" }, { status: 404 });
       }
-      const newStoryIds = parsedData.stories ?? series.storyId;
+      const newStoryIds = parsedData.stories
+        ? parsedData.stories.map((story) => story.id)
+        : series.storyId;
       const updatedSeries = await prisma.series.update({
         where: { id: parsedData.id },
         data: {
@@ -157,6 +173,128 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json(
         {
           error: `Bad Request. Error message: ${err.message}`,
+          errorCode: err.code,
+          meta: err.meta,
+        },
+        { status: 400 },
+      );
+    }
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 },
+    );
+  }
+}
+*/
+
+export async function PUT(req: NextRequest) {
+  const seriesFormData = await req.formData();
+  const parsedRequest = putSeriesSchema.safeParse(seriesFormData);
+  if (!parsedRequest.success) {
+    console.log(parsedRequest.error);
+    return NextResponse.json(
+      { error: "Bad Request. Validation Error." },
+      { status: 400 },
+    );
+  }
+  try {
+    const parsedData = parsedRequest.data;
+    const newSeries: NewSeries = await prisma.series.create({
+      data: {
+        title: parsedData.title,
+      },
+    });
+    const newStoryinSeries = await prisma.storyinSeries.createMany({
+      data: parsedData.stories.map((story, id) => ({
+        storyId: story.id,
+        seriesId: newSeries.id,
+        storyShortHeadline: story.shortHeadline,
+        storyURL: story.storyURL,
+        order: id,
+      })),
+    });
+    return NextResponse.json({ newStoryinSeries });
+  } catch (err) {
+    console.log(err);
+    if (err instanceof Prisma.PrismaClientKnownRequestError) {
+      return NextResponse.json(
+        {
+          error: `Bad Request. Prisma Error message: ${err.message}`,
+          errorCode: err.code,
+          meta: err.meta,
+        },
+        { status: 400 },
+      );
+    }
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 },
+    );
+  }
+}
+
+export async function PATCH(req: NextRequest) {
+  const seriesFormData = await req.formData();
+  const parsedRequest = patchSeriesSchema.safeParse(seriesFormData);
+  if (!parsedRequest.success) {
+    console.log(parsedRequest.error);
+    return NextResponse.json(
+      { error: "Bad Request. Validation Error." },
+      { status: 400 },
+    );
+  }
+  try {
+    const parsedData = parsedRequest.data;
+    if (parsedData.id) {
+      //Let prisma handle?
+      const series = await prisma.series.findUnique({
+        where: { id: parsedData.id },
+      });
+      if (!series) {
+        return NextResponse.json(
+          { error: "Series not found." },
+          { status: 404 },
+        );
+      }
+      let result = {};
+      if (parsedData.title) {
+        const updatedSeries = await prisma.series.update({
+          where: {
+            id: parsedData.id,
+          },
+          data: {
+            title: parsedData.title,
+          },
+        });
+        result = { ...updatedSeries };
+      }
+      if (parsedData.stories) {
+        const deletedRelations = await prisma.$transaction([
+          prisma.storyinSeries.deleteMany({
+            where: {
+              seriesId: parsedData.id,
+            },
+          }),
+          prisma.storyinSeries.createMany({
+            data: parsedData.stories.map((story, id) => ({
+              storyId: (story as unknown as StoryinSeries).id,
+              seriesId: parsedData.id, //has verified that series id exists
+              storyShortHeadline: (story as unknown as StoryinSeries)
+                .shortHeadline,
+              storyURL: (story as unknown as StoryinSeries).storyURL,
+              order: id,
+            })),
+          }),
+        ]);
+        result = { ...result, ...deletedRelations };
+      }
+      return NextResponse.json({ result });
+    }
+  } catch (err) {
+    if (err instanceof Prisma.PrismaClientKnownRequestError) {
+      return NextResponse.json(
+        {
+          error: `Bad Request. Prisma Error message: ${err.message}`,
           errorCode: err.code,
           meta: err.meta,
         },
