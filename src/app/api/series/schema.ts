@@ -42,3 +42,7 @@ export const patchSeriesSchema = z
 export const getStorySeriesSchema = z.object({
   id: z.string(),
 });
+
+export const deleteSeriesSchema = z.object({
+  id: z.string(),
+});
