@@ -1,4 +1,3 @@
-import { title } from "node:process";
 import * as z from "zod";
 import { zfd } from "zod-form-data";
 
@@ -36,15 +35,10 @@ export const patchSeriesSchema = z
         .optional(),
     ),
   })
-  .refine(({ _, title, stories }) => title || stories, {
+  .refine(({ title, stories }) => title || stories, {
     message: "title or stories array must be defined",
   });
 
-export const getStorySeriesSchema = z
-  .object({
-    id: z.string().optional(),
-    title: z.string().optional(),
-  })
-  .refine(({ id, title }) => id || title, {
-    message: "Id or title must be defined",
-  });
+export const getStorySeriesSchema = z.object({
+  id: z.string(),
+});

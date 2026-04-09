@@ -1,4 +1,3 @@
-import { parse } from "node:path";
 import prisma from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 import { NextResponse, type NextRequest } from "next/server";
@@ -27,14 +26,8 @@ export async function GET(req: NextRequest) {
       { status: 400 },
     );
   }
-  const { id, title } = parsedParams.data;
-  if (!id && !title) {
-    return NextResponse.json(
-      { error: "Missing both id and title" },
-      { status: 422 },
-    );
-  }
   try {
+    const { id, title } = parsedParams.data;
     const allSeries = await prisma.series.findMany({
       where: {
         id: id,
