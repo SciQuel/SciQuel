@@ -1,9 +1,7 @@
-// This component is a temporary prototype for the staff pick creation flow,
-// used to validate the design and interactions before wiring it up to real data and actions.
-// It is not currently integrated into the app and can be accessed at /staff-picks-preview from the header link.
-// The placeholder article data and simplified submit flow will be replaced with real implementations once the design is finalized.
+// Staff pick creation and editing flow
+// Accessible at /staff-picks-preview/create (create mode) or /staff-picks-preview/[id]/edit (edit mode)
 
-// "use client" is required to use state and effects in this component, which are necessary for the interactive create flow steps and form handling.
+// "use client" is required for state and effects used in the interactive form steps
 "use client";
 
 import { type GetStoriesResult } from "@/app/api/stories/route";
@@ -12,7 +10,6 @@ import { useRouter } from "next/navigation";
 import { type StoryTopic } from "@prisma/client";
 import { useDeferredValue, useEffect, useState } from "react";
 import StaffPickCard from "./StaffPickCard";
-import { type PlaceholderStaffPick } from "./placeholderData";
 import TopicTag from "../TopicTag";
 
 type Step = "compose" | "preview" | "success";
@@ -28,9 +25,18 @@ interface ArticleOption {
   href: string;
 }
 
+// Data shape passed to the edit flow — mirrors the fields the component actually needs
+export interface InitialStaffPick {
+  // The staff pick's own database ID (used for PATCH requests)
+  id: string;
+  article: ArticleOption;
+  quote: string;
+  quoteAuthor: string;
+}
+
 interface StaffPickCreateFlowProps {
   mode?: "create" | "edit";
-  initialStaffPick?: PlaceholderStaffPick;
+  initialStaffPick?: InitialStaffPick;
 }
 
 // Shared button styling for the bottom navigation controls
@@ -68,10 +74,10 @@ export default function StaffPickCreateFlow({
   const [step, setStep] = useState<Step>("compose");
   const [searchValue, setSearchValue] = useState("");
   const deferredSearchValue = useDeferredValue(searchValue);
-  // Real article options now come from the stories API instead of placeholder data.
+  // Real article options come from the stories API
   const [articleOptions, setArticleOptions] = useState<ArticleOption[]>([]);
   const [selectedArticle, setSelectedArticle] = useState<ArticleOption | null>(
-    initialStaffPick ? mapStaffPickToArticle(initialStaffPick) : null,
+    initialStaffPick?.article ?? null,
   );
   const [isLoadingArticles, setIsLoadingArticles] = useState(!isEditMode);
   const [articleLoadError, setArticleLoadError] = useState<string | null>(null);
@@ -79,17 +85,65 @@ export default function StaffPickCreateFlow({
   const [authorName, setAuthorName] = useState(
     initialStaffPick?.quoteAuthor ?? "",
   );
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  async function handleSubmit() {
+    setIsSubmitting(true);
+    setSubmitError(null);
+
+    try {
+      if (isEditMode && initialStaffPick) {
+        const response = await fetch(
+          `/api/staff/mark-story/${initialStaffPick.id}`,
+          {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              description: quote,
+              author_name: authorName,
+            }),
+          },
+        );
+        if (!response.ok) {
+          const data = (await response.json()) as { error?: string };
+          throw new Error(data.error ?? "Failed to update staff pick.");
+        }
+      } else if (selectedArticle) {
+        const response = await fetch("/api/staff/mark-story", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            story_id: selectedArticle.id,
+            description: quote,
+            author_name: authorName,
+          }),
+        });
+        if (!response.ok) {
+          const data = (await response.json()) as { error?: string };
+          throw new Error(data.error ?? "Failed to create staff pick.");
+        }
+      }
+      setStep("success");
+    } catch (error) {
+      setSubmitError(
+        error instanceof Error ? error.message : "Something went wrong.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
 
   useEffect(() => {
     if (isEditMode) {
       return;
     }
 
-    // Keep the prototype edit screen fixed to its seeded article, but load live articles for create.
+    // In create mode, fetch live articles that aren't already staff picks
     const controller = new AbortController();
     const params = new URLSearchParams({
       published: "true",
-      // Only show stories that are not already picked as staff picks.
+      // Exclude stories that are already staff picks
       staff_pick: "false",
       page_size: "25",
     });
@@ -113,7 +167,7 @@ export default function StaffPickCreateFlow({
         return (await response.json()) as GetStoriesResult;
       })
       .then((result) => {
-        // Normalize story records into the lighter picker/preview shape this flow already uses.
+        // Normalize story records into the lighter shape used by the picker UI
         setArticleOptions(result.stories.map(mapStoryToArticle));
       })
       .catch((error: unknown) => {
@@ -331,29 +385,30 @@ export default function StaffPickCreateFlow({
             Preview
           </ActionButton>
         ) : (
-          <ActionButton onClick={() => setStep("success")}>
-            {isEditMode ? "Save" : "Submit"}
-          </ActionButton>
+          <div className="flex flex-col items-end gap-2">
+            {submitError ? (
+              <p className="text-sm font-medium text-[#db3631]">
+                {submitError}
+              </p>
+            ) : null}
+            <ActionButton
+              disabled={isSubmitting}
+              onClick={() => void handleSubmit()}
+            >
+              {isSubmitting
+                ? "Saving…"
+                : isEditMode
+                  ? "Save"
+                  : "Submit"}
+            </ActionButton>
+          </div>
         )}
       </div>
     </div>
   );
 }
 
-function mapStaffPickToArticle(staffPick: PlaceholderStaffPick): ArticleOption {
-  return {
-    id: staffPick.articleId,
-    title: staffPick.title,
-    summary: staffPick.summary,
-    thumbnailUrl: staffPick.thumbnailUrl,
-    topic: staffPick.topic,
-    authorName: staffPick.authorName,
-    condensedDate: staffPick.condensedDate,
-    href: staffPick.href,
-  };
-}
-
-// Convert the full story payload into the article card fields used by the staff pick flow.
+// Convert the full story payload into the article card fields used by the staff pick flow
 function mapStoryToArticle(story: GetStoriesResult["stories"][number]): ArticleOption {
   const publishedDate = new Date(story.publishedAt ?? story.createdAt);
   const primaryAuthor =

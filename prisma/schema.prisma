@@ -364,6 +364,7 @@ model StaffPick {
   createdAt DateTime @default(now())
 
   description String
+  authorName  String
 
   @@unique([storyId, id])
 }

@@ -91,9 +91,11 @@ export default function StaffPickCard({
       </div>
 
       <div className="flex w-full items-center gap-4 px-2 lg:w-1/2 lg:min-h-[12.5rem] lg:justify-center lg:px-8">
+        {/* TODO: Re-enable once avatar/profile-image behavior is decided
         <div className="relative h-[4.5rem] w-[4.5rem] flex-shrink-0 overflow-hidden rounded-full bg-sciquelTeal">
           <Image src={avatarUrl} alt={quoteAuthor} fill className="object-cover" />
         </div>
+        */}
 
         <div className="flex flex-col gap-1.5 text-center lg:text-left">
           <p className="font-serif text-base italic leading-relaxed text-gray-700">

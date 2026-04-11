@@ -8,42 +8,27 @@ interface Props {
   articles: Stories;
 }
 
-const staffPickQuotes = [
-  {
-    quote: "A compelling story that highlights the Hawaiian bobtail squid's remarkable ability to recruit and host a single bacterial partner, Vibrio fischeri, through highly selective biological mechanisms.",
-    author: "Edward Chen",
-    handle: "SciQuel",
-    date: "12/5/25",
-    avatarUrl: "/user-settings/ProfilePicture.png",
-  },
-  {
-    quote: "A compelling story that highlights the Hawaiian bobtail squid's remarkable ability to recruit and host a single bacterial partner, Vibrio fischeri, through highly selective biological mechanisms.",
-    author: "Edward Chen",
-    handle: "SciQuel",
-    date: "12/5/25",
-    avatarUrl: "/user-settings/ProfilePicture.png",
-  },
-  {
-    quote: "A compelling story that highlights the Hawaiian bobtail squid's remarkable ability to recruit and host a single bacterial partner, Vibrio fischeri, through highly selective biological mechanisms.",
-    author: "Edward Chen",
-    handle: "SciQuel",
-    date: "12/5/25",
-    avatarUrl: "/user-settings/ProfilePicture.png",
-  },
-];
+// Format a date as MM/DD/YY for the condensed card layout
+function formatCondensedDate(date: Date) {
+  return new Intl.DateTimeFormat("en-US", {
+    month: "2-digit",
+    day: "2-digit",
+    year: "2-digit",
+  }).format(date);
+}
 
 export default function StaffPicksSection({ articles }: Props) {
-  if (articles.length === 0) {
+  // Only show articles that actually have a staff pick attached
+  const displayArticles = articles.filter((a) => a.staffPick).slice(0, 3);
+
+  if (displayArticles.length === 0) {
     return null;
   }
-
-  const displayArticles = articles.slice(0, 3);
 
   return (
     <HomepageSection heading="Staff Picks">
       <div className="flex flex-col gap-8">
-        {displayArticles.map((article, index) => {
-          const staffPick = staffPickQuotes[index];
+        {displayArticles.map((article) => {
           const publishDate = DateTime.fromJSDate(article.publishedAt).toUTC();
           const href = `/stories/${publishDate.year}/${publishDate.toFormat("LL")}/${publishDate.toFormat("dd")}/${article.slug}`;
           const author = article.storyContributions.find(
@@ -53,6 +38,11 @@ export default function StaffPicksSection({ articles }: Props) {
             ? `${author.contributor.firstName} ${author.contributor.lastName}`
             : "";
           const condensedDate = publishDate.toFormat("MM/dd/yy");
+
+          // Use the real staff pick description saved by the editor
+          const pickDate = article.staffPick
+            ? formatCondensedDate(new Date(article.staffPick.createdAt))
+            : condensedDate;
 
           return (
             <StaffPickCard
@@ -64,11 +54,11 @@ export default function StaffPicksSection({ articles }: Props) {
               topic={article.topics?.[0] ?? "BIOLOGY"}
               authorName={authorName}
               condensedDate={condensedDate}
-              quote={staffPick.quote}
-              quoteAuthor={staffPick.author}
-              quoteHandle={staffPick.handle}
-              quoteDate={staffPick.date}
-              avatarUrl={staffPick.avatarUrl}
+              quote={article.staffPick?.description ?? ""}
+              quoteAuthor={article.staffPick?.authorName ?? "SciQuel"}
+              quoteHandle="SciQuel"
+              quoteDate={pickDate}
+              avatarUrl="/user-settings/ProfilePicture.png"
             />
           );
         })}

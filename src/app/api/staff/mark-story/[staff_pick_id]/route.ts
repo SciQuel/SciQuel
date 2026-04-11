@@ -98,11 +98,13 @@ export async function PATCH(
     }
 
     const description = parseSchema.data.description;
+    const authorName = parseSchema.data.author_name;
 
     const updateStaffPickPromise = prisma.staffPick.update({
       where: { id: staff_pick_id },
       data: {
         description,
+        authorName,
       },
     });
     //create record

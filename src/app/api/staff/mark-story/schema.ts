@@ -10,10 +10,16 @@ export const postSchema = z.object({
   description: z.string({
     required_error: "description is required",
   }),
+  author_name: z.string({
+    required_error: "author_name is required",
+  }),
 });
 export const patchSchema = z.object({
   description: z.string({
     required_error: "description is required",
+  }),
+  author_name: z.string({
+    required_error: "author_name is required",
   }),
 });
 

@@ -22,6 +22,14 @@ export type Stories = (Story & {
     };
     contributionType: ContributionType;
   }[];
+  // Included by the Prisma query so staff-pick features can read the pick metadata
+  staffPick: {
+    id: string;
+    storyId: string;
+    description: string;
+    authorName: string;
+    createdAt: Date;
+  } | null;
 })[];
 
 export type GetStoriesResult = {
