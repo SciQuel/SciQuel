@@ -1,14 +1,10 @@
 import * as z from "zod";
 import { zfd } from "zod-form-data";
 
-export const getSeriesSchema = z
-  .object({
-    id: z.string().optional(),
-    title: z.string().optional(),
-  })
-  .refine(({ id, title }) => id || title, {
-    message: "One of the fields must be defined",
-  });
+export const getSeriesSchema = z.object({
+  id: z.string().optional(),
+  title: z.string().optional(),
+});
 
 export const putSeriesSchema = zfd.formData({
   title: zfd.text(),
