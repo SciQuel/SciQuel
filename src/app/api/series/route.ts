@@ -208,7 +208,10 @@ export async function POST(req: NextRequest) {
         order: id + 1, //1 based index
       })),
     });
-    return NextResponse.json({ newStoryinSeries });
+    return NextResponse.json({
+      newSeries: newSeries,
+      relations: newStoryinSeries,
+    });
   } catch (err) {
     console.log(err);
     if (err instanceof Prisma.PrismaClientKnownRequestError) {
@@ -252,7 +255,7 @@ export async function PUT(req: NextRequest) {
           { status: 404 },
         );
       }
-      let result = {};
+      let result = { series: series };
       if (parsedData.title) {
         const updatedSeries = await prisma.series.update({
           where: {
@@ -262,7 +265,7 @@ export async function PUT(req: NextRequest) {
             title: parsedData.title,
           },
         });
-        result = { ...updatedSeries };
+        result.series = updatedSeries;
       }
       if (parsedData.stories) {
         // const deletedRelations = await prisma.$transaction([
@@ -282,7 +285,7 @@ export async function PUT(req: NextRequest) {
         //     })),
         //   }),
         // ]);
-        const deletedRelations = await prisma.$transaction(async (tx) => {
+        const updatedRelations = await prisma.$transaction(async (tx) => {
           const deleted = await tx.storyinSeries.deleteMany({
             where: {
               seriesId: parsedData.id,
@@ -303,7 +306,7 @@ export async function PUT(req: NextRequest) {
           }
           return { deleted: deleted };
         });
-        result = { ...result, ...deletedRelations };
+        result = { ...result, ...updatedRelations };
       }
       return NextResponse.json({ result });
     }
