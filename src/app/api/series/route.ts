@@ -11,7 +11,8 @@ interface StoryinSeries {
 
 interface NewSeries {
   id: string;
-  title: string;
+  title: string | null;
+  createdAt: Date | null;
 }
 
 //get series based on id or title
