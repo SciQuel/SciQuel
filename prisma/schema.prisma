@@ -107,7 +107,7 @@ model Story {
   comments        Comment[]
   staffPick       StaffPick?
   StaffPickRecord StaffPickRecord[]
-  StoryinSeries   StoryinSeries[]
+  storyinSeries StoryinSeries[]
 }
 
 model StoryContribution {
@@ -390,9 +390,9 @@ model StaffPickRecord {
 
 model Series {
   id            String          @id @default(auto()) @map("_id") @db.ObjectId
-  title         String          @unique
-  createdAt     DateTime        @default(now())
-  StoryinSeries StoryinSeries[]
+  title         String?  @default("Untitled")
+  createdAt     DateTime?    @default(now())
+  storyinSeries StoryinSeries[]
 }
 
 model StoryinSeries {

@@ -1,7 +1,7 @@
 import prisma from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 import { NextResponse, type NextRequest } from "next/server";
-import { getSeriesSchema, patchSeriesSchema, putSeriesSchema } from "./schema";
+import { getSeriesSchema, postSeriesSchema, putSeriesSchema } from "./schema";
 
 interface StoryinSeries {
   id: string;
@@ -33,7 +33,7 @@ export async function GET(req: NextRequest) {
         id: id,
         title: title
           ? {
-              contains: title,
+              contains: JSON.stringify(title),
             }
           : title,
       },
@@ -180,9 +180,9 @@ export async function PATCH(req: NextRequest) {
 }
 */
 
-export async function PUT(req: NextRequest) {
+export async function POST(req: NextRequest) {
   const seriesFormData = await req.formData();
-  const parsedRequest = putSeriesSchema.safeParse(seriesFormData);
+  const parsedRequest = postSeriesSchema.safeParse(seriesFormData);
   if (!parsedRequest.success) {
     console.log(parsedRequest.error);
     return NextResponse.json(
@@ -197,6 +197,7 @@ export async function PUT(req: NextRequest) {
         title: parsedData.title,
       },
     });
+    console.log(typeof parsedData.stories);
     const newStoryinSeries = await prisma.storyinSeries.createMany({
       data: parsedData.stories.map((story, id) => ({
         storyId: story.id,
@@ -226,9 +227,9 @@ export async function PUT(req: NextRequest) {
   }
 }
 
-export async function PATCH(req: NextRequest) {
+export async function PUT(req: NextRequest) {
   const seriesFormData = await req.formData();
-  const parsedRequest = patchSeriesSchema.safeParse(seriesFormData);
+  const parsedRequest = putSeriesSchema.safeParse(seriesFormData);
   if (!parsedRequest.success) {
     console.log(parsedRequest.error);
     return NextResponse.json(
