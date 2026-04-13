@@ -38,21 +38,22 @@ export const putSeriesSchema = z
     title: zfd.text().optional(),
     stories: z.preprocess(
       (val) => {
+        if (Array.isArray(val)) return val as unknown;
         if (typeof val == "string") {
           const newVal = JSON.parse(val) as StoryRequestSchema[];
           return newVal;
         }
         return [];
       },
-      z.array(
-        z
-          .object({
+      z
+        .array(
+          z.object({
             id: zfd.text(),
             shortHeadline: zfd.text(),
             storyURL: z.string().url(),
-          })
-          .optional(),
-      ),
+          }),
+        )
+        .optional(),
     ),
   })
   .refine(({ title, stories }) => title || stories, {
