@@ -8,11 +8,10 @@ interface Params {
   token: string;
 }
 
-export default async function ResetPasswordPage({
-  params,
-}: {
-  params: Params;
+export default async function ResetPasswordPage(props: {
+  params: Promise<Params>;
 }) {
+  const params = await props.params;
   try {
     const data = jwt.verify(params.token, process.env.NEXTAUTH_SECRET ?? "");
     const { email, id } = tokenSchema.parse(data);

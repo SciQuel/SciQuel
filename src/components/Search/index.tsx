@@ -33,62 +33,101 @@ export default function Search({ searchParams }: Props) {
   };
 
   return (
-    <div>
-      <form
-        className="mx-[10%] mt-5 flex flex-col justify-center rounded-lg align-middle"
-        onSubmit={onSearch}
-      >
+    <form onSubmit={onSearch}>
+      <label className="mx-[10%] mb-3 mt-5 flex flex-col justify-center rounded-lg align-middle">
+        <span className=" sr-only">Search term:</span>
         <input
           className="h-16 rounded-lg border border-black px-3 text-black outline-1 outline-black"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="What are you searching for..."
         />
-      </form>
+      </label>
 
       <div className="duration-350 z-10 mx-[10%] rounded-lg text-center transition-all">
-        <div className=" flex flex-row justify-between">
-          <div>
+        <div className=" flex flex-row flex-wrap justify-between gap-2">
+          <label>
             Media Type
             <select
+              className={`mx-2 rounded-sm border-2 bg-slate-50 px-2 py-1`}
               value={mediaType}
               onChange={(e) => setMediaType(e.target.value)}
             >
-              <option value=""></option>
-              <option value="essay">Essay</option>
-              <option value="digest">Digest</option>
+              <option
+                className={`mx-2 rounded-sm border-2 bg-slate-50 px-2 py-1 font-quicksand`}
+                value=""
+              ></option>
+              <option
+                className={`mx-2 rounded-sm border-2 bg-slate-50 px-2 py-1 font-quicksand`}
+                value="essay"
+              >
+                Essay
+              </option>
+              <option
+                className={`mx-2 rounded-sm border-2 bg-slate-50 px-2 py-1 font-quicksand`}
+                value="digest"
+              >
+                Digest
+              </option>
             </select>
-          </div>
-          <div>
-            <form>
-              <label> Data Range: </label>
+          </label>
+          <div className="flex flex-row flex-wrap gap-2">
+            <span> Data Range: </span>
+            <label>
+              From
               <input
                 type="date"
                 value={dateFrom}
                 onChange={(e) => setDateFrom(e.target.value)}
               />
-              <label> To </label>
+            </label>
+
+            <label>
+              {" "}
+              To{" "}
               <input
                 type="date"
                 value={dateTo}
                 onChange={(e) => setDateTo(e.target.value)}
               />
-            </form>
+            </label>
           </div>
-          <div>
+          <label>
             Sort By
             <select
               value={sort}
               defaultValue={sort}
+              className={`mx-2 rounded-sm border-2 bg-slate-50 px-2 py-1`}
               onChange={(e) => setSort(e.target.value)}
             >
-              <option value=""></option>
-              <option value="newest">Newest</option>
-              <option value="oldest">Oldest</option>
+              <option
+                className={`mx-2 rounded-sm border-2 bg-slate-50 px-2 py-1 font-quicksand`}
+                value=""
+              ></option>
+              <option
+                className={`mx-2 rounded-sm border-2 bg-slate-50 px-2 py-1 font-quicksand`}
+                value="newest"
+              >
+                Newest
+              </option>
+              <option
+                className={`mx-2 rounded-sm border-2 bg-slate-50 px-2 py-1 font-quicksand`}
+                value="oldest"
+              >
+                Oldest
+              </option>
             </select>
-          </div>
+          </label>
         </div>
       </div>
-    </div>
+      <div className="mx-[10%] flex items-center justify-center">
+        <button
+          className={`rounded-md bg-sciquelTeal px-2 py-1 text-xl text-white`}
+          type="submit"
+        >
+          Search
+        </button>
+      </div>
+    </form>
   );
 }

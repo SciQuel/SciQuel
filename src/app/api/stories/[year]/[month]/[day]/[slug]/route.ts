@@ -28,10 +28,12 @@ export type GetStoryResult = Story & {
   storyContent: {
     content: string;
     footer: string | undefined;
+    coverImgCredit: string | undefined;
   }[];
 };
 
-export async function GET(req: Request, { params }: { params: Params }) {
+export async function GET(req: Request, props: { params: Promise<Params> }) {
+  const params = await props.params;
   try {
     const { searchParams } = new URL(req.url);
 
@@ -93,7 +95,7 @@ export async function GET(req: Request, { params }: { params: Params }) {
             ? {
                 take: 1,
                 orderBy: { createdAt: "desc" },
-                select: { content: true, footer: true },
+                select: { content: true, footer: true, coverImgCredit: true },
               }
             : false,
       },

@@ -50,7 +50,7 @@ export default function WhatsNewSection({ articles }: Props) {
         )}
       </div>
       {readMoreArticles && <ArticleList articles={readMoreArticles} />}
-      <NavigateLink text="Read all recent" route="/stories/read" />
+      <NavigateLink text="Read all recent articles" route="/stories/read" />
     </HomepageSection>
   );
 }

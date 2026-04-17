@@ -10,11 +10,10 @@ interface Params {
   page_number: string;
 }
 
-export default async function StoriesListPage({
-  searchParams,
-}: {
-  searchParams: Params;
+export default async function StoriesListPage(props: {
+  searchParams: Promise<Params>;
 }) {
+  const searchParams = await props.searchParams;
   const { topic, staff_pick, page_number } = searchParams;
   const params = {
     ...(topic ? { topic } : {}),
@@ -25,7 +24,7 @@ export default async function StoriesListPage({
   const { stories, total_pages } = await getStories(params);
 
   // Header text shows ALL TOPICS by default or Topic if specified
-  let headerText = topic ? topic.toUpperCase() : "ALL TOPICS";
+  let headerText = topic ? topic.toUpperCase().replace("_", " ") : "ALL TOPICS";
 
   // Add Staff Pick to header text if user specified staff pick
   if (staff_pick && staff_pick === "true") {

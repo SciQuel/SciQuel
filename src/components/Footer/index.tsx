@@ -4,22 +4,24 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <div className=" z-10 flex w-full flex-col bg-sciquelFooter text-white ">
+    <div className=" z-10 flex w-full flex-col bg-sciquelFooter font-quicksand text-white ">
       <div className="relative">
         <div className=" flex w-full flex-row justify-center gap-4 px-4 pb-4 align-middle xs:justify-between sm:px-10 sm:pt-4">
           <div className="hidden flex-col gap-4 pt-4 xs:flex">
-            <p>Get a weekly dose of accessible science to your inbox</p>
+            <p>
+              Get a weekly dose of accessible science delivered to your inbox.
+            </p>
             <form className="w-full">
               <input
                 id="email"
                 type="email"
                 className="h-9 w-full rounded-l-lg rounded-r-lg border border-solid
                  bg-sciquelFooter pl-2 text-xs font-medium
-                  text-sciquelFooter placeholder-white outline-1
+                  text-white placeholder-white outline-1
                    sm:w-64 sm:rounded-r-none"
                 placeholder="team@sciquel.org"
                 pattern="^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"
-                title="Please provide a valid email"
+                title="Please provide a valid email to subscribe to our newsletter"
                 required
               />
               <button
@@ -34,7 +36,7 @@ export default function Footer() {
           </div>
           <div className="flex flex-col items-end pt-4 ">
             <p className="w-full text-center text-lg font-semibold xs:w-auto xs:text-end xs:text-base">
-              Sciquel
+              SciQuel
             </p>
             {/* <div className="flex flex-row">
               <FooterIcon type="instagram" />
@@ -42,7 +44,7 @@ export default function Footer() {
               <FooterIcon type="youtube" />
               <FooterIcon type="arrow" />
             </div> */}
-            <p>125 Western Ave.</p>
+            <p>125 Western Avenue</p>
             <p>Allston, MA 02163</p>
           </div>
         </div>

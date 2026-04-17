@@ -183,7 +183,7 @@ export default function StoryCredits({ story }: Props) {
 
     return (
       <div className="flex flex-col">
-        {Object.keys(contributorMap).map((key) =>
+        {Object.keys(contributorMap).map((key, keyIndex) =>
           contributorMap[key].length > 0 ? (
             <div className="flex flex-row items-center" key={key}>
               {contributorMap[key].map((icon, index) => (
@@ -203,31 +203,40 @@ export default function StoryCredits({ story }: Props) {
                       key as "AUTHOR" | "ANIMATOR" | "ILLUSTRATOR"
                     ].prefix
                   : "by "}
-                {contributorMap[key].slice(0, -1).map((author) => {
+                {contributorMap[key].slice(0, -1).map((author, authorIndex) => {
                   if (contributorMap[key].length > 2) {
                     return (
-                      <>
-                        <a href={`/profile/${author.slug}`}>{author.name}</a>,{" "}
-                      </>
+                      <a
+                        key={`${author.name}-${authorIndex}`}
+                        href={`/profile/${author.slug}`}
+                      >
+                        {author.name},{" "}
+                      </a>
                     );
                   } else {
                     return (
-                      <>
-                        <a href={`/profile/${author.slug}`}>{author.name}</a>{" "}
-                      </>
+                      <a
+                        key={`${author.name}-${authorIndex}`}
+                        href={`/profile/${author.slug}`}
+                      >
+                        {author.name}{" "}
+                      </a>
                     );
                   }
                 })}{" "}
                 {contributorMap[key].length > 1 ? "and " : ""}{" "}
                 {contributorMap[key].slice(-1).map((finalContributors) => (
-                  <a href={`/profile/${finalContributors.slug}`}>
+                  <a
+                    key={finalContributors.name}
+                    href={`/profile/${finalContributors.slug}`}
+                  >
                     {finalContributors.name}
                   </a>
                 ))}
               </p>
             </div>
           ) : (
-            <></>
+            <span key={`${keyIndex}-blank`} />
           ),
         )}
         {Object.keys(otherMap).map((key) => (
@@ -284,17 +293,15 @@ export default function StoryCredits({ story }: Props) {
           alt={story.title}
         />
         <p className="my-1 font-sourceSerif4">
-          Title Image provided by Source name
+          {story.storyContent[0].coverImgCredit ?? ""}
         </p>
         <h1 className="my-4  font-customTest text-4xl">{story.title}</h1>
         <h2 className="font-customTest text-2xl">{story.summary}</h2>
       </div>
-
       <div className="relative mx-0 mt-5 flex w-screen flex-col px-2 font-sourceSerif4 sm:mx-auto md:w-[768px] md:px-0">
         <div className="pointer-events-none top-0 flex flex-1 flex-row justify-start xl:hidden">
           <ShareLinks />
         </div>
-
         <div className="flex flex-row ">
           <p className="mr-1 ">
             {story.category
@@ -333,7 +340,7 @@ export default function StoryCredits({ story }: Props) {
     </>
   ) : (
     <>
-      <div className="absolute left-0 top-0 m-0 flex min-h-screen w-screen items-end">
+      <div className="relative left-0 m-0 -mt-24 flex min-h-screen w-screen items-end lg:-mt-12">
         <Image
           src={story.thumbnailUrl}
           className="h-full object-cover"
@@ -345,7 +352,7 @@ export default function StoryCredits({ story }: Props) {
           className={`relative m-10 flex min-h-0 w-full flex-col justify-end overflow-hidden `}
         >
           <h1
-            className="mb-0 p-8 pb-0 font-customTest text-6xl font-bold sm:text-8xl lg:w-4/5"
+            className="mb-0 rounded-t-xl p-8 pb-0 font-customTest text-6xl font-bold sm:text-8xl lg:w-4/5"
             style={{
               color: story.titleColor,
 
@@ -356,29 +363,32 @@ export default function StoryCredits({ story }: Props) {
             {story.title}
           </h1>
           <h2
-            className="p-8 pt-0 font-customTest text-4xl font-semibold lg:w-5/6"
+            className=" p-8 pt-0 font-besley text-2xl   lg:w-5/6"
             style={{
               color: story.summaryColor,
 
-              fontSize: `${Math.max(headerFont - 28, 14)}px`,
-              lineHeight: `${Math.max(headerFont - 25, 14)}px`,
+              fontSize: `${Math.max(headerFont - 33, 14)}px`,
+              lineHeight: `${Math.max(headerFont - 28, 14)}px`,
             }}
           >
             {story.summary}
           </h2>
         </div>
       </div>
-      <div className="h-[calc(100vh_-_6rem)] w-full" />{" "}
+      {/* <div className="h-[calc(100vh_-_7.5rem)] w-full" />{" "} */}
       <p className="my-0 w-screen px-2 py-0 font-sourceSerif4">
-        Title Image provided by Source name
+        {story.storyContent[0].coverImgCredit ?? " "}
       </p>
-      <div className=" -mt-6 justify-self-start pt-0 font-sourceSerif4">
-        <div className="relative mx-0 mt-0 flex w-screen flex-col overflow-hidden px-2 md:mx-auto md:w-[768px] md:px-0">
-          <div className="pointer-events-none relative top-2 flex flex-1 flex-row flex-wrap justify-start xl:hidden">
+      <div className=" -mt-6 grid grid-cols-1 justify-self-start pt-0 font-sourceSerif4 xl:grid-cols-[1fr_768px_1fr] ">
+        <div className="relative mt-[3.7rem] hidden justify-end px-[1.45rem] xl:flex">
+          <ShareLinks />
+        </div>
+        <div className="relative mx-0 mt-0 flex w-screen flex-col px-2 md:mx-auto md:w-[768px] md:px-0">
+          <div className="pointer-events-none relative top-7 flex flex-1 flex-row flex-wrap justify-start xl:hidden">
             <ShareLinks />
           </div>
 
-          <div className="mt-4 flex flex-row">
+          <div className="mt-8 flex flex-row">
             <p className="mr-1  ">
               {story.category
                 ? story.category.slice(0, 1) +

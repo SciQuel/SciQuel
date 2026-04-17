@@ -16,7 +16,7 @@ export default function PaginationNumber({ params, page, curr_page }: Props) {
       <a
         className={
           (page === curr_page
-            ? "bg-[#69A297] text-black"
+            ? "bg-sciquelTeal text-white"
             : "transition-all duration-300 hover:bg-neutral-100") +
           " rounded-full px-3.5 py-1.5"
         }

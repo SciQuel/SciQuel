@@ -6,6 +6,7 @@ import {
   useReducer,
   useRef,
   type PropsWithChildren,
+  type RefObject,
 } from "react";
 import { DictionaryContext } from "../dictionary/DictionaryContext";
 import { PrintContext } from "../PrintContext";
@@ -41,11 +42,14 @@ export default function StoryBlockquote({
           widthDispatch({
             type: "set",
             figureVal: getOffset(entry.contentRect.width),
-            elementRef: blockquoteRef,
+            elementRef: blockquoteRef as RefObject<HTMLElement>,
           });
         } else {
           scrollObserver.current.disconnect();
-          widthDispatch({ type: "reset", elementRef: blockquoteRef });
+          widthDispatch({
+            type: "reset",
+            elementRef: blockquoteRef as RefObject<HTMLElement>,
+          });
         }
       });
     }),
@@ -124,7 +128,7 @@ export default function StoryBlockquote({
       widthDispatch({
         type: "update",
         figureVal: 0,
-        elementRef: blockquoteRef,
+        elementRef: blockquoteRef as RefObject<HTMLElement>,
       });
     }
   }

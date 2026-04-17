@@ -114,13 +114,11 @@ export async function GET(req: NextRequest) {
       where: query.where,
     });
 
-    return NextResponse.json(
-      {
-        stories,
-        page_number: numPagesToSkip + 1,
-        total_pages: Math.ceil(numStories / numStoriesPerPage),
-      } ?? { stories: [] },
-    );
+    return NextResponse.json({
+      stories,
+      page_number: numPagesToSkip + 1,
+      total_pages: Math.ceil(numStories / numStoriesPerPage),
+    });
   } catch (e) {
     if (e instanceof Prisma.PrismaClientValidationError) {
       console.log(e.message);

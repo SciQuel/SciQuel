@@ -19,9 +19,9 @@ import SecurityIcon from "/public/user-settings/setting-page/security_icon.svg";
 import SociologyIcon from "/public/user-settings/setting-page/sociology_icon.svg";
 import TechIcon from "/public/user-settings/setting-page/tech_icon.svg";
 import clsx from "clsx";
-import { useRef, useState } from "react";
+import { useRef, useState, type ReactNode } from "react";
 
-const iconMap: Record<StoryTopic, JSX.Element> = {
+const iconMap: Record<StoryTopic, ReactNode> = {
   CHEMISTRY: <ChemistryIcon className="w-6" />,
   CHEMICAL_ENGINEERING: <CeIcon className="w-6" />,
   MECHANICAL_ENGINEERING: <MeIcon className="w-6" />,
@@ -34,6 +34,7 @@ const iconMap: Record<StoryTopic, JSX.Element> = {
   MEDICINE: <MedicineIcon className="w-6" />,
   PSYCHOLOGY: <PsyIcon className="w-6" />,
   TECHNOLOGY: <TechIcon className="w-6" />,
+  SCIQUEL_MATTERS: <></>,
   ASTRONOMY: <></>, // wait for the design team
   BIOLOGY: <></>, // wait for the design team
   GEOLOGY: <></>, // wait for the design team
@@ -228,7 +229,7 @@ export default function Settings() {
             <p className="">Text size (px)</p>
             <FontSlider />
           </li>
-          <li className="min-h-16 flex items-center justify-between">
+          <li className="flex min-h-16 items-center justify-between">
             <span className="basis-3/4">
               Turn on automatic captions for audio and video content
             </span>

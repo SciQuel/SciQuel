@@ -31,37 +31,37 @@ const PrintModeIcon = () => (
       <path
         d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z"
         stroke="#F8F8FF"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M14 2V8H20"
         stroke="#F8F8FF"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M16 13H8"
         stroke="#F8F8FF"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M16 17H8"
         stroke="#F8F8FF"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M10 9H9H8"
         stroke="#F8F8FF"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   </div>
@@ -89,61 +89,6 @@ export default function ShareLinks() {
     };
   }, []);
 
-  // useEffect(() => {
-  //   if (status == "authenticated") {
-  //     getBookmark();
-  //     getBrain();
-  //   }
-  // }, [status]);
-
-  // async function getBookmark() {
-  //   if (status == "authenticated" && session.user.email) {
-  //     try {
-  //       const bookmarkResponse = await axios.get("/api/user/bookmark", {
-  //         params: {
-  //           story_id: storyId,
-  //           user_email: session.user.email,
-  //         },
-  //       });
-
-  //       if (bookmarkResponse.status == 200) {
-  //         setIsBookmarked(true);
-  //       }
-  //     } catch (err) {
-  //       if (axios.isAxiosError(err) && err.response?.status == 404) {
-  //         setIsBookmarked(false);
-  //         //not bookmarked
-  //       } else {
-  //         console.log("get bookmark error: ", err);
-  //       }
-  //     }
-  //   }
-  // }
-
-  // async function getBrain() {
-  //   if (status == "authenticated" && session.user.email) {
-  //     try {
-  //       const brainResponse = await axios.get("/api/user/brains", {
-  //         params: {
-  //           story_id: storyId,
-  //           user_email: session.user.email,
-  //         },
-  //       });
-
-  //       if (brainResponse.status == 200) {
-  //         setIsBrained(true);
-  //       }
-  //     } catch (err) {
-  //       if (axios.isAxiosError(err) && err.response?.status == 404) {
-  //         setIsBrained(false);
-  //         //not brained
-  //       } else {
-  //         console.log("get brain error: ", err);
-  //       }
-  //     }
-  //   }
-  // }
-
   function handleClick(e: MouseEvent) {
     let shouldShut = true;
 
@@ -159,102 +104,6 @@ export default function ShareLinks() {
       setShowOptions("none");
     }
   }
-
-  // async function handleBrain() {
-  //   if (status != "authenticated") {
-  //     setShowOptions("brain-login");
-  //   } else if (session.user.email) {
-  //     if (isBrained == false) {
-  //       try {
-  //         const response = await axios.post("/api/user/brains", {
-  //           story_id: storyId,
-  //           user_email: session.user.email,
-  //         });
-
-  //         if (response.status == 200) {
-  //           setIsBrained(true);
-  //         }
-  //       } catch (err) {
-  //         if (
-  //           axios.isAxiosError(err) &&
-  //           err.response?.data.error ==
-  //             "story_id and user_id combination already exists"
-  //         ) {
-  //           setIsBrained(true);
-  //         }
-  //       }
-  //     } else {
-  //       // already brained, un-brain
-  //       try {
-  //         const response = await axios.delete("/api/user/brains", {
-  //           params: {
-  //             story_id: storyId,
-  //             user_email: session.user.email,
-  //           },
-  //         });
-  //         if (response.status == 200) {
-  //           setIsBrained(false);
-  //         }
-  //       } catch (err) {
-  //         if (
-  //           axios.isAxiosError(err) &&
-  //           err.response?.data.error == "No entries found"
-  //         ) {
-  //           setIsBrained(false);
-  //         }
-  //       }
-  //     }
-  //   }
-  // }
-
-  // async function handleBookmark() {
-  //   if (status != "authenticated") {
-  //     setShowOptions("bookmark-login");
-  //   } else if (session.user.email) {
-  //     console.log(session.user.email);
-
-  //     if (isBookmarked == false) {
-  //       try {
-  //         const response = await axios.post("/api/user/bookmark", {
-  //           story_id: storyId,
-  //           user_email: session.user.email,
-  //         });
-
-  //         if (response.status == 200) {
-  //           setIsBookmarked(true);
-  //         }
-  //       } catch (err) {
-  //         if (
-  //           axios.isAxiosError(err) &&
-  //           err.response?.data.error ==
-  //             "story_id and user_id combination already exists"
-  //         ) {
-  //           setIsBookmarked(true);
-  //         }
-  //       }
-  //     } else {
-  //       //already booked, un-book
-  //       try {
-  //         const response = await axios.delete("/api/user/bookmark", {
-  //           params: {
-  //             story_id: storyId,
-  //             user_email: session.user.email,
-  //           },
-  //         });
-  //         if (response.status == 200) {
-  //           setIsBookmarked(false);
-  //         }
-  //       } catch (err) {
-  //         if (
-  //           axios.isAxiosError(err) &&
-  //           err.response?.data.error == "No entries found"
-  //         ) {
-  //           setIsBookmarked(false);
-  //         }
-  //       }
-  //     }
-  //   }
-  // }
 
   return (
     <>
@@ -321,7 +170,7 @@ export default function ShareLinks() {
             setShowOptions("share");
           }
         }}
-        className={`pointer-events-auto absolute left-[4rem] flex h-fit w-fit flex-col  xl:left-[calc(100%_-_4.3rem)]  xl:top-[3.5rem]  xl:items-start `}
+        className={`pointer-events-auto absolute left-[4rem] flex h-fit w-fit flex-col  xl:left-[calc(100%_-_5rem)]  xl:top-[3.5rem]  xl:items-start `}
       >
         <button
           type="button"

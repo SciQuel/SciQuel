@@ -4,15 +4,8 @@ import Avatar from "@/components/Avatar";
 import MoreCard from "@/components/MoreCard";
 import Quiz from "@/components/Quiz";
 import FromThisSeries from "@/components/story-components/FromThisSeries";
-// import Dictionary from "@/components/story-components/dictionary/Dictionary";
-// import { DictionaryProvider } from "@/components/story-components/dictionary/DictionaryContext";
-// import DictionarySentence from "@/components/story-components/dictionary/DictionarySentence";
-// import DictionaryWord from "@/components/story-components/dictionary/DictionaryWord";
-// import TestImages from "@/components/story-components/imgTests";
-// import StoryParagraph from "@/components/story-components/markdown/StoryParagraph";
 import { PrintModeProvider } from "@/components/story-components/PrintContext";
 import { StoryScrollProvider } from "@/components/story-components/scroll/ScrollProvider";
-import ShareLinks from "@/components/story-components/ShareLinks";
 import StoryCredits from "@/components/story-components/StoryCredits";
 import StoryFooter from "@/components/story-components/StoryFooter";
 import { tagUser } from "@/lib/cache";
@@ -23,19 +16,19 @@ import { DateTime } from "luxon";
 import Image from "next/image";
 import React, { type ReactNode } from "react";
 
-// import { getServerSession } from "next-auth";
-// import Image from "next/image";
-
 interface Params {
-  params: {
-    year: string;
-    month: string;
-    day: string;
-    slug: string;
-  };
+  year: string;
+  month: string;
+  day: string;
+  slug: string;
 }
 
-export default async function StoriesPage({ params }: Params) {
+interface ParamsPromise {
+  params: Promise<Params>;
+}
+
+export default async function StoriesPage(props: ParamsPromise) {
+  const params = await props.params;
   const whatsNewArticles = await getWhatsNewArticles();
   const quizzes = (await getQuiz()) as QuizQuestion;
   // console.log("quizzes", quizzes);
@@ -43,32 +36,31 @@ export default async function StoriesPage({ params }: Params) {
   console.log("Type: ", typeof quizzes, quizzes);
   const story = await retrieveStoryContent(params);
 
-  const { file } = await generateMarkdown(
-    `${story.storyContent[0].content} :end-icon`,
-  );
+  const { file } = (await generateMarkdown(
+    `${story.storyContent[0].content}:end-icon`,
+  )) as { file: { result: ReactNode } };
 
   return (
     <PrintModeProvider>
       <StoryScrollProvider>
         {/* <DictionaryProvider dictionary={testDictList}> */}
         <div className="flex h-fit flex-col overflow-visible">
+          <StoryCredits story={story} />{" "}
           <div className="mx-0 mt-0 grid grid-cols-[1fr_0px] gap-0 px-0 pt-0 lg:grid-cols-[1fr_768px_1fr]">
-            <div className="pointer-events-none relative hidden flex-col items-end px-0 xl:flex">
-              <div className="w-100 h-[calc(100vh_-_2rem)]" />
-              <div className="relative flex h-full w-full flex-1 flex-col items-end gap-0 overflow-visible px-3">
-                <ShareLinks />
+            <div className="pointer-events-none relative -mt-20 hidden flex-col items-end px-0 xl:flex">
+              <div className="relative mt-1 flex h-full w-full flex-1 flex-col items-end gap-0 overflow-visible px-[1.5rem]">
+                {/* <ShareLinks /> */}
 
                 <div className="flex-1 self-stretch" />
               </div>
             </div>
 
-            <div className="  w-screen xl:w-full">
+            <div className="w-screen xl:w-full">
               <div className="mx-0 mt-2 flex w-screen flex-col items-center gap-4 px-2 sm:mx-auto md:w-[768px] md:px-0">
-                <StoryCredits story={story} />
                 <Quiz quizMode="preQuiz" Quizzes={quizzes} />
                 {/* <Dictionary /> */}
 
-                {file.result as ReactNode}
+                {file.result}
               </div>
 
               <div className="w-[calc( 100% - 1rem )] mx-2 mb-8 mt-8 border-t-2 border-[#616161] pt-1  md:mx-auto md:w-[768px] ">
@@ -164,12 +156,7 @@ export default async function StoriesPage({ params }: Params) {
 //   }
 // }
 
-async function retrieveStoryContent({
-  year,
-  day,
-  month,
-  slug,
-}: Params["params"]) {
+async function retrieveStoryContent({ year, day, month, slug }: Params) {
   const storyRoute = `/stories/${year}/${month}/${day}/${slug}`;
   const prefetchedMetadataRes = await fetch(
     `${env.NEXT_PUBLIC_SITE_URL}/api${storyRoute}`,
