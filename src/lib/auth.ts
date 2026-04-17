@@ -74,6 +74,7 @@ export const authOptions: AuthOptions = {
           ...session.user,
           firstName: token.firstName,
           lastName: token.lastName,
+          roles: token.roles ?? [],
         },
       };
     },
@@ -85,10 +86,17 @@ export const authOptions: AuthOptions = {
           token.lastName = user.lastName;
           token.email = user.email;
           token.picture = user.avatarUrl;
+          token.roles = user.roles;
         }
       } else if (trigger === "signIn" && account) {
         token.firstName = user.firstName;
         token.lastName = user.lastName;
+        const dbUser = await prisma.user.findUnique({ where: { email: user.email! } });
+        token.roles = dbUser?.roles ?? [];
+      } else if (!token.roles) {
+        // Backfill roles for existing JWTs created before this field was added
+        const dbUser = await prisma.user.findUnique({ where: { id: token.sub } });
+        token.roles = dbUser?.roles ?? [];
       }
       return token;
     },
