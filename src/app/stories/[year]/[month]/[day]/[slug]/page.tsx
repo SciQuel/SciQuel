@@ -29,12 +29,12 @@ interface ParamsPromise {
 
 export default async function StoriesPage(props: ParamsPromise) {
   const params = await props.params;
+  const story = await retrieveStoryContent(params);
   const whatsNewArticles = await getWhatsNewArticles();
-  const quizzes = (await getQuiz()) as QuizQuestion;
+  const quizzes = (await getQuiz(story.id)) as QuizQuestion;
   // console.log("quizzes", quizzes);
 
   console.log("Type: ", typeof quizzes, quizzes);
-  const story = await retrieveStoryContent(params);
 
   const { file } = (await generateMarkdown(
     `${story.storyContent[0].content}:end-icon`,
@@ -217,9 +217,9 @@ async function getWhatsNewArticles() {
 }
 
 /// temporary
-async function getQuiz() {
+async function getQuiz(storyId: string) {
   const res = await fetch(
-    `${env.NEXT_PUBLIC_SITE_URL}/api/quizzes?story_id=6488c6f6f5f617c772f6f61a&quiz_type=POST_QUIZ`,
+    `${env.NEXT_PUBLIC_SITE_URL}/api/quizzes?story_id=${storyId}&quiz_type=POST_QUIZ`,
     {
       next: { revalidate: 60 },
     },
