@@ -79,6 +79,10 @@ interface resultGradeI {
 interface handleQuizReturnI {
   errorRes: NextResponse | null;
   success: boolean;
+  scoreComparison?: {
+    sameScoreCount: number;
+    higherScoreCount: number;
+  };
 }
 /** return score, user response that is converted to string array */
 export function grading(params: gradingParam) {
@@ -946,10 +950,11 @@ export async function handlePostQuiz(
     },
   });
 
-  //create dummy promise
-  let userFirstScorePromise = new Promise((resolve) => {
-    resolve(0);
-  });
+  //create comparison result for user score if this is the last question, this will be used to show how well user do compare to other user
+  let scoreComparisonResult:
+    | { sameScoreCount: number; higherScoreCount: number }
+    | undefined;
+  let userFirstScorePromise: Promise<any> = Promise.resolve(0);
   if (isLastQuestion) {
     userFirstScorePromise = insertIfNotExists<
       "StoryQuizScoreFirstTime",
@@ -972,6 +977,25 @@ export async function handlePostQuiz(
         quizResultId: quizResult.id,
       },
     });
+
+    await Promise.all([
+      updatequizResultPromise,
+      userFirstAnsPromise,
+      userFirstScorePromise,
+    ]);
+
+    const finalScore = quizResult.totalCorrectAnswer + (isCorrect ? 1 : 0);
+    scoreComparisonResult = await getScoreComparison(
+      quizResult.storyId,
+      finalScore,
+      "POST_QUIZ",
+    );
+
+    return {
+      errorRes: null,
+      success: true,
+      scoreComparison: scoreComparisonResult,
+    };
   }
 
   await Promise.all([
@@ -1033,4 +1057,36 @@ function createArray<T>(length: number, defaultValue: T) {
     arr.push(defaultValue);
   }
   return arr;
+}
+
+/** Returns count of users with the same score and count with a higher score */
+export async function getScoreComparison(
+  storyId: string,
+  userScore: number,
+  quizType: QuizType = "POST_QUIZ",
+) {
+  const baseWhere: Prisma.StoryQuizScoreFirstTimeWhereInput = {
+    storyId,
+    quizType,
+  };
+
+  const [sameScoreCount, higherScoreCount] = await Promise.all([
+    prisma.storyQuizScoreFirstTime.count({
+      where: {
+        ...baseWhere,
+        totalCorrectAnswer: userScore,
+      },
+    }),
+    prisma.storyQuizScoreFirstTime.count({
+      where: {
+        ...baseWhere,
+        totalCorrectAnswer: { gt: userScore },
+      },
+    }),
+  ]);
+
+  return {
+    sameScoreCount,
+    higherScoreCount,
+  };
 }

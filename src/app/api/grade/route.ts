@@ -13,8 +13,7 @@ import {
 
 const prisma = new PrismaClient();
 /**
- * grade user answer and give out grade result, explanation
- * and percentage of people answer right
+ * grade user answer and give out grade result, explanation and percentage of people answer right
  */
 export async function POST(req: NextRequest) {
   try {
@@ -65,6 +64,7 @@ export async function POST(req: NextRequest) {
       });
     }
     //if user is logged in, save user response
+    let scoreComparison;
     if (userId) {
       const quizResult = await prisma.quizResult.findFirst({
         where: {
@@ -103,6 +103,7 @@ export async function POST(req: NextRequest) {
       if (saveDataResult.errorRes) {
         return saveDataResult.errorRes;
       }
+      scoreComparison = saveDataResult.scoreComparison;
     }
 
     //count how many people answer correct question
@@ -133,6 +134,7 @@ export async function POST(req: NextRequest) {
           };
         }),
         percent_people_answer_correct: percentagePeopleAnswerCorrect,
+        score_comparison: scoreComparison,
       }),
       {
         status: 200,
