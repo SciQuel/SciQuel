@@ -27,6 +27,7 @@ export default function ArticleCard({
   mini = false,
   preferHorizontal = false,
 }: Props) {
+  const headding = "Staff picks";
   return (
     <div className="w-full">
       <Link className="align-middle" href={href ?? "#"}>
@@ -127,6 +128,12 @@ export default function ArticleCard({
               style={{ objectFit: "cover" }}
               alt={title}
             />
+          </div>
+          <div className="group relative w-max">
+            <button>Reason for Picking </button>
+            <span className="pointer-events-none absolute  w-max opacity-0 transition-opacity group-hover:opacity-100">
+              Because I say so.
+            </span>
           </div>
         </div>
       </Link>
