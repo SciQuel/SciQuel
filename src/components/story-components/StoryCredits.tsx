@@ -4,13 +4,7 @@ import { type GetStoryResult } from "@/app/api/stories/[year]/[month]/[day]/[slu
 import { type StoryTopic } from "@prisma/client";
 import { DateTime } from "luxon";
 import Image from "next/image";
-import {
-  useContext,
-  useEffect,
-  useLayoutEffect,
-  useReducer,
-  useRef,
-} from "react";
+import { useContext, useEffect, useReducer, useRef } from "react";
 import Avatar from "../Avatar";
 import TopicTag from "../TopicTag";
 import { PrintContext } from "./PrintContext";
@@ -93,6 +87,8 @@ export default function StoryCredits({ story }: Props) {
     console.log(story);
     if (!isPrintMode) {
       window.addEventListener("resize", handleWindowResize);
+      // Initial calculation on mount
+      dispatchHeaderFont({ type: "window update" });
     } else {
       window.removeEventListener("resize", handleWindowResize);
     }
@@ -101,10 +97,6 @@ export default function StoryCredits({ story }: Props) {
       window.removeEventListener("resize", handleWindowResize);
     };
   }, [isPrintMode]);
-
-  useLayoutEffect(() => {
-    dispatchHeaderFont({ type: "window update" });
-  }, [headerFont]);
 
   function buildContributors() {
     const contributorMap = {
@@ -352,21 +344,19 @@ export default function StoryCredits({ story }: Props) {
           className={`relative m-10 flex min-h-0 w-full flex-col justify-end overflow-hidden `}
         >
           <h1
-            className="mb-0 rounded-t-xl p-8 pb-0 font-customTest text-6xl font-bold sm:text-8xl lg:w-4/5"
+            className="mb-0 rounded-t-xl p-8 pb-0 font-customTest font-bold lg:w-4/5"
             style={{
               color: story.titleColor,
-
-              fontSize: `${Math.max(headerFont, 14)}px`,
-              lineHeight: `${Math.max(headerFont + 3, 14)}px`,
+              fontSize: `${Math.max(headerFont, 18)}px`,
+              lineHeight: `${Math.max(headerFont + 3, 21)}px`,
             }}
           >
             {story.title}
           </h1>
           <h2
-            className=" p-8 pt-0 font-besley text-2xl   lg:w-5/6"
+            className="p-8 pt-0 font-besley lg:w-5/6"
             style={{
               color: story.summaryColor,
-
               fontSize: `${Math.max(headerFont - 33, 14)}px`,
               lineHeight: `${Math.max(headerFont - 28, 14)}px`,
             }}
