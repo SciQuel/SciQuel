@@ -1,0 +1,388 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+enum StoryType {
+  DIGEST
+  ESSAY
+}
+
+enum Category {
+  ARTICLE
+  PODCAST
+}
+
+enum ContributionType {
+  AUTHOR
+  ILLUSTRATOR
+  ANIMATOR
+  PHOTOGRAPHER
+  VIDEOGRAPHER
+  OTHER
+}
+
+enum StoryTopic {
+  ASTRONOMY
+  BIOLOGY
+  CHEMICAL_ENGINEERING
+  CHEMISTRY
+  COMPUTER_SCIENCE
+  ELECTRICAL_ENGINEERING
+  ENVIRONMENTAL_SCIENCE
+  GEOLOGY
+  MATHEMATICS
+  MECHANICAL_ENGINEERING
+  MEDICINE
+  PHYSICS
+  PSYCHOLOGY
+  SCIQUEL_MATTERS
+  SOCIOLOGY
+  TECHNOLOGY
+}
+
+enum AuthVerificationType {
+  EMAIL_VERIFICATION
+  PASSWORD_RESET
+}
+
+enum UserRole {
+  AUTHOR
+  EDITOR
+}
+
+enum QuizType {
+  PRE_QUIZ
+  POST_QUIZ
+}
+
+enum QuestionType {
+  MULTIPLE_CHOICE
+  TRUE_FALSE
+  DIRECT_MATCHING
+  COMPLEX_MATCHING
+  SELECT_ALL
+}
+
+enum StaffPickRecordType {
+  CREATE
+  DELETE
+  UPDATE
+}
+
+model Story {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  storyType StoryType
+  category  Category
+
+  title      String
+  titleColor String
+
+  slug String // Title slug for URL conforming to RFC 3986
+
+  summary      String
+  summaryColor String
+
+  topics StoryTopic[]
+
+  storyContributions StoryContribution[]
+  storyContent       StoryContent[]
+
+  published Boolean
+
+  thumbnailUrl String
+  coverCaption String @default("")
+
+  createdAt       DateTime
+  publishedAt     DateTime
+  updatedAt       DateTime
+  quizzes         Quiz[]
+  comments        Comment[]
+  staffPick       StaffPick?
+  StaffPickRecord StaffPickRecord[]
+}
+
+model StoryContribution {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  contributor   Contributor? @relation(fields: [contributorId], references: [id])
+  contributorId String?      @db.ObjectId
+
+  story   Story  @relation(fields: [storyId], references: [id], onDelete: NoAction)
+  storyId String @db.ObjectId
+
+  contributionType       ContributionType
+  otherContributorType   String?
+  otherContributorCredit String?
+  contributorByline      String?
+
+  bio String?
+}
+
+model Contributor {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  firstName String
+  lastName  String
+  email     String? @unique
+  avatarUrl String?
+
+  bio String?
+
+  contributorSlug String @unique
+
+  storyContributions StoryContribution[]
+}
+
+model User {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  firstName String
+  lastName  String
+  email     String  @unique
+  avatarUrl String?
+
+  bio String
+
+  passwordHash String
+
+  joinedAt DateTime @default(now())
+
+  verified Boolean @default(false)
+
+  authVerifications AuthVerification[]
+
+  roles    UserRole[] @default([])
+  quizzes  Quiz[]
+  comments Comment[]
+
+  contactUpdates       ContactMessage[]
+  firstQuizRecord      Json?
+  mostRecentQuizRecord Json?
+
+  commentLikes    CommentLike[]
+  StaffPickRecord StaffPickRecord[]
+}
+
+model AuthVerification {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @db.ObjectId
+
+  type AuthVerificationType
+
+  createdAt DateTime @default(now())
+}
+
+model StoryContent {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  story   Story  @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  storyId String @db.ObjectId
+
+  content        String
+  coverImgCredit String?
+  footer         String?
+
+  createdAt DateTime
+}
+
+model PageView {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  userId  String @db.ObjectId
+  storyId String @db.ObjectId
+
+  createdAt DateTime @default(now())
+}
+
+model Brain {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  userId  String @db.ObjectId
+  storyId String @db.ObjectId
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, storyId])
+}
+
+model Quiz {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  userId  String @db.ObjectId
+  storyId String @db.ObjectId
+
+  quizType   QuizType
+  totalScore Int
+  score      Int
+  date       DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id])
+  story Story @relation(fields: [storyId], references: [id])
+
+  @@unique([userId, storyId])
+}
+
+model Bookmark {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  userId  String @db.ObjectId
+  storyId String @db.ObjectId
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, storyId])
+}
+
+// feedback schema
+
+enum ContactStatus {
+  UNOPENED
+  NEEDS_RESPONSE
+  CLOSED
+  ARCHIVED
+}
+
+enum ContactType {
+  FEEDBACK
+  GET_INVOLVED
+}
+
+model ContactMessage {
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  contactType ContactType
+
+  name     String
+  email    String
+  message  String
+  senderIp String
+
+  status      ContactStatus
+  createdAt   DateTime
+  lastUpdated DateTime
+
+  lastUpdatedUser   User?   @relation(fields: [lastUpdatedUserId], references: [id])
+  lastUpdatedUserId String? @db.ObjectId
+}
+
+model BlockedUser {
+  id    String  @id @default(auto()) @map("_id") @db.ObjectId
+  email String?
+  ip    String?
+
+  reason String
+
+  banEndTime DateTime?
+
+  lastUpdated DateTime
+}
+
+model QuizQuestion {
+  id              String       @id @default(auto()) @map("_id") @db.ObjectId
+  storyId         String       @db.ObjectId
+  contentCategory String
+  questionType    QuestionType
+  questionName    String
+  totalScore      Int
+  subparts        Subpart[]
+}
+
+model Subpart {
+  id             String        @id @default(auto()) @map("_id") @db.ObjectId
+  question       String
+  options        String[]
+  correctAnswer  String[]
+  explanation    String
+  QuizQuestion   QuizQuestion? @relation(fields: [quizQuestionId], references: [id])
+  quizQuestionId String?       @db.ObjectId
+}
+
+model UserResponse {
+  id               String            @id @default(auto()) @map("_id") @db.ObjectId
+  storyId          String
+  questionType     QuestionType
+  userId           String            @db.ObjectId
+  quizQuestionId   String            @db.ObjectId
+  responseSubparts ResponseSubpart[]
+}
+
+model ResponseSubpart {
+  id             String        @id @default(auto()) @map("_id") @db.ObjectId
+  subpartId      String        @db.ObjectId
+  subpartUserAns String[]
+  UserResponse   UserResponse? @relation(fields: [userResponseId], references: [id])
+  userResponseId String?       @db.ObjectId
+}
+
+model Comment {
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  content         String
+  likeNum         Int       @default(0)
+  quote           String?
+  parentCommentId String?   @db.ObjectId
+  parentComment   Comment?  @relation("CommentReplies", fields: [parentCommentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  replies         Comment[] @relation("CommentReplies")
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @db.ObjectId
+
+  story   Story  @relation(fields: [storyId], references: [id], onDelete: NoAction)
+  storyId String @db.ObjectId
+
+  likes CommentLike[]
+  read  Boolean       @default(false)
+}
+
+model CommentLike {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  comment   Comment  @relation(fields: [commentId], references: [id])
+  commentId String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String   @db.ObjectId
+  createdAt DateTime @default(now())
+
+  @@unique([commentId, userId])
+}
+
+model StaffPick {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  storyId String @unique @db.ObjectId
+  story   Story  @relation(fields: [storyId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  description String
+
+  @@unique([storyId, id])
+}
+
+model StaffPickRecord {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  storyId String @db.ObjectId
+  story   Story  @relation(fields: [storyId], references: [id])
+
+  staffId String @db.ObjectId
+  staff   User   @relation(fields: [staffId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  updateType StaffPickRecordType
+
+  description String?
+
+  @@index([storyId])
+  @@index([staffId])
+}

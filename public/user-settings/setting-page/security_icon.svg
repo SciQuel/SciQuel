@@ -1,0 +1,20 @@
+<svg
+  viewBox="0 0 33 32"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+  className="h-7 w-7"
+>
+  <circle
+    cx="17.8827"
+    cy="21.6473"
+    r="8.47059"
+    stroke="#69A297"
+    stroke-width="1.88235"
+  />
+  <path
+    d="M21.6465 14.1176L27.2935 7.17547M30.1171 3.76465L27.2935 7.17547M27.2935 7.17547L31.9994 11.2941"
+    stroke="#69A297"
+    stroke-width="1.88235"
+    stroke-linecap="round"
+  />
+</svg>

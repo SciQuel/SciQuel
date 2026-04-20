@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="67.692467mm"
+   height="83.945122mm"
+   viewBox="0 0 67.692467 83.945121"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.2.2 (732a01da63, 2022-12-09)"
+   sodipodi:docname="triangle.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="1.0456808"
+     inkscape:cx="-277.33129"
+     inkscape:cy="209.91109"
+     inkscape:window-width="1920"
+     inkscape:window-height="991"
+     inkscape:window-x="-9"
+     inkscape:window-y="-9"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs2">
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#sciquel_teal"
+       id="linearGradient855"
+       x1="0"
+       y1="57.5"
+       x2="100"
+       y2="57.5"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       id="sciquel_teal"
+       inkscape:swatch="solid">
+      <stop
+         style="stop-color:#109191;stop-opacity:1;"
+         offset="0"
+         id="stop851" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#sciquel_teal"
+       id="linearGradient1634"
+       x1="-0.87420833"
+       y1="57.256924"
+       x2="100.87421"
+       y2="57.256924"
+       gradientUnits="userSpaceOnUse" />
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-121.29711,-30.837377)">
+    <polygon
+       points="0,100 50,15 100,100 "
+       id="polygon2"
+       transform="matrix(0,0.52133565,0.46358057,0,128.48677,46.743154)"
+       style="fill:url(#linearGradient855);fill-opacity:1;stroke:url(#linearGradient1634);stroke-width:61.0239;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:normal" />
+  </g>
+</svg>

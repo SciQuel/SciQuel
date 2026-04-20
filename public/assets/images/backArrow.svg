@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   version="1.1"
+   width="114.51605"
+   height="80.224319"
+   id="svg4"
+   viewBox="0 0 114.51605 80.224319"
+   preserveAspectRatio="none"
+   sodipodi:docname="backArrow.svg"
+   inkscape:version="1.2.2 (732a01da63, 2022-12-09)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs8">
+    <linearGradient
+       id="sciquel_teal"
+       inkscape:swatch="solid">
+      <stop
+         style="stop-color:#109191;stop-opacity:1;"
+         offset="0"
+         id="stop851" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#sciquel_teal"
+       id="linearGradient2314"
+       x1="0"
+       y1="57.5"
+       x2="100"
+       y2="57.5"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#sciquel_teal"
+       id="linearGradient3048"
+       x1="-113.70117"
+       y1="40.11216"
+       x2="-38.576599"
+       y2="40.11216"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#sciquel_teal"
+       id="linearGradient3064"
+       x1="0.15219045"
+       y1="40.11216"
+       x2="114.51605"
+       y2="40.11216"
+       gradientUnits="userSpaceOnUse" />
+  </defs>
+  <sodipodi:namedview
+     id="namedview6"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     showgrid="false"
+     inkscape:zoom="4.1499999"
+     inkscape:cx="12.289157"
+     inkscape:cy="32.409639"
+     inkscape:window-width="1920"
+     inkscape:window-height="991"
+     inkscape:window-x="-9"
+     inkscape:window-y="-9"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="g3058" />
+  <g
+     id="g3058"
+     style="stroke:url(#linearGradient3064)">
+    <polygon
+       points="0,100 50,15 100,100 "
+       id="polygon2"
+       transform="matrix(0,0.79538745,0.60033307,0,-8.8528056,0.34278583)"
+       style="fill:url(#linearGradient2314);fill-opacity:1;stroke:url(#linearGradient3064);stroke-linecap:round;stroke-linejoin:bevel;stroke-opacity:1;paint-order:normal" />
+    <rect
+       style="fill:url(#linearGradient3048);fill-opacity:1;stroke:url(#linearGradient3064);stroke-width:1.62976;stroke-linecap:round;stroke-linejoin:bevel;stroke-opacity:1;paint-order:normal"
+       id="rect1688"
+       width="75.124573"
+       height="49.526875"
+       x="-113.70117"
+       y="15.348721"
+       ry="0"
+       transform="scale(-1,1)" />
+  </g>
+</svg>
