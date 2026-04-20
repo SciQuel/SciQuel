@@ -190,7 +190,7 @@ export default function StoryCredits({ story }: Props) {
                 <Avatar
                   key={`author-icons-${icon.icon}-${index}`}
                   imageUrl={icon.icon ? icon.icon : undefined}
-                  label={icon.name[index].slice(0, 1)}
+                  label={icon.name[index]?.slice(0, 1)}
                   className="my-1 me-2  "
                   size="md"
                 />
@@ -315,7 +315,7 @@ export default function StoryCredits({ story }: Props) {
                 " | "
               : ""}
           </p>
-          {story.topics.map((item: StoryTopic, index: number) => {
+          {story?.topics?.map((item: StoryTopic, index: number) => {
             return (
               <p key={`${item}-${index}`} className="lowercase">
                 {item}{" "}
@@ -401,7 +401,7 @@ export default function StoryCredits({ story }: Props) {
                   " |"
                 : ""}
             </p>
-            {story.topics.map((item: StoryTopic, index: number) => {
+            {story?.topics?.map((item: StoryTopic, index: number) => {
               return <TopicTag name={item} key={`${item}-${index}`} />;
             })}
           </div>
