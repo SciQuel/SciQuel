@@ -1,3 +1,6 @@
+// This component is responsible for rendering the "Staff Picks" section on the homepage, which highlights a selection of articles that have been marked as staff picks by the editors.
+// It filters the provided list of articles to only include those with a staff pick, and then renders a card for each of those articles, displaying relevant information such as the title, summary, author, and the staff pick description.
+// If there are no staff picks available, it returns null and does not render anything.
 import { type Stories } from "@/app/api/stories/route";
 import HomepageSection from "../HomepageSection";
 import NavigateLink from "../HomepageSection/NavigateLink";
