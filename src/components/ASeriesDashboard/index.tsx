@@ -1,7 +1,7 @@
 "use client";
 
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface Story {
   id: string;
@@ -29,6 +29,46 @@ export default function ASeriesDashboard() {
     Record<string, any[]>
   >({});
   const [searchingMap, setSearchingMap] = useState<Record<string, boolean>>({});
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [expandedSeries, setExpandedSeries] = useState<Record<string, boolean>>(
+    {},
+  );
+  const [updatingSeriesMap, setUpdatingSeriesMap] = useState<
+    Record<string, boolean>
+  >({});
+
+  const loadExistingSeries = async () => {
+    setIsLoading(true);
+    setLoadError(null);
+
+    try {
+      const res = await axios.get("/api/series");
+      const rawSeries = res.data?.allSeries || [];
+      const normalizedSeries: Series[] = rawSeries.map((series: any) => ({
+        id: series.id,
+        name: series.title || "Untitled Series",
+        stories: (series.storyinSeries || [])
+          .sort((a: any, b: any) => (a.order ?? 0) - (b.order ?? 0))
+          .map((relation: any) => ({
+            id: relation.storyId,
+            name: relation.story?.title || relation.storyShortHeadline || "",
+            url: relation.storyURL || "",
+            shortHeadline: relation.storyShortHeadline || "",
+          })),
+      }));
+      setSeriesList(normalizedSeries);
+    } catch (err) {
+      console.error(err);
+      setLoadError("Failed to load existing series.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadExistingSeries();
+  }, []);
 
   const addSeries = () => {
     const newSeries: Series = {
@@ -37,6 +77,14 @@ export default function ASeriesDashboard() {
       stories: [{ id: "1", name: "Story 1", url: "", shortHeadline: "" }],
     };
     setSeriesList([...seriesList, newSeries]);
+    setExpandedSeries((prev) => ({ ...prev, [newSeries.id]: true }));
+  };
+
+  const toggleSeriesExpanded = (seriesId: string) => {
+    setExpandedSeries((prev) => ({
+      ...prev,
+      [seriesId]: !prev[seriesId],
+    }));
   };
 
   const updateSeriesName = (id: string, name: string) => {
@@ -69,6 +117,40 @@ export default function ASeriesDashboard() {
 
   const deleteSeries = (id: string) => {
     setSeriesList(seriesList.filter((series) => series.id !== id));
+  };
+
+  const updateExistingSeries = async (series: Series) => {
+    setUpdatingSeriesMap((prev) => ({ ...prev, [series.id]: true }));
+    setLoadError(null);
+
+    try {
+      const payload: any = {
+        id: series.id,
+        title: series.name,
+      };
+
+      const allStoriesHaveUrl = series.stories.every(
+        (story) => story.url.trim() !== "",
+      );
+
+      if (allStoriesHaveUrl && series.stories.length > 0) {
+        payload.stories = series.stories.map((story) => ({
+          id: story.id,
+          shortHeadline: story.shortHeadline || "",
+          storyURL: story.url,
+        }));
+      }
+
+      await axios.put("/api/series", payload);
+      setSeriesList((prev) =>
+        prev.map((item) => (item.id === series.id ? series : item)),
+      );
+    } catch (err) {
+      console.error(err);
+      setLoadError("Failed to update series.");
+    } finally {
+      setUpdatingSeriesMap((prev) => ({ ...prev, [series.id]: false }));
+    }
   };
 
   const addStory = (seriesId: string) => {
@@ -107,9 +189,9 @@ export default function ASeriesDashboard() {
   /**
    * Handles the dragover event when the user drags a story over the story list area.
    *
-   * @param {React.DragEvent} e - The dragover event.
+   * @param {React.DragEvent<HTMLDivElement>} e - The dragover event.
    */
-  const handleDragOver = (e: React.DragEvent) => {
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     // Prevent the default dragover behavior (browser will try to open the dragged element)
     e.preventDefault();
     // Set the opacity of the target element to 0.8
@@ -119,9 +201,9 @@ export default function ASeriesDashboard() {
   /**
    * Called when the user stops dragging a story over the story list area.
    *
-   * @param {React.DragEvent} e - The dragleave event.
+   * @param {React.DragEvent<HTMLDivElement>} e - The dragleave event.
    */
-  const handleDragLeave = (e: React.DragEvent) => {
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
     // Reset the opacity of the target element
     e.currentTarget.style.opacity = "1";
   };
@@ -129,12 +211,12 @@ export default function ASeriesDashboard() {
   /**
    * Handles the drop event when the user stops dragging a story over the story list area.
    *
-   * @param {React.DragEvent} e - The drop event.
+   * @param {React.DragEvent<HTMLDivElement>} e - The drop event.
    * @param {string} targetSeriesId - The id of the series that the user dropped the story into.
    * @param {string} targetStoryId - The id of the story that the user dropped the story into.
    */
   const handleDrop = (
-    e: React.DragEvent,
+    e: React.DragEvent<HTMLDivElement>,
     targetSeriesId: string,
     targetStoryId: string,
   ) => {
@@ -260,6 +342,16 @@ export default function ASeriesDashboard() {
 
       {/* Exists Section */}
       <div>
+        {isLoading && (
+          <div className="rounded-md border border-gray-300 bg-white p-4 text-sm text-slate-600">
+            Loading existing series...
+          </div>
+        )}
+        {loadError && (
+          <div className="rounded-md border border-red-300 bg-red-50 p-4 text-sm text-red-700">
+            {loadError}
+          </div>
+        )}
         <h4 className="mb-4 text-xl font-semibold">Exists</h4>
         <div className="flex flex-col gap-4">
           {seriesList.map((series) => (
@@ -267,9 +359,16 @@ export default function ASeriesDashboard() {
               key={series.id}
               className="rounded-md border border-gray-300 p-4"
             >
-              <div className="mb-4 flex items-center justify-between">
+              <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex-1">
+                  <label
+                    className="sr-only"
+                    htmlFor={`series-name-${series.id}`}
+                  >
+                    Series Name
+                  </label>
                   <input
+                    id={`series-name-${series.id}`}
                     type="text"
                     value={series.name}
                     onChange={(e) =>
@@ -278,154 +377,199 @@ export default function ASeriesDashboard() {
                     className="mb-2 w-full rounded border px-2 py-1 text-2xl font-bold"
                     placeholder="Series Name"
                   />
+                  <p className="text-sm text-slate-600">
+                    {series.stories.length} story
+                    {series.stories.length === 1 ? "" : "ies"} in this series
+                  </p>
                 </div>
-                <button
-                  onClick={() => deleteSeries(series.id)}
-                  className="ml-4 rounded bg-red-600 px-3 py-1 text-white hover:bg-red-700"
-                >
-                  Delete
-                </button>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={() => toggleSeriesExpanded(series.id)}
+                    className="rounded bg-slate-200 px-3 py-1 text-sm font-semibold text-slate-700 hover:bg-slate-300"
+                  >
+                    {expandedSeries[series.id] ? "Collapse" : "Expand"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => updateExistingSeries(series)}
+                    className="rounded bg-blue-600 px-3 py-1 text-sm font-semibold text-white hover:bg-blue-700"
+                    disabled={updatingSeriesMap[series.id]}
+                  >
+                    {updatingSeriesMap[series.id] ? "Updating..." : "Update"}
+                  </button>
+                  <button
+                    onClick={() => deleteSeries(series.id)}
+                    className="rounded bg-red-600 px-3 py-1 text-white hover:bg-red-700"
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
 
-              <div className="flex flex-wrap gap-3">
-                {series.stories.map((story) => (
-                  <div
-                    key={story.id}
-                    draggable
-                    onDragStart={() => handleDragStart(series.id, story.id)}
-                    onDragOver={handleDragOver}
-                    onDragLeave={handleDragLeave}
-                    onDrop={(e) => handleDrop(e, series.id, story.id)}
-                    className="flex w-80 cursor-move flex-col gap-2 rounded border-2 border-gray-300 p-2 transition hover:border-teal-400"
-                    style={{
-                      opacity:
-                        draggedStory?.seriesId === series.id &&
-                        draggedStory?.storyId === story.id
-                          ? 0.5
-                          : 1,
-                    }}
-                  >
-                    <div>
-                      <label className="mb-1 block text-sm font-semibold">
-                        Story Headline
-                      </label>
-                      <input
-                        type="text"
-                        value={story.name}
-                        readOnly
-                        className="w-full cursor-not-allowed rounded border bg-gray-100 px-2 py-1"
-                        placeholder="Story Headline"
-                      />
-                    </div>
-                    <div>
-                      <label className="mb-1 block text-sm font-semibold">
-                        Story URL
-                      </label>
-                      <input
-                        type="text"
-                        value={story.url}
-                        readOnly
-                        className="w-full cursor-not-allowed rounded border bg-gray-100 px-2 py-1"
-                        placeholder="Story URL"
-                      />
-                    </div>
-                    <div className="mt-2">
-                      <label className="mb-1 block text-sm font-semibold">
-                        Story Short Headline
-                      </label>
-                      <input
-                        type="text"
-                        value={story.shortHeadline || ""}
-                        onChange={(e) =>
-                          updateStory(
-                            series.id,
-                            story.id,
-                            "shortHeadline",
-                            e.target.value,
-                          )
-                        }
-                        className="w-full rounded border px-2 py-1"
-                        placeholder="Short headline"
-                      />
-                    </div>
-                    <div className="mt-2">
-                      <div className="flex gap-2">
-                        <input
-                          type="text"
-                          placeholder="Search existing stories..."
-                          value={
-                            searchQueries[`${series.id}_${story.id}`] || ""
-                          }
-                          onChange={(e) =>
-                            setSearchQueries((q) => ({
-                              ...q,
-                              [`${series.id}_${story.id}`]: e.target.value,
-                            }))
-                          }
-                          className="flex-1 rounded border px-2 py-1"
-                        />
-                        <button
-                          type="button"
-                          onClick={() =>
-                            handleSearch(`${series.id}_${story.id}`)
-                          }
-                          className="rounded-md bg-gray-200 px-3 py-1 text-sm font-semibold"
-                        >
-                          Search
-                        </button>
-                      </div>
-                      {searchingMap[`${series.id}_${story.id}`] ? (
-                        <p className="mt-2 text-sm italic">Searching...</p>
-                      ) : (
-                        (searchResultsMap[`${series.id}_${story.id}`] || [])
-                          .length > 0 && (
-                          <ul className="mt-2 max-h-40 overflow-y-auto rounded border bg-white text-sm">
-                            {(
-                              searchResultsMap[`${series.id}_${story.id}`] || []
-                            ).map((s: any) => (
-                              <li
-                                key={s.id}
-                                className="cursor-pointer px-2 py-1 hover:bg-gray-100"
-                                onClick={() => {
-                                  updateStory(
-                                    series.id,
-                                    story.id,
-                                    "name",
-                                    s.title,
-                                  );
-                                  updateStory(
-                                    series.id,
-                                    story.id,
-                                    "url",
-                                    buildStoryUrl(s),
-                                  );
-                                  clearResults(`${series.id}_${story.id}`);
-                                }}
-                              >
-                                {s.title}
-                              </li>
-                            ))}
-                          </ul>
-                        )
-                      )}
-                    </div>
-                    <div className="mt-2 flex justify-end">
-                      <button
-                        onClick={() => deleteStory(series.id, story.id)}
-                        className="rounded-md bg-red-600 px-3 py-1 text-sm font-semibold text-white hover:bg-red-700"
+              {expandedSeries[series.id] && (
+                <div className="space-y-4">
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    {series.stories.map((story) => (
+                      <div
+                        key={story.id}
+                        draggable
+                        onDragStart={() => handleDragStart(series.id, story.id)}
+                        onDragOver={handleDragOver}
+                        onDragLeave={handleDragLeave}
+                        onDrop={(e) => handleDrop(e, series.id, story.id)}
+                        className="min-w-0 rounded border border-gray-300 p-3"
+                        style={{
+                          opacity:
+                            draggedStory?.seriesId === series.id &&
+                            draggedStory?.storyId === story.id
+                              ? 0.5
+                              : 1,
+                        }}
                       >
-                        Delete
-                      </button>
-                    </div>
+                        <div className="grid gap-3">
+                          <div>
+                            <label className="mb-1 block text-sm font-semibold">
+                              Story Headline
+                            </label>
+                            <input
+                              type="text"
+                              value={story.name}
+                              readOnly
+                              className="w-full cursor-not-allowed rounded border bg-gray-100 px-2 py-1"
+                              placeholder="Story Headline"
+                            />
+                          </div>
+                          <div>
+                            <label className="mb-1 block text-sm font-semibold">
+                              Story URL
+                            </label>
+                            <input
+                              type="text"
+                              value={story.url}
+                              readOnly
+                              className="w-full cursor-not-allowed rounded border bg-gray-100 px-2 py-1"
+                              placeholder="Story URL"
+                            />
+                          </div>
+                          <div>
+                            <label className="mb-1 block text-sm font-semibold">
+                              Story Short Headline
+                            </label>
+                            <input
+                              type="text"
+                              value={story.shortHeadline || ""}
+                              onChange={(e) =>
+                                updateStory(
+                                  series.id,
+                                  story.id,
+                                  "shortHeadline",
+                                  e.target.value,
+                                )
+                              }
+                              className="w-full rounded border px-2 py-1"
+                              placeholder="Short headline"
+                            />
+                          </div>
+                          <div className="grid gap-2 sm:grid-cols-[1fr_auto]">
+                            <input
+                              type="text"
+                              placeholder="Search existing stories..."
+                              value={
+                                searchQueries[`${series.id}_${story.id}`] || ""
+                              }
+                              onChange={(e) =>
+                                setSearchQueries((q) => ({
+                                  ...q,
+                                  [`${series.id}_${story.id}`]: e.target.value,
+                                }))
+                              }
+                              className="rounded border px-2 py-1"
+                            />
+                            <button
+                              type="button"
+                              onClick={() =>
+                                handleSearch(`${series.id}_${story.id}`)
+                              }
+                              className="rounded-md bg-gray-200 px-3 py-1 text-sm font-semibold"
+                            >
+                              Search
+                            </button>
+                          </div>
+                          {searchingMap[`${series.id}_${story.id}`] ? (
+                            <p className="text-sm italic">Searching...</p>
+                          ) : (
+                            (searchResultsMap[`${series.id}_${story.id}`] || [])
+                              .length > 0 && (
+                              <ul className="max-h-40 overflow-y-auto rounded border bg-white text-sm">
+                                {(
+                                  searchResultsMap[
+                                    `${series.id}_${story.id}`
+                                  ] || []
+                                ).map((s: any) => (
+                                  <li
+                                    key={s.id}
+                                    className="cursor-pointer px-2 py-1 hover:bg-gray-100"
+                                    onClick={() => {
+                                      updateStory(
+                                        series.id,
+                                        story.id,
+                                        "name",
+                                        s.title,
+                                      );
+                                      updateStory(
+                                        series.id,
+                                        story.id,
+                                        "url",
+                                        buildStoryUrl(s),
+                                      );
+                                      clearResults(`${series.id}_${story.id}`);
+                                    }}
+                                  >
+                                    {s.title}
+                                  </li>
+                                ))}
+                              </ul>
+                            )
+                          )}
+                          <div className="flex justify-end gap-2">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const updatedSeries = {
+                                  ...series,
+                                  stories: series.stories.map((s) =>
+                                    s.id === story.id ? story : s,
+                                  ),
+                                };
+                                updateExistingSeries(updatedSeries);
+                              }}
+                              className="rounded-md bg-green-600 px-3 py-1 text-sm font-semibold text-white hover:bg-green-700"
+                              disabled={updatingSeriesMap[series.id]}
+                            >
+                              {updatingSeriesMap[series.id]
+                                ? "Saving..."
+                                : "Save"}
+                            </button>
+                            <button
+                              onClick={() => deleteStory(series.id, story.id)}
+                              className="rounded-md bg-red-600 px-3 py-1 text-sm font-semibold text-white hover:bg-red-700"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-              <button
-                onClick={() => addStory(series.id)}
-                className="mt-3 rounded-md bg-blue-600 px-3 py-1 text-sm font-semibold text-white hover:bg-blue-700"
-              >
-                + Add Story
-              </button>
+                  <button
+                    onClick={() => addStory(series.id)}
+                    className="rounded-md bg-blue-600 px-3 py-1 text-sm font-semibold text-white hover:bg-blue-700"
+                  >
+                    + Add Story
+                  </button>
+                </div>
+              )}
             </div>
           ))}
 

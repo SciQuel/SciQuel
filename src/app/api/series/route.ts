@@ -38,6 +38,16 @@ export async function GET(req: NextRequest) {
             }
           : title,
       },
+      include: {
+        storyinSeries: {
+          include: {
+            story: true,
+          },
+          orderBy: {
+            order: "asc",
+          },
+        },
+      },
     });
     return NextResponse.json({
       allSeries,
@@ -232,84 +242,69 @@ export async function POST(req: NextRequest) {
 }
 
 export async function PUT(req: NextRequest) {
-  const seriesPutBody = (await req.json()) as string;
+  const seriesPutBody = await req.json();
   const parsedRequest = putSeriesSchema.safeParse(seriesPutBody);
-  console.log(parsedRequest);
   if (!parsedRequest.success) {
     console.log(parsedRequest.error);
     return NextResponse.json(
-      { error: "Bad Request. Validation Error." },
+      {
+        error: "Bad Request. Validation Error.",
+        details: parsedRequest.error.format(),
+      },
       { status: 400 },
     );
   }
+
   try {
     const parsedData = parsedRequest.data;
-    if (parsedData.id) {
-      //Let prisma handle?
-      const series = await prisma.series.findUnique({
-        where: { id: parsedData.id },
-      });
-      if (!series) {
-        return NextResponse.json(
-          { error: "Series not found." },
-          { status: 404 },
-        );
-      }
-      let result = { series: series };
-      if (parsedData.title) {
-        const updatedSeries = await prisma.series.update({
-          where: {
-            id: parsedData.id,
-          },
-          data: {
-            title: parsedData.title,
-          },
-        });
-        result.series = updatedSeries;
-      }
-      if (parsedData.stories) {
-        // const deletedRelations = await prisma.$transaction([
-        //   prisma.storyinSeries.deleteMany({
-        //     where: {
-        //       seriesId: parsedData.id,
-        //     },
-        //   }),
-        //   prisma.storyinSeries.createMany({
-        //     data: parsedData.stories.map((story, id) => ({
-        //       storyId: (story as unknown as StoryinSeries).id,
-        //       seriesId: parsedData.id, //has verified that series id exists
-        //       storyShortHeadline: (story as unknown as StoryinSeries)
-        //         .shortHeadline,
-        //       storyURL: (story as unknown as StoryinSeries).storyURL,
-        //       order: id + 1, //1 base index
-        //     })),
-        //   }),
-        // ]);
-        const updatedRelations = await prisma.$transaction(async (tx) => {
-          const deleted = await tx.storyinSeries.deleteMany({
-            where: {
-              seriesId: parsedData.id,
-            },
-          });
-          if (parsedData.stories && parsedData.stories.length > 0) {
-            const newRelations = await tx.storyinSeries.createMany({
-              data: parsedData.stories.map((story, id) => ({
-                storyId: (story as unknown as StoryinSeries).id,
-                seriesId: parsedData.id,
-                storyShortHeadline: (story as unknown as StoryinSeries)
-                  .shortHeadline,
-                storyURL: (story as unknown as StoryinSeries).storyURL,
-                order: id + 1,
-              })),
-            });
-            return { newRelations: newRelations };
-          }
-          return { deleted: deleted };
-        });
-        result = { ...result, ...updatedRelations };
-      }
-      return NextResponse.json({ result });
+    if (!parsedData.id) {
+      return NextResponse.json(
+        { error: "Series id is required." },
+        { status: 400 },
+      );
     }
+
+    const existingSeries = await prisma.series.findUnique({
+      where: { id: parsedData.id },
+    });
+    if (!existingSeries) {
+      return NextResponse.json({ error: "Series not found." }, { status: 404 });
+    }
+
+    const updatedSeries = await prisma.$transaction(async (tx) => {
+      const seriesUpdate = parsedData.title
+        ? await tx.series.update({
+            where: { id: parsedData.id },
+            data: { title: parsedData.title },
+          })
+        : existingSeries;
+
+      let relationResult = null;
+      if (parsedData.stories) {
+        await tx.storyinSeries.deleteMany({
+          where: { seriesId: parsedData.id },
+        });
+
+        if (parsedData.stories.length > 0) {
+          relationResult = await tx.storyinSeries.createMany({
+            data: parsedData.stories.map((story, index) => ({
+              storyId: story.id,
+              seriesId: parsedData.id,
+              storyShortHeadline: story.shortHeadline,
+              storyURL: story.storyURL,
+              order: index + 1,
+            })),
+          });
+        }
+      }
+
+      return {
+        series: seriesUpdate,
+        relations: relationResult,
+      };
+    });
+
+    return NextResponse.json({ updatedSeries });
   } catch (err) {
     if (err instanceof Prisma.PrismaClientKnownRequestError) {
       return NextResponse.json(

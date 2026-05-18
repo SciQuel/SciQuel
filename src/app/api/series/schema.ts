@@ -12,6 +12,20 @@ export const getSeriesSchema = z.object({
   title: z.string().optional(),
 });
 
+const storyUrlSchema = z.string().refine(
+  (value) => {
+    try {
+      new URL(value, "http://example.com");
+      return true;
+    } catch {
+      return false;
+    }
+  },
+  {
+    message: "Invalid story URL",
+  },
+);
+
 export const postSeriesSchema = zfd.formData({
   title: zfd.text(),
   stories: z.preprocess(
@@ -26,7 +40,7 @@ export const postSeriesSchema = zfd.formData({
       z.object({
         id: zfd.text(),
         shortHeadline: zfd.text(),
-        storyURL: z.string().url(),
+        storyURL: storyUrlSchema,
       }),
     ),
   ),
@@ -34,27 +48,17 @@ export const postSeriesSchema = zfd.formData({
 
 export const putSeriesSchema = z
   .object({
-    id: zfd.text(),
-    title: zfd.text().optional(),
-    stories: z.preprocess(
-      (val) => {
-        if (Array.isArray(val)) return val as unknown;
-        if (typeof val == "string") {
-          const newVal = JSON.parse(val) as StoryRequestSchema[];
-          return newVal;
-        }
-        return [];
-      },
-      z
-        .array(
-          z.object({
-            id: zfd.text(),
-            shortHeadline: zfd.text(),
-            storyURL: z.string().url(),
-          }),
-        )
-        .optional(),
-    ),
+    id: z.string(),
+    title: z.string().optional(),
+    stories: z
+      .array(
+        z.object({
+          id: z.string(),
+          shortHeadline: z.string(),
+          storyURL: storyUrlSchema,
+        }),
+      )
+      .optional(),
   })
   .refine(({ title, stories }) => title || stories, {
     message: "title or stories array must be defined",
