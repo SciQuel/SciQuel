@@ -1,12 +1,14 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 "use server";
 
 import { env } from "process";
 import { type GetStoriesResult } from "@/app/api/stories/route";
-import { revalidatePath, revalidateTag } from "next/cache";
+import { type Story } from "@prisma/client";
+import { revalidateTag } from "next/cache";
 import { cookies } from "next/headers";
 
-export async function publishStory(story: any, isPublished: boolean) {
-  const cookieStore = await cookies(); //support in nextjs 15
+export async function publishStory(story: Story, isPublished: boolean) {
+  const cookieStore = cookies(); //support in nextjs 15
   const storyURL = new URL(
     `${env.NEXT_PUBLIC_SITE_URL}/api/stories/id/${
       story.id
@@ -27,7 +29,7 @@ export async function publishStory(story: any, isPublished: boolean) {
 }
 
 export const storyFetcher = async (isPublished: string) => {
-  const cookieStore = await cookies();
+  const cookieStore = cookies();
   return (await fetch(
     `${env.NEXT_PUBLIC_SITE_URL}/api/stories?published=${isPublished}`,
     {

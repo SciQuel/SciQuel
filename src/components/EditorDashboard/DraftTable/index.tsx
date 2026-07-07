@@ -1,6 +1,7 @@
 "use client";
 
 import { type GetStoriesResult } from "@/app/api/stories/route";
+import { type Story } from "@prisma/client";
 // import env from "@/lib/env";
 // import axios from "axios";
 import { DateTime } from "luxon";
@@ -20,7 +21,7 @@ export default function DraftTable({
   publishHandle,
 }: {
   data: GetStoriesResult;
-  publishHandle: (story: any, isPublished: boolean) => Promise<void>;
+  publishHandle: (story: Story, isPublished: boolean) => Promise<void>;
 }) {
   // const { data, isLoading } = useSWR(
   //   `${env.NEXT_PUBLIC_SITE_URL}/api/stories?published=false`,

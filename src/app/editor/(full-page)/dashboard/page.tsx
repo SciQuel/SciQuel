@@ -1,11 +1,7 @@
-import { type GetStoriesResult } from "@/app/api/stories/route";
 import ContactLink from "@/components/EditorDashboard/contact-forms/ContactLink";
 import DraftTable from "@/components/EditorDashboard/DraftTable";
 import PublishedTable from "@/components/EditorDashboard/PublishedTable";
-import env from "@/lib/env";
-import { cookies } from "next/headers";
 import Link from "next/link";
-import { useEffect } from "react";
 import { publishStory, storyFetcher } from "./action";
 
 export default async function EditorDashboardPage() {
