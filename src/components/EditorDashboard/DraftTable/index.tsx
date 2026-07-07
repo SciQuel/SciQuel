@@ -1,20 +1,33 @@
 "use client";
 
 import { type GetStoriesResult } from "@/app/api/stories/route";
-import env from "@/lib/env";
+// import env from "@/lib/env";
+// import axios from "axios";
 import { DateTime } from "luxon";
 import Link from "next/link";
 import { useState } from "react";
-import useSWR from "swr";
 
-const storyFetcher = (url: string) =>
-  fetch(url).then((r) => r.json() as Promise<GetStoriesResult>);
+// import useSWR from "swr";
+// import { type z } from "zod";
 
-export default function DraftTable() {
-  const { data, isLoading } = useSWR(
-    `${env.NEXT_PUBLIC_SITE_URL}/api/stories?published=false`,
-    storyFetcher,
-  );
+// const storyFetcher = (url: string) =>
+//   fetch(url, {
+//     next: { tags: ["draftStories"] },
+//   }).then((r) => r.json() as Promise<GetStoriesResult>);
+
+export default function DraftTable({
+  data,
+  publishHandle,
+}: {
+  data: GetStoriesResult;
+  publishHandle: (story: any, isPublished: boolean) => Promise<void>;
+}) {
+  // const { data, isLoading } = useSWR(
+  //   `${env.NEXT_PUBLIC_SITE_URL}/api/stories?published=false`,
+  //   storyFetcher,
+  // );
+  // const [state, action, pending] = useActionState(publishHandle, false);
+  const [isLoading, setIsLoading] = useState(false);
   const [search, setSearch] = useState("");
   return (
     <div className="flex flex-col gap-2">
@@ -51,46 +64,71 @@ export default function DraftTable() {
             </tr>
           </thead>
           <tbody className="border-gray-300 [&>tr:not(:last-child)]:border-b">
-            {data?.stories?.map((story) => (
-              <tr className="[&>td]:px-3 [&>td]:py-3">
-                <td>{story.title}</td>
-                <td>N/A</td>
-                <td>{`${story.storyType[0]}${story.storyType
-                  .slice(1)
-                  .toLowerCase()}`}</td>
-                <td>{story.topics.join(" ").toLowerCase()}</td>
-                <td>
-                  {DateTime.fromISO(
-                    story.createdAt as unknown as string,
-                  ).toLocaleString(DateTime.DATETIME_FULL)}
-                </td>
-                <td className="flex flex-row">
-                  <Link
-                    href={`/editor/story/info?id=${story.id}`}
-                    className="mr-2 rounded-md bg-teal-600 px-2 py-1 text-sm font-semibold text-white hover:bg-teal-700"
-                  >
-                    Edit
-                  </Link>
-                  <button className="rounded-md bg-blue-600 px-2 py-1 text-sm font-semibold text-white hover:bg-blue-700">
-                    Publish
-                  </button>
-                </td>
-              </tr>
-            ))}
-            {!data && isLoading && (
+            {!isLoading ? (
+              data && data.stories?.length > 0 ? (
+                data?.stories?.map((story) => (
+                  <tr className="[&>td]:px-3 [&>td]:py-3">
+                    <td>{story.title}</td>
+                    <td>N/A</td>
+                    <td>{`${story.storyType[0]}${story.storyType
+                      .slice(1)
+                      .toLowerCase()}`}</td>
+                    <td>{story.topics.join(" ").toLowerCase()}</td>
+                    <td>
+                      {DateTime.fromISO(
+                        story.createdAt as unknown as string,
+                      ).toLocaleString(DateTime.DATETIME_FULL)}
+                    </td>
+                    <td className="flex flex-row">
+                      <Link
+                        href={`/editor/story/info?id=${story.id}`}
+                        className="mr-2 rounded-md bg-teal-600 px-2 py-1 text-sm font-semibold text-white hover:bg-teal-700"
+                      >
+                        Edit
+                      </Link>
+                      <button
+                        className="rounded-md bg-blue-600 px-2 py-1 text-sm font-semibold text-white hover:bg-blue-700"
+                        onClick={() => {
+                          setIsLoading(true);
+                          void publishHandle(story, true);
+                          setTimeout(() => {
+                            setIsLoading(false);
+                          }, 250);
+                        }}
+                      >
+                        Publish
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={7} className="py-3 text-center italic">
+                    No data
+                  </td>
+                </tr>
+              )
+            ) : (
               <tr>
                 <td colSpan={7} className="py-3 text-center italic">
                   Loading data
                 </td>
               </tr>
             )}
-            {(!data || data.stories?.length === 0) && !isLoading && (
+            {/* {!data && isLoading && (
+              <tr>
+                <td colSpan={7} className="py-3 text-center italic">
+                  Loading data
+                </td>
+              </tr>
+            )} */}
+            {/* {(!data || data.stories?.length === 0)  && (
               <tr>
                 <td colSpan={7} className="py-3 text-center italic">
                   No data
                 </td>
               </tr>
-            )}
+            )} */}
           </tbody>
         </table>
       </div>

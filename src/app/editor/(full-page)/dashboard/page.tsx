@@ -1,9 +1,16 @@
+import { type GetStoriesResult } from "@/app/api/stories/route";
 import ContactLink from "@/components/EditorDashboard/contact-forms/ContactLink";
 import DraftTable from "@/components/EditorDashboard/DraftTable";
 import PublishedTable from "@/components/EditorDashboard/PublishedTable";
+import env from "@/lib/env";
+import { cookies } from "next/headers";
 import Link from "next/link";
+import { useEffect } from "react";
+import { publishStory, storyFetcher } from "./action";
 
-export default function EditorDashboardPage() {
+export default async function EditorDashboardPage() {
+  const draftStoriesData = await storyFetcher("false");
+  const publishedStoriesData = await storyFetcher("true");
   return (
     <div className="mx-32 mt-5 flex flex-col gap-5">
       <h3 className="flex items-center text-3xl font-semibold text-sciquelTeal">
@@ -12,8 +19,11 @@ export default function EditorDashboardPage() {
       <div>
         <Link href="/editor/contributors">Edit / Add Contributors</Link>
       </div>
-      <DraftTable />
-      <PublishedTable />
+      <DraftTable data={draftStoriesData} publishHandle={publishStory} />
+      <PublishedTable
+        data={publishedStoriesData}
+        publishHandle={publishStory}
+      />
     </div>
   );
 }
