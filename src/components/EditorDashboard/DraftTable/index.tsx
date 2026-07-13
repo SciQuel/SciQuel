@@ -96,7 +96,7 @@ export default function DraftTable({
                           router.refresh();
                           setTimeout(() => {
                             setIsLoading(false);
-                          }, 500);
+                          }, 2000);
                         }}
                       >
                         Publish

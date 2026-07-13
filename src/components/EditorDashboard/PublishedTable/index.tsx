@@ -85,7 +85,7 @@ export default function PublishedTable({
                           router.refresh();
                           setTimeout(() => {
                             setIsLoading(false);
-                          }, 500);
+                          }, 2000);
                         }}
                       >
                         Unpublish
