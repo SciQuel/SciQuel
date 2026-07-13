@@ -1,11 +1,11 @@
 "use client";
 
 import { type GetStoriesResult } from "@/app/api/stories/route";
-import { type Story } from "@prisma/client";
 // import env from "@/lib/env";
 // import axios from "axios";
 import { DateTime } from "luxon";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 // import useSWR from "swr";
@@ -21,13 +21,14 @@ export default function DraftTable({
   publishHandle,
 }: {
   data: GetStoriesResult;
-  publishHandle: (story: Story, isPublished: boolean) => Promise<void>;
+  publishHandle: (story: any, isPublished: boolean) => Promise<void>;
 }) {
   // const { data, isLoading } = useSWR(
   //   `${env.NEXT_PUBLIC_SITE_URL}/api/stories?published=false`,
   //   storyFetcher,
   // );
   // const [state, action, pending] = useActionState(publishHandle, false);
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [search, setSearch] = useState("");
   return (
@@ -92,9 +93,10 @@ export default function DraftTable({
                         onClick={() => {
                           setIsLoading(true);
                           void publishHandle(story, true);
+                          router.refresh();
                           setTimeout(() => {
                             setIsLoading(false);
-                          }, 250);
+                          }, 500);
                         }}
                       >
                         Publish

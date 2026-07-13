@@ -1,14 +1,10 @@
 "use client";
 
 import { type GetStoriesResult } from "@/app/api/stories/route";
-import env from "@/lib/env";
 import { DateTime } from "luxon";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
-import useSWR from "swr";
-
-const storyFetcher = (url: string) =>
-  fetch(url).then((r) => r.json() as Promise<GetStoriesResult>);
 
 export default function PublishedTable({
   data,
@@ -21,6 +17,7 @@ export default function PublishedTable({
   //   `${env.NEXT_PUBLIC_SITE_URL}/api/stories?published=true`,
   //   storyFetcher,
   // );
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [search, setSearch] = useState("");
   return (
@@ -85,9 +82,10 @@ export default function PublishedTable({
                         onClick={() => {
                           setIsLoading(true);
                           void publishHandle(story, false);
+                          router.refresh();
                           setTimeout(() => {
                             setIsLoading(false);
-                          }, 250);
+                          }, 500);
                         }}
                       >
                         Unpublish

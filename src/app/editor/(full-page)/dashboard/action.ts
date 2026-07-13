@@ -8,7 +8,7 @@ import { revalidateTag } from "next/cache";
 import { cookies } from "next/headers";
 
 export async function publishStory(story: Story, isPublished: boolean) {
-  const cookieStore = cookies(); //support in nextjs 15
+  const cookieStore = await cookies(); //support in nextjs 15
   const storyURL = new URL(
     `${env.NEXT_PUBLIC_SITE_URL}/api/stories/id/${
       story.id
@@ -29,7 +29,7 @@ export async function publishStory(story: Story, isPublished: boolean) {
 }
 
 export const storyFetcher = async (isPublished: string) => {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   return (await fetch(
     `${env.NEXT_PUBLIC_SITE_URL}/api/stories?published=${isPublished}`,
     {
