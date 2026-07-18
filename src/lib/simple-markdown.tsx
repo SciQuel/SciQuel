@@ -1,10 +1,12 @@
-import { type HTMLProps } from "react";
+import { type HTMLProps, type ReactNode } from "react";
 import production from "react/jsx-runtime";
 import rehypeReact from "rehype-react";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
 import { unified } from "unified";
+
+/*eslint-disable @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call */
 
 export async function generateBasicMarkdown(content: string) {
   const remarkResult = unified()
@@ -44,5 +46,5 @@ export async function generateBasicMarkdown(content: string) {
     })
     .process(content);
 
-  return { file: await remarkResult };
+  return { file: (await remarkResult) as { result: ReactNode } };
 }

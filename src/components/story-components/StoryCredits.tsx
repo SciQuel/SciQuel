@@ -183,7 +183,7 @@ export default function StoryCredits({ story }: Props) {
 
     return (
       <div className="flex flex-col">
-        {Object.keys(contributorMap).map((key) =>
+        {Object.keys(contributorMap).map((key, keyIndex) =>
           contributorMap[key].length > 0 ? (
             <div className="flex flex-row items-center" key={key}>
               {contributorMap[key].map((icon, index) => (
@@ -203,31 +203,40 @@ export default function StoryCredits({ story }: Props) {
                       key as "AUTHOR" | "ANIMATOR" | "ILLUSTRATOR"
                     ].prefix
                   : "by "}
-                {contributorMap[key].slice(0, -1).map((author) => {
+                {contributorMap[key].slice(0, -1).map((author, authorIndex) => {
                   if (contributorMap[key].length > 2) {
                     return (
-                      <>
-                        <a href={`/profile/${author.slug}`}>{author.name}</a>,{" "}
-                      </>
+                      <a
+                        key={`${author.name}-${authorIndex}`}
+                        href={`/profile/${author.slug}`}
+                      >
+                        {author.name},{" "}
+                      </a>
                     );
                   } else {
                     return (
-                      <>
-                        <a href={`/profile/${author.slug}`}>{author.name}</a>{" "}
-                      </>
+                      <a
+                        key={`${author.name}-${authorIndex}`}
+                        href={`/profile/${author.slug}`}
+                      >
+                        {author.name}{" "}
+                      </a>
                     );
                   }
                 })}{" "}
                 {contributorMap[key].length > 1 ? "and " : ""}{" "}
                 {contributorMap[key].slice(-1).map((finalContributors) => (
-                  <a href={`/profile/${finalContributors.slug}`}>
+                  <a
+                    key={finalContributors.name}
+                    href={`/profile/${finalContributors.slug}`}
+                  >
                     {finalContributors.name}
                   </a>
                 ))}
               </p>
             </div>
           ) : (
-            <></>
+            <span key={`${keyIndex}-blank`} />
           ),
         )}
         {Object.keys(otherMap).map((key) => (
@@ -289,12 +298,10 @@ export default function StoryCredits({ story }: Props) {
         <h1 className="my-4  font-customTest text-4xl">{story.title}</h1>
         <h2 className="font-customTest text-2xl">{story.summary}</h2>
       </div>
-
       <div className="relative mx-0 mt-5 flex w-screen flex-col px-2 font-sourceSerif4 sm:mx-auto md:w-[768px] md:px-0">
         <div className="pointer-events-none top-0 flex flex-1 flex-row justify-start xl:hidden">
           <ShareLinks />
         </div>
-
         <div className="flex flex-row ">
           <p className="mr-1 ">
             {story.category

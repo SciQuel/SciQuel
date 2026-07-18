@@ -5,7 +5,8 @@ export const createCommentSchema = z.object({
   quote: z.string().optional(),
   parentCommentId: z.string().optional(),
   userEmail: z.string({
-    required_error: "user_email is required",
+    error: (issue) =>
+      issue.input === undefined ? "user_email is required" : undefined,
   }),
   storyId: z.string(),
 });
