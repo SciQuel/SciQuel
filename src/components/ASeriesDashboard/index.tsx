@@ -34,7 +34,15 @@ export default function ASeriesDashboard() {
 
   // Search results keyed by the same unique identifier used in searchQueries.
   const [searchResultsMap, setSearchResultsMap] = useState<
-    Record<string, any[]>
+    Record<
+      string,
+      Array<{
+        id: string;
+        title: string;
+        createdAt: string | Date;
+        slug: string;
+      }>
+    >
   >({});
 
   // Loading state for individual search boxes during async story lookup.
@@ -67,21 +75,48 @@ export default function ASeriesDashboard() {
 
     try {
       const res = await axios.get("/api/series");
-      const rawSeries = res.data?.allSeries || [];
+      type ApiResponse = {
+        allSeries: Array<{
+          id: string;
+          title: string | null;
+          storyinSeries: Array<{
+            storyId: string;
+            order: number;
+            story?: { title: string };
+            storyShortHeadline: string;
+            storyURL: string;
+          }>;
+        }>;
+      };
+      const data = res.data as ApiResponse | undefined;
+      const allSeries = data?.allSeries;
+      const rawSeries = Array.isArray(allSeries) ? allSeries : [];
 
       // Convert normalized API payload into local state shape.
-      const normalizedSeries: Series[] = rawSeries.map((series: any) => ({
-        id: series.id,
-        name: series.title || "Untitled Series",
-        stories: (series.storyinSeries || [])
-          .sort((a: any, b: any) => (a.order ?? 0) - (b.order ?? 0))
-          .map((relation: any) => ({
-            id: relation.storyId,
-            name: relation.story?.title || relation.storyShortHeadline || "",
-            url: relation.storyURL || "",
-            shortHeadline: relation.storyShortHeadline || "",
-          })),
-      }));
+      const normalizedSeries: Series[] = rawSeries.map(
+        (series: {
+          id: string;
+          title: string | null;
+          storyinSeries: Array<{
+            storyId: string;
+            order: number;
+            story?: { title: string };
+            storyShortHeadline: string;
+            storyURL: string;
+          }>;
+        }) => ({
+          id: series.id,
+          name: series.title || "Untitled Series",
+          stories: (series.storyinSeries || [])
+            .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+            .map((relation) => ({
+              id: relation.storyId,
+              name: relation.story?.title || relation.storyShortHeadline || "",
+              url: relation.storyURL || "",
+              shortHeadline: relation.storyShortHeadline || "",
+            })),
+        }),
+      );
       setSeriesList(normalizedSeries);
     } catch (err) {
       console.error(err);
@@ -92,7 +127,7 @@ export default function ASeriesDashboard() {
   };
 
   useEffect(() => {
-    loadExistingSeries();
+    void loadExistingSeries();
   }, []);
 
   const addSeries = () => {
@@ -197,15 +232,24 @@ export default function ASeriesDashboard() {
         });
         console.log("Created new series with response:", res.data);
         // Update local state with the new series ID and data from the response
-        const newSeriesId = res.data?.newSeries?.id;
+        const newSeriesId = (res.data as { newSeries?: { id: string } })
+          ?.newSeries?.id;
         setSeriesList((prev) =>
           prev.map((item) =>
-            item.id === series.id ? { ...series, id: newSeriesId } : item,
+            item.id === series.id ? { ...series, id: newSeriesId ?? "" } : item,
           ),
         );
       } else {
         // Update existing series using PUT
-        const payload: any = {
+        const payload: {
+          id: string;
+          title: string;
+          stories?: Array<{
+            id: string;
+            shortHeadline: string;
+            storyURL: string;
+          }>;
+        } = {
           id: series.id,
           title: series.name,
         };
@@ -242,7 +286,15 @@ export default function ASeriesDashboard() {
     clearResults(`add-${seriesId}`);
   };
 
-  const addSelectedStoryToSeries = (seriesId: string, story: any) => {
+  const addSelectedStoryToSeries = (
+    seriesId: string,
+    story: {
+      id: string;
+      title: string;
+      createdAt: string | Date;
+      slug: string;
+    },
+  ) => {
     setSeriesList((prev) =>
       prev.map((series) =>
         series.id === seriesId
@@ -345,25 +397,44 @@ export default function ASeriesDashboard() {
 
   const pad = (n: number) => String(n).padStart(2, "0");
   // Build the public story URL from the story metadata returned by the API.
-  const buildStoryUrl = (story: any) => {
+  const buildStoryUrl = (story: { createdAt: string | Date; slug: string }) => {
     const d = new Date(story.createdAt);
     return `/stories/${d.getFullYear()}/${pad(d.getMonth() + 1)}/${pad(
       d.getDate(),
-    )}/${story.slug}`;
+    )}/${story.slug}`.toLowerCase();
   };
 
   /**
    * Search for stories that contain the given keyword. This helper performs the API request and
    * returns matching story objects.
    */
-  const searchStories = async (keyword: string) => {
+  const searchStories = async (
+    keyword: string,
+  ): Promise<
+    Array<{
+      id: string;
+      title: string;
+      createdAt: string | Date;
+      slug: string;
+    }>
+  > => {
     if (!keyword) return [];
 
     try {
       const res = await axios.get(
         `/api/stories?keyword=${encodeURIComponent(keyword)}&page_size=5`,
       );
-      return (res.data && res.data.stories) || [];
+      const resData = res.data as
+        | {
+            stories: Array<{
+              id: string;
+              title: string;
+              createdAt: string | Date;
+              slug: string;
+            }>;
+          }
+        | undefined;
+      return resData?.stories || [];
     } catch (err) {
       console.error(err);
       return [];
@@ -465,14 +536,15 @@ export default function ASeriesDashboard() {
                   </button>
                   <button
                     type="button"
-                    onClick={() => updateExistingSeries(series)}
+                    onClick={() => void updateExistingSeries(series)}
                     className="rounded bg-blue-600 px-3 py-1 text-sm font-semibold text-white hover:bg-blue-700"
                     disabled={updatingSeriesMap[series.id]}
                   >
                     {updatingSeriesMap[series.id] ? "Saving..." : "Save"}
                   </button>
                   <button
-                    onClick={() => deleteSeries(series.id)}
+                    type="button"
+                    onClick={() => void deleteSeries(series.id)}
                     className="rounded bg-red-600 px-3 py-1 text-white hover:bg-red-700"
                     disabled={deletingSeriesMap[series.id]}
                   >
@@ -563,7 +635,7 @@ export default function ASeriesDashboard() {
                             <button
                               type="button"
                               onClick={() =>
-                                handleSearch(`${series.id}_${story.id}`)
+                                void handleSearch(`${series.id}_${story.id}`)
                               }
                               className="rounded-md bg-gray-200 px-3 py-1 text-sm font-semibold"
                             >
@@ -580,7 +652,7 @@ export default function ASeriesDashboard() {
                                   searchResultsMap[
                                     `${series.id}_${story.id}`
                                   ] || []
-                                ).map((s: any) => (
+                                ).map((s) => (
                                   <li
                                     key={s.id}
                                     className="cursor-pointer px-2 py-1 hover:bg-gray-100"
@@ -623,7 +695,7 @@ export default function ASeriesDashboard() {
                                     s.id === story.id ? story : s,
                                   ),
                                 };
-                                updateExistingSeries(updatedSeries);
+                                void updateExistingSeries(updatedSeries);
                               }}
                               className="rounded-md bg-green-600 px-3 py-1 text-sm font-semibold text-white hover:bg-green-700"
                               disabled={updatingSeriesMap[series.id]}
@@ -633,6 +705,7 @@ export default function ASeriesDashboard() {
                                 : "Save"}
                             </button>
                             <button
+                              type="button"
                               onClick={() => deleteStory(series.id, story.id)}
                               className="rounded-md bg-red-600 px-3 py-1 text-sm font-semibold text-white hover:bg-red-700"
                             >
@@ -660,7 +733,7 @@ export default function ASeriesDashboard() {
                         />
                         <button
                           type="button"
-                          onClick={() => handleSearch(`add-${series.id}`)}
+                          onClick={() => void handleSearch(`add-${series.id}`)}
                           className="rounded-md bg-slate-200 px-3 py-1 text-sm font-semibold"
                         >
                           Search
@@ -674,7 +747,12 @@ export default function ASeriesDashboard() {
                           0 && (
                           <ul className="mt-2 max-h-52 overflow-y-auto rounded border bg-white text-sm">
                             {(searchResultsMap[`add-${series.id}`] || []).map(
-                              (story: any) => (
+                              (story: {
+                                id: string;
+                                title: string;
+                                createdAt: string | Date;
+                                slug: string;
+                              }) => (
                                 <li
                                   key={story.id}
                                   className="cursor-pointer border-b px-2 py-2 hover:bg-gray-100"
@@ -703,6 +781,7 @@ export default function ASeriesDashboard() {
                   )}
 
                   <button
+                    type="button"
                     onClick={() => startAddStory(series.id)}
                     className="rounded-md bg-blue-600 px-3 py-1 text-sm font-semibold text-white hover:bg-blue-700"
                   >

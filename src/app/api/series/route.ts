@@ -3,12 +3,6 @@ import { Prisma } from "@prisma/client";
 import { NextResponse, type NextRequest } from "next/server";
 import { getSeriesSchema, postSeriesSchema, putSeriesSchema } from "./schema";
 
-interface StoryinSeries {
-  id: string;
-  shortHeadline: string;
-  storyURL: string;
-}
-
 interface NewSeries {
   id: string;
   title: string | null;
@@ -59,7 +53,7 @@ export async function GET(req: NextRequest) {
         {
           error: `Bad Request. Prisma Error message: ${err.message}`,
           errorCode: err.code,
-          meta: err.meta,
+          meta: err.meta as unknown,
         },
         { status: 400 },
       );
@@ -125,7 +119,7 @@ export async function PUT(req: NextRequest) {
         {
           error: `Bad Request. Error message: ${err.message}`,
           errorCode: err.code,
-          meta: err.meta,
+          meta: err.meta as unknown,
         },
         { status: 400 },
       );
@@ -178,7 +172,7 @@ export async function PATCH(req: NextRequest) {
         {
           error: `Bad Request. Error message: ${err.message}`,
           errorCode: err.code,
-          meta: err.meta,
+          meta: err.meta as unknown,
         },
         { status: 400 },
       );
@@ -203,11 +197,11 @@ export async function POST(req: NextRequest) {
   }
   try {
     const parsedData = parsedRequest.data;
-    const newSeries: NewSeries = await prisma.series.create({
+    const newSeries = (await prisma.series.create({
       data: {
         title: parsedData.title,
       },
-    });
+    })) as NewSeries;
     console.log(typeof parsedData.stories);
     const newStoryinSeries = await prisma.storyinSeries.createMany({
       data: parsedData.stories.map((story, id) => ({
@@ -229,7 +223,7 @@ export async function POST(req: NextRequest) {
         {
           error: `Bad Request. Prisma Error message: ${err.message}`,
           errorCode: err.code,
-          meta: err.meta,
+          meta: err.meta as unknown,
         },
         { status: 400 },
       );
@@ -242,7 +236,7 @@ export async function POST(req: NextRequest) {
 }
 
 export async function PUT(req: NextRequest) {
-  const seriesPutBody = await req.json();
+  const seriesPutBody = (await req.json()) as unknown;
   const parsedRequest = putSeriesSchema.safeParse(seriesPutBody);
   if (!parsedRequest.success) {
     console.log(parsedRequest.error);
@@ -311,7 +305,7 @@ export async function PUT(req: NextRequest) {
         {
           error: `Bad Request. Prisma Error message: ${err.message}`,
           errorCode: err.code,
-          meta: err.meta,
+          meta: err.meta as unknown,
         },
         { status: 400 },
       );
@@ -357,7 +351,7 @@ export async function DELETE(req: NextRequest) {
         {
           error: `Bad Request. Prisma Error message: ${err.message}`,
           errorCode: err.code,
-          meta: err.meta,
+          meta: err.meta as unknown,
         },
         { status: 400 },
       );
