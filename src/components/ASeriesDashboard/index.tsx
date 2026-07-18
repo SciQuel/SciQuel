@@ -17,27 +17,50 @@ interface Series {
 }
 
 export default function ASeriesDashboard() {
+  // The list of series currently displayed in the dashboard.
+  // Each series contains an ordered list of stories.
   const [seriesList, setSeriesList] = useState<Series[]>([]);
+
+  // The story currently being dragged for reordering within a series.
   const [draggedStory, setDraggedStory] = useState<{
     seriesId: string;
     storyId: string;
   } | null>(null);
+
+  // Current search input values keyed by a unique story field identifier.
   const [searchQueries, setSearchQueries] = useState<Record<string, string>>(
     {},
   );
+
+  // Search results keyed by the same unique identifier used in searchQueries.
   const [searchResultsMap, setSearchResultsMap] = useState<
     Record<string, any[]>
   >({});
+
+  // Loading state for individual search boxes during async story lookup.
   const [searchingMap, setSearchingMap] = useState<Record<string, boolean>>({});
+
+  // Global loading / error state for fetching series from the server.
   const [isLoading, setIsLoading] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
+
+  // Tracks whether each series is expanded or collapsed in the UI.
   const [expandedSeries, setExpandedSeries] = useState<Record<string, boolean>>(
     {},
   );
+
+  // Tracks pending series updates so the UI can disable buttons while saving.
   const [updatingSeriesMap, setUpdatingSeriesMap] = useState<
     Record<string, boolean>
   >({});
+  const [deletingSeriesMap, setDeletingSeriesMap] = useState<
+    Record<string, boolean>
+  >({});
+  const [pendingAddStorySeriesId, setPendingAddStorySeriesId] = useState<
+    string | null
+  >(null);
 
+  // Load saved series data from the backend and normalize it for local state.
   const loadExistingSeries = async () => {
     setIsLoading(true);
     setLoadError(null);
@@ -45,6 +68,8 @@ export default function ASeriesDashboard() {
     try {
       const res = await axios.get("/api/series");
       const rawSeries = res.data?.allSeries || [];
+
+      // Convert normalized API payload into local state shape.
       const normalizedSeries: Series[] = rawSeries.map((series: any) => ({
         id: series.id,
         name: series.title || "Untitled Series",
@@ -72,8 +97,8 @@ export default function ASeriesDashboard() {
 
   const addSeries = () => {
     const newSeries: Series = {
-      id: Date.now().toString(),
-      name: "New Series",
+      id: "",
+      name: "",
       stories: [{ id: "1", name: "Story 1", url: "", shortHeadline: "" }],
     };
     setSeriesList([...seriesList, newSeries]);
@@ -98,7 +123,7 @@ export default function ASeriesDashboard() {
   const updateStory = (
     seriesId: string,
     storyId: string,
-    field: "name" | "url" | "shortHeadline",
+    field: "id" | "name" | "url" | "shortHeadline",
     value: string,
   ) => {
     setSeriesList((prev) =>
@@ -115,58 +140,128 @@ export default function ASeriesDashboard() {
     );
   };
 
-  const deleteSeries = (id: string) => {
-    setSeriesList(seriesList.filter((series) => series.id !== id));
+  const deleteSeries = async (id: string) => {
+    if (!id || id.trim() === "") {
+      setSeriesList((prev) => prev.filter((series) => series.id !== id));
+      return;
+    }
+
+    setDeletingSeriesMap((prev) => ({ ...prev, [id]: true }));
+    setLoadError(null);
+
+    try {
+      await axios.delete("/api/series", { params: { id } });
+      setSeriesList((prev) => prev.filter((series) => series.id !== id));
+    } catch (err) {
+      console.error(err);
+      setLoadError("Failed to delete series.");
+    } finally {
+      setDeletingSeriesMap((prev) => ({ ...prev, [id]: false }));
+    }
   };
 
+  // Save changes for a new or existing series to the backend.
+  // For new series (empty ID), uses POST. For existing series, uses PUT.
+  // The payload only includes story items if every story has a valid URL.
   const updateExistingSeries = async (series: Series) => {
     setUpdatingSeriesMap((prev) => ({ ...prev, [series.id]: true }));
     setLoadError(null);
 
     try {
-      const payload: any = {
-        id: series.id,
-        title: series.name,
-      };
-
       const allStoriesHaveUrl = series.stories.every(
         (story) => story.url.trim() !== "",
       );
 
-      if (allStoriesHaveUrl && series.stories.length > 0) {
-        payload.stories = series.stories.map((story) => ({
-          id: story.id,
-          shortHeadline: story.shortHeadline || "",
-          storyURL: story.url,
-        }));
-      }
+      const stories =
+        allStoriesHaveUrl && series.stories.length > 0
+          ? series.stories.map((story) => ({
+              id: story.id,
+              shortHeadline: story.shortHeadline || "",
+              storyURL: story.url,
+            }))
+          : [];
 
-      await axios.put("/api/series", payload);
-      setSeriesList((prev) =>
-        prev.map((item) => (item.id === series.id ? series : item)),
-      );
+      // Check if this is a new series (empty ID)
+      const isNewSeries = !series.id || series.id.trim() === "";
+
+      if (isNewSeries) {
+        // Create new series using POST
+        const formData = new FormData();
+        formData.append("title", series.name);
+        formData.append("stories", JSON.stringify(stories));
+
+        const res = await axios.post("/api/series", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+        console.log("Created new series with response:", res.data);
+        // Update local state with the new series ID and data from the response
+        const newSeriesId = res.data?.newSeries?.id;
+        setSeriesList((prev) =>
+          prev.map((item) =>
+            item.id === series.id ? { ...series, id: newSeriesId } : item,
+          ),
+        );
+      } else {
+        // Update existing series using PUT
+        const payload: any = {
+          id: series.id,
+          title: series.name,
+        };
+
+        if (stories.length > 0) {
+          payload.stories = stories;
+        }
+
+        await axios.put("/api/series", payload);
+
+        // Reflect the saved changes in local state after successful update.
+        setSeriesList((prev) =>
+          prev.map((item) => (item.id === series.id ? series : item)),
+        );
+      }
     } catch (err) {
       console.error(err);
-      setLoadError("Failed to update series.");
+      setLoadError(`Failed to ${!series.id ? "create" : "update"} series.`);
     } finally {
       setUpdatingSeriesMap((prev) => ({ ...prev, [series.id]: false }));
     }
   };
 
-  const addStory = (seriesId: string) => {
-    const newStory: Story = {
-      id: Date.now().toString(),
-      name: "New Story",
-      url: "",
-      shortHeadline: "",
-    };
-    setSeriesList(
-      seriesList.map((series) =>
+  const startAddStory = (seriesId: string) => {
+    setPendingAddStorySeriesId(seriesId);
+    setSearchQueries((prev) => ({ ...prev, [`add-${seriesId}`]: "" }));
+    setSearchResultsMap((prev) => ({ ...prev, [`add-${seriesId}`]: [] }));
+  };
+
+  const cancelAddStory = (seriesId: string) => {
+    setPendingAddStorySeriesId((current) =>
+      current === seriesId ? null : current,
+    );
+    clearResults(`add-${seriesId}`);
+  };
+
+  const addSelectedStoryToSeries = (seriesId: string, story: any) => {
+    setSeriesList((prev) =>
+      prev.map((series) =>
         series.id === seriesId
-          ? { ...series, stories: [...series.stories, newStory] }
+          ? {
+              ...series,
+              stories: [
+                ...series.stories,
+                {
+                  id: story.id,
+                  name: story.title || "",
+                  url: buildStoryUrl(story),
+                  shortHeadline: "",
+                },
+              ],
+            }
           : series,
       ),
     );
+    cancelAddStory(seriesId);
   };
 
   const deleteStory = (seriesId: string, storyId: string) => {
@@ -182,19 +277,17 @@ export default function ASeriesDashboard() {
     );
   };
 
+  // Start a drag operation by remembering which story is being moved.
   const handleDragStart = (seriesId: string, storyId: string) => {
     setDraggedStory({ seriesId, storyId });
   };
 
   /**
-   * Handles the dragover event when the user drags a story over the story list area.
-   *
-   * @param {React.DragEvent<HTMLDivElement>} e - The dragover event.
+   * Handles the dragover event when the user drags a story over the story list area. Keeping the
+   * event prevented allows drop events to be fired.
    */
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-    // Prevent the default dragover behavior (browser will try to open the dragged element)
     e.preventDefault();
-    // Set the opacity of the target element to 0.8
     e.currentTarget.style.opacity = "0.8";
   };
 
@@ -209,11 +302,8 @@ export default function ASeriesDashboard() {
   };
 
   /**
-   * Handles the drop event when the user stops dragging a story over the story list area.
-   *
-   * @param {React.DragEvent<HTMLDivElement>} e - The drop event.
-   * @param {string} targetSeriesId - The id of the series that the user dropped the story into.
-   * @param {string} targetStoryId - The id of the story that the user dropped the story into.
+   * Handles the drop event when the user stops dragging a story over the story list area. The
+   * dragged story is reordered within the same series.
    */
   const handleDrop = (
     e: React.DragEvent<HTMLDivElement>,
@@ -223,15 +313,11 @@ export default function ASeriesDashboard() {
     e.preventDefault();
     e.currentTarget.style.opacity = "1";
 
-    // If the user didn't drag a story, or if the user dropped the story into a different series, do nothing.
     if (!draggedStory || draggedStory.seriesId !== targetSeriesId) return;
 
     const draggedStoryId = draggedStory.storyId;
-
-    // If the user dropped the story into the same position, do nothing.
     if (draggedStoryId === targetStoryId) return;
 
-    // Update the series list by moving the dragged story item to the target position.
     setSeriesList(
       seriesList.map((series) => {
         if (series.id !== targetSeriesId) return series;
@@ -243,7 +329,6 @@ export default function ASeriesDashboard() {
           (s) => s.id === targetStoryId,
         );
 
-        // If the user didn't drag a story, or if the target story doesn't exist, do nothing.
         if (draggedIndex === -1 || targetIndex === -1) return series;
 
         const updatedStories = [...series.stories];
@@ -254,11 +339,12 @@ export default function ASeriesDashboard() {
       }),
     );
 
-    // Reset the dragged story state.
+    // Clear the drag state after reordering is complete.
     setDraggedStory(null);
   };
 
   const pad = (n: number) => String(n).padStart(2, "0");
+  // Build the public story URL from the story metadata returned by the API.
   const buildStoryUrl = (story: any) => {
     const d = new Date(story.createdAt);
     return `/stories/${d.getFullYear()}/${pad(d.getMonth() + 1)}/${pad(
@@ -267,25 +353,18 @@ export default function ASeriesDashboard() {
   };
 
   /**
-   * Search for stories that contain the given keyword.
-   *
-   * @param {string} keyword - The keyword to search for.
-   * @returns {Promise<Array<Story>>} - A list of stories that contain the keyword.
+   * Search for stories that contain the given keyword. This helper performs the API request and
+   * returns matching story objects.
    */
   const searchStories = async (keyword: string) => {
-    // If the keyword is empty, return an empty array.
     if (!keyword) return [];
 
     try {
-      // Make a GET request to the stories API with the keyword as a query parameter.
       const res = await axios.get(
         `/api/stories?keyword=${encodeURIComponent(keyword)}&page_size=5`,
       );
-
-      // If the response is successful and contains a list of stories, return the list.
       return (res.data && res.data.stories) || [];
     } catch (err) {
-      // If the request fails, log the error to the console and return an empty array.
       console.error(err);
       return [];
     }
@@ -297,23 +376,20 @@ export default function ASeriesDashboard() {
    * @param {string} key - The key of the search box (e.g. "search-series").
    * @returns {Promise<void>} - A promise that resolves when the search is complete.
    */
+  // Called when the user submits a search for an individual story slot.
+  // This updates loading state and stores the results for that slot.
   const handleSearch = async (key: string) => {
     const searchQuery = searchQueries[key] || "";
     if (!searchQuery) return;
 
-    // Show a loading indicator while the search is in progress.
     setSearchingMap((s) => ({ ...s, [key]: true }));
 
     try {
-      // Search for stories that contain the search query.
       const results = await searchStories(searchQuery);
-      // Update the search results map with the new results.
       setSearchResultsMap((m) => ({ ...m, [key]: results }));
     } catch (err) {
-      // If the search fails, log the error to the console.
       console.error(err);
     } finally {
-      // Hide the loading indicator when the search is complete.
       setSearchingMap((s) => ({ ...s, [key]: false }));
     }
   };
@@ -329,17 +405,6 @@ export default function ASeriesDashboard() {
         Article Series Dashboard
       </h3>
 
-      {/* Create Section */}
-      <div className="rounded-md border border-gray-300 bg-gray-50 p-4">
-        <h4 className="mb-4 text-xl font-semibold">Create</h4>
-        <button
-          onClick={addSeries}
-          className="rounded-md bg-teal-600 px-4 py-2 font-semibold text-white hover:bg-teal-700"
-        >
-          + Add Series
-        </button>
-      </div>
-
       {/* Exists Section */}
       <div>
         {isLoading && (
@@ -352,7 +417,15 @@ export default function ASeriesDashboard() {
             {loadError}
           </div>
         )}
-        <h4 className="mb-4 text-xl font-semibold">Exists</h4>
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <h4 className="text-xl font-semibold">Exists</h4>
+          <button
+            onClick={addSeries}
+            className="rounded-md bg-teal-600 px-4 py-2 font-semibold text-white hover:bg-teal-700"
+          >
+            Add Series
+          </button>
+        </div>
         <div className="flex flex-col gap-4">
           {seriesList.map((series) => (
             <div
@@ -396,13 +469,14 @@ export default function ASeriesDashboard() {
                     className="rounded bg-blue-600 px-3 py-1 text-sm font-semibold text-white hover:bg-blue-700"
                     disabled={updatingSeriesMap[series.id]}
                   >
-                    {updatingSeriesMap[series.id] ? "Updating..." : "Update"}
+                    {updatingSeriesMap[series.id] ? "Saving..." : "Save"}
                   </button>
                   <button
                     onClick={() => deleteSeries(series.id)}
                     className="rounded bg-red-600 px-3 py-1 text-white hover:bg-red-700"
+                    disabled={deletingSeriesMap[series.id]}
                   >
-                    Delete
+                    {deletingSeriesMap[series.id] ? "Deleting..." : "Delete"}
                   </button>
                 </div>
               </div>
@@ -511,17 +585,24 @@ export default function ASeriesDashboard() {
                                     key={s.id}
                                     className="cursor-pointer px-2 py-1 hover:bg-gray-100"
                                     onClick={() => {
-                                      updateStory(
-                                        series.id,
-                                        story.id,
-                                        "name",
-                                        s.title,
-                                      );
-                                      updateStory(
-                                        series.id,
-                                        story.id,
-                                        "url",
-                                        buildStoryUrl(s),
+                                      setSeriesList((prev) =>
+                                        prev.map((ser) =>
+                                          ser.id === series.id
+                                            ? {
+                                                ...ser,
+                                                stories: ser.stories.map((st) =>
+                                                  st.id === story.id
+                                                    ? {
+                                                        ...st,
+                                                        id: s.id,
+                                                        name: s.title,
+                                                        url: buildStoryUrl(s),
+                                                      }
+                                                    : st,
+                                                ),
+                                              }
+                                            : ser,
+                                        ),
                                       );
                                       clearResults(`${series.id}_${story.id}`);
                                     }}
@@ -562,11 +643,70 @@ export default function ASeriesDashboard() {
                       </div>
                     ))}
                   </div>
+                  {pendingAddStorySeriesId === series.id && (
+                    <div className="rounded-md border border-gray-300 bg-white p-4">
+                      <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
+                        <input
+                          type="text"
+                          placeholder="Search story to add..."
+                          value={searchQueries[`add-${series.id}`] || ""}
+                          onChange={(e) =>
+                            setSearchQueries((q) => ({
+                              ...q,
+                              [`add-${series.id}`]: e.target.value,
+                            }))
+                          }
+                          className="w-full rounded border px-2 py-1"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => handleSearch(`add-${series.id}`)}
+                          className="rounded-md bg-slate-200 px-3 py-1 text-sm font-semibold"
+                        >
+                          Search
+                        </button>
+                      </div>
+
+                      {searchingMap[`add-${series.id}`] ? (
+                        <p className="mt-2 text-sm italic">Searching...</p>
+                      ) : (
+                        (searchResultsMap[`add-${series.id}`] || []).length >
+                          0 && (
+                          <ul className="mt-2 max-h-52 overflow-y-auto rounded border bg-white text-sm">
+                            {(searchResultsMap[`add-${series.id}`] || []).map(
+                              (story: any) => (
+                                <li
+                                  key={story.id}
+                                  className="cursor-pointer border-b px-2 py-2 hover:bg-gray-100"
+                                  onClick={() =>
+                                    addSelectedStoryToSeries(series.id, story)
+                                  }
+                                >
+                                  {story.title}
+                                </li>
+                              ),
+                            )}
+                          </ul>
+                        )
+                      )}
+
+                      <div className="mt-3 flex justify-end gap-2">
+                        <button
+                          type="button"
+                          onClick={() => cancelAddStory(series.id)}
+                          className="rounded-md bg-gray-200 px-3 py-1 text-sm font-semibold text-slate-700 hover:bg-gray-300"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
                   <button
-                    onClick={() => addStory(series.id)}
+                    onClick={() => startAddStory(series.id)}
                     className="rounded-md bg-blue-600 px-3 py-1 text-sm font-semibold text-white hover:bg-blue-700"
                   >
-                    + Add Story
+                    Add Story
                   </button>
                 </div>
               )}
