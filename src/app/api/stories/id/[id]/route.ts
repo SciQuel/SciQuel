@@ -1,7 +1,6 @@
 import prisma from "@/lib/prisma";
 import { type ContributionType, type Prisma, type Story } from "@prisma/client";
 import { getServerSession } from "next-auth";
-import { revalidateTag } from "next/cache";
 import { NextResponse, type NextRequest } from "next/server";
 import { patchStorySchema } from "../../schema";
 
