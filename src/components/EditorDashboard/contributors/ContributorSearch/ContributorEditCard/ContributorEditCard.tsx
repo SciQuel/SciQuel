@@ -215,7 +215,7 @@ export default function ContributorEditCard({ contributor }: Props) {
               <p>social links:</p>
 
               {socialLinks.map((link, i) => (
-                <div key={i} className="flex gap-2">
+                <div key={`${link.url}`} className="flex gap-2">
                   <input
                     className="w-full rounded border-2 border-slate-600 px-2 py-1"
                     placeholder="https://..."
