@@ -63,9 +63,9 @@ async function getArticles(slug: string, page: number, staffPick: boolean) {
   } else {
     try {
       const res = await fetch(
-        `${NEXT_PUBLIC_SITE_URL}/api/contributor?contributorSlug=${slug}&pageNum=${
-          page - 1
-        }`,
+        `${NEXT_PUBLIC_SITE_URL}/api/contributor?contributorSlug=${slug}&${
+          staffPick ? "staffPick=True" : ""
+        }&pageNum=${page - 1}`,
         { cache: "no-store" },
       );
       if (res.ok) {
