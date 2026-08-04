@@ -3,8 +3,18 @@ import FooterIcon from "@/components/Footer/FooterIcon";
 import TopicTag from "@/components/TopicTag";
 import { type Contributor, type StoryTopic } from "@prisma/client";
 
+// Prisma doesn't export SocialLink; define minimal local type
+type SocialLink = {
+  platform: string;
+  url: string;
+};
+
+interface ProfileContributor extends Contributor {
+  socialLinks?: SocialLink[] | null;
+}
+
 interface Props {
-  contributor: Contributor;
+  contributor: ProfileContributor;
   topTopics: StoryTopic[];
 }
 
@@ -67,7 +77,7 @@ export default function ProfileSidebar({ contributor, topTopics }: Props) {
             </a>
           )}
 
-          {socials.arrow && (
+          {/* {socials.arrow && (
             <a
               href={socials.arrow}
               target="_blank"
@@ -76,7 +86,7 @@ export default function ProfileSidebar({ contributor, topTopics }: Props) {
             >
               <FooterIcon type="arrow" />
             </a>
-          )}
+          )} */}
           {socials.website && (
             <a
               href={socials.website}
