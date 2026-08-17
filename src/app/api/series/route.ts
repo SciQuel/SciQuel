@@ -33,7 +33,7 @@ export async function GET(req: NextRequest) {
           : title,
       },
       include: {
-        storyinSeries: {
+        storyInSeries: {
           include: {
             story: true,
           },
@@ -83,18 +83,17 @@ export async function POST(req: NextRequest) {
       },
     })) as NewSeries;
     console.log(typeof parsedData.stories);
-    const newStoryinSeries = await prisma.storyinSeries.createMany({
+    const newStoryInSeries = await prisma.StoryInSeries.createMany({
       data: parsedData.stories.map((story, id) => ({
         storyId: story.id,
         seriesId: newSeries.id,
         storyShortHeadline: story.shortHeadline,
-        storyURL: story.storyURL,
         order: id + 1, //1 based index
       })),
     });
     return NextResponse.json({
       newSeries: newSeries,
-      relations: newStoryinSeries,
+      relations: newStoryInSeries,
     });
   } catch (err) {
     console.log(err);
@@ -155,17 +154,16 @@ export async function PUT(req: NextRequest) {
 
       let relationResult = null;
       if (parsedData.stories) {
-        await tx.storyinSeries.deleteMany({
+        await tx.StoryInSeries.deleteMany({
           where: { seriesId: parsedData.id },
         });
 
         if (parsedData.stories.length > 0) {
-          relationResult = await tx.storyinSeries.createMany({
+          relationResult = await tx.StoryInSeries.createMany({
             data: parsedData.stories.map((story, index) => ({
               storyId: story.id,
               seriesId: parsedData.id,
               storyShortHeadline: story.shortHeadline,
-              storyURL: story.storyURL,
               order: index + 1,
             })),
           });
@@ -217,7 +215,7 @@ export async function DELETE(req: NextRequest) {
           id: id,
         },
       }),
-      prisma.storyinSeries.deleteMany({
+      prisma.StoryInSeries.deleteMany({
         where: {
           seriesId: id,
         },
