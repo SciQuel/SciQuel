@@ -3,18 +3,8 @@ import FooterIcon from "@/components/Footer/FooterIcon";
 import TopicTag from "@/components/TopicTag";
 import { type Contributor, type StoryTopic } from "@prisma/client";
 
-// Prisma doesn't export SocialLink; define minimal local type
-type SocialLink = {
-  platform: string;
-  url: string;
-};
-
-interface ProfileContributor extends Contributor {
-  socialLinks?: SocialLink[] | null;
-}
-
 interface Props {
-  contributor: ProfileContributor;
+  contributor: Contributor;
   topTopics: StoryTopic[];
 }
 
