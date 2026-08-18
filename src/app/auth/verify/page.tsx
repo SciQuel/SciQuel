@@ -4,11 +4,10 @@ import { AuthVerificationType } from "@prisma/client";
 import { redirect } from "next/navigation";
 import schema from "./schema";
 
-export default async function VerifyInfoPage({
-  searchParams,
-}: {
-  searchParams: { [key: string]: unknown };
+export default async function VerifyInfoPage(props: {
+  searchParams: Promise<{ [key: string]: unknown }>;
 }) {
+  const searchParams = await props.searchParams;
   const parsedParams = schema.safeParse(searchParams);
 
   if (!parsedParams.success) {

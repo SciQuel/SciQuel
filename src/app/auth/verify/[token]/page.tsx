@@ -8,7 +8,8 @@ interface Params {
   token: string;
 }
 
-export default async function VerifyPage({ params }: { params: Params }) {
+export default async function VerifyPage(props: { params: Promise<Params> }) {
+  const params = await props.params;
   try {
     const data = jwt.verify(params.token, process.env.NEXTAUTH_SECRET ?? "");
     const { email, id } = tokenSchema.parse(data);

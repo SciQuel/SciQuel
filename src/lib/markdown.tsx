@@ -13,7 +13,7 @@ import StoryParagraph from "@/components/story-components/markdown/StoryParagrap
 import StoryPre from "@/components/story-components/markdown/StoryPre";
 import StoryUl from "@/components/story-components/markdown/StoryUl";
 import remarkSciquelDirective from "@/lib/remark-sciquel-directive";
-import { type HTMLProps } from "react";
+import { type HTMLProps, type ReactNode } from "react";
 import production from "react/jsx-runtime";
 import rehypeReact from "rehype-react";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
@@ -24,6 +24,8 @@ import remarkRetext from "remark-retext";
 import retextEnglish from "retext-english";
 import { unified } from "unified";
 import retextWordCount from "./retext-word-count";
+
+/*eslint-disable @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call */
 
 export async function generateMarkdown(content: string) {
   const wordStats: Record<string, number> = {};
@@ -128,5 +130,5 @@ export async function generateMarkdown(content: string) {
     })
     .process(content);
 
-  return { file: await remarkResult, wordStats };
+  return { file: (await remarkResult) as { result: ReactNode }, wordStats };
 }

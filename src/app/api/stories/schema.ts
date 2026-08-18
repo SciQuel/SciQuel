@@ -11,13 +11,13 @@ export const getStorySchema = z.object({
   page: z
     .preprocess(
       (value) => parseInt(z.string().parse(value)),
-      z.number().positive().int(),
+      z.int().positive(),
     )
     .optional(),
   page_size: z
     .preprocess(
       (value) => parseInt(z.string().parse(value)),
-      z.number().positive().int(),
+      z.int().positive(),
     )
     .optional(),
   keyword: z.string().optional(),
@@ -30,13 +30,13 @@ export const getStorySchema = z.object({
   topic: z
     .preprocess(
       (value) => String(z.string().parse(value).toUpperCase()),
-      z.nativeEnum(StoryTopic),
+      z.enum(StoryTopic),
     )
     .optional(),
   type: z
     .preprocess(
       (value) => String(z.string().parse(value).toUpperCase()),
-      z.nativeEnum(StoryType),
+      z.enum(StoryType),
     )
     .optional(),
   date_from: z
@@ -48,12 +48,12 @@ export const getStorySchema = z.object({
   sort_by: z.enum(["newest", "oldest"]).optional(),
   published: z.preprocess(
     (value) => (value === "false" ? false : true),
-    z.boolean().optional().default(true),
+    z.boolean().optional().prefault(true),
   ),
   category: z
     .preprocess(
       (value) => String(z.string().parse(value).toUpperCase()),
-      z.nativeEnum(Category),
+      z.enum(Category),
     )
     .optional(),
 });
@@ -82,7 +82,7 @@ export const patchStorySchema = z.object({
     .array(
       z.object({
         email: z.string(),
-        contributionType: z.nativeEnum(ContributionType),
+        contributionType: z.enum(ContributionType),
         bio: z.string(),
       }),
     )

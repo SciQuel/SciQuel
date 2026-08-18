@@ -3,51 +3,65 @@ import { z } from "zod";
 
 export const contactSchema = z.object({
   message: z.string({
-    required_error: "message is required",
-    invalid_type_error: "message must be a string",
+    error: (issue) =>
+      issue.input === undefined
+        ? "message is required"
+        : "message must be a string",
   }),
 
   contact_name: z.string({
-    required_error: "contact_name is required",
-    invalid_type_error: "contact_name must be a string",
+    error: (issue) =>
+      issue.input === undefined
+        ? "contact_name is required"
+        : "contact_name must be a string",
   }),
 
   reply_email: z.string({
-    required_error: "reply_email is required",
-    invalid_type_error: "reply_email must be a string",
+    error: (issue) =>
+      issue.input === undefined
+        ? "reply_email is required"
+        : "reply_email must be a string",
   }),
 });
 
 export const contactGetSchema = z.object({
   status: z.enum(["UNOPENED", "NEEDS_RESPONSE", "CLOSED", "ARCHIVED"], {
-    invalid_type_error:
-      "Invalid status.  Valid statuses: UNOPENED | NEEDS_RESPONSE | CLOSED | ARCHIVED",
+    error: (issue) =>
+      issue.input === undefined
+        ? undefined
+        : "Invalid status.  Valid statuses: UNOPENED | NEEDS_RESPONSE | CLOSED | ARCHIVED",
   }),
 
   start_index: z.preprocess(
     (value) => parseInt(z.string().parse(value)),
-    z.number().nonnegative().int(),
+    z.int().nonnegative(),
   ),
   end_index: z.preprocess(
     (value) => parseInt(z.string().parse(value)),
-    z.number().nonnegative().int(),
+    z.int().nonnegative(),
   ),
 });
 
 export const contactPatchSchema = z.object({
   new_status: z.enum(["UNOPENED", "NEEDS_RESPONSE", "CLOSED", "ARCHIVED"], {
-    invalid_type_error:
-      "Invalid new_status.  Valid statuses: UNOPENED | NEEDS_RESPONSE | CLOSED | ARCHIVED",
+    error: (issue) =>
+      issue.input === undefined
+        ? undefined
+        : "Invalid new_status.  Valid statuses: UNOPENED | NEEDS_RESPONSE | CLOSED | ARCHIVED",
   }),
 
   send_reply: z.boolean({
-    invalid_type_error: "send_reply must be a boolean.",
-    required_error: "send_reply is required",
+    error: (issue) =>
+      issue.input === undefined
+        ? "send_reply is required"
+        : "send_reply must be a boolean.",
   }),
 
   reply_text: z.string({
-    invalid_type_error: "reply_text must be a string.",
-    required_error: "reply_text is required.",
+    error: (issue) =>
+      issue.input === undefined
+        ? "reply_text is required."
+        : "reply_text must be a string.",
   }),
 });
 
