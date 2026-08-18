@@ -1,124 +1,33 @@
 import { type GetStoryResult } from "@/app/api/stories/[year]/[month]/[day]/[slug]/route";
 import { type GetStoriesResult } from "@/app/api/stories/route";
-// import Dictionary from "@/components/story-components/dictionary/Dictionary";
-// import { DictionaryProvider } from "@/components/story-components/dictionary/DictionaryContext";
-// import DictionarySentence from "@/components/story-components/dictionary/DictionarySentence";
-// import DictionaryWord from "@/components/story-components/dictionary/DictionaryWord";
-// import TestImages from "@/components/story-components/imgTests";
-// import StoryParagraph from "@/components/story-components/markdown/StoryParagraph";
 import { PrintModeProvider } from "@/components/story-components/PrintContext";
 import { StoryScrollProvider } from "@/components/story-components/scroll/ScrollProvider";
-// import ShareLinks from "@/components/story-components/ShareLinks";
 import StoryCredits from "@/components/story-components/StoryCredits";
 import StoryFooter from "@/components/story-components/StoryFooter";
 import { tagUser } from "@/lib/cache";
 import env from "@/lib/env";
 import { generateMarkdown } from "@/lib/markdown";
-// import { getServerSession } from "next-auth";
-// import Image from "next/image";
 import { type ReactNode } from "react";
 
 interface Params {
-  params: {
-    year: string;
-    month: string;
-    day: string;
-    slug: string;
-  };
+  year: string;
+  month: string;
+  day: string;
+  slug: string;
 }
 
-// const testDictionary = {
-//   camouflage: {
-//     id: "123abc",
-//     definition:
-//       "concealment by some means that alters or obscures the appearance.",
-//     pronunciation: "cam·ou·flage \n/ˈkaməˌflä(d)ZH/",
-//     instances: [],
-//     inContext: [
-//       "This camouflage comes from a layer of densely packed, pigmented structures just below the skin’s surface.",
-//       "All modern, adult birds molt at least once a year to replace old, damaged feathers, or to exchange their bright summer colors for drab winter camouflage.",
-//     ],
-//     bookmarked: undefined,
-//     altSpellings: [],
-//   },
+interface ParamsPromise {
+  params: Promise<Params>;
+}
 
-//   enzyme: {
-//     id: "345abc",
-//     definition:
-//       "An enzyme is a biological catalyst and is almost always a protein. It speeds up the rate of a specific chemical reaction in the cell.",
-//     pronunciation: "en·zyme \n/ˈenˌzīm/",
-//     instances: [],
-//     inContext: [
-//       "A cell contains thousands of different types of enzyme molecules, each specific to a particular chemical reaction.",
-//     ],
-//     bookmarked: undefined,
-//     altSpellings: [],
-//   },
-
-//   lipopolysaccharide: {
-//     id: "678abc",
-//     definition:
-//       "lipopolysaccharides (LPS) are important outer membrane components of gram-negative bacteria. They typically consist of a lipid domain (hydrophobic) attached to a core oligosaccharide and a distal polysaccharide.",
-//     pronunciation:
-//       "lip·o·pol·y·sac·cha·ride \n/ˌlipōˌpälēˈsakəˌrīd,ˌlīpōˌpälēˈsakəˌrīd/",
-//     instances: [],
-//     inContext: [
-//       "The Gram-negative bacterial lipopolysaccharide (LPS) is a major component of the outer membrane that plays a key role in host–pathogen interactions with the innate immune system.",
-//     ],
-//     bookmarked: undefined,
-//     altSpellings: ["LPS"],
-//   },
-// };
-
-// const testDictList = [
-//   {
-//     id: "123abc",
-//     word: "camouflage",
-//     definition:
-//       "concealment by some means that alters or obscures the appearance.",
-//     instances: [],
-//     inContext: [
-//       "This camouflage comes from a layer of densely packed, pigmented structures just below the skin’s surface.",
-//       "All modern, adult birds molt at least once a year to replace old, damaged feathers, or to exchange their bright summer colors for drab winter camouflage.",
-//     ],
-//     bookmarked: undefined,
-//     altSpellings: [],
-//   },
-//   {
-//     id: "345abc",
-//     word: "enzyme",
-//     definition:
-//       "An enzyme is a biological catalyst and is almost always a protein. It speeds up the rate of a specific chemical reaction in the cell.",
-//     instances: [],
-//     inContext: [
-//       "A cell contains thousands of different types of enzyme molecules, each specific to a particular chemical reaction.",
-//     ],
-//     bookmarked: undefined,
-//     altSpellings: [],
-//   },
-//   {
-//     id: "678abc",
-//     word: "lipopolysaccharide",
-//     definition:
-//       "lipopolysaccharides (LPS) are important outer membrane components of gram-negative bacteria. They typically consist of a lipid domain (hydrophobic) attached to a core oligosaccharide and a distal polysaccharide.",
-//     pronunciation:
-//       "lip·o·pol·y·sac·cha·ride \n/ˌlipōˌpälēˈsakəˌrīd,ˌlīpōˌpälēˈsakəˌrīd/",
-//     instances: [],
-//     inContext: [
-//       "The Gram-negative bacterial lipopolysaccharide (LPS) is a major component of the outer membrane that plays a key role in host–pathogen interactions with the innate immune system.",
-//     ],
-//     bookmarked: undefined,
-//     altSpellings: ["LPS"],
-//   },
-// ];
-
-export default async function StoriesPage({ params }: Params) {
+export default async function StoriesPage(props: ParamsPromise) {
+  const params = await props.params;
   const whatsNewArticles = await getWhatsNewArticles();
   const story = await retrieveStoryContent(params);
 
-  const { file } = await generateMarkdown(
+  const { file } = (await generateMarkdown(
     `${story.storyContent[0].content}:end-icon`,
-  );
+  )) as { file: { result: ReactNode } };
 
   return (
     <PrintModeProvider>
@@ -138,7 +47,7 @@ export default async function StoriesPage({ params }: Params) {
               <div className="story-body mx-0 mt-2 flex w-screen flex-col items-center gap-4 px-2 sm:mx-auto md:w-[768px] md:px-0">
                 {/* <Dictionary /> */}
 
-                {file.result as ReactNode}
+                {file.result}
               </div>
               <div className="w-[calc( 100% - 1rem )] mx-2 mb-8 mt-8 border-t-2 border-[#616161] pt-1  md:mx-auto md:w-[768px] ">
                 <p className=" mt-2 text-sm text-[#616161]">
@@ -232,12 +141,7 @@ export default async function StoriesPage({ params }: Params) {
 //   }
 // }
 
-async function retrieveStoryContent({
-  year,
-  day,
-  month,
-  slug,
-}: Params["params"]) {
+async function retrieveStoryContent({ year, day, month, slug }: Params) {
   const storyRoute = `/stories/${year}/${month}/${day}/${slug}`;
   const prefetchedMetadataRes = await fetch(
     `${env.NEXT_PUBLIC_SITE_URL}/api${storyRoute}`,

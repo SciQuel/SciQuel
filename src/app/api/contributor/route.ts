@@ -39,13 +39,11 @@ export interface GetContributionResult {
 
 /**
  * One api for every single story a contributor has worked on sorted by time (given the user id) one
- * api for the same thing, but for stories that have been staff picked I'll do do a single api that
- * determines if we should do staff picked based on input
+ * Determines if we should do staff picked based on input.
  *
  * example url:
  * http://localhost:3000/api/contributor?contributorId=660778a163c61d29bd4f8de4&staffPick=True
- * Parameter: userId(id), staffPick(string: "True" | "False") return: all contributions by the
- * userId ordered in descending order by story creation date
+ * Parameter: userId(id), staffPick(string: "True" | "False") return: all contributions by the userId ordered in descending order by story creation date.
  */
 
 export async function GET(req: NextRequest) {

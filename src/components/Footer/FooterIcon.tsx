@@ -1,6 +1,6 @@
 "use client";
 
-import { type ReactElement } from "react";
+import { type ReactNode } from "react";
 import InstagramIcon from "../Footer/images/icons8-instagram.svg";
 import FacebookIcon from "./images/icons8-facebook.svg";
 import YouTubeIcon from "./images/icons8-youtube.svg";
@@ -11,7 +11,7 @@ interface Props {
 }
 
 export default function FooterIcon({ type }: Props) {
-  const iconMap: Record<Props["type"], ReactElement> = {
+  const iconMap: Record<typeof type, ReactNode> = {
     instagram: (
       <button>
         <InstagramIcon className="h-[2rem] w-auto" />{" "}
