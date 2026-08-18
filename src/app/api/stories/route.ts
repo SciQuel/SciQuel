@@ -165,6 +165,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const parsedRequest = putStorySchema.safeParse(await request.formData());
+    console.log(`parsed request ${JSON.stringify(parsedRequest)}`);
     if (!parsedRequest.success) {
       return NextResponse.json({ error: "Bad Request" }, { status: 400 });
     }
@@ -194,11 +195,16 @@ export async function PUT(request: NextRequest) {
           .file(story.thumbnailUrl.slice(bucketUrlPrefix.length))
           .delete({ ignoreNotFound: true });
       }
-
+      console.log(
+        `title color ${parsedRequest.data.titleColor}, title background ${parsedRequest.data.titleBackgroundColor}`,
+      );
       await prisma.story.update({
         where: { id: parsedRequest.data.id },
         data: {
           title: parsedRequest.data.title,
+          titleColor: parsedRequest.data.titleColor ?? "#ffffff",
+          titleBackgroundColor:
+            parsedRequest.data.titleBackgroundColor ?? "#000000",
           summary: parsedRequest.data.summary,
           thumbnailUrl,
           coverCaption: parsedRequest.data.imageCaption,
@@ -208,14 +214,15 @@ export async function PUT(request: NextRequest) {
 
       return NextResponse.json({ id: parsedRequest.data.id });
     }
-
     const newStory = await prisma.story.create({
       data: {
         title: parsedRequest.data.title,
         summary: parsedRequest.data.summary,
         storyType: StoryType.ESSAY,
         category: Category.ARTICLE,
-        titleColor: "#ffffff",
+        titleColor: parsedRequest.data.titleColor ?? "#ffffff",
+        titleBackgroundColor:
+          parsedRequest.data.titleBackgroundColor ?? "#000000",
         slug: slug(parsedRequest.data.title),
         summaryColor: "#ffffff",
         createdAt: timestamp,
