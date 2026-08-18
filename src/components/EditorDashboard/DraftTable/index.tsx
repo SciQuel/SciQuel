@@ -5,7 +5,6 @@ import { type GetStoriesResult } from "@/app/api/stories/route";
 // import axios from "axios";
 import { DateTime } from "luxon";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 // import useSWR from "swr";
@@ -28,7 +27,6 @@ export default function DraftTable({
   //   storyFetcher,
   // );
   // const [state, action, pending] = useActionState(publishHandle, false);
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [search, setSearch] = useState("");
   return (
@@ -93,7 +91,6 @@ export default function DraftTable({
                         onClick={() => {
                           setIsLoading(true);
                           void publishHandle(story, true);
-                          router.refresh();
                           setTimeout(() => {
                             setIsLoading(false);
                           }, 2000);

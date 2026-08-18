@@ -3,7 +3,6 @@
 import { type GetStoriesResult } from "@/app/api/stories/route";
 import { DateTime } from "luxon";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function PublishedTable({
@@ -17,7 +16,6 @@ export default function PublishedTable({
   //   `${env.NEXT_PUBLIC_SITE_URL}/api/stories?published=true`,
   //   storyFetcher,
   // );
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [search, setSearch] = useState("");
   return (
@@ -82,7 +80,6 @@ export default function PublishedTable({
                         onClick={() => {
                           setIsLoading(true);
                           void publishHandle(story, false);
-                          router.refresh();
                           setTimeout(() => {
                             setIsLoading(false);
                           }, 2000);
