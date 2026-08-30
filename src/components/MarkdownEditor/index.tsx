@@ -36,6 +36,18 @@ interface Props {
   id: string;
 }
 
+type SmartQuoteEditor = editor.IStandaloneCodeEditor & {
+  onDidType: (listener: (text: string) => void) => void;
+};
+
+function isOpeningQuoteContext(previousCharacter: string) {
+  if (previousCharacter.length === 0) {
+    return true;
+  }
+
+  return /[\s([{<\u2014-]$/.test(previousCharacter);
+}
+
 export default function MarkdownEditor({ initialValue, id }: Props) {
   const router = useRouter();
   const [dirty, setDirty] = useState(false);
@@ -60,6 +72,50 @@ export default function MarkdownEditor({ initialValue, id }: Props) {
 
       // monaco-editor requires Browser API, so it is dynamically imported on component render
       void import("monaco-editor").then(({ KeyMod, KeyCode }) => {
+        (editor as SmartQuoteEditor).onDidType((text) => {
+          if (text !== '"') {
+            return;
+          }
+
+          const model = editor.getModel();
+          const position = editor.getPosition();
+          if (model === null || position === null) {
+            return;
+          }
+
+          const quoteColumn = position.column - 1;
+          if (quoteColumn < 1) {
+            return;
+          }
+
+          const previousCharacter =
+            quoteColumn > 1
+              ? model.getValueInRange({
+                  startLineNumber: position.lineNumber,
+                  startColumn: quoteColumn - 1,
+                  endLineNumber: position.lineNumber,
+                  endColumn: quoteColumn,
+                })
+              : "";
+
+          const replacementQuote = isOpeningQuoteContext(previousCharacter)
+            ? "\u201C"
+            : "\u201D";
+
+          editor.executeEdits("smart-quotes", [
+            {
+              range: {
+                startLineNumber: position.lineNumber,
+                startColumn: quoteColumn,
+                endLineNumber: position.lineNumber,
+                endColumn: quoteColumn + 1,
+              },
+              text: replacementQuote,
+              forceMoveMarkers: true,
+            },
+          ]);
+        });
+
         editor.addAction({
           id: "insertRemoveBold",
           label: "Insert/Remove Bold Area",
