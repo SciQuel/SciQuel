@@ -127,6 +127,11 @@ model StoryContribution {
   bio String?
 }
 
+type SocialLink {
+  platform String
+  url      String
+}
+
 model Contributor {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
@@ -138,6 +143,8 @@ model Contributor {
   bio String?
 
   contributorSlug String @unique
+
+  socialLinks SocialLink[]
 
   storyContributions StoryContribution[]
 }
