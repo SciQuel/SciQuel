@@ -1,4 +1,5 @@
 import { getServerSession } from "next-auth";
+import Image from "next/image";
 import { redirect, RedirectType } from "next/navigation";
 import { type PropsWithChildren } from "react";
 
