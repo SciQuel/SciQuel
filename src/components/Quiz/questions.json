@@ -1,0 +1,23 @@
+{
+  "quiz": [
+    {
+      "type": "multiplematch",
+      "category": ["Car", "Phone", "Browser"],
+      "choice": [
+        "Iphone",
+        "Google",
+        "Honda",
+        "Toyota",
+        "Samsung",
+        "Safari",
+        "Firefox",
+        "KIA"
+      ]
+    },
+    {
+      "type": "onematch",
+      "category": ["Car", "Phone", "Browser"],
+      "choice": ["Iphone", "Google", "Honda"]
+    }
+  ]
+}

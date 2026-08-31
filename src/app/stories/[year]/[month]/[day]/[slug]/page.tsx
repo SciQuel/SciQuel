@@ -1,5 +1,9 @@
 import { type GetStoryResult } from "@/app/api/stories/[year]/[month]/[day]/[slug]/route";
 import { type GetStoriesResult } from "@/app/api/stories/route";
+import Avatar from "@/components/Avatar";
+import MoreCard from "@/components/MoreCard";
+import Quiz from "@/components/Quiz";
+import FromThisSeries from "@/components/story-components/FromThisSeries";
 import { PrintModeProvider } from "@/components/story-components/PrintContext";
 import { StoryScrollProvider } from "@/components/story-components/scroll/ScrollProvider";
 import StoryCredits from "@/components/story-components/StoryCredits";
@@ -7,7 +11,10 @@ import StoryFooter from "@/components/story-components/StoryFooter";
 import { tagUser } from "@/lib/cache";
 import env from "@/lib/env";
 import { generateMarkdown } from "@/lib/markdown";
-import { type ReactNode } from "react";
+import { type QuizQuestion, type StoryTopic } from "@prisma/client";
+import { DateTime } from "luxon";
+import Image from "next/image";
+import React, { type ReactNode } from "react";
 
 interface Params {
   year: string;
@@ -22,8 +29,12 @@ interface ParamsPromise {
 
 export default async function StoriesPage(props: ParamsPromise) {
   const params = await props.params;
-  const whatsNewArticles = await getWhatsNewArticles();
   const story = await retrieveStoryContent(params);
+  const whatsNewArticles = await getWhatsNewArticles();
+  const quizzes = (await getQuiz(story.id)) as QuizQuestion;
+  // console.log("quizzes", quizzes);
+
+  console.log("Type: ", typeof quizzes, quizzes);
 
   const { file } = (await generateMarkdown(
     `${story.storyContent[0].content}:end-icon`,
@@ -43,12 +54,15 @@ export default async function StoriesPage(props: ParamsPromise) {
                 <div className="flex-1 self-stretch" />
               </div>
             </div>
+
             <div className="w-screen xl:w-full">
               <div className="mx-0 mt-2 flex w-screen flex-col items-center gap-4 px-2 sm:mx-auto md:w-[768px] md:px-0">
+                <Quiz quizMode="preQuiz" Quizzes={quizzes} />
                 {/* <Dictionary /> */}
 
                 {file.result}
               </div>
+
               <div className="w-[calc( 100% - 1rem )] mx-2 mb-8 mt-8 border-t-2 border-[#616161] pt-1  md:mx-auto md:w-[768px] ">
                 <p className=" mt-2 text-sm text-[#616161]">
                   {story.storyContent ? story.storyContent[0].footer ?? "" : ""}
@@ -94,6 +108,7 @@ export default async function StoriesPage(props: ParamsPromise) {
               </div>
             </div>
           </div>
+          <Quiz quizMode="postQuiz" Quizzes={quizzes} />
           <StoryFooter
             storyContributions={story.storyContributions}
             articles1={whatsNewArticles}
@@ -199,4 +214,20 @@ async function getWhatsNewArticles() {
       updatedAt: new Date(story.updatedAt),
     })),
   );
+}
+
+/// temporary
+async function getQuiz(storyId: string) {
+  const res = await fetch(
+    `${env.NEXT_PUBLIC_SITE_URL}/api/quizzes?story_id=${storyId}&quiz_type=POST_QUIZ`,
+    {
+      next: { revalidate: 60 },
+    },
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch data");
+  }
+
+  return res.json();
 }
