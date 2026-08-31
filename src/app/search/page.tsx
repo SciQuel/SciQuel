@@ -5,10 +5,11 @@ import Pagination from "@/components/StoriesList/Pagination";
 import env from "@/lib/env";
 
 interface Params {
-  searchParams: { [key: string]: string };
+  searchParams: Promise<{ [key: string]: string }>;
 }
 
-export default async function SearchPage({ searchParams }: Params) {
+export default async function SearchPage(props: Params) {
+  const searchParams = await props.searchParams;
   const { keyword, page, type, date_from, date_to, sort_by } = searchParams;
   const params = {
     ...(keyword ? { keyword } : {}),
