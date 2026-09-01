@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
         { status: 400 },
       );
     }
-    const { description, story_id } = postParse.data;
+    const { description, story_id, author_name } = postParse.data;
 
     const storyPromise = prisma.story.findFirst({ where: { id: story_id } });
     const staffPickCheckPromise = prisma.staffPick.findUnique({
@@ -45,6 +45,7 @@ export async function POST(request: NextRequest) {
     const staffPickPromise = prisma.staffPick.create({
       data: {
         description,
+        authorName: author_name,
         storyId: story_id,
       },
     });
