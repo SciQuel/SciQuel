@@ -103,14 +103,17 @@ export default function RegisterForm() {
               password.length === 0 ||
               password !== confirmPassword
             }
-            className={`mt-4 rounded-md bg-sciquelTeal px-2 py-1 font-semibold text-white
+            className={`mt-8 rounded-md bg-sciquelTeal px-2 py-1 font-semibold text-white
       transition-all hover:brightness-90 disabled:bg-gray-300 disabled:hover:brightness-100`}
           >
             Sign up
           </button>
-          <p className="mt-6 text-sm text-sciquelDarkText">
+          <p className="mt-2 text-center text-sm text-sciquelDarkText">
             Already have an account?{" "}
-            <Link href="/auth/login" className="text-sciquelTeal">
+            <Link
+              href="/auth/login"
+              className="text-sciquelTeal hover:underline"
+            >
               Log in here
             </Link>
           </p>
