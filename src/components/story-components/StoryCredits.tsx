@@ -4,13 +4,7 @@ import { type GetStoryResult } from "@/app/api/stories/[year]/[month]/[day]/[slu
 import { type StoryTopic } from "@prisma/client";
 import { DateTime } from "luxon";
 import Image from "next/image";
-import {
-  useContext,
-  useEffect,
-  useLayoutEffect,
-  useReducer,
-  useRef,
-} from "react";
+import { useContext, useRef } from "react";
 import Avatar from "../Avatar";
 import TopicTag from "../TopicTag";
 import { PrintContext } from "./PrintContext";
@@ -18,10 +12,6 @@ import ShareLinks from "./ShareLinks";
 
 interface Props {
   story: GetStoryResult;
-}
-
-interface FontAction {
-  type: "window update";
 }
 
 const contributorPrefixMap = {
@@ -49,62 +39,6 @@ const contributorPrefixMap = {
 export default function StoryCredits({ story }: Props) {
   const isPrintMode = useContext(PrintContext);
   const headerRef = useRef<HTMLDivElement>(null);
-
-  //72
-  const [headerFont, dispatchHeaderFont] = useReducer(
-    (state: number, action: FontAction) => {
-      switch (action.type) {
-        case "window update":
-          if (
-            headerRef.current &&
-            headerRef.current.clientHeight > window.innerHeight * 0.9 - 90 &&
-            state > 14
-          ) {
-            return state - 2;
-          } else if (
-            headerRef.current &&
-            headerRef.current.clientHeight +
-              state +
-              Math.max(state - 23, 14) +
-              32 <
-              window.innerHeight * 0.9 - 90 &&
-            state < 72
-          ) {
-            return state + 2;
-          } else {
-            return state;
-          }
-
-        default:
-          throw Error("unknown action in header font reducer");
-      }
-    },
-    72,
-  );
-
-  function handleWindowResize() {
-    if (headerRef.current) {
-      dispatchHeaderFont({ type: "window update" });
-    }
-  }
-
-  useEffect(() => {
-    console.log("is print mode? : ", isPrintMode);
-    console.log(story);
-    if (!isPrintMode) {
-      window.addEventListener("resize", handleWindowResize);
-    } else {
-      window.removeEventListener("resize", handleWindowResize);
-    }
-
-    return () => {
-      window.removeEventListener("resize", handleWindowResize);
-    };
-  }, [isPrintMode]);
-
-  useLayoutEffect(() => {
-    dispatchHeaderFont({ type: "window update" });
-  }, [headerFont]);
 
   function buildContributors() {
     const contributorMap = {
@@ -358,21 +292,17 @@ export default function StoryCredits({ story }: Props) {
             }}
           >
             <h1
-              className="mb-0 rounded-t-xl p-8 pb-0 font-customTest text-6xl font-bold sm:text-8xl lg:w-full"
+              className="mb-0 break-words rounded-t-xl p-8 pb-0 font-customTest text-6xl font-bold sm:text-4xl lg:w-full"
               style={{
                 color: story.titleColor,
-                fontSize: `${Math.max(headerFont, 14)}px`,
-                lineHeight: `${Math.max(headerFont + 3, 14)}px`,
               }}
             >
               {story.title}
             </h1>
             <h2
-              className="p-8 pt-0 font-besley text-2xl lg:w-full"
+              className="break-words p-8 pt-0 font-besley text-2xl lg:w-full"
               style={{
                 color: story.summaryColor,
-                fontSize: `${Math.max(headerFont - 33, 14)}px`,
-                lineHeight: `${Math.max(headerFont - 28, 14)}px`,
               }}
             >
               {story.summary}
