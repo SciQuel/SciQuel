@@ -25,7 +25,11 @@ export type GetStoryResult = Story & {
   }[];
 };
 
-export async function GET(req: NextRequest, { params }: { params: Params }) {
+export async function GET(
+  req: NextRequest,
+  props: { params: Promise<Params> },
+) {
+  const params = await props.params;
   try {
     const { searchParams } = new URL(req.url);
 
@@ -84,8 +88,9 @@ export async function GET(req: NextRequest, { params }: { params: Params }) {
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: Params },
+  props: { params: Promise<Params> },
 ) {
+  const params = await props.params;
   try {
     const session = await getServerSession();
     const user = await prisma.user.findUnique({

@@ -6,7 +6,11 @@ interface Params {
   story_id: string;
 }
 
-export async function GET(req: NextRequest, { params }: { params: Params }) {
+export async function GET(
+  req: NextRequest,
+  props: { params: Promise<Params> },
+) {
+  const params = await props.params;
   try {
     const { story_id } = params;
     const session = await getServerSession();

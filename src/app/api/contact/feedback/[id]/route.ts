@@ -9,7 +9,11 @@ interface Params {
   id: unknown;
 }
 
-export async function PATCH(req: NextRequest, { params }: { params: Params }) {
+export async function PATCH(
+  req: NextRequest,
+  props: { params: Promise<Params> },
+) {
+  const params = await props.params;
   const session = await getServerSession();
   const user = await prisma.user.findUnique({
     where: { email: session?.user.email ?? "noemail" },

@@ -148,15 +148,16 @@ export default function AuthorCredits({ storyContributions }: Props) {
                       contributionType as "AUTHOR" | "ILLUSTRATOR" | "ANIMATOR"
                     ].prefix
                   }
-                  {contributors.length > 1 ? "s" : ""}
                 </h1>
-                {contributors.map((element) => (
-                  <p key={`footer-credits-${element.slug}`} className="">
+                {contributors.map((element, index) => (
+                  <p
+                    key={`footer-credits-${element.slug}-${index}`}
+                    className=""
+                  >
                     <a
                       className="font-semibold"
                       href={`/profile/${element.slug}`}
                     >
-                      {" "}
                       {element.name}{" "}
                     </a>
                     {element.bio}
