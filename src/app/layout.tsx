@@ -12,6 +12,8 @@ import {
 } from "next/font/google";
 import AuthProvider from "./AuthProvider";
 
+export const fetchCache = "default-cache";
+
 export const metadata = {
   title: "SciQuel",
   description: "SciQuel",

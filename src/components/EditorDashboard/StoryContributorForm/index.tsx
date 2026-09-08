@@ -110,7 +110,7 @@ export default function StoryContributorForm({
     [authorDirectory],
   );
 
-  const [state, dispatch] = useReducer<(state: State, action: Action) => State>(
+  const [state, dispatch] = useReducer(
     reducer,
     contributors.map((contributor) => ({
       contributionType: contributor.contributionType,

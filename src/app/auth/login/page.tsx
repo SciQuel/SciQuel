@@ -1,12 +1,12 @@
 import Alert from "@/components/Alert";
 import LoginForm from "@/components/Auth/LoginForm";
+import { type ReactNode } from "react";
 
-export default function LoginPage({
-  searchParams,
-}: {
-  searchParams: { [key: string]: unknown };
+export default async function LoginPage(props: {
+  searchParams: Promise<{ [key: string]: unknown }>;
 }) {
-  const errorMap: Record<string, JSX.Element> = {
+  const searchParams = await props.searchParams;
+  const errorMap: Record<string, ReactNode> = {
     EmailSignin: (
       <Alert type="danger">
         There was a problem while attempting to verify your account.

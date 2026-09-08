@@ -6,6 +6,7 @@ import {
   useReducer,
   useRef,
   type PropsWithChildren,
+  type RefObject,
 } from "react";
 import { PrintContext } from "../PrintContext";
 import {
@@ -90,7 +91,7 @@ export default function StoryLargeImage({
         overlapDispatch({
           type: "set",
           figureVal: getOffset(entry.contentRect.width),
-          elementRef: figureRef,
+          elementRef: figureRef as RefObject<HTMLElement>,
         });
       } else {
         // entry is too small?
@@ -98,7 +99,10 @@ export default function StoryLargeImage({
         if (intersectionRef.current) {
           intersectionRef.current.disconnect();
         }
-        overlapDispatch({ type: "reset", elementRef: figureRef });
+        overlapDispatch({
+          type: "reset",
+          elementRef: figureRef as RefObject<HTMLElement>,
+        });
       }
     });
   }
@@ -127,7 +131,10 @@ export default function StoryLargeImage({
 
   function onscreenScroll() {
     if (figureRef.current) {
-      overlapDispatch({ type: "update", elementRef: figureRef });
+      overlapDispatch({
+        type: "update",
+        elementRef: figureRef as RefObject<HTMLElement>,
+      });
     }
   }
 

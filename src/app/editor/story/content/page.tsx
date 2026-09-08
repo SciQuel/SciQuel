@@ -7,11 +7,13 @@ interface SearchParams {
   id?: string;
 }
 
-export default async function StoryContentEditorPage({
-  searchParams: { id },
-}: {
-  searchParams: SearchParams;
+export default async function StoryContentEditorPage(props: {
+  searchParams: Promise<SearchParams>;
 }) {
+  const searchParams = await props.searchParams;
+
+  const { id } = searchParams;
+
   const story = id
     ? await prisma.story.findUnique({
         where: { id },
