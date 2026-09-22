@@ -1,11 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import {
-  buildStoryUrl,
-  normalizeSeriesList,
-  type Series,
-  type Story,
-} from "./helpers";
+import { buildStoryUrl, normalizeSeriesList, type Series } from "./helpers";
 
 export type SearchResult = {
   id: string;
@@ -49,7 +44,22 @@ export function useSeriesDashboard() {
 
     try {
       const res = await axios.get("/api/series");
-      const data = res.data as { allSeries?: Array<any> } | undefined;
+      const data = res.data as
+        | {
+            allSeries?: Array<{
+              id: string;
+              title: string | null;
+              storyinSeries?: Array<{
+                storyId: string;
+                order: number;
+                story?: { title?: string | null } | null;
+                storyShortHeadline?: string | null;
+                storyURL?: string | null;
+              }>;
+            }>;
+          }
+        | undefined;
+
       setSeriesList(
         normalizeSeriesList(
           Array.isArray(data?.allSeries) ? data.allSeries : [],

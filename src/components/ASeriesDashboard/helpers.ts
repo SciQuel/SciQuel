@@ -31,9 +31,9 @@ export const normalizeSeriesList = (
     storyinSeries?: Array<{
       storyId: string;
       order: number;
-      story?: { title: string };
-      storyShortHeadline: string;
-      storyURL: string;
+      story?: { title?: string | null } | null;
+      storyShortHeadline?: string | null;
+      storyURL?: string | null;
     }>;
   }>,
 ): Series[] =>

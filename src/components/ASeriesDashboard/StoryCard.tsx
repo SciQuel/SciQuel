@@ -119,7 +119,7 @@ export function StoryCard({
             type="text"
             placeholder="Search existing stories..."
             value={searchQueries[key] || ""}
-            onChange={(e) =>
+            onChange={() =>
               setSeriesList((prev) =>
                 prev.map((ser) =>
                   ser.id === series.id
