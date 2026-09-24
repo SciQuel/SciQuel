@@ -12,20 +12,6 @@ export const getSeriesSchema = z.object({
   title: z.string().optional(),
 });
 
-const storyUrlSchema = z.string().refine(
-  (value) => {
-    try {
-      new URL(value, "http://example.com");
-      return true;
-    } catch {
-      return false;
-    }
-  },
-  {
-    message: "Invalid story URL",
-  },
-);
-
 export const postSeriesSchema = zfd.formData({
   title: zfd.text(),
   stories: z.preprocess(
@@ -40,7 +26,6 @@ export const postSeriesSchema = zfd.formData({
       z.object({
         id: zfd.text(),
         shortHeadline: zfd.text(),
-        storyURL: storyUrlSchema,
       }),
     ),
   ),
@@ -55,7 +40,6 @@ export const putSeriesSchema = z
         z.object({
           id: z.string(),
           shortHeadline: z.string(),
-          storyURL: storyUrlSchema,
         }),
       )
       .optional(),
