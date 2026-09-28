@@ -1,7 +1,6 @@
 import prisma from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 import { NextResponse, type NextRequest } from "next/server";
-import { includes } from "zod";
 import { getStorySeriesSchema } from "../schema";
 
 export async function GET(req: NextRequest) {
