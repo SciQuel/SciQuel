@@ -22,12 +22,14 @@ export const postSeriesSchema = zfd.formData({
       }
       return [];
     },
-    z.array(
-      z.object({
-        id: zfd.text(),
-        shortHeadline: zfd.text(),
-      }),
-    ).superRefine((items, ctx) => {
+    z
+      .array(
+        z.object({
+          id: zfd.text(),
+          shortHeadline: zfd.text(),
+        }),
+      )
+      .superRefine((items, ctx) => {
         if (items) {
           const seen = new Map();
           items.forEach((item, idx) => {
@@ -35,19 +37,14 @@ export const postSeriesSchema = zfd.formData({
               ctx.addIssue({
                 code: "custom",
                 message: `Duplicate id: ${item.id}`,
-                path: [idx, "id"],
-              });
-              ctx.addIssue({
-                code: "custom",
-                message: `Duplicate id: ${item.id}`,
-                path: [seen.get(item.id), "id"],
+                path: [idx, seen.get(item.id), "id"],
               });
             } else {
               seen.set(item.id, idx);
             }
           });
         }
-      }),,
+      }),
   ),
 });
 
