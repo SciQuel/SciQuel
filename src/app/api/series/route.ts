@@ -17,7 +17,11 @@ export async function GET(req: NextRequest) {
   );
   if (!parsedParams.success) {
     return NextResponse.json(
-      { error: `Bad request. Validation Error Message ${parsedParams.error} ` },
+      {
+        error: "Bad Request. Validation Error.",
+        name: parsedParams.error.name,
+        issues: parsedParams.error.issues,
+      },
       { status: 400 },
     );
   }
@@ -71,7 +75,11 @@ export async function POST(req: NextRequest) {
   if (!parsedRequest.success) {
     console.log(parsedRequest.error);
     return NextResponse.json(
-      { error: "Bad Request. Validation Error." },
+      {
+        error: "Bad Request. Validation Error.",
+        name: parsedRequest.error.name,
+        issues: parsedRequest.error.issues,
+      },
       { status: 400 },
     );
   }
@@ -83,7 +91,7 @@ export async function POST(req: NextRequest) {
       },
     })) as NewSeries;
     console.log(typeof parsedData.stories);
-    const newStoryInSeries = await prisma.StoryInSeries.createMany({
+    const newStoryInSeries = await prisma.storyInSeries.createMany({
       data: parsedData.stories.map((story, id) => ({
         storyId: story.id,
         seriesId: newSeries.id,
@@ -122,7 +130,8 @@ export async function PUT(req: NextRequest) {
     return NextResponse.json(
       {
         error: "Bad Request. Validation Error.",
-        details: parsedRequest.error.format(),
+        name: parsedRequest.error.name,
+        issues: parsedRequest.error.issues,
       },
       { status: 400 },
     );
@@ -154,12 +163,12 @@ export async function PUT(req: NextRequest) {
 
       let relationResult = null;
       if (parsedData.stories) {
-        await tx.StoryInSeries.deleteMany({
+        await tx.storyInSeries.deleteMany({
           where: { seriesId: parsedData.id },
         });
 
         if (parsedData.stories.length > 0) {
-          relationResult = await tx.StoryInSeries.createMany({
+          relationResult = await tx.storyInSeries.createMany({
             data: parsedData.stories.map((story, index) => ({
               storyId: story.id,
               seriesId: parsedData.id,
@@ -215,7 +224,7 @@ export async function DELETE(req: NextRequest) {
           id: id,
         },
       }),
-      prisma.StoryInSeries.deleteMany({
+      prisma.storyInSeries.deleteMany({
         where: {
           seriesId: id,
         },
