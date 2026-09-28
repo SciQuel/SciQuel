@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 import { NextResponse, type NextRequest } from "next/server";
+import { includes } from "zod";
 import { getStorySeriesSchema } from "../schema";
 
 export async function GET(req: NextRequest) {
@@ -16,28 +17,32 @@ export async function GET(req: NextRequest) {
   }
   try {
     const { id } = parsedParams.data;
-    const foundRelations = await prisma.storyinSeries.findMany({
+    const seriesOfStory = await prisma.storyInSeries.findMany({
       where: {
         storyId: id,
       },
+      include: {
+        series: true,
+      },
     });
-    let res: unknown[] = [];
-    if (foundRelations && foundRelations.length > 0) {
-      res = await Promise.allSettled(
-        foundRelations.map((rel) =>
-          prisma.series.findFirst({
-            where: {
-              id: rel.seriesId,
-            },
-          }),
-        ),
-      ).then((results) =>
-        results.map((r): unknown =>
-          r.status === "fulfilled" ? r.value : r.reason,
-        ),
-      );
-    }
-    return NextResponse.json({ foudnRelations: foundRelations, series: res });
+    // let res: unknown[] = [];
+    // if (foundRelations && foundRelations.length > 0) {
+    //   res = await Promise.allSettled(
+    //     foundRelations.map((rel) =>
+    //       prisma.series.findFirst({
+    //         where: {
+    //           id: rel.seriesId,
+    //         },
+    //       }),
+    //     ),
+    //   ).then((results) =>
+    //     results.map((r): unknown =>
+    //       r.status === "fulfilled" ? r.value : r.reason,
+    //     ),
+    //   );
+    // }
+    // return NextResponse.json({ foudnRelations: foundRelations, series: res });
+    return NextResponse.json({ series: seriesOfStory });
   } catch (err) {
     console.log(err);
     if (err instanceof Prisma.PrismaClientKnownRequestError) {
