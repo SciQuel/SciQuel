@@ -7,7 +7,7 @@ interface StoryRequestSchema {
   storyURL: string;
 }
 
-export const getSeriesSchema = z.object({
+export const getSeriesSchema = z.strictObject({
   id: z.string().optional(),
   title: z.string().optional(),
 });
