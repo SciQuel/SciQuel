@@ -27,7 +27,27 @@ export const postSeriesSchema = zfd.formData({
         id: zfd.text(),
         shortHeadline: zfd.text(),
       }),
-    ),
+    ).superRefine((items, ctx) => {
+        if (items) {
+          const seen = new Map();
+          items.forEach((item, idx) => {
+            if (seen.has(item.id)) {
+              ctx.addIssue({
+                code: "custom",
+                message: `Duplicate id: ${item.id}`,
+                path: [idx, "id"],
+              });
+              ctx.addIssue({
+                code: "custom",
+                message: `Duplicate id: ${item.id}`,
+                path: [seen.get(item.id), "id"],
+              });
+            } else {
+              seen.set(item.id, idx);
+            }
+          });
+        }
+      }),,
   ),
 });
 
@@ -42,7 +62,28 @@ export const putSeriesSchema = z
           shortHeadline: z.string(),
         }),
       )
-      .optional(),
+      .optional()
+      .superRefine((items, ctx) => {
+        if (items) {
+          const seen = new Map();
+          items.forEach((item, idx) => {
+            if (seen.has(item.id)) {
+              ctx.addIssue({
+                code: "custom",
+                message: `Duplicate id: ${item.id}`,
+                path: [idx, "id"],
+              });
+              ctx.addIssue({
+                code: "custom",
+                message: `Duplicate id: ${item.id}`,
+                path: [seen.get(item.id), "id"],
+              });
+            } else {
+              seen.set(item.id, idx);
+            }
+          });
+        }
+      }),
   })
   .refine(({ title, stories }) => title || stories, {
     message: "title or stories array must be defined",
