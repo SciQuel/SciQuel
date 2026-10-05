@@ -49,10 +49,14 @@ export function useSeriesDashboard() {
             allSeries?: Array<{
               id: string;
               title: string | null;
-              storyinSeries?: Array<{
+              storyInSeries?: Array<{
                 storyId: string;
                 order: number;
-                story?: { title?: string | null } | null;
+                story?: {
+                  title?: string | null;
+                  createdAt?: string | Date;
+                  slug?: string;
+                } | null;
                 storyShortHeadline?: string | null;
                 storyURL?: string | null;
               }>;
@@ -171,14 +175,11 @@ export function useSeriesDashboard() {
       const allStoriesHaveUrl = series.stories.every(
         (story) => story.url.trim() !== "",
       );
-      const stories =
-        allStoriesHaveUrl && series.stories.length > 0
-          ? series.stories.map((story) => ({
-              id: story.id,
-              shortHeadline: story.shortHeadline || "",
-              storyURL: story.url,
-            }))
-          : [];
+      const stories = series.stories.map((story) => ({
+        id: story.id,
+        shortHeadline: story.shortHeadline || "",
+        storyURL: story.url,
+      }));
 
       const isNewSeries =
         !series.id || series.id.trim() === "" || series.id.startsWith("temp-");
@@ -219,7 +220,7 @@ export function useSeriesDashboard() {
           }>;
         } = { id: series.id, title: series.name };
 
-        if (stories.length > 0) payload.stories = stories;
+        if (allStoriesHaveUrl) payload.stories = stories;
 
         await axios.put("/api/series", payload);
         setSeriesList((prev) =>

@@ -28,10 +28,14 @@ export const normalizeSeriesList = (
   allSeries: Array<{
     id: string;
     title: string | null;
-    storyinSeries?: Array<{
+    storyInSeries?: Array<{
       storyId: string;
       order: number;
-      story?: { title?: string | null } | null;
+      story?: {
+        title?: string | null;
+        createdAt?: string | Date;
+        slug?: string;
+      } | null;
       storyShortHeadline?: string | null;
       storyURL?: string | null;
     }>;
@@ -40,12 +44,19 @@ export const normalizeSeriesList = (
   (allSeries ?? []).map((series) => ({
     id: series.id,
     name: series.title || "Untitled Series",
-    stories: (series.storyinSeries || [])
+    stories: (series.storyInSeries || [])
       .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
       .map((relation) => ({
         id: relation.storyId,
         name: relation.story?.title || relation.storyShortHeadline || "",
-        url: relation.storyURL || "",
+        url:
+          relation.storyURL ||
+          (relation.story?.createdAt && relation.story.slug
+            ? buildStoryUrl({
+                createdAt: relation.story.createdAt,
+                slug: relation.story.slug,
+              })
+            : ""),
         shortHeadline: relation.storyShortHeadline || "",
       })),
   }));
