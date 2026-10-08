@@ -77,6 +77,12 @@ enum StaffPickRecordType {
   UPDATE
 }
 
+enum StoryContentStatus {
+  WORKING
+  DRAFT
+  PUBLISHED
+}
+
 model Story {
   id        String    @id @default(auto()) @map("_id") @db.ObjectId
   storyType StoryType
@@ -192,6 +198,8 @@ model StoryContent {
   content        String
   coverImgCredit String?
   footer         String?
+
+  status StoryContentStatus @default(WORKING)
 
   createdAt DateTime
 }

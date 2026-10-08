@@ -1,6 +1,6 @@
 import MarkdownEditor from "@/components/MarkdownEditor";
 import prisma from "@/lib/prisma";
-import { type StoryContent } from "@prisma/client";
+import { pickEditorStoryContent } from "@/lib/story-content";
 import { redirect } from "next/navigation";
 
 interface SearchParams {
@@ -24,18 +24,7 @@ export default async function StoryContentEditorPage(props: {
     return redirect("/editor/dashboard");
   }
 
-  const latestRevision = story.storyContent.reduce<StoryContent | null>(
-    (acc, current) => {
-      if (acc === null) {
-        return current;
-      }
-      if (current.createdAt > acc.createdAt) {
-        return current;
-      }
-      return acc;
-    },
-    null,
-  );
+  const latestRevision = pickEditorStoryContent(story.storyContent);
   return (
     <MarkdownEditor initialValue={latestRevision?.content} id={story.id} />
   );

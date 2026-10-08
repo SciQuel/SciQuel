@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import { publishedStoryContentQuery } from "@/lib/story-content";
 import { type ContributionType, type Story } from "@prisma/client";
 import { DateTime } from "luxon";
 import { NextResponse } from "next/server";
@@ -57,6 +58,7 @@ export async function GET(req: Request, props: { params: Promise<Params> }) {
     const result = await prisma.story.findFirst({
       where: {
         slug: slug,
+        published: true,
         publishedAt: {
           gte: DateTime.utc(
             parsedYear,
@@ -93,8 +95,7 @@ export async function GET(req: Request, props: { params: Promise<Params> }) {
         storyContent:
           includeContent === "true"
             ? {
-                take: 1,
-                orderBy: { createdAt: "desc" },
+                ...publishedStoryContentQuery,
                 select: { content: true, footer: true, coverImgCredit: true },
               }
             : false,
