@@ -66,7 +66,9 @@ export default async function StoryTopicPage(props: Params) {
             <Pagination total_pages={total_pages} />
           </>
         ) : (
-          <h2 className="text-3xl font-[550] text-sciquelHeading">No Result</h2>
+          <h2 className="text-3xl font-[550] text-sciquelHeading">
+            No results
+          </h2>
         )}
       </HomepageSection>
     </div>

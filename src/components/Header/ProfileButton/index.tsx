@@ -81,6 +81,7 @@ export default function ProfileButton() {
               className="z-[20] flex w-48 flex-col rounded-md bg-white px-3 py-2 text-sciquelDarkText outline-none ring-0 drop-shadow-md"
             >
               <DropdownItem label="Profile" href="/user-settings/dashboard" />
+               <DropdownItem label="Series" href="/editor/article-series " />
               <DropdownItem label="Settings" href="/user-settings/settings" />
               <DropdownItem label="Sign out" onClick={() => void signOut()} />
             </div>

@@ -39,6 +39,12 @@ export default function DraftTable({
         >
           + Create
         </Link>
+        <Link
+          href="/editor/article-series"
+          className="rounded-md bg-blue-600 px-2 py-1 text-sm font-semibold text-white hover:bg-blue-700"
+        >
+          Series
+        </Link>
         <div className="grow text-right">
           <input
             className={`peer w-64 rounded-md px-2 py-1 outline outline-1
