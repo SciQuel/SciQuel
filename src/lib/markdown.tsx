@@ -12,6 +12,9 @@ import StoryOl from "@/components/story-components/markdown/StoryOl";
 import StoryParagraph from "@/components/story-components/markdown/StoryParagraph";
 import StoryPre from "@/components/story-components/markdown/StoryPre";
 import StoryUl from "@/components/story-components/markdown/StoryUl";
+import rehypeMarkLeadParagraph, {
+  hasStoryLeadClass,
+} from "@/lib/rehype-mark-lead-paragraph";
 import remarkSciquelDirective from "@/lib/remark-sciquel-directive";
 import { type HTMLProps, type ReactNode } from "react";
 import production from "react/jsx-runtime";
@@ -59,13 +62,20 @@ export async function generateMarkdown(content: string) {
         "end-icon",
       ],
     })
+    .use(rehypeMarkLeadParagraph)
     .use(rehypeReact, {
       Fragment: production.Fragment,
       jsx: production.jsx,
       jsxs: production.jsxs,
       components: {
-        p: (props: HTMLProps<HTMLParagraphElement>) => (
-          <StoryParagraph>{props.children}</StoryParagraph>
+        p: (
+          props: HTMLProps<HTMLParagraphElement> & {
+            className?: string | string[];
+          },
+        ) => (
+          <StoryParagraph isLead={hasStoryLeadClass(props.className)}>
+            {props.children}
+          </StoryParagraph>
         ),
         h1: (props: HTMLProps<HTMLHeadingElement>) => (
           <StoryH1>{props.children}</StoryH1>
