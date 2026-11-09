@@ -3,6 +3,11 @@
 import prisma from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 
+export type SocialLink = {
+  platform: string;
+  url: string;
+};
+
 export interface ContributorResult {
   id: string;
   firstName: string;
@@ -11,6 +16,7 @@ export interface ContributorResult {
   avatarUrl: string | null;
   bio: string | null;
   contributorSlug: string;
+  socialLinks?: SocialLink[];
 }
 
 export type SearchResult = ContributorResult[] | undefined;
