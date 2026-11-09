@@ -20,6 +20,16 @@ module.exports = {
         besley: "var(--font-besley)",
         quicksand: "var(--font-quicksand)",
       },
+
+      screens: {
+        'h-sm': { 'raw': '(max-height: 568px)' },    // Small mobile devices
+        'h-md': { 'raw': '(min-height: 569px)' },    // Medium mobile devices
+        'h-lg': { 'raw': '(min-height: 668px)' },    // Large mobile devices
+        'h-xl': { 'raw': '(min-height: 1024px)' },   // Tablets
+        'h-2xl': { 'raw': '(min-height: 1280px)' },  // Small laptops
+        'h-3xl': { 'raw': '(min-height: 1280px)' },  // Desktops
+      },
+   
       colors: {
         sciquelDarkText: "#333333",
         sciquelTeal: "#194b52",
