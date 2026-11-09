@@ -22,6 +22,14 @@ export type Stories = (Story & {
     };
     contributionType: ContributionType;
   }[];
+  // Included by the Prisma query so staff-pick features can read the pick metadata
+  staffPick: {
+    id: string;
+    storyId: string;
+    description: string;
+    authorName: string;
+    createdAt: Date;
+  } | null;
 })[];
 
 export type GetStoriesResult = {
@@ -82,7 +90,9 @@ export async function GET(req: NextRequest) {
             }
           : {}),
         published,
-        staffPick: staff_pick ? { isNot: null } : undefined,
+        // Support both "already picked" and "not yet picked" story searches.
+        ...(staff_pick === true ? { staffPick: { isNot: null } } : {}),
+        ...(staff_pick === false ? { staffPick: { is: null } } : {}),
         ...(topic ? { topics: { has: topic } } : {}),
         storyType: type,
         category: category,
@@ -113,7 +123,7 @@ export async function GET(req: NextRequest) {
     });
 
     const numStories = await prisma.story.count({
-      where: query.where,
+      where: { category: Category.ARTICLE, ...query.where },
     });
 
     return NextResponse.json({
