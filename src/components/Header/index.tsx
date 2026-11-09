@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import SciquelLogo from "../../../public/assets/images/logoWithNameOnSide.svg";
 import MainSubHeader from "./MainSubHeader";
+import ProfileButton from "./ProfileButton";
 // import ProfileButton from "./ProfileButton";
 import Search from "./search.svg";
 // import SeriesSubHeader from "./SeriesSubHeader";
@@ -57,7 +58,7 @@ export default function Header() {
             </form>
           </div>
           <div className="h-[2rem] grow" />
-          {/* <ProfileButton /> */}
+          <ProfileButton />
         </div>
       </div>
       {/* {pathname.split("/")[1] === "stories" ? (
