@@ -8,12 +8,13 @@ const config = {
     "plugin:@typescript-eslint/recommended-requiring-type-checking",
     "plugin:prettier/recommended",
     "plugin:@next/next/recommended",
+    "plugin:storybook/recommended",
   ],
   parserOptions: {
     ecmaVersion: "latest",
     sourceType: "module",
     tsconfigRootDir: __dirname,
-    project: ["./tsconfig.json"],
+    project: ["./tsconfig.json", "./tsconfig.storybook.json"],
   },
   rules: {
     "@typescript-eslint/restrict-template-expressions": "off",

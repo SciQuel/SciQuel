@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "prettier": "npx prettier --write ./src"
+    "prettier": "npx prettier --write ./src",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
@@ -79,7 +81,12 @@
     "prettier-plugin-tailwindcss": "^0.3.0",
     "prisma": "^5.22.0",
     "tailwindcss-touch": "^1.0.1",
-    "ts-node": "^10.9.1"
+    "ts-node": "^10.9.1",
+    "storybook": "^10.6.0",
+    "@storybook/nextjs": "^10.6.0",
+    "@storybook/addon-a11y": "^10.6.0",
+    "@storybook/addon-docs": "^10.6.0",
+    "eslint-plugin-storybook": "^10.6.0"
   },
   "overrides": {
     "@types/react": "19.2.14",
