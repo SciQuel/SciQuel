@@ -1,16 +1,13 @@
 import "./globals.css";
-import Footer from "@/components/Footer";
-import Header from "@/components/Header";
-import { authOptions } from "@/lib/auth";
+import RootLayoutBody from "@/components/layout-components/RootBody/RootBody";
+import { layoutGetServerSession } from "@app/layoutFunctions";
 import clsx from "clsx";
-import { getServerSession } from "next-auth";
 import {
   Alegreya_Sans_SC,
   Besley,
   Quicksand,
   Source_Serif_4,
 } from "next/font/google";
-import AuthProvider from "./AuthProvider";
 
 export const fetchCache = "default-cache";
 
@@ -51,7 +48,8 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await getServerSession(authOptions);
+  const session = await layoutGetServerSession();
+  console.log("in RootLayout: ", session);
   return (
     <html lang="en">
       <body
@@ -65,23 +63,7 @@ export default async function RootLayout({
           "flex min-h-screen flex-col",
         )}
       >
-        <AuthProvider session={session}>
-          <a
-            href="#main"
-            className="skip center absolute overflow-hidden outline focus:static "
-          >
-            Skip to main content
-          </a>
-          <div className=" min-h-screen">
-            <Header></Header>
-
-            <main className="pt-36 font-quicksand xs:pt-24 sm:pt-10" id="main">
-              {children}
-            </main>
-          </div>
-
-          <Footer />
-        </AuthProvider>
+        <RootLayoutBody session={session}>{children}</RootLayoutBody>
       </body>
     </html>
   );

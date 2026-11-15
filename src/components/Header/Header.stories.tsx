@@ -1,22 +1,30 @@
 import { type Meta, type StoryObj } from "@storybook/nextjs";
 import Header from ".";
 
-const meta: Meta<typeof Header> = {
+// import { layoutGetServerSession } from "../../app/layoutFunctions.mock";
+
+const meta = {
   component: Header,
   parameters: {
-    layout: "fullscreen",
+    nextjs: {
+      appDirectory: true,
+    },
   },
-  decorators: [
-    (Story) => (
-      <div className="[&_header]:!w-full">
-        <Story />
-      </div>
-    ),
-  ],
-};
+  beforeEach: () => {
+    // layoutGetServerSession.mockClear();
+    // layoutGetServerSession.mockImplementation(() => {
+    //   console.log("in home mock implementation");
+    //   return new Promise((resolve) => {
+    //     setTimeout(() => {
+    //       resolve(null);
+    //     }, 100);
+    //   });
+    // });
+  },
+} satisfies Meta<typeof Header>;
 
 export default meta;
 
 type Story = StoryObj<typeof Header>;
 
-export const Default: Story = {};
+export const LoggedOut: Story = {};

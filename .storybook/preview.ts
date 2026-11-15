@@ -1,17 +1,34 @@
-import { type Preview } from "@storybook/nextjs";
+import type { Preview } from "@storybook/nextjs";
+import { initialize, mswLoader } from "msw-storybook-addon";
+import { StoriesMock } from "../src/app/api/stories/mock";
 import "../src/app/globals.css";
+import { sb } from "storybook/test";
+import { INITIAL_VIEWPORTS } from "storybook/viewport";
+
+initialize({ onUnhandledRequest: "bypass" });
+
+sb.mock(import("../src/app/layoutFunctions.ts"));
 
 const preview: Preview = {
+  loaders: [mswLoader],
   parameters: {
-    layout: "padded",
-    nextjs: {
-      appDirectory: true,
+    layout: "fullscreen",
+    viewport: {
+      options: INITIAL_VIEWPORTS,
     },
     controls: {
       matchers: {
         color: /(background|color)$/i,
         date: /Date$/i,
       },
+    },
+
+    msw: {
+      handlers: [StoriesMock],
+    },
+
+    nextjs: {
+      appDirectory: true,
     },
   },
 };
