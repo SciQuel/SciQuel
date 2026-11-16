@@ -2,18 +2,18 @@
 // Fetches the real story + staff pick data from the API using the staff pick ID in the URL
 "use client";
 
-import { useEffect, useState } from "react";
-import { notFound } from "next/navigation";
 import { type GetStoriesResult } from "@/app/api/stories/route";
 import HomepageSection from "@/components/HomepageSection";
 import StaffPickCreateFlow, {
   type InitialStaffPick,
 } from "@/components/StaffPicksSection/StaffPickCreateFlow";
+import { notFound } from "next/navigation";
+import { use, useEffect, useState } from "react";
 
 interface PageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 // Build a story URL from its publish date and slug
@@ -33,6 +33,7 @@ function formatCondensedDate(date: Date) {
 }
 
 export default function StaffPickEditPreviewPage({ params }: PageProps) {
+  const { id } = use(params);
   const [staffPick, setStaffPick] = useState<InitialStaffPick | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isNotFound, setIsNotFound] = useState(false);
@@ -48,9 +49,7 @@ export default function StaffPickEditPreviewPage({ params }: PageProps) {
 
         const data = (await response.json()) as GetStoriesResult;
 
-        const story = data.stories.find(
-          (s) => s.staffPick?.id === params.id,
-        );
+        const story = data.stories.find((s) => s.staffPick?.id === id);
 
         if (!story || !story.staffPick) {
           setIsNotFound(true);
@@ -89,7 +88,7 @@ export default function StaffPickEditPreviewPage({ params }: PageProps) {
     }
 
     void load();
-  }, [params.id]);
+  }, [id]);
 
   if (isNotFound) {
     notFound();
