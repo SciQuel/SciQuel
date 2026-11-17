@@ -84,6 +84,7 @@ model Story {
 
   title      String
   titleColor String
+  titleBackgroundColor String @default("#000000")
 
   slug String // Title slug for URL conforming to RFC 3986
 
@@ -364,6 +365,7 @@ model StaffPick {
   createdAt DateTime @default(now())
 
   description String
+  authorName  String
 
   @@unique([storyId, id])
 }

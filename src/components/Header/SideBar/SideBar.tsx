@@ -1,9 +1,12 @@
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
 export default function SideBar() {
   const [showSideBar, setShowSideBar] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const { data: session } = useSession();
+  const isEditor = session?.user?.roles?.includes("EDITOR") ?? false;
   useEffect(() => {
     const handler = (event: Event) => {
       if (menuRef.current != null) {
@@ -38,7 +41,7 @@ export default function SideBar() {
       >
         <nav className="relative flex flex-col ">
           <li
-            className="text-white-400 my-1.5 flex transform cursor-pointer items-center  hover:bg-sciquelHover"
+            className="text-white-400 flex transform cursor-pointer items-center  hover:bg-sciquelHover"
             style={{ display: showSideBar ? "block" : "none" }}
           >
             <Link
@@ -81,7 +84,7 @@ export default function SideBar() {
           />
 
           <li
-            className="text-white-400 my-1.5 flex transform cursor-pointer items-center  hover:bg-sciquelHover"
+            className="text-white-400 flex transform cursor-pointer items-center  hover:bg-sciquelHover"
             style={{ display: showSideBar ? "block" : "none" }}
           >
             <Link
@@ -93,7 +96,7 @@ export default function SideBar() {
           </li>
 
           <li
-            className="text-white-400 my-1.5 flex transform cursor-pointer items-center   hover:bg-sciquelHover"
+            className="text-white-400 flex transform cursor-pointer items-center   hover:bg-sciquelHover"
             style={{ display: showSideBar ? "block" : "none" }}
           >
             <Link
@@ -104,7 +107,7 @@ export default function SideBar() {
             </Link>
           </li>
           <li
-            className="text-white-400 my-1.5 flex transform cursor-pointer items-center   hover:bg-sciquelHover"
+            className="text-white-400 flex transform cursor-pointer items-center   hover:bg-sciquelHover"
             style={{ display: showSideBar ? "block" : "none" }}
           >
             <Link
@@ -115,7 +118,7 @@ export default function SideBar() {
             </Link>
           </li>
           <li
-            className="text-white-400 my-1.5 flex transform cursor-pointer items-center   hover:bg-sciquelHover"
+            className="text-white-400 flex transform cursor-pointer items-center   hover:bg-sciquelHover"
             style={{ display: showSideBar ? "block" : "none" }}
           >
             <Link
@@ -126,7 +129,7 @@ export default function SideBar() {
             </Link>
           </li>
           <li
-            className="text-white-400 my-1.5 flex transform cursor-pointer items-center   hover:bg-sciquelHover"
+            className="text-white-400 flex transform cursor-pointer items-center   hover:bg-sciquelHover"
             style={{ display: showSideBar ? "block" : "none" }}
           >
             <Link
@@ -137,7 +140,7 @@ export default function SideBar() {
             </Link>
           </li>
           <li
-            className="text-white-400 my-1.5 flex transform cursor-pointer items-center   hover:bg-sciquelHover"
+            className="text-white-400 flex transform cursor-pointer items-center   hover:bg-sciquelHover"
             style={{ display: showSideBar ? "block" : "none" }}
           >
             <Link
@@ -148,7 +151,7 @@ export default function SideBar() {
             </Link>
           </li>
           <li
-            className="text-white-400 my-1.5 flex transform cursor-pointer items-center   hover:bg-sciquelHover"
+            className="text-white-400 flex transform cursor-pointer items-center   hover:bg-sciquelHover"
             style={{ display: showSideBar ? "block" : "none" }}
           >
             <Link
@@ -159,7 +162,7 @@ export default function SideBar() {
             </Link>
           </li>
           <li
-            className="text-white-400 my-1.5 flex transform cursor-pointer items-center   hover:bg-sciquelHover"
+            className="text-white-400 flex transform cursor-pointer items-center   hover:bg-sciquelHover"
             style={{ display: showSideBar ? "block" : "none" }}
           >
             <Link
@@ -170,7 +173,7 @@ export default function SideBar() {
             </Link>
           </li>
           <li
-            className="text-white-400 my-1.5 flex transform cursor-pointer items-center   hover:bg-sciquelHover"
+            className="text-white-400 flex transform cursor-pointer items-center   hover:bg-sciquelHover"
             style={{ display: showSideBar ? "block" : "none" }}
           >
             <Link
@@ -181,7 +184,7 @@ export default function SideBar() {
             </Link>
           </li>
           <li
-            className="text-white-400 my-1.5 flex transform cursor-pointer items-center   hover:bg-sciquelHover"
+            className="text-white-400 flex transform cursor-pointer items-center   hover:bg-sciquelHover"
             style={{ display: showSideBar ? "block" : "none" }}
           >
             <Link
@@ -193,7 +196,7 @@ export default function SideBar() {
           </li>
 
           <li
-            className="text-white-400 my-1.5 flex transform cursor-pointer items-center   hover:bg-sciquelHover"
+            className="text-white-400 flex transform cursor-pointer items-center   hover:bg-sciquelHover"
             style={{ display: showSideBar ? "block" : "none" }}
           >
             <Link
@@ -204,7 +207,7 @@ export default function SideBar() {
             </Link>
           </li>
           <li
-            className="text-white-400 my-1.5 flex transform cursor-pointer items-center   hover:bg-sciquelHover"
+            className="text-white-400 flex transform cursor-pointer items-center   hover:bg-sciquelHover"
             style={{ display: showSideBar ? "block" : "none" }}
           >
             <Link
@@ -215,7 +218,7 @@ export default function SideBar() {
             </Link>
           </li>
           <li
-            className="text-white-400 my-1.5 flex transform cursor-pointer items-center   hover:bg-sciquelHover"
+            className="text-white-400 flex transform cursor-pointer items-center   hover:bg-sciquelHover"
             style={{ display: showSideBar ? "block" : "none" }}
           >
             <Link
@@ -226,7 +229,7 @@ export default function SideBar() {
             </Link>
           </li>
           <li
-            className="text-white-400 my-1.5 flex transform cursor-pointer items-center   hover:bg-sciquelHover"
+            className="text-white-400 flex transform cursor-pointer items-center   hover:bg-sciquelHover"
             style={{ display: showSideBar ? "block" : "none" }}
           >
             <Link
@@ -237,7 +240,7 @@ export default function SideBar() {
             </Link>
           </li>
           <li
-            className="text-white-400 my-1.5 flex transform cursor-pointer items-center   hover:bg-sciquelHover"
+            className="text-white-400 flex transform cursor-pointer items-center   hover:bg-sciquelHover"
             style={{ display: showSideBar ? "block" : "none" }}
           >
             <Link
@@ -254,7 +257,7 @@ export default function SideBar() {
           />
 
           <li
-            className="text-white-400 my-1.5 flex transform cursor-pointer items-center   hover:bg-sciquelHover"
+            className="text-white-400 flex transform cursor-pointer items-center   hover:bg-sciquelHover"
             style={{ display: showSideBar ? "block" : "none" }}
           >
             <Link
@@ -265,7 +268,7 @@ export default function SideBar() {
             </Link>
           </li>
           <li
-            className="text-white-400 my-1.5 flex transform cursor-pointer items-center   hover:bg-sciquelHover"
+            className="text-white-400 flex transform cursor-pointer items-center   hover:bg-sciquelHover"
             style={{ display: showSideBar ? "block" : "none" }}
           >
             <Link
@@ -276,13 +279,26 @@ export default function SideBar() {
             </Link>
           </li>
           <li
-            className="text-white-400 my-1.5 flex transform cursor-pointer items-center   hover:bg-sciquelHover"
+            className="text-white-400 flex transform cursor-pointer items-center   hover:bg-sciquelHover"
             style={{ display: showSideBar ? "block" : "none" }}
           >
             <Link href="/about" className="block w-full px-4 font-medium">
               Behind The Science
             </Link>
           </li>
+          {isEditor && (
+            <li
+              className="text-white-400 my-1.5 flex transform cursor-pointer items-center   hover:bg-sciquelHover"
+              style={{ display: showSideBar ? "block" : "none" }}
+            >
+              <Link
+                href="/staff-picks-preview"
+                className="block w-full px-4 font-medium"
+              >
+                Your Staff Picks
+              </Link>
+            </li>
+          )}
 
           <hr
             className="mx-3 my-2"

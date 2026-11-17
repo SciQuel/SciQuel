@@ -19,9 +19,9 @@ import SecurityIcon from "/public/user-settings/setting-page/security_icon.svg";
 import SociologyIcon from "/public/user-settings/setting-page/sociology_icon.svg";
 import TechIcon from "/public/user-settings/setting-page/tech_icon.svg";
 import clsx from "clsx";
-import { useRef, useState } from "react";
+import { useRef, useState, type ReactNode } from "react";
 
-const iconMap: Record<StoryTopic, JSX.Element> = {
+const iconMap: Record<StoryTopic, ReactNode> = {
   CHEMISTRY: <ChemistryIcon className="w-6" />,
   CHEMICAL_ENGINEERING: <CeIcon className="w-6" />,
   MECHANICAL_ENGINEERING: <MeIcon className="w-6" />,

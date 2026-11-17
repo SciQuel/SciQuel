@@ -6,7 +6,11 @@ import { patchSchema, staffpickIdSchema } from "../schema";
 interface Params {
   staff_pick_id: string;
 }
-export async function DELETE(req: NextRequest, { params }: { params: Params }) {
+export async function DELETE(
+  req: NextRequest,
+  props: { params: Promise<Params> },
+) {
+  const params = await props.params;
   try {
     const { staff_pick_id } = params;
     //check valid type
@@ -57,8 +61,9 @@ export async function DELETE(req: NextRequest, { params }: { params: Params }) {
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: Params },
+  props: { params: Promise<Params> },
 ) {
+  const params = await props.params;
   try {
     const { staff_pick_id } = params;
     //check valid type
@@ -98,11 +103,13 @@ export async function PATCH(
     }
 
     const description = parseSchema.data.description;
+    const authorName = parseSchema.data.author_name;
 
     const updateStaffPickPromise = prisma.staffPick.update({
       where: { id: staff_pick_id },
       data: {
         description,
+        authorName,
       },
     });
     //create record

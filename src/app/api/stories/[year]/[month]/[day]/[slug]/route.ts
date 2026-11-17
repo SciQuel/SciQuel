@@ -32,7 +32,8 @@ export type GetStoryResult = Story & {
   }[];
 };
 
-export async function GET(req: Request, { params }: { params: Params }) {
+export async function GET(req: Request, props: { params: Promise<Params> }) {
+  const params = await props.params;
   try {
     const { searchParams } = new URL(req.url);
 

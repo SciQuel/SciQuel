@@ -12,6 +12,7 @@ declare module "next-auth" {
     user: {
       firstName: string;
       lastName: string;
+      roles: string[];
     } & DefaultUser;
   }
 }
@@ -20,5 +21,6 @@ declare module "next-auth/jwt" {
   interface JWT {
     firstName: string;
     lastName: string;
+    roles: string[];
   }
 }

@@ -1,6 +1,8 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
+import Image from "next/image";
+import { type ReactNode } from "react";
 import AstronomyAct from "./TopicIcons/Astronomy_Active.svg";
 import Astronomy from "./TopicIcons/Astronomy_Inactive.svg";
 import BiologyAct from "./TopicIcons/Biology_Active.svg";
@@ -71,7 +73,7 @@ interface Props {
 }
 
 export default function TopicIcon({ type }: Props) {
-  const iconMap: Record<typeof type, JSX.Element> = {
+  const iconMap: Record<typeof type, ReactNode> = {
     Astronomy: <Astronomy className="h-[2rem] w-auto" />,
     Biology: <Biology className="h-[2rem] w-auto" />,
     Chemical: <Chemical className="h-[2rem] w-auto" />,
@@ -107,7 +109,7 @@ export default function TopicIcon({ type }: Props) {
     SociologyAct: <SociologyAct className="h-[2rem] w-auto" />,
     // SciquelAct: <SciquelAct className="h-[2rem] w-auto" />,
     SciquelAct: (
-      <img
+      <Image
         src={SciquelAct.src}
         alt="SciQuel Active"
         className="h-[2rem] w-auto"

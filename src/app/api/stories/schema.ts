@@ -11,32 +11,40 @@ export const getStorySchema = z.object({
   page: z
     .preprocess(
       (value) => parseInt(z.string().parse(value)),
-      z.number().positive().int(),
+      z.int().positive(),
     )
     .optional(),
   page_size: z
     .preprocess(
       (value) => parseInt(z.string().parse(value)),
-      z.number().positive().int(),
+      z.int().positive(),
     )
     .optional(),
   keyword: z.string().optional(),
   staff_pick: z
-    .preprocess(
-      (value) => (value === "true" ? true : undefined),
-      z.boolean().optional(),
-    )
+    .preprocess((value) => {
+      // Allow callers to explicitly ask for stories with or without a staff pick.
+      if (value === "true") {
+        return true;
+      }
+
+      if (value === "false") {
+        return false;
+      }
+
+      return undefined;
+    }, z.boolean().optional())
     .optional(),
   topic: z
     .preprocess(
       (value) => String(z.string().parse(value).toUpperCase()),
-      z.nativeEnum(StoryTopic),
+      z.enum(StoryTopic),
     )
     .optional(),
   type: z
     .preprocess(
       (value) => String(z.string().parse(value).toUpperCase()),
-      z.nativeEnum(StoryType),
+      z.enum(StoryType),
     )
     .optional(),
   date_from: z
@@ -48,12 +56,12 @@ export const getStorySchema = z.object({
   sort_by: z.enum(["newest", "oldest"]).optional(),
   published: z.preprocess(
     (value) => (value === "false" ? false : true),
-    z.boolean().optional().default(true),
+    z.boolean().optional().prefault(true),
   ),
   category: z
     .preprocess(
       (value) => String(z.string().parse(value).toUpperCase()),
-      z.nativeEnum(Category),
+      z.enum(Category),
     )
     .optional(),
 });
@@ -66,6 +74,8 @@ export const postStorySchema = z.object({
 export const putStorySchema = zfd.formData({
   id: zfd.text().optional(),
   title: zfd.text(),
+  titleColor: zfd.text(),
+  titleBackgroundColor: zfd.text(),
   summary: zfd.text(),
   image: z.preprocess(
     (val) => (val instanceof Blob && val.size === 0 ? undefined : val),
@@ -80,7 +90,7 @@ export const patchStorySchema = z.object({
     .array(
       z.object({
         email: z.string(),
-        contributionType: z.nativeEnum(ContributionType),
+        contributionType: z.enum(ContributionType),
         bio: z.string(),
       }),
     )

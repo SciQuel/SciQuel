@@ -12,6 +12,8 @@ import {
 } from "next/font/google";
 import AuthProvider from "./AuthProvider";
 
+export const fetchCache = "default-cache";
+
 export const metadata = {
   title: "SciQuel",
   description: "SciQuel",
@@ -70,15 +72,18 @@ export default async function RootLayout({
           >
             Skip to main content
           </a>
-          <div className=" min-h-screen">
+          <div className="flex min-h-screen flex-col">
             <Header></Header>
 
-            <main className="pt-36 font-quicksand xs:pt-24 sm:pt-10" id="main">
+            <main
+              id="main"
+              className="flex flex-1 flex-col pt-36 font-quicksand xs:pt-24 sm:pt-10"
+            >
               {children}
             </main>
-          </div>
 
-          <Footer />
+            <Footer />
+          </div>
         </AuthProvider>
       </body>
     </html>

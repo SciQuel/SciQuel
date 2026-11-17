@@ -16,11 +16,13 @@ type FullStoryContribution = StoryContribution & {
   };
 };
 
-export default async function StoryContributorEditorPage({
-  searchParams: { id },
-}: {
-  searchParams: SearchParams;
+export default async function StoryContributorEditorPage(props: {
+  searchParams: Promise<SearchParams>;
 }) {
+  const searchParams = await props.searchParams;
+
+  const { id } = searchParams;
+
   const storyPromise = retrieveStory(id);
   const authorsPromise = retrieveAuthors();
   const [story, authors] = await Promise.all([storyPromise, authorsPromise]);

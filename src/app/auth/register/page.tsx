@@ -1,12 +1,12 @@
 import Alert from "@/components/Alert";
 import RegisterForm from "@/components/Auth/RegisterForm";
+import { type ReactNode } from "react";
 
-export default function RegisterPage({
-  searchParams,
-}: {
-  searchParams: { [key: string]: unknown };
+export default async function RegisterPage(props: {
+  searchParams: Promise<{ [key: string]: unknown }>;
 }) {
-  const errorMap: Record<string, JSX.Element> = {
+  const searchParams = await props.searchParams;
+  const errorMap: Record<string, ReactNode> = {
     Default: (
       <Alert type="danger">
         There was a problem creating your account. Please check that your email

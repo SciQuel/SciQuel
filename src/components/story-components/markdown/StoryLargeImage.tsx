@@ -8,6 +8,7 @@ import {
   useRef,
   useState,
   type PropsWithChildren,
+  type RefObject,
 } from "react";
 import { PrintContext } from "../PrintContext";
 import {
@@ -147,7 +148,7 @@ it will only open the popup
         overlapDispatch({
           type: "set",
           figureVal: getOffset(entry.contentRect.width),
-          elementRef: figureRef,
+          elementRef: figureRef as RefObject<HTMLElement>,
         });
       } else {
         // entry is too small?
@@ -155,7 +156,10 @@ it will only open the popup
         if (intersectionRef.current) {
           intersectionRef.current.disconnect();
         }
-        overlapDispatch({ type: "reset", elementRef: figureRef });
+        overlapDispatch({
+          type: "reset",
+          elementRef: figureRef as RefObject<HTMLElement>,
+        });
       }
     });
   }
@@ -184,7 +188,10 @@ it will only open the popup
 
   function onscreenScroll() {
     if (figureRef.current) {
-      overlapDispatch({ type: "update", elementRef: figureRef });
+      overlapDispatch({
+        type: "update",
+        elementRef: figureRef as RefObject<HTMLElement>,
+      });
     }
   }
 

@@ -9,10 +9,10 @@ import { DateTime } from "luxon";
 import { notFound } from "next/navigation";
 
 interface Params {
-  searchParams: { [key: string]: string };
-  params: {
+  searchParams: Promise<{ [key: string]: string }>;
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 function parsePageNum(page: string | undefined) {
@@ -85,7 +85,9 @@ async function getArticles(slug: string, page: number, staffPick: boolean) {
     ID with author role:  64ff8fa50d2710ca31d09555
     ID with out author role: 64cc4fefe601ab59588a9e0f
 */
-export default async function ProfilePage({ searchParams, params }: Params) {
+export default async function ProfilePage(props: Params) {
+  const params = await props.params;
+  const searchParams = await props.searchParams;
   const pageNum = parsePageNum(searchParams["page"]);
   const staffPick = parseStaffPick(searchParams["category"]);
   const category = staffPick ? "Staff Pick" : null;

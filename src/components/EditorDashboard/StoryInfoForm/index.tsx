@@ -1,6 +1,7 @@
 "use client";
 
 import Form from "@/components/Form";
+import FormColorPicker from "@/components/Form/FormColorPicker";
 import FormInput from "@/components/Form/FormInput";
 import axios from "axios";
 import clsx from "clsx";
@@ -10,6 +11,8 @@ import { useRef, useState, useTransition } from "react";
 interface Props {
   id?: string;
   title?: string;
+  titleColor?: string;
+  titleBackgroundColor?: string;
   summary?: string;
   image?: string;
   caption?: string;
@@ -18,6 +21,8 @@ interface Props {
 export default function StoryInfoForm({
   id: storyId,
   title: initialTitle,
+  titleColor: initialTitleColor,
+  titleBackgroundColor: initialTitleBackgroundColor,
   summary: initialSummary,
   image: initialImage,
   caption: initialCaption,
@@ -27,6 +32,10 @@ export default function StoryInfoForm({
 
   const [title, setTitle] = useState(initialTitle ?? "");
   const [summary, setSummary] = useState(initialSummary ?? "");
+  const [titleColor, setTitleColor] = useState(initialTitleColor ?? "#000000");
+  const [titleBackgroundColor, setTitleBackgroundColor] = useState(
+    initialTitleBackgroundColor ?? "#ffffff",
+  );
   const [image, setImage] = useState<File | string | null>(
     initialImage ?? null,
   );
@@ -48,6 +57,8 @@ export default function StoryInfoForm({
                 }
                 formData.append("title", title);
                 formData.append("summary", summary);
+                formData.append("titleColor", titleColor);
+                formData.append("titleBackgroundColor", titleBackgroundColor);
                 formData.append("imageCaption", caption);
                 if (image === null) {
                   return;
@@ -57,6 +68,7 @@ export default function StoryInfoForm({
                   const file = new File([image], image.name);
                   formData.append("image", file, file.name);
                 }
+
                 const story = await axios.put<{ id: string }>(
                   "/api/stories",
                   formData,
@@ -88,6 +100,24 @@ export default function StoryInfoForm({
           }}
           disabled={loading}
         />
+        <div className="mt-6 pb-6">
+          <FormColorPicker
+            title="Title Color"
+            onChange={(e) => {
+              setDirty(true);
+              setTitleColor(e.target.value);
+            }}
+            value={titleColor}
+          />
+          <FormColorPicker
+            title="Title Background Color"
+            onChange={(e) => {
+              setDirty(true);
+              setTitleBackgroundColor(e.target.value);
+            }}
+            value={titleBackgroundColor}
+          />
+        </div>
         <FormInput
           title="Summary"
           required

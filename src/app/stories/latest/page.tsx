@@ -10,11 +10,10 @@ interface Params {
   page_number: string;
 }
 
-export default async function StoriesListPage({
-  searchParams,
-}: {
-  searchParams: Params;
+export default async function StoriesListPage(props: {
+  searchParams: Promise<Params>;
 }) {
+  const searchParams = await props.searchParams;
   const { page_number } = searchParams;
   const params = {
     page: page_number || "1",
