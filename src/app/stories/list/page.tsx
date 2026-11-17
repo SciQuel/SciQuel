@@ -45,8 +45,14 @@ export default async function StoriesListPage(props: {
               {isStaffPick ? (
                 <div className="flex flex-col gap-8">
                   {stories.map((article) => {
-                    const publishDate = DateTime.fromJSDate(article.publishedAt).toUTC();
-                    const href = `/stories/${publishDate.year}/${publishDate.toFormat("LL")}/${publishDate.toFormat("dd")}/${article.slug}`;
+                    const publishDate = DateTime.fromJSDate(
+                      article.publishedAt,
+                    ).toUTC();
+                    const href = `/stories/${
+                      publishDate.year
+                    }/${publishDate.toFormat("LL")}/${publishDate.toFormat(
+                      "dd",
+                    )}/${article.slug}`;
                     const author = article.storyContributions.find(
                       (v) => v.contributionType === "AUTHOR",
                     );

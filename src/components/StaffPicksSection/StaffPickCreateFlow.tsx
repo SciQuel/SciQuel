@@ -5,12 +5,12 @@
 "use client";
 
 import { type GetStoriesResult } from "@/app/api/stories/route";
+import { type StoryTopic } from "@prisma/client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { type StoryTopic } from "@prisma/client";
 import { useDeferredValue, useEffect, useState } from "react";
-import StaffPickCard from "./StaffPickCard";
 import TopicTag from "../TopicTag";
+import StaffPickCard from "./StaffPickCard";
 
 type Step = "compose" | "preview" | "success";
 
@@ -55,8 +55,12 @@ function ActionButton(props: {
       disabled={props.disabled}
       className={[
         "min-w-[6.5rem] rounded-md px-8 py-3 text-sm font-semibold text-white transition",
-        variant === "primary" ? "bg-sciquelTeal hover:opacity-85" : "bg-sciquelTeal hover:opacity-85",
-        props.disabled ? "cursor-not-allowed opacity-40" : "shadow-[0_10px_25px_rgba(25,75,82,0.18)]",
+        variant === "primary"
+          ? "bg-sciquelTeal hover:opacity-85"
+          : "bg-sciquelTeal hover:opacity-85",
+        props.disabled
+          ? "cursor-not-allowed opacity-40"
+          : "shadow-[0_10px_25px_rgba(25,75,82,0.18)]",
       ].join(" ")}
     >
       {props.children}
@@ -273,7 +277,7 @@ export default function StaffPickCreateFlow({
                           key={article.id}
                           type="button"
                           onClick={() => setSelectedArticle(article)}
-                          className="flex w-full flex-col gap-3 border-b border-gray-100 px-4 py-4 text-left transition hover:bg-[#f6fbfb] last:border-b-0"
+                          className="flex w-full flex-col gap-3 border-b border-gray-100 px-4 py-4 text-left transition last:border-b-0 hover:bg-[#f6fbfb]"
                         >
                           <div className="flex items-start justify-between gap-4">
                             <div className="flex min-w-0 flex-col gap-2">
@@ -308,7 +312,9 @@ export default function StaffPickCreateFlow({
                   </p>
                 ) : null}
 
-                {!isLoadingArticles && !articleLoadError && articleOptions.length === 0 ? (
+                {!isLoadingArticles &&
+                !articleLoadError &&
+                articleOptions.length === 0 ? (
                   <p className="text-sm text-sciquelMuted">
                     No published articles matched your search.
                   </p>
@@ -343,7 +349,9 @@ export default function StaffPickCreateFlow({
       ) : (
         // Preview step: render the reusable staff pick card with the current draft values
         <section className="flex flex-col gap-8 pt-2">
-          <h2 className="text-[2rem] font-semibold leading-none text-black">Preview</h2>
+          <h2 className="text-[2rem] font-semibold leading-none text-black">
+            Preview
+          </h2>
           {selectedArticle ? (
             <div className="w-full">
               <StaffPickCard
@@ -381,7 +389,10 @@ export default function StaffPickCreateFlow({
         </ActionButton>
 
         {step === "compose" ? (
-          <ActionButton disabled={!canPreview} onClick={() => setStep("preview")}>
+          <ActionButton
+            disabled={!canPreview}
+            onClick={() => setStep("preview")}
+          >
             Preview
           </ActionButton>
         ) : (
@@ -395,11 +406,7 @@ export default function StaffPickCreateFlow({
               disabled={isSubmitting}
               onClick={() => void handleSubmit()}
             >
-              {isSubmitting
-                ? "Saving…"
-                : isEditMode
-                  ? "Save"
-                  : "Submit"}
+              {isSubmitting ? "Saving…" : isEditMode ? "Save" : "Submit"}
             </ActionButton>
           </div>
         )}
@@ -409,7 +416,9 @@ export default function StaffPickCreateFlow({
 }
 
 // Convert the full story payload into the article card fields used by the staff pick flow
-function mapStoryToArticle(story: GetStoriesResult["stories"][number]): ArticleOption {
+function mapStoryToArticle(
+  story: GetStoriesResult["stories"][number],
+): ArticleOption {
   const publishedDate = new Date(story.publishedAt ?? story.createdAt);
   const primaryAuthor =
     story.storyContributions.find(

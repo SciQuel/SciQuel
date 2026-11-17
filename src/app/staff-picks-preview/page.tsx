@@ -1,10 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import Link from "next/link";
 import { type GetStoriesResult } from "@/app/api/stories/route";
 import HomepageSection from "@/components/HomepageSection";
 import StaffPickCard from "@/components/StaffPicksSection/StaffPickCard";
+import Link from "next/link";
+import { useCallback, useEffect, useState } from "react";
 
 // Lightweight shape for the staff pick cards displayed on this dashboard
 interface StaffPickEntry {
@@ -131,8 +131,7 @@ export default function StaffPicksPreviewPage() {
       // Remove from local state so the UI updates immediately
       setStaffPicks((current) =>
         current.filter(
-          (entry) =>
-            entry.staffPickId !== staffPickPendingDelete.staffPickId,
+          (entry) => entry.staffPickId !== staffPickPendingDelete.staffPickId,
         ),
       );
       closeDeleteModal();
@@ -174,7 +173,11 @@ export default function StaffPicksPreviewPage() {
                     title={entry.title}
                     summary={entry.summary}
                     thumbnailUrl={entry.thumbnailUrl}
-                    topic={entry.topic as Parameters<typeof StaffPickCard>[0]["topic"]}
+                    topic={
+                      entry.topic as Parameters<
+                        typeof StaffPickCard
+                      >[0]["topic"]
+                    }
                     authorName={entry.authorName}
                     condensedDate={entry.condensedDate}
                     quote={entry.quote}

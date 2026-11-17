@@ -2,9 +2,9 @@
 // It filters the provided list of articles to only include those with a staff pick, and then renders a card for each of those articles, displaying relevant information such as the title, summary, author, and the staff pick description.
 // If there are no staff picks available, it returns null and does not render anything.
 import { type Stories } from "@/app/api/stories/route";
+import { DateTime } from "luxon";
 import HomepageSection from "../HomepageSection";
 import NavigateLink from "../HomepageSection/NavigateLink";
-import { DateTime } from "luxon";
 import StaffPickCard from "./StaffPickCard";
 
 interface Props {
@@ -33,7 +33,9 @@ export default function StaffPicksSection({ articles }: Props) {
       <div className="flex flex-col gap-8">
         {displayArticles.map((article) => {
           const publishDate = DateTime.fromJSDate(article.publishedAt).toUTC();
-          const href = `/stories/${publishDate.year}/${publishDate.toFormat("LL")}/${publishDate.toFormat("dd")}/${article.slug}`;
+          const href = `/stories/${publishDate.year}/${publishDate.toFormat(
+            "LL",
+          )}/${publishDate.toFormat("dd")}/${article.slug}`;
           const author = article.storyContributions.find(
             (value) => value.contributionType === "AUTHOR",
           );

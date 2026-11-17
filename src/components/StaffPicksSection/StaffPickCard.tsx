@@ -1,7 +1,7 @@
+import TopicTag from "@/components/TopicTag";
+import { type StoryTopic } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
-import { type StoryTopic } from "@prisma/client";
-import TopicTag from "@/components/TopicTag";
 
 interface StaffPickCardProps {
   href: string;
@@ -31,7 +31,6 @@ export default function StaffPickCard({
   quoteAuthor,
   quoteHandle,
   quoteDate,
-  avatarUrl,
   showDivider = true,
 }: StaffPickCardProps) {
   return (
@@ -74,7 +73,9 @@ export default function StaffPickCard({
                 </div>
 
                 <div className="flex items-center gap-2 text-xs text-sciquelMuted">
-                  <p className="font-semibold text-sciquelDarkText">By {authorName}</p>
+                  <p className="font-semibold text-sciquelDarkText">
+                    By {authorName}
+                  </p>
                   <span className="text-sciquelMuted">{condensedDate}</span>
                 </div>
               </div>
@@ -90,7 +91,7 @@ export default function StaffPickCard({
         </Link>
       </div>
 
-      <div className="flex w-full items-center gap-4 px-2 lg:w-1/2 lg:min-h-[12.5rem] lg:justify-center lg:px-8">
+      <div className="flex w-full items-center gap-4 px-2 lg:min-h-[12.5rem] lg:w-1/2 lg:justify-center lg:px-8">
         {/* TODO: Re-enable once avatar/profile-image behavior is decided
         <div className="relative h-[4.5rem] w-[4.5rem] flex-shrink-0 overflow-hidden rounded-full bg-sciquelTeal">
           <Image src={avatarUrl} alt={quoteAuthor} fill className="object-cover" />
