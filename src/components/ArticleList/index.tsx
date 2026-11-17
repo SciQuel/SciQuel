@@ -3,9 +3,20 @@ import clsx from "clsx";
 import { DateTime } from "luxon";
 import ArticleCard from "../ArticleCard/ArticleCard";
 
+type Article = Pick<
+  Stories[number],
+  | "publishedAt"
+  | "slug"
+  | "topics"
+  | "title"
+  | "summary"
+  | "thumbnailUrl"
+  | "storyContributions"
+>;
+
 interface Props {
   mini?: boolean;
-  articles: Stories;
+  articles: Article[];
   preferHorizontal?: boolean;
 }
 

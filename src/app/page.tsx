@@ -1,4 +1,4 @@
-// import StaffPicksSection from "@/components/StaffPicksSection";
+import StaffPicksSection from "@/components/StaffPicksSection";
 // import TrendingSection from "@/components/TrendingSection";
 import WhatsNewSection from "@/components/WhatsNewSection";
 import env from "@/lib/env";
@@ -16,8 +16,8 @@ export default async function Home() {
       {/* Article cards */}
       <div className="mx-4 mb-10 mt-8 flex flex-col gap-12 xs:mx-[10%]">
         <WhatsNewSection articles={whatsNewArticles} />
-        {/* <TrendingSection articles={[exampleStory]} />
-        <StaffPicksSection articles={whatsNewArticles} /> */}
+        {/* <TrendingSection articles={[exampleStory]} /> */}
+        <StaffPicksSection articles={whatsNewArticles} />
       </div>
     </>
   );

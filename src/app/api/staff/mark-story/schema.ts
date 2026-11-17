@@ -15,11 +15,19 @@ export const postSchema = z.object({
     error: (issue) =>
       issue.input === undefined ? "description is required" : undefined,
   }),
+  author_name: z.string({
+    error: (issue) =>
+      issue.input === undefined ? "author_name is required" : undefined,
+  }),
 });
 export const patchSchema = z.object({
   description: z.string({
     error: (issue) =>
       issue.input === undefined ? "description is required" : undefined,
+  }),
+  author_name: z.string({
+    error: (issue) =>
+      issue.input === undefined ? "author_name is required" : undefined,
   }),
 });
 
