@@ -1,3 +1,4 @@
+/* eslint-disable isaacscript/complete-sentences-jsdoc */
 import prisma from "@/lib/prisma";
 import {
   type ContributionType,
