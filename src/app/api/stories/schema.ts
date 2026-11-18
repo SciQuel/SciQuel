@@ -22,10 +22,18 @@ export const getStorySchema = z.object({
     .optional(),
   keyword: z.string().optional(),
   staff_pick: z
-    .preprocess(
-      (value) => (value === "true" ? true : undefined),
-      z.boolean().optional(),
-    )
+    .preprocess((value) => {
+      // Allow callers to explicitly ask for stories with or without a staff pick.
+      if (value === "true") {
+        return true;
+      }
+
+      if (value === "false") {
+        return false;
+      }
+
+      return undefined;
+    }, z.boolean().optional())
     .optional(),
   topic: z
     .preprocess(
