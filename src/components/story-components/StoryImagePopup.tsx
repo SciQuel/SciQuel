@@ -12,7 +12,7 @@ interface Props {
   src: string;
   handleClick: (e: MouseEvent<HTMLDivElement>) => void;
   alt?: string;
-  captionRef: RefObject<HTMLParagraphElement>;
+  captionRef: RefObject<HTMLParagraphElement | null>;
   isClicked: boolean;
   setIsClicked: (isClicked: boolean) => void;
   isMobile: boolean;
