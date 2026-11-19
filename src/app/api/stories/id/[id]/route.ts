@@ -1,4 +1,8 @@
 import prisma from "@/lib/prisma";
+import {
+  findEditorStoryContent,
+  upsertWorkingStoryContent,
+} from "@/lib/story-content";
 import { type ContributionType, type Prisma, type Story } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { NextResponse, type NextRequest } from "next/server";
@@ -61,14 +65,6 @@ export async function GET(
             },
           },
         },
-        storyContent:
-          includeContent === "true"
-            ? {
-                take: 1,
-                orderBy: { createdAt: "desc" },
-                select: { content: true, footer: true },
-              }
-            : false,
       },
     });
 
@@ -76,7 +72,17 @@ export async function GET(
       return NextResponse.json({ error: "Not Found" }, { status: 404 });
     }
 
-    return NextResponse.json(result);
+    if (includeContent !== "true") {
+      return NextResponse.json(result);
+    }
+
+    const editorContent = await findEditorStoryContent(id);
+    return NextResponse.json({
+      ...result,
+      storyContent: editorContent
+        ? [{ content: editorContent.content, footer: editorContent.footer }]
+        : [],
+    });
   } catch (err) {
     console.error(err);
     return NextResponse.json(
@@ -140,29 +146,10 @@ export async function PATCH(
     }
 
     if (parsedBody.data.content || parsedBody.data.footer !== undefined) {
-      const storyContent = await prisma.storyContent.findFirst({
-        where: { storyId: id },
-        orderBy: { createdAt: "desc" },
+      await upsertWorkingStoryContent(id, {
+        content: parsedBody.data.content,
+        footer: parsedBody.data.footer,
       });
-
-      if (storyContent) {
-        await prisma.storyContent.update({
-          where: { id: storyContent.id },
-          data: {
-            content: parsedBody.data.content,
-            footer: parsedBody.data.footer,
-          },
-        });
-      } else {
-        await prisma.storyContent.create({
-          data: {
-            content: parsedBody.data.content ?? "",
-            footer: parsedBody.data.footer,
-            createdAt: new Date(),
-            storyId: id,
-          },
-        });
-      }
     }
 
     if (parsedBody.data.published !== undefined) {
