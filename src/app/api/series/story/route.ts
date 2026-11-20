@@ -24,23 +24,7 @@ export async function GET(req: NextRequest) {
         series: true,
       },
     });
-    // let res: unknown[] = [];
-    // if (foundRelations && foundRelations.length > 0) {
-    //   res = await Promise.allSettled(
-    //     foundRelations.map((rel) =>
-    //       prisma.series.findFirst({
-    //         where: {
-    //           id: rel.seriesId,
-    //         },
-    //       }),
-    //     ),
-    //   ).then((results) =>
-    //     results.map((r): unknown =>
-    //       r.status === "fulfilled" ? r.value : r.reason,
-    //     ),
-    //   );
-    // }
-    // return NextResponse.json({ foudnRelations: foundRelations, series: res });
+
     return NextResponse.json({ series: seriesOfStory });
   } catch (err) {
     console.log(err);
