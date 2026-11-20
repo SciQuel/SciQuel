@@ -135,6 +135,8 @@ model Contributor {
   email     String? @unique
   avatarUrl String?
 
+  userId String? @db.ObjectId
+
   bio String?
 
   contributorSlug String @unique
