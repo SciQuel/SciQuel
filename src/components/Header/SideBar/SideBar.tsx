@@ -88,7 +88,7 @@ export default function SideBar() {
             style={{ display: showSideBar ? "block" : "none" }}
           >
             <Link
-              href="/stories/topics/Astronomy"
+              href="/stories/topics/astronomy"
               className="block w-full px-4 font-medium"
             >
               Astronomy
@@ -100,7 +100,7 @@ export default function SideBar() {
             style={{ display: showSideBar ? "block" : "none" }}
           >
             <Link
-              href="/stories/topics/Biology"
+              href="/stories/topics/biology"
               className="block w-full px-4 font-medium"
             >
               Biology
@@ -111,7 +111,7 @@ export default function SideBar() {
             style={{ display: showSideBar ? "block" : "none" }}
           >
             <Link
-              href="/stories/topics/Chemistry"
+              href="/stories/topics/chemistry"
               className="block w-full px-4 font-medium"
             >
               Chemistry
@@ -122,7 +122,7 @@ export default function SideBar() {
             style={{ display: showSideBar ? "block" : "none" }}
           >
             <Link
-              href="/stories/topics/Computer_Science"
+              href="/stories/topics/computer_science"
               className="block w-full px-4 font-medium"
             >
               Computer Science
@@ -144,7 +144,7 @@ export default function SideBar() {
             style={{ display: showSideBar ? "block" : "none" }}
           >
             <Link
-              href="/stories/topics/Electrical_Engineering"
+              href="/stories/topics/electrical_engineering"
               className="block w-full px-4 font-medium"
             >
               Electrical Engineering
@@ -155,7 +155,7 @@ export default function SideBar() {
             style={{ display: showSideBar ? "block" : "none" }}
           >
             <Link
-              href="/stories/topics/Environmental_Science"
+              href="/stories/topics/environmental_science"
               className="block w-full px-4 font-medium"
             >
               Environmental Science
@@ -166,7 +166,7 @@ export default function SideBar() {
             style={{ display: showSideBar ? "block" : "none" }}
           >
             <Link
-              href="/stories/topics/Geology"
+              href="/stories/topics/geology"
               className="block w-full px-4 font-medium"
             >
               Geology
@@ -177,7 +177,7 @@ export default function SideBar() {
             style={{ display: showSideBar ? "block" : "none" }}
           >
             <Link
-              href="/stories/topics/Mathematics"
+              href="/stories/topics/mathematics"
               className="block w-full px-4 font-medium"
             >
               Mathematics
@@ -188,7 +188,7 @@ export default function SideBar() {
             style={{ display: showSideBar ? "block" : "none" }}
           >
             <Link
-              href="/stories/topics/Mechanical_Engineering"
+              href="/stories/topics/mechanical_engineering"
               className="block w-full px-4 font-medium"
             >
               Mechanical Engineering
@@ -200,7 +200,7 @@ export default function SideBar() {
             style={{ display: showSideBar ? "block" : "none" }}
           >
             <Link
-              href="/stories/topics/Medicine"
+              href="/stories/topics/medicine"
               className="block w-full px-4 font-medium"
             >
               Medicine
@@ -211,7 +211,7 @@ export default function SideBar() {
             style={{ display: showSideBar ? "block" : "none" }}
           >
             <Link
-              href="/stories/topics/Physics"
+              href="/stories/topics/physics"
               className="block w-full px-4 font-medium"
             >
               Physics
@@ -222,7 +222,7 @@ export default function SideBar() {
             style={{ display: showSideBar ? "block" : "none" }}
           >
             <Link
-              href="/stories/topics/Psychology"
+              href="/stories/topics/psychology"
               className="block w-full px-4 font-medium"
             >
               Psychology
@@ -233,7 +233,7 @@ export default function SideBar() {
             style={{ display: showSideBar ? "block" : "none" }}
           >
             <Link
-              href="/stories/topics/Sociology"
+              href="/stories/topics/sociology"
               className="block w-full px-4 font-medium"
             >
               Sociology
@@ -244,7 +244,7 @@ export default function SideBar() {
             style={{ display: showSideBar ? "block" : "none" }}
           >
             <Link
-              href="/stories/topics/Technology"
+              href="/stories/topics/technology"
               className="block w-full px-4 font-medium"
             >
               Technology
